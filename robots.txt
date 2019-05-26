@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://yindongliang.com/sitemap.xml

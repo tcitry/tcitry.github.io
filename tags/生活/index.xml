@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>生活 on Dongliang Yin</title>
+    <link>https://yindongliang.com/tags/%E7%94%9F%E6%B4%BB/</link>
+    <description>Recent content in 生活 on Dongliang Yin</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>tcitry</copyright>
+    <lastBuildDate>Mon, 22 Sep 2014 00:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://yindongliang.com/tags/%E7%94%9F%E6%B4%BB/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>这个博客</title>
+      <link>https://yindongliang.com/2014/09/22/this-blog/</link>
+      <pubDate>Mon, 22 Sep 2014 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/2014/09/22/this-blog/</guid>
+      <description>关于我的博客，技术架构上已经有了很多的版本，我对做一个自己的博客是这么着迷，现在想一想，如果不是真的想做，是不可能这么折腾。 记得最早是在大一</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Vagrant on Dongliang Yin</title>
+    <link>https://yindongliang.com/categories/vagrant/</link>
+    <description>Recent content in Vagrant on Dongliang Yin</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>tcitry</copyright>
+    <lastBuildDate>Mon, 10 Apr 2017 00:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://yindongliang.com/categories/vagrant/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Vagrant虚拟机Ubuntu16.04安装MariaDB</title>
+      <link>https://yindongliang.com/2017/04/10/vagrant-ubuntu-install-mariadb/</link>
+      <pubDate>Mon, 10 Apr 2017 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/2017/04/10/vagrant-ubuntu-install-mariadb/</guid>
+      <description>由于宿主机安装了MySQL，为了避免安装MariaDB造成MySQL无法使用，所以在Vagrant中安装Mariadb 更换网易apt-get</description>
+    </item>
+    
+  </channel>
+</rss>

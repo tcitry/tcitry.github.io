@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Django on Dongliang Yin</title>
+    <link>https://yindongliang.com/tags/django/</link>
+    <description>Recent content in Django on Dongliang Yin</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>tcitry</copyright>
+    <lastBuildDate>Thu, 20 Apr 2017 00:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://yindongliang.com/tags/django/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>浅谈Django-REST-framework的设计与源码</title>
+      <link>https://yindongliang.com/2017/04/20/talk-about-django-rest-framework/</link>
+      <pubDate>Thu, 20 Apr 2017 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/2017/04/20/talk-about-django-rest-framework/</guid>
+      <description>从一年半之前接触Django，一年前接触Django-REST-framework（后称drf），再后来中间有个空挡，一直没有真正用到drf</description>
+    </item>
+    
+    <item>
+      <title>Ubuntu下部署Django应用</title>
+      <link>https://yindongliang.com/2014/10/28/deploy-django-app/</link>
+      <pubDate>Tue, 28 Oct 2014 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/2014/10/28/deploy-django-app/</guid>
+      <description>做了一个Django小应用，主要内容是一个论坛，经过好几天的研究，也可以在服务器端运行了，以下所有代码中的操作都需要在命令行运行。 安装MyS</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Think on Dongliang Yin</title>
+    <link>https://yindongliang.com/tags/think/</link>
+    <description>Recent content in Think on Dongliang Yin</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>tcitry</copyright>
+    <lastBuildDate>Wed, 29 Apr 2015 00:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://yindongliang.com/tags/think/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>独立软件的付费方式</title>
+      <link>https://yindongliang.com/2015/04/29/price-of-software/</link>
+      <pubDate>Wed, 29 Apr 2015 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/2015/04/29/price-of-software/</guid>
+      <description>一款软件如果有意图收费，而又不想流失用户，大部分都是采用捐助的模式，让用户自己决定软件捐还是不捐，我认为这样的效果应该不明显，很难激起用户捐</description>
+    </item>
+    
+  </channel>
+</rss>

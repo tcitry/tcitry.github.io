@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Dongliang Yin</title>
+    <link>https://yindongliang.com/tags/</link>
+    <description>Recent content in Tags on Dongliang Yin</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>tcitry</copyright>
+    <lastBuildDate>Thu, 20 Apr 2017 00:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://yindongliang.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Django</title>
+      <link>https://yindongliang.com/tags/django/</link>
+      <pubDate>Thu, 20 Apr 2017 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/tags/django/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mariadb</title>
+      <link>https://yindongliang.com/tags/mariadb/</link>
+      <pubDate>Mon, 10 Apr 2017 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/tags/mariadb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Python</title>
+      <link>https://yindongliang.com/tags/python/</link>
+      <pubDate>Tue, 28 Oct 2014 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Think</title>
+      <link>https://yindongliang.com/tags/think/</link>
+      <pubDate>Wed, 29 Apr 2015 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/tags/think/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ubuntu</title>
+      <link>https://yindongliang.com/tags/ubuntu/</link>
+      <pubDate>Mon, 10 Apr 2017 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/tags/ubuntu/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Vagrant</title>
+      <link>https://yindongliang.com/tags/vagrant/</link>
+      <pubDate>Mon, 10 Apr 2017 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/tags/vagrant/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Web</title>
+      <link>https://yindongliang.com/tags/web/</link>
+      <pubDate>Thu, 20 Apr 2017 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/tags/web/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>生活</title>
+      <link>https://yindongliang.com/tags/%E7%94%9F%E6%B4%BB/</link>
+      <pubDate>Mon, 22 Sep 2014 00:00:00 +0800</pubDate>
+      
+      <guid>https://yindongliang.com/tags/%E7%94%9F%E6%B4%BB/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

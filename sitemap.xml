@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml-stylesheet type="text/xsl" href="https://yindongliang.com/sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://yindongliang.com/2017/04/20/talk-about-django-rest-framework/</loc>
+    <lastmod>2017-04-20T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/2017/04/10/vagrant-ubuntu-install-mariadb/</loc>
+    <lastmod>2017-04-10T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/2015/04/29/price-of-software/</loc>
+    <lastmod>2015-04-29T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/2014/10/28/deploy-django-app/</loc>
+    <lastmod>2014-10-28T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/2014/09/22/this-blog/</loc>
+    <lastmod>2014-09-22T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/categories/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/tags/django/</loc>
+    <lastmod>2017-04-20T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/categories/django/</loc>
+    <lastmod>2017-04-20T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/</loc>
+    <lastmod>2017-04-20T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/tags/mariadb/</loc>
+    <lastmod>2017-04-10T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/post/</loc>
+    <lastmod>2017-04-20T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/tags/python/</loc>
+    <lastmod>2014-10-28T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/categories/python/</loc>
+    <lastmod>2014-10-28T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/tags/</loc>
+    <lastmod>2017-04-20T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/tags/think/</loc>
+    <lastmod>2015-04-29T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/categories/think/</loc>
+    <lastmod>2015-04-29T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/tags/ubuntu/</loc>
+    <lastmod>2017-04-10T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/tags/vagrant/</loc>
+    <lastmod>2017-04-10T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/categories/vagrant/</loc>
+    <lastmod>2017-04-10T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/tags/web/</loc>
+    <lastmod>2017-04-20T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/tags/%E7%94%9F%E6%B4%BB/</loc>
+    <lastmod>2014-09-22T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://yindongliang.com/categories/%E7%94%9F%E6%B4%BB/</loc>
+    <lastmod>2014-09-22T00:00:00+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+</urlset>
