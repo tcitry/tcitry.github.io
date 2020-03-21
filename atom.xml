@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://yindongliang.com</id>
+    <title>yindongliang</title>
+    <updated>2020-03-21T15:17:56.905Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://yindongliang.com"/>
+    <link rel="self" href="https://yindongliang.com/atom.xml"/>
+    <subtitle>殷东亮的博客</subtitle>
+    <logo>https://yindongliang.com/images/avatar.png</logo>
+    <icon>https://yindongliang.com/favicon.ico</icon>
+    <rights>All rights reserved 2020, yindongliang</rights>
+    <entry>
+        <title type="html"><![CDATA[浅谈 Django-REST-framework 的设计与源码]]></title>
+        <id>https://yindongliang.com/post/talk-about-django-rest-framework/</id>
+        <link href="https://yindongliang.com/post/talk-about-django-rest-framework/">
+        </link>
+        <updated>2017-04-20T06:44:17.000Z</updated>
+        <summary type="html"><![CDATA[<p>最近又重新接触 DRF，翻看文档发现，当时很难理解的东西，如今看一遍就懂了，顺带看了源码，也比较容易理解，至少比 Django 的源码简单不少。下面开始从 DRF 的设计和源码两个方面，结合自己的看法，谈谈DRF。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>最近又重新接触 DRF，翻看文档发现，当时很难理解的东西，如今看一遍就懂了，顺带看了源码，也比较容易理解，至少比 Django 的源码简单不少。下面开始从 DRF 的设计和源码两个方面，结合自己的看法，谈谈DRF。</p>
+<!-- more -->
+<h2 id="apiview">APIView</h2>
+<p>APIView 是 DRF 概念体系中最基本类视图，它基于 Django 的 View，同时又实现了一层对自己创造的概念的封装，比如<code>permission_classes</code>，<code>render_classes</code>，<code>authentication_classes</code>等，相当于请求过来后又进入一层，过滤（验证、初始化）完要走的这些classes，才能执行到我们自己实现的 view。</p>
+<h2 id="mixin">Mixin</h2>
+<p>在介绍 Generic view 前先说一下 mixin。说白了，官方给的案例里面的 mixin，就是对 model 的object增删改查的原子操作。比如<code>RetrieveModelMixin</code>，通过 get_object 先获取到对象，然后通过 serializer 拿到序列化数据。</p>
+<pre><code class="language-python">class RetrieveModelMixin(object):
+    &quot;&quot;&quot;
+    Retrieve a model instance.
+    &quot;&quot;&quot;
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+</code></pre>
+<p>延伸开来，Mixin 是一个非常重要的概念，因为它是模块化拆分后最关键的原子逻辑实现，是每一个单独的块。试想下，我们可以通过这些小块拼接成不同的功能，比如用户注册功能，使用者有可能在手机注册，有可能在web注册，在 Django 后端中可能需要提供两套 view 层接口，甚至还有渲染 template 的实现，但是真正的逻辑处理上，可以只调用一个<code>RegistMixin</code>的东西，从而提高代码复用，降低维护成本。</p>
+<p>甚至，Mixin 可以重写同时继承的 GenericAPIView 中的实现，比如 request 参数处理，Response 数据处理（视频、文件格式之类），get_queryset，get_serializer 等等有通用需求，并且会在多个地方复用的定制，比如根据传入参数指定需要的 serializer 从而在 mixin 中重写 get_serializer 方法的实现逻辑。总之，原本会在 View 中发生的一切，都可以通过 Mixin 封装起来，或重写、或新的逻辑实现。</p>
+<h2 id="generic-views">Generic views</h2>
+<p>典型的Generic view就是这样的，本质上是类视图，它由一些 Mixin 组成，这里的<code>ListModelMixin</code>实现了list()方法，并同时继承自<code>GenericAPIView</code>，同时自己实现了由 get() 到 list() 的转发。复杂的是，<code>GenericAPIView</code> 实现，以及他的执行过程，和后期对里面函数的重写、定制。所以抽时间多研究下这里很值得，以后也会节省大量时间。</p>
+<pre><code class="language-python">class ListAPIView(mixins.ListModelMixin,
+                  GenericAPIView):
+    &quot;&quot;&quot;
+    Concrete view for listing a queryset.
+    &quot;&quot;&quot;
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+</code></pre>
+<p>如果要实现的逻辑不是很复杂的话，直接在view中继承一个<code>[List[Create[Update]]]APIView</code>，然后指定下<code>serializer_class</code>，<code>permission_class</code>，<code>queryset</code>等就可以了。对DRF熟悉的话相信这种方式实现功能会很快。</p>
+<h2 id="viewsets">Viewsets</h2>
+<p>先看代码，ViewSet 继承了<code>ViewSetMixin</code>和<code>APIView</code>，<code>ViewSetMix</code>是<code>APIView</code>中<code>as_view</code>的重写，实现请求到 action 的转发，虽然 Django 自带的 View 也实现了 as_view，但只是传递初始化参数，确实没有这个请求转发到 action 的实现，APIView里面也没有。这里也可以学习到：Python的多重继承中，子类形参的先后顺序，影响到执行的是哪个类中的<code>as_view</code>方法，相当于<code>ViewSetMixin</code>又继承了<code>APIView</code>。</p>
+<pre><code class="language-python">class ViewSet(ViewSetMixin, views.APIView):
+    &quot;&quot;&quot;
+    The base ViewSet class does not provide any actions by default.
+    &quot;&quot;&quot;
+    pass
+</code></pre>
+<p>viewsets 和 APIView 不一样的地方在于，它要表达的更多的是一个方法视图的集合，他的内部是已经实现了的<code>list()</code>，<code>retrieve()</code>，<code>delete()</code>，<code>update()</code>的实现，如果实现用 DRF 的 DefaultRouter。router和as_view都可以实现GET请求--&gt;list()的转发，值得一提的还有<code>detail_route</code>和<code>list_route</code>(最新版本推荐使用<code>action</code>)，他们需要在urls中配置 router 的前提下使用，在 Router 类的<code>get_url</code>里面的<code>get_routers</code>执行，然后获得所有的路由列表，再进行 action 转发。</p>
+<pre><code class="language-python"># account/views.py
+class AccountViewSet(viewsets.ModelViewSet):
+    &quot;&quot;&quot;
+    对Account的操作的集合，本质上是基于方法视图的封装
+    &quot;&quot;&quot;
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    @detail_route(methods=['post'], url_path='change-password')
+    def set_password(self, request, *args, **kwargs):
+        &quot;&quot;&quot;
+        修改用户的密码
+        &quot;&quot;&quot;
+        return Response(status=status.HTTP_200_OK)
+
+    @detail_route(methods=['post'], url_path='change-username')
+    def change_username(self, request, *args, **kwargs):
+        &quot;&quot;&quot;
+        修改用户的用户名
+        &quot;&quot;&quot;
+        return Response(status=status.HTTP_200_OK, data={'msg': 'changed'})
+
+# account/urls.py
+router = routers.SimpleRouter()
+router.register(r'', views.AccountViewSet, base_name='user')
+urlpatterns = router.urls
+
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://yindongliang.com/post-images/1574349880486.png" alt="" loading="lazy"></figure>
+<p>以上代码，直接实现了对 account 的增（create）删（delete）改（update）和 account 列表（list），同时我又添加了<code>set_password</code>和<code>change_username</code>方法。这种形式没接触过的话很难理解，但是却很实用，尤其一个 model 有频繁的不同功能需求的时候，如果写<code>SetPasswordView</code>和<code>ChangeUsernameView</code>这样类视图的实现，未免会很麻烦，这个时候 viewsets 就是很好的选择。</p>
+<h2 id="serializers">Serializers</h2>
+<pre><code class="language-python">class TopicListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.TopicModel
+        fields = '__all__'
+        read_only_fields = ('id', 'author_id')
+</code></pre>
+<p>Serializer 相当于 View 和 Model 的中间层，避免 view 频繁直接操作 model object 的同时，规范数据字段格式、内容、validator、提供序列化数据等等，同时可以定义方法实现对 model 的特定操作。serializer 不适合处理业务逻辑，它要做的就是对数据传入传出的处理，保证数据正确。通常为了验证和序列化各项数据，serializer 的代码加上 validator 也集中了较大的工作量。</p>
+<h2 id="其它">其它</h2>
+<p>DRF 最主要的就是上面提到的一些概念，也许在刚接触 Django Web 的话没有接触过，但是这应该是 DRF 中最常用的。其他的比如 router、Throttling、validator 也比较实用，甚至也是必须掌握的，但是 DRF 的文档写的确定很详细，使用方法不再介绍。</p>
+<h2 id="总结">总结</h2>
+<p>我的理解，DRF 是基于 “Don't repeat yourself” 原则，提出一个Web开发的规范，它代码里提供了规范的接口，和最基础的使用例子，而在实际的复杂逻辑开发中，需要的是对各种概念的 “custome” 定制，几乎文档每一页都提供了定制的介绍。实际的应用里面不会是简单的增删改查，而是需要走一定的逻辑处理后的增删改查，同时还有对基础操作频繁的复用。DRF通过把web业务系统中会出现的每一步流程拆分，进行模块化，概念化，让开发者知道需要开发的业务属于哪一种概念，放到哪一个模块下面，从而在DRF的大框架下特定的位置编写，这样减少了一份功能多份代码实现的麻烦，也因为规范化 coding 提高了开发者的效率。</p>
+<p>当然DRF也有缺点，它对新手不够友好，一些封装太极致，以至于不容易明白程序的执行流程，比如我初次看<code>viewsets</code>、<code>GenericAPIView</code>的时候。</p>
+<p>最后我基于DRF的文档，学习过程中写了一个论坛demo：<a href="https://github.com/tcitry/DRForum">DRForum</a>的论坛例子，可以直接runserver调试。通过<code>127.0.0.1:8000/docs</code>可以查看汇总的接口，这里使用了<a href="http://DRFdocs.com/">DRF Docs</a>。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Vagrant 虚拟机 Ubuntu16.04 安装 MariaDB]]></title>
+        <id>https://yindongliang.com/post/vagrant-install-mariadb/</id>
+        <link href="https://yindongliang.com/post/vagrant-install-mariadb/">
+        </link>
+        <updated>2017-04-10T14:00:08.000Z</updated>
+        <summary type="html"><![CDATA[<p>由于宿主机安装了 MySQL，为了避免安装 MariaDB 造成 MySQL 无法使用，所以在 Vagrant 中安装 Mariadb。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>由于宿主机安装了 MySQL，为了避免安装 MariaDB 造成 MySQL 无法使用，所以在 Vagrant 中安装 Mariadb。</p>
+<!-- more -->
+<p>更换<a href="http://mirrors.163.com/.help/ubuntu.html">网易 apt-get 源</a> <code>/etc/apt/sources.list</code></p>
+<p>读取源软件列表 <code>sudo apt update</code></p>
+<p>更新软件版本 <code>sudo apt upgrade</code></p>
+<p>安装 MariaDB  <code>sudo apt install mariadb-server</code></p>
+<p>安全性设置更新 root 密码 <code>sudo mysql_secure_installation</code></p>
+<p>服务器开始远程登陆：my.cnf 中<code>bind_address</code>改为 0.0.0.0</p>
+<p>为登陆用户开启远程登陆权限：</p>
+<pre><code class="language-sql">&gt;&gt;GRANT ALL PRIVILEGES ON *.* TO myuser@'%' IDENTIFIED BY 'mypassword' WITH GRANT OPTION;
+&gt;&gt;FLUSH PRIVILEGES;
+</code></pre>
+<p>重启 MariaDB <code>service mysql restart</code></p>
+<p>Vagrantfile 中 config.vm.network</p>
+<pre><code>config.vm.network &quot;forwarded_port&quot;, guest: 3306, host: 8306
+</code></pre>
+<p>重启 Vagrant 虚拟机 <code>vagrant reload</code></p>
+<p>最后在宿主机连接 MariaDB 的命令：</p>
+<pre><code class="language-bash">mysql -u root -h 127.0.0.1 -P 8306 -p
+</code></pre>
+<p>期间遇到无法 reset MariaDB 的 root 用户的密码，通过<a href="https://superuser.com/questions/949496/cant-reset-mysql-mariadb-root-password">这里</a>解决了，大致就是在安全模式下登陆，清空 root 的 plugin，然后将密码写入表中。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Ubuntu 下部署 Django 应用]]></title>
+        <id>https://yindongliang.com/post/ubuntu-deploy-django/</id>
+        <link href="https://yindongliang.com/post/ubuntu-deploy-django/">
+        </link>
+        <updated>2014-10-28T14:01:04.000Z</updated>
+        <summary type="html"><![CDATA[<p>做了一个Django小应用，主要内容是一个论坛，经过好几天的研究，也可以在服务器端运行了，以下所有代码中的操作都需要在命令行运行。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>做了一个Django小应用，主要内容是一个论坛，经过好几天的研究，也可以在服务器端运行了，以下所有代码中的操作都需要在命令行运行。</p>
+<!-- more -->
+<h2 id="安装mysql">安装MySQL</h2>
+<pre><code class="language-bash">apt-get update
+apt-get install mysql-server mysql-client
+</code></pre>
+<p>根据提示设置 MySQL root用户密码</p>
+<h2 id="mysql设置中文utf8格式">MySQL设置中文utf8格式</h2>
+<p>一般在<code>/etc/mysql</code>下</p>
+<p>[client]下添加<code>default-character-set=utf8</code></p>
+<p>[mysqld]下添加<code>character-set-server=utf8</code></p>
+<p>[mysql]下添加<code>default-character-set=utf8</code></p>
+<p>重启MySQL</p>
+<pre><code class="language-bash">service mysql restart
+</code></pre>
+<p>进入MySQL查看编码</p>
+<pre><code class="language-bash">show variables like 'char%';
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://yindongliang.com/post-images/1575122583496.png" alt="" loading="lazy"></figure>
+<h2 id="为mysql建立远程连接">为MySQL建立远程连接</h2>
+<p>由于修改数据库时不可能频繁的登服务器在命令行下修改，远程用workbench连接MySQL服务器是更方便的选择，先登入MySQL，授权一个可以远程连接这个数据库的用户名和密码</p>
+<pre><code class="language-mysql">&gt;&gt;GRANT ALL PRIVILEGES ON *.* TO myuser@'%' IDENTIFIED BY 'mypassword' WITH GRANT OPTION;
+&gt;&gt;FLUSH PRIVILEGES;
+</code></pre>
+<p>有的MySQL没有开放远程连接的端口，只允许本地连接，你需要查看my.conf之类的文件，我的在<code>/etc/mysql/my.conf</code>把</p>
+<pre><code class="language-bash">bind-address:127.0.0.1
+</code></pre>
+<p>那行注释掉即可</p>
+<h2 id="安装pip">安装pip</h2>
+<p><a href="https://pypi.python.org/pypi/pip#downloads">下载地址</a></p>
+<pre><code class="language-bash">apt-get install python-pip
+</code></pre>
+<h2 id="安装django17">安装django1.7</h2>
+<p><a href="https://www.djangoproject.com/">django官网</a></p>
+<pre><code class="language-bash">pip install Django==1.7
+</code></pre>
+<p>python进入python2.7解释器</p>
+<pre><code class="language-bash">&gt;&gt;import django
+&gt;&gt;
+</code></pre>
+<p>不出错说明安装成功</p>
+<h2 id="安装mysql-python">安装mysql-python</h2>
+<p>安装mysql-python注意需要配置<code>mysql_config</code>我的在(/usr/bin目录下，其他的类似也在bin目录下，视不同系统不同版本而定)如果 <code>/usr/bin</code>目录下没有<code>mysql_config</code>，需要安装mysql开发包</p>
+<pre><code class="language-bash">apt-get install python-setuptools
+apt-get install libmysqld-dev
+apt-get install libmysqlclient-dev
+apt-get install python-dev
+</code></pre>
+<p><a href="https://pypi.python.org/pypi/MySQL-python/">下载链接</a></p>
+<pre><code class="language-bash">wget 'url'
+</code></pre>
+<p>解压zip文件，首先安装unzip</p>
+<pre><code class="language-bash">apt-get install unzip
+unzip mysql-python.zip
+cd mysql-python
+vi site.cfg
+</code></pre>
+<p>把<code>mysql_config</code>路径那行取消注释，路径为<code>/usr/bin/mysql_config</code></p>
+<pre><code class="language-bash">cd ..
+python setup.py build
+python setup.py install
+</code></pre>
+<p>进去python解释器</p>
+<pre><code class="language-bash">&gt;&gt;import MySQLdb
+&gt;&gt;
+</code></pre>
+<p>不报错说明安装成功</p>
+<p>MySQLdb不支持python3，可以试试pymysql，同时在Python3的项目中，需要在<code>__init__.py</code>中添加</p>
+<pre><code class="language-bash">import pymysql
+pymysql.install_as_MySQLdb()
+</code></pre>
+<p>这是由于Django调用MySQL的接口问题，在setting.py文件中具体为<code>'ENGINE': 'django.db.backends.mysql',</code>，仔细查看这句代码就会发现Django默认调用的是MySQLdb，虽然它只支持Python2.0。</p>
+<h2 id="配置nginx">配置nginx</h2>
+<p>最重要的就是nginx的配置</p>
+<p>我的配置目录在<code>/etc/nginx/nginx.conf</code>和<code>/etc/nginx/sites-enable/*</code>后者可以在前者文件中设置，先查看配置文件<code>/etc/nginx/sites-enable/django</code></p>
+<figure data-type="image" tabindex="2"><img src="https://yindongliang.com/post-images/1575122555550.png" alt="" loading="lazy"></figure>
+<p>根据自己的应用修改配置文件中static路径，server_name，root等。修改完毕注意要<code>service nginx reload</code></p>
+<p>关于静态文件的地址配置还是需要多说一句，nginx中的<code>/static</code>目录对应的是<code>setting.py</code>文件中的<code>STATIC_ROOT</code>目录，两个写一样的，执行<code>python manage.py collectstatic</code>收集的文件是admin后台模块的静态样式文件，执行完后这些静态文件就被复制在你设置的<code>STATIC_ROOT</code>目录了。</p>
+<h2 id="部署代码">部署代码</h2>
+<p>因为我的代码在github，先安装git</p>
+<pre><code class="language-bash">apt-get install git
+git clone https://github.com/tcitry/dlpucsdn.git
+</code></pre>
+<p>部署以后注意修改数据库密码，邮件服务器密码，debug模式False，template_debug模式为False。</p>
+<h2 id="virtualenv">virtualenv</h2>
+<pre><code class="language-bash">pip install virtualenv
+</code></pre>
+<p>根据网上现有的教程简单看看virtualenv的使用很容易理解，在项目依赖的相关程序配置过程中需要始终开着virtualenv。</p>
+<h2 id="配置gunicorn">配置Gunicorn</h2>
+<p>查看这个<a href="https://www.digitalocean.com/community/tutorials/how-to-use-the-django-one-click-install-image">文档</a>修改为自己的应用参数</p>
+<pre><code class="language-bash">service gunicorn restart
+</code></pre>
+<p>当部署一个应用时可以将配置文件放在<code>/etc/init.d/gunicorn.conf</code>文件里面。但同时部署多个文件的时候，可以使用supervisor+gunicorn+virtualenv的部署方式，这样可以在每个不同的项目目录利用virtualenv为每个应用配置不同的环境，同时可以使服务器的环境更加易于管理。</p>
+<p>先在项目的根目录测试一下，确保gunicorn安装正确，</p>
+<pre><code class="language-bash">../bin/gunicorn myapp.wsgi:application
+</code></pre>
+<p>不出错就说明正确了，出错一般是提示没有那个module名，检查一下django是否安装，执行命令的文件目录是否正确。</p>
+<h2 id="supervisor的使用">supervisor的使用</h2>
+<pre><code class="language-bash">apt-get install supervisor
+sudo vim /etc/supervisord.conf
+</code></pre>
+<p>编辑的内容如下，请自行修改项目和目录名。</p>
+<pre><code class="language-bash">[program:classroom]
+command = sh /home/projects/classroom/classroom/gunicorn_start
+user = root
+redirect_stderr = true
+autorestart = true
+</code></pre>
+<p>配置这个gunicorn_start.sh</p>
+<pre><code class="language-bash">cd /home/projects/classroom/classroom
+../bin/gunicorn classroom.wsgi:application -w 4 -b :8000
+</code></pre>
+<p>启动supervisor</p>
+<pre><code class="language-bash">/etc/init.d/supervisord start
+</code></pre>
+<p>其他方式</p>
+<pre><code class="language-bash">supervisorctl start &lt;name&gt;
+supervisorctl stop &lt;name&gt;
+</code></pre>
+<h2 id="安装七牛云sdk">安装七牛云SDK</h2>
+<p>由于网站的静态存储要用七牛云，在运行程序前要安装否则报错没有qiniu SDK的方法。</p>
+<pre><code class="language-bash">pip install qiniu
+</code></pre>
+<p>七牛云安装前注意安装的版本，我被坑过一次，写程序时是6.0版本，部署时都7.0了，接口全都不一样。</p>
+<h2 id="还有">还有</h2>
+<p>还有不推荐cloudflare等国外CDN加速，亲身体验。</p>
+<p>还有推荐下这篇来自digitalocean的<a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-django-with-postgres-nginx-and-gunicorn">部署实例</a></p>
+]]></content>
+    </entry>
+</feed>
