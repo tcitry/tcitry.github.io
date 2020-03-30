@@ -11,7 +11,7 @@ printf "\033[0;32mDeploying updates to GitHub...\033[0m\n"
 # Go To Public folder
 cd public
 git checkout master
-mv * ../
+mv -uv * ../
 cd ..
 # Add changes to git.
 git add .
