@@ -29,8 +29,15 @@ paginate = 10
   filename = "sitemap.xml"
 
 [markup.highlight]
-codeFences = true
-noClasses = false
+  codeFences = true
+  guessSyntax = false
+  hl_Lines = ""
+  lineNoStart = 1
+  lineNos = false
+  lineNumbersInTable = true
+  noClasses = true
+  style = "emacs"
+  tabWidth = 4
 
 [markup.tableOfContents]
   startLevel = 1
