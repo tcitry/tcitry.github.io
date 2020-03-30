@@ -25,3 +25,6 @@ git commit -m "$msg"
 
 # Push source and build repos.
 git push origin master
+
+# come back zero
+git checkout typora
