@@ -10,6 +10,7 @@ printf "\033[0;32mDeploying updates to GitHub...\033[0m\n"
 
 # Go To Public folder
 cd public
+rm -rf .git
 git init
 git remote add origin git@github.com:tcitry/blog.git
 # Add changes to git.
