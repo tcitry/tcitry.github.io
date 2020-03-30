@@ -10,9 +10,8 @@ printf "\033[0;32mDeploying updates to GitHub...\033[0m\n"
 
 # Go To Public folder
 cd public
-git checkout master
-mv -f * ../
-cd ..
+git init
+git remote add origin git@github.com:tcitry/blog.git
 # Add changes to git.
 git add .
 
@@ -24,7 +23,7 @@ fi
 git commit -m "$msg"
 
 # Push source and build repos.
-git push origin master
+git push -f origin master
 
 # come back zero
-git checkout typora
+cd ..
