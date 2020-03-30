@@ -1,10 +1,14 @@
 baseURL = "https://yindongliang.com"
 title = "yindongliang"
-theme = "hugo-notepadium"
+theme = "book"
 copyright = "©2012-2020 yindongliang."
 
 languageCode = "zh-cn"
 hasCJKLanguage = true
+
+# Book configuration
+disablePathToLower = true
+enableGitInfo = true
 
 enableRobotsTXT = true
 
@@ -14,42 +18,79 @@ disqusShortname = "yindongliang"
 # Google Analytics
 googleAnalytics = "UA-50554094-4"
 
-ignoreFiles = ["个人管理", "图片"]
-staticDir = ["/Users/yindongliang/OneDrive/Typora/图片"]
+paginate = 10
+
+[author]
+  name = "yindongliang"
+
+[sitemap]
+  changefreq = "weekly"
+  priority = 0.5
+  filename = "sitemap.xml"
 
 [markup.highlight]
 codeFences = true
 noClasses = false
 
+[markup.tableOfContents]
+  startLevel = 1
+
 [markup.goldmark.renderer]
 unsafe = true  # enable raw HTML in Markdown
 
+[menu]
+# [[menu.before]]
+
+[[menu.after]]
+  name = "Github↗"
+  url = "https://github.com/tcitry"
+  weight = 10
+
 [params]
-style = "auto"  # default: auto. light: light theme, dark: dark theme, auto: based on system.
-dateFormat = "Monday, January 2, 2006"  # if unset, default is "2006-01-02"
-logo = ""  # if you have a logo png
-# slogan = "100% JavaScript-free"
-license = ""  # CC License
-fullRss = false # Puts entire HTML post into rss 'description' tag. If unset, default is false.
+  # (Optional, default true) Controls table of contents visibility on right side of pages.
+  # Start and end levels can be controlled with markup.tableOfContents setting.
+  # You can also specify this parameter per page in front matter.
+  BookToC = true
 
-[params.comments]
-enable = false  # En/Disable comments globally, default: false. You can always enable comments on per page.
+  # (Optional, default none) Set the path to a logo for the book. If the logo is
+  # /static/logo.png then the path would be logo.png
+  BookLogo = 'logo.jpeg'
 
-[params.math]
-enable = false  # optional: true, false. Enable globally, default: false. You can always enable math on per page.
-use = "katex"  # option: "katex", "mathjax". default: "katex"
+  # (Optional, default none) Set leaf bundle to render as side menu
+  # When not specified file structure and weights will be used
+  # BookMenuBundle = '/menu'
 
-[params.syntax]
-use = "none"  # builtin: "prismjs", "hljs". "none" means Chroma
-theme = "xcode"
-darkTheme = "xcode-dark"  # apply this theme in dark mode
+  # (Optional, default docs) Specify section of content to render as menu
+  # You can also set value to '*' to render all sections to menu
+  BookSection = 'docs'
 
-[params.nav]
-showCategories = true       # /categories/
-showTags = true             # /tags/
+  # Set source repository location.
+  # Used for 'Last Modified' and 'Edit this page' links.
+  BookRepo = 'https://github.com/tcitry/blog'
 
-# custom navigation items
+  # Enable "Edit this page" links for 'doc' page type.
+  # Disabled by default. Uncomment to enable. Requires 'BookRepo' param.
+  # Path must point to 'content' directory of repo.
+  # BookEditPath = 'edit/master/exampleSite/content'
 
-[[params.nav.custom]]
-title = "About"
-url = "/about"
+  # Configure the date format used on the pages
+  # - In git information
+  # - In blog posts
+  BookDateFormat = 'Jan 2, 2006'
+
+  # (Optional, default true) Enables search function with flexsearch,
+  # Index is built on fly, therefore it might slowdown your website.
+  # Configuration for indexing can be adjusted in i18n folder per language.
+  BookSearch = true
+
+  # (Optional, default true) Enables comments template on pages
+  # By default partals/docs/comments.html includes Disqus template
+  # See https://gohugo.io/content-management/comments/#configure-disqus
+  # Can be overwritten by same param in page frontmatter
+  BookComments = true
+
+  # /!\ This is an experimental feature, might be removed or changed at any time
+  # (Optional, experimental, default false) Enables portable links and link checks in markdown pages.
+  # Portable links meant to work with text editors and let you write markdown without {{< relref >}} shortcode
+  # Theme will print warning if page referenced in markdown does not exists.
+  # BookPortableLinks = true
