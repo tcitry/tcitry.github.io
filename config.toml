@@ -51,6 +51,11 @@ unsafe = true  # enable raw HTML in Markdown
 [[menu.after]]
   name = "Github↗"
   url = "https://github.com/tcitry"
+  weight = 5
+
+[[menu.after]]
+  name = "RSS↗"
+  url = "/index.xml"
   weight = 10
 
 [params]
