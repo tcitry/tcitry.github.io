@@ -1,7 +1,6 @@
 baseURL = "https://yindongliang.com"
 title = "yindongliang"
 theme = "book"
-copyright = "©2012-2020 yindongliang."
 
 languageCode = "zh-cn"
 hasCJKLanguage = true
@@ -36,7 +35,7 @@ paginate = 10
   lineNos = false
   lineNumbersInTable = true
   noClasses = true
-  style = "emacs"
+  style = "perldoc"
   tabWidth = 4
 
 [markup.tableOfContents]
@@ -59,6 +58,10 @@ unsafe = true  # enable raw HTML in Markdown
   weight = 10
 
 [params]
+  CopyrightHTML = "Copyright 2012-2020 yindongliang."
+  TwitterUser = "tcitry"
+  SidebarRecentLimit = 5
+
   # (Optional, default true) Controls table of contents visibility on right side of pages.
   # Start and end levels can be controlled with markup.tableOfContents setting.
   # You can also specify this parameter per page in front matter.
