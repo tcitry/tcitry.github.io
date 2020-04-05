@@ -47,20 +47,12 @@ unsafe = true  # enable raw HTML in Markdown
 [menu]
 # [[menu.before]]
 
-[[menu.after]]
-  name = "Github↗"
-  url = "https://github.com/tcitry"
-  weight = 5
-
-[[menu.after]]
-  name = "RSS↗"
-  url = "/index.xml"
-  weight = 10
-
 [params]
+
   CopyrightHTML = "Copyright 2012-2020 yindongliang."
   TwitterUser = "tcitry"
   SidebarRecentLimit = 5
+  mainSections = ["posts"]
 
   # (Optional, default true) Controls table of contents visibility on right side of pages.
   # Start and end levels can be controlled with markup.tableOfContents setting.
