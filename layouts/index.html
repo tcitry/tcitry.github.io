@@ -16,6 +16,12 @@
   {{ end }}
 
   {{ template "_internal/pagination.html" . }}
+  <br>
+  {{if .Site.Params.CopyrightHTML}}<footer>
+    <div class="text-center">{{.Site.Params.CopyrightHTML}}</div>
+    </footer>
+  {{end}}
+
 {{ end }}
 
 {{ define "toc" }}
