@@ -35,8 +35,8 @@ paginate = 10
   lineNos = false
   lineNumbersInTable = true
   noClasses = true
-  # style = "dracula"
-  style = "perldoc"
+  style = "dracula"
+  # style = "perldoc"
   tabWidth = 4
 
 [markup.tableOfContents]
@@ -54,6 +54,7 @@ unsafe = true  # enable raw HTML in Markdown
   TwitterUser = "tcitry"
   SidebarRecentLimit = 5
   mainSections = ["posts"]
+  BookTheme = "auto"
 
   # (Optional, default true) Controls table of contents visibility on right side of pages.
   # Start and end levels can be controlled with markup.tableOfContents setting.
