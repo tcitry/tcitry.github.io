@@ -1,0 +1,12 @@
+<div>
+    <span style="float:left">
+    {{ with .NextInSection }}
+        {{if .Title}}上一篇：<a href="{{.Permalink}}">{{ .Title }}</a>{{end}}
+    {{end}}
+    </span>
+    <span style="float:right">
+    {{ with .PrevInSection}}
+        {{if .Title}}下一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}
+    {{ end }}
+    </span>
+</div>
