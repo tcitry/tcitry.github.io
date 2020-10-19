@@ -2,3 +2,24 @@
 $container-max-width: 100rem !default;
 
 // @import "plugins/dark";
+
+* {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background-color: hsla(220, 4%, 58%, 0.3);
+    transition: background-color 0.3s;
+
+    &:hover {
+      background: #bbb;
+    }
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #ededed;
+  }
+}
