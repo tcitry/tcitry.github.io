@@ -35,8 +35,8 @@ paginate = 10
   lineNos = false
   lineNumbersInTable = true
   noClasses = true
-  style = "dracula"
-  # style = "perldoc"
+  # style = "dracula"
+  style = "perldoc"
   tabWidth = 4
 
 [markup.tableOfContents]
