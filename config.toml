@@ -17,7 +17,7 @@ disqusShortname = "yindongliang"
 # Google Analytics
 googleAnalytics = "UA-50554094-4"
 
-paginate = 10
+paginate = 20
 
 [author]
   name = "yindongliang"
@@ -50,7 +50,7 @@ unsafe = true  # enable raw HTML in Markdown
 
 [params]
 
-  CopyrightHTML = "Copyright 2012-2020 yindongliang"
+  CopyrightHTML = "Copyright 2012-2021 yindongliang"
   TwitterUser = "tcitry"
   SidebarRecentLimit = 5
   mainSections = ["posts"]

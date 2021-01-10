@@ -4,6 +4,22 @@ $menu-width: 16rem;
 $toc-width: 16rem;
 // @import "plugins/dark";
 
+.book-page h1 {
+  color: darkslategrey;
+}
+
+.book-page h2 {
+  color: darkblue;
+}
+
+.book-page h3 {
+  color: darkcyan;
+}
+
+.book-page h4 {
+  color: darkturquoise;
+}
+
 * {
   &::-webkit-scrollbar {
     width: 8px;
