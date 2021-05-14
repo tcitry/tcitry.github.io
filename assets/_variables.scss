@@ -11,22 +11,6 @@ $toc-width: 16rem;
   border-radius: 8px;
 }
 
-.book-page h1 {
-  color: rgb(14, 0, 139);
-}
-
-.book-page h2 {
-  color: darkblue;
-}
-
-.book-page h3 {
-  color: rgb(0, 44, 139);
-}
-
-.book-page h4 {
-  color: rgb(0, 108, 209);
-}
-
 * {
   &::-webkit-scrollbar {
     width: 8px;
