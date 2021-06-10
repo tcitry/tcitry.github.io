@@ -1,5 +1,5 @@
 baseURL = "https://yindongliang.com"
-title = "yindongliang"
+title = "Yindongliang"
 theme = "book"
 
 languageCode = "zh-cn"
@@ -19,8 +19,11 @@ googleAnalytics = "UA-50554094-4"
 
 paginate = 20
 
+[permalinks]
+  posts = "/posts/:slug/"
+
 [author]
-  name = "yindongliang"
+  name = "tcitry"
 
 [sitemap]
   changefreq = "weekly"
@@ -54,7 +57,8 @@ unsafe = true  # enable raw HTML in Markdown
   TwitterUser = "tcitry"
   SidebarRecentLimit = 5
   mainSections = ["posts"]
-  BookTheme = "auto"
+  # BookTheme = "auto"
+  BookTheme = "dark"
 
   # (Optional, default true) Controls table of contents visibility on right side of pages.
   # Start and end levels can be controlled with markup.tableOfContents setting.
