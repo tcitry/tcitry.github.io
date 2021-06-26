@@ -79,7 +79,7 @@ unsafe = true  # enable raw HTML in Markdown
 
   # Set source repository location.
   # Used for 'Last Modified' and 'Edit this page' links.
-  BookRepo = 'https://github.com/tcitry/blog'
+  # BookRepo = 'https://github.com/tcitry/blog'
 
   # Enable "Edit this page" links for 'doc' page type.
   # Disabled by default. Uncomment to enable. Requires 'BookRepo' param.
