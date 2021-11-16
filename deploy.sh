@@ -10,8 +10,8 @@ printf "\033[0;32mDeploying updates to GitHub...\033[0m\n"
 
 # Go To Public folder
 cd public
-git init
-git remote add origin git@github.com:tcitry/blog.git
+git init -b gh-pages
+git remote add origin git@github.com:tcitry/tcitry.github.io.git
 # Add changes to git.
 git add .
 
