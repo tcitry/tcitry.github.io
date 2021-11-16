@@ -10,7 +10,11 @@
     {{ end }}
     </span>
     <br>
-    <div id="gitalk-container"></div>
+    {{ if or (.PrevInSection) (.NextInSection)}}
+        {{ if (.Title)}}
+            <div id="gitalk-container"></div>
+        {{ end }}
+    {{ end }}
 </div>
 
 <!-- KaTeX -->
