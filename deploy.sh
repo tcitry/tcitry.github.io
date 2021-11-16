@@ -23,7 +23,7 @@ fi
 git commit -m "$msg"
 
 # Push source and build repos.
-git push -f origin master
+git push -f origin gh-pages
 
 # come back zero
 rm -rf .git
