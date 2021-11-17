@@ -11,7 +11,7 @@
     </span>
     <br>
     {{ if or (.PrevInSection) (.NextInSection)}}
-        {{ if (.Title)}}
+        {{ if in .Permalink "/posts/"}}
             <div id="gitalk-container"></div>
         {{ end }}
     {{ end }}
