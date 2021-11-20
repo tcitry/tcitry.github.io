@@ -19,6 +19,8 @@ googleAnalytics = "UA-50554094-4"
 
 paginate = 10
 
+summaryLength = 100
+
 [permalinks]
 posts = "/posts/:slug/"
 
@@ -58,7 +60,6 @@ CopyrightHTML = "Copyright 2012 - 2021 yindongliang"
 SidebarRecentLimit = 5
 TwitterUser = "tcitry"
 mainSections = ["posts"]
-# BookTheme = "dark"
 
 # (Optional, default true) Controls table of contents visibility on right side of pages.
 # Start and end levels can be controlled with markup.tableOfContents setting.
@@ -100,7 +101,7 @@ BookSearch = true
 # By default partals/docs/comments.html includes Disqus template
 # See https://gohugo.io/content-management/comments/#configure-disqus
 # Can be overwritten by same param in page frontmatter
-BookComments = true
+BookComments = false
 
 # /!\ This is an experimental feature, might be removed or changed at any time
 # (Optional, experimental, default false) Enables portable links and link checks in markdown pages.
