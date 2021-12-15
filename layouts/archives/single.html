@@ -1,0 +1,6 @@
+{{ define "main" }}
+<h1>归档</h1>
+    {{ range where .Site.RegularPages "Section" "in" .Site.Params.mainSections }}
+      <p><h3>{{.Date.Format "2006-01-02"}} » <a href="{{ .RelPermalink }}">{{ .Title }}</a></h3></p>
+    {{ end }}
+{{ end }}
