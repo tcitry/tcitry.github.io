@@ -10,7 +10,7 @@
             {{if .Title}}下一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}
         {{ end }}
         </span>
-        <br>
+        <!-- <br>
         {{ if or (.PrevInSection) (.NextInSection)}}
             <div id="gitalk-container"></div>
             <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
@@ -18,7 +18,7 @@
             <script>
                 var gitalk = new Gitalk({
                     clientID: '0304ddaa2812b21d9a92',
-                    clientSecret: '1972af46f5fa7d6019a4b8ec38fce4955c8e3ff5',
+                    clientSecret: 'c8df3f5269dab7e85c7573fa2d19feeec32b16a8',
                     repo: 'tcitry.github.io',
                     owner: 'tcitry',
                     admin: ['tcitry'],
@@ -28,7 +28,7 @@
 
                 gitalk.render('gitalk-container')
             </script>
-        {{ end }}
+        {{ end }} -->
     {{ end }}
 </div>
 
