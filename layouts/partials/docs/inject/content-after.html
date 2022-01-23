@@ -1,12 +1,12 @@
 <div>
     {{ if in .Permalink "/posts/"}}
         <span style="float:left">
-        {{ with .NextInSection }}
+        {{ with .PrevInSection }}
             {{if .Title}}上一篇：<a href="{{.Permalink}}">{{ .Title }}</a>{{end}}
         {{end}}
         </span>
         <span style="float:right">
-        {{ with .PrevInSection}}
+        {{ with .NextInSection }}
             {{if .Title}}下一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}
         {{ end }}
         </span>
