@@ -56,7 +56,7 @@ unsafe = true # enable raw HTML in Markdown
 [params]
 
 BookTheme = "auto"
-CopyrightHTML = "Copyright 2012 - 2022 yindongliang"
+CopyrightHTML = "©Yindongliang 1993 - 2022"
 SidebarRecentLimit = 5
 TwitterUser = "tcitry"
 mainSections = ["posts"]
