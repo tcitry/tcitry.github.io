@@ -1,6 +1,6 @@
 <div>
     {{ if in .Permalink "/posts/"}}
-        <p>本文以 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh">CC 署名-禁止演绎 4.0 国际协议</a> 发行。</p>
+        <h5><a href="{{.Permalink}}">本文 </a>以 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh">CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5>
         <span style="float:left">
         {{ with .PrevInSection }}
             {{if .Title}}上一篇：<a href="{{.Permalink}}">{{ .Title }}</a>{{end}}
@@ -13,7 +13,7 @@
         </span>
         <br>
         {{ if or (.PrevInSection) (.NextInSection)}}
-            <!-- <div id="gitalk-container"></div>
+            <div id="gitalk-container"></div>
             <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
             <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
             <script>
@@ -29,8 +29,8 @@
                 })
 
                 gitalk.render('gitalk-container')
-            </script> -->
-            <div id="disqus_thread"></div>
+            </script>
+            <!-- <div id="disqus_thread"></div>
             <script>
                 var disqus_config = function () {
                 this.page.url = location.href;  // Replace PAGE_URL with your page's canonical URL variable
@@ -42,7 +42,7 @@
                 s.setAttribute('data-timestamp', +new Date());
                 (d.head || d.body).appendChild(s);
                 })();
-            </script>
+            </script> -->
             <!-- <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript> -->
         {{ end }}
     {{ end }}
