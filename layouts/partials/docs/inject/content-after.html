@@ -1,6 +1,5 @@
 <div>
     {{ if in .Permalink "/posts/"}}
-        <p>本文以 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh">CC 署名-禁止演绎 4.0 国际协议</a> 发行。</p>
         <span style="float:left">
         {{ with .PrevInSection }}
             {{if .Title}}上一篇：<a href="{{.Permalink}}">{{ .Title }}</a>{{end}}
