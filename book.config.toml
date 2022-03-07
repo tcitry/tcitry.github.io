@@ -45,7 +45,8 @@ style = "dracula"
 tabWidth = 4
 
 [markup.tableOfContents]
-startLevel = 1
+startLevel = 2
+endLevel = 4
 
 [markup.goldmark.renderer]
 unsafe = true # enable raw HTML in Markdown
