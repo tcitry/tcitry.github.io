@@ -1,0 +1,21 @@
+<nav>
+  {{ $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections }}
+  <p style="color: dimgray;">共 {{ len $pages }} 篇</p>
+  <ul>
+    {{ range $term := (slice "Categories") }}
+    {{ with $.Site.GetPage (printf "/%s" $term | urlize) }}
+    <li class="book-section-flat">
+      <strong>{{ .Title | title }}</strong>
+      <ul>
+        {{ range .Pages }}
+        <li class="flex justify-between">
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          <span>{{ len .Pages }}</span>
+        </li>
+        {{ end }}
+      </ul>
+    </li>
+    {{ end }}
+    {{ end }}
+  </ul>
+</nav>

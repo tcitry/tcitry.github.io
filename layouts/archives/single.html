@@ -1,10 +1,9 @@
 {{ define "main" }}
 {{ $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections }}
 
-<p style="color: dimgray;">共 {{ len $pages }} 篇</p>
 {{ range $pages.GroupByDate "2006" }}
 <section>
-  <h2 style="color: dimgray;">{{ .Key }}</h2>
+  <h1 style="color: dimgray;">{{ .Key }}</h1>
   <div class="posts">
     {{ range .Pages }}
     <div class="post">
@@ -17,5 +16,5 @@
 {{ end }}
 
 {{ define "toc" }}
-  {{ partial "docs/taxonomy" . }}
+  {{ partial "docs/categories" . }}
 {{ end }}
