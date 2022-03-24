@@ -1,4 +1,5 @@
 <nav>
+  <p style="color: darkgrey;">共 {{ len (where .Site.RegularPages "Type" "in" .Site.Params.mainSections) }} 篇</p>
   <ul>
     {{ range $term := (slice "Categories") }}
     {{ with $.Site.GetPage (printf "/%s" $term | urlize) }}
@@ -16,5 +17,4 @@
     {{ end }}
     {{ end }}
   </ul>
-  <p style="color: darkgrey;">共 {{ len (where .Site.RegularPages "Type" "in" .Site.Params.mainSections) }} 篇</p>
 </nav>
