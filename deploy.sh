@@ -9,6 +9,8 @@ printf "\033[0;32mDeploying updates to GitHub...\033[0m\n"
 # hugo # if using a theme, replace with `hugo -t <YOURTHEME>`
 
 # Go To Public folder
+rm -rf public
+make gen
 cd public
 git init -b gh-pages
 git remote add origin git@github.com:tcitry/tcitry.github.io.git
