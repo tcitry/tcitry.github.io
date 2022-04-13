@@ -1,6 +1,6 @@
 <nav>
   <ul>
-  {{ range $term := (slice "Tags" "Categories") }}
+  {{ range $term := (slice "Tags") }}
     {{ with $.Site.GetPage (printf "/%s" $term | urlize) }}
     <li class="book-section-flat">
       <strong>{{ .Title | title }}</strong>
