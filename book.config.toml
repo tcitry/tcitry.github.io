@@ -25,7 +25,7 @@ summaryLength = 100
 posts = "/posts/:slug/"
 
 [author]
-name = "tcitry"
+name = "殷东亮"
 
 [sitemap]
 changefreq = "weekly"
