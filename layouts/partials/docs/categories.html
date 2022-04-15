@@ -1,14 +1,12 @@
 <nav>
-  <p style="color: darkgrey;">共 {{ len (where .Site.RegularPages "Type" "in" .Site.Params.mainSections) }} 篇</p>
+  <p style="color: darkgrey;">共 {{ sub (len (where .Site.RegularPages "Type" "in" .Site.Params.mainSections)) 1 }} 篇</p>
   <ul>
     {{ range $term := (slice "Categories") }}
     {{ with $.Site.GetPage (printf "/%s" $term | urlize) }}
     <li class="book-section-flat">
-      <!-- <strong>{{ .Title | title }}</strong> -->
       <ul>
         {{ range .Pages }}
         <li class="flex justify-between">
-          <!-- <a href="{{ .RelPermalink }}">{{ .Title }}</a> -->
           <a href="#{{ .Title }}">{{ .Title }}</a>
           <span>{{ len .Pages }}</span>
         </li>
