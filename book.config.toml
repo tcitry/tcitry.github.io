@@ -1,6 +1,6 @@
 baseURL = "https://yindongliang.com"
 theme = "hugo-book"
-title = "Yindongliang"
+title = "殷东亮的博客"
 
 hasCJKLanguage = true
 languageCode = "zh-cn"
@@ -17,7 +17,7 @@ enableRobotsTXT = true
 # Google Analytics
 googleAnalytics = "UA-50554094-4"
 
-paginate = 50
+paginate = 10
 
 summaryLength = 100
 
