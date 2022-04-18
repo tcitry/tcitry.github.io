@@ -17,7 +17,7 @@ enableRobotsTXT = true
 # Google Analytics
 googleAnalytics = "UA-50554094-4"
 
-paginate = 10
+paginate = 20
 
 summaryLength = 100
 
