@@ -4,6 +4,7 @@ title = "殷东亮的博客"
 
 hasCJKLanguage = true
 languageCode = "zh-cn"
+defaultContentLanguage = "zh-cn"
 
 # Book configuration
 disablePathToLower = true
@@ -17,7 +18,7 @@ enableRobotsTXT = true
 # Google Analytics
 googleAnalytics = "UA-50554094-4"
 
-paginate = 20
+paginate = 10
 
 summaryLength = 100
 
@@ -57,7 +58,7 @@ unsafe = true # enable raw HTML in Markdown
 [params]
 
 BookTheme = "auto"
-CopyrightHTML = "©殷东亮 1993 - 2022"
+CopyrightHTML = "©殷东亮 2012 - 2022"
 SidebarRecentLimit = 5
 TwitterUser = "tcitry"
 mainSections = ["posts"]
