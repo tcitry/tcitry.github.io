@@ -7,7 +7,7 @@ $toc-width: 16rem;
   margin-left: auto;
   margin-right:auto;
   display:block;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 * {
@@ -17,7 +17,7 @@ $toc-width: 16rem;
   }
 
   &::-webkit-scrollbar-thumb {
-    border-radius: 8px;
+    border-radius: 4px;
     background-color: hsla(220, 4%, 58%, 0.3);
     transition: background-color 0.3s;
 
