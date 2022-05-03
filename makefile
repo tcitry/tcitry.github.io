@@ -1,7 +1,7 @@
 server:
-	hugo -c ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Typora/Blog --config book.config.toml server
+	hugo -c ~/OneDrive/Blog --config book.config.toml server
 gen:
-	hugo -c ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/Typora/Blog --config book.config.toml
+	hugo -c ~/OneDrive/Blog --config book.config.toml
 sub:
 	git submodule update --init --recursive
 
