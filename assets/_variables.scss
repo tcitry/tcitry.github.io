@@ -10,6 +10,12 @@ $toc-width: 16rem;
   border-radius: 4px;
 }
 
+.markdown table {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
 * {
   &::-webkit-scrollbar {
     width: 8px;
