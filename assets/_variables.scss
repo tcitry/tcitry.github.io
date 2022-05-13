@@ -16,27 +16,6 @@ $toc-width: 16rem;
   text-align: center;
 }
 
-* {
-  &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    border-radius: 4px;
-    background-color: hsla(220, 4%, 58%, 0.3);
-    transition: background-color 0.3s;
-
-    &:hover {
-      background: #bbb;
-    }
-  }
-
-  &::-webkit-scrollbar-track {
-    background: #ededed;
-  }
-}
-
 .x-responsive-container {
   position: relative;
   margin-bottom: 1em;
