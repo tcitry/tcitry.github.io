@@ -4,9 +4,7 @@
   window.dataLayer = window.dataLayer || [];
   function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());
-  if (window.location.hostname.indexOf('localhost') === -1) {
-    gtag('config', 'G-Q20952BPE6');
-  }
+  gtag('config', 'G-Q20952BPE6', {"debug_mode": window.location.hostname.indexOf('localhost') > 0});
 </script>
 
 <script src="https://cdn.jsdelivr.net/gh/cferdinandi/gumshoe@5.1.1/dist/gumshoe.polyfills.min.js"></script>
