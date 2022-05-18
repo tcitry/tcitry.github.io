@@ -4,7 +4,11 @@
   window.dataLayer = window.dataLayer || [];
   function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());
-  gtag('config', 'G-Q20952BPE6', {"debug_mode": window.location.hostname.indexOf('localhost') > 0});
+  if (window.location.hostname.indexOf('localhost') > 0) {
+    gtag('config', 'G-Q20952BPE6', { 'debug_mode': true });
+  } else {
+    gtag('config', 'G-Q20952BPE6');
+  }
 </script>
 
 <script src="https://cdn.jsdelivr.net/gh/cferdinandi/gumshoe@5.1.1/dist/gumshoe.polyfills.min.js"></script>
