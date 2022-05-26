@@ -1,0 +1,12 @@
+{{ define "main" }}
+  <h1 style="color: dimgray;">{{ .Title }}</h1>
+  {{ range sort .Pages }}
+    <div class="post">
+      <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> » <a href="{{ .RelPermalink }}">{{ .Title }}</a></h3></p>
+    </div>
+  {{ end }}
+{{ end }}
+
+{{ define "toc" }}
+  {{ partial "docs/taxonomy" . }}
+{{ end }}
