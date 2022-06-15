@@ -7,7 +7,13 @@
   <div class="posts">
     {{ range .Pages }}
     <div class="post">
-      <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> » <a href="{{ .RelPermalink }}">{{ .Title }}</a></h3></p>
+      <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> » <a href="{{ .RelPermalink }}">
+        {{ if not .Title }}
+          {{ .File }}
+        {{ else }}
+          {{ .Title }}
+        {{ end }}
+      </a></h3></p>
     </div>
     {{ end }}
   </div>
