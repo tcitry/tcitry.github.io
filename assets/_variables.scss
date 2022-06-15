@@ -34,3 +34,9 @@ $toc-width: 16rem;
     height: 100%;
   }
 }
+
+.hr-edge-weak {
+    border: 0;
+    padding-top: 1px;
+    background: linear-gradient(to right, transparent, dimgray, transparent);
+}
