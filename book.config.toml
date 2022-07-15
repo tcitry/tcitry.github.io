@@ -22,6 +22,9 @@ paginate = 10
 
 summaryLength = 100
 
+[frontmatter]
+lastmod = ["lastmod"]
+
 [permalinks]
 posts = "/posts/:slug/"
 
