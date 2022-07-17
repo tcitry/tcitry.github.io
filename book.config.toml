@@ -44,7 +44,7 @@ lineNoStart = 1
 lineNos = false
 lineNumbersInTable = true
 noClasses = true
-style = "dracula"
+# style = "dracula"
 # style = "perldoc"
 tabWidth = 4
 
