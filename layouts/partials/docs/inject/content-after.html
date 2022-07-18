@@ -11,7 +11,7 @@
             <!-- <p>{{ with .NextInSection }}{{if .Title}}下一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}{{ end }}</p> -->
             {{ $related := .Site.RegularPages.Related . | first 5 }}
             {{ with $related }}
-            <h2 style="color: darkgrey;">推荐阅读</h2>
+            <h2 style="color: darkgrey;">相关文章</h2>
                 {{ range . }}
                     <div class="post">
                     <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> » <a href="{{ .RelPermalink }}">
