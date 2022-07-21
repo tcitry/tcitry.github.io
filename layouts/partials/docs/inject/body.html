@@ -1,3 +1,32 @@
+<div id="navigation">
+    {{ with .NextInSection }}{{if .Title}}
+        <a class="nav nav-left" href="{{ .Permalink }}" title="上一篇：{{ .Title }}"><i class="fa-left"></i></a>
+        {{end}}{{end}}
+    {{ with .PrevInSection }}{{if .Title}}
+        <a class="nav nav-right" href="{{ .Permalink }}" title="下一篇：{{ .Title }}"><i class="fa-right"></i></a>
+        {{end}}{{end}}
+</div>
+
+<script>
+    document.onkeydown = function (event) {
+        if (event.code === "ArrowLeft") {
+            let ele = document.getElementsByClassName("nav nav-left")
+            if (ele.length > 0) {
+                if (ele[0].hasAttribute("href")) {
+                    window.open(ele[0].href, "_self");
+                }
+            }
+        } else if (event.code === "ArrowRight") {
+            let ele = document.getElementsByClassName("nav nav-right")
+            if (ele.length > 0) {
+                if (ele[0].hasAttribute("href")) {
+                    window.open(ele[0].href, "_self");
+                }
+            }
+        }
+    }
+</script>
+
 <script src="/gumshoe.polyfills.min.js"></script>
 <script>new Gumshoe('.book-toc a', { nested: true });</script>
 <style>

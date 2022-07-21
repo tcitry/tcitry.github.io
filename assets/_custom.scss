@@ -1,0 +1,94 @@
+blockquote {
+  font-style: italic;
+}
+
+.book-hint {
+  font-style: normal;
+}
+
+.markdown img {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  border-radius: 4px;
+}
+
+// .markdown table {
+//   margin-left: auto;
+//   margin-right: auto;
+//   text-align: center;
+// }
+
+.x-responsive-container {
+  position: relative;
+  margin-bottom: 1em;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  max-width: 100%;
+
+  iframe,
+  object,
+  embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.hr-edge-weak {
+  border: 0;
+  padding-top: 1px;
+  background: linear-gradient(to right, transparent, dimgray, transparent);
+}
+
+a[target="_blank"]::after {
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
+  margin: 0 3px 0 5px;
+}
+
+@media screen and (max-width: 1400px) {
+  #navigation {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 1400px) {
+  #navigation-mobile {
+    display: none;
+  }
+}
+
+#navigation .nav {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 4rem;
+  font-size: 50px;
+  height: 100%;
+  cursor: pointer;
+  display: table;
+  text-align: center;
+}
+
+#navigation .nav > i {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  font-style: normal;
+  color: darkgray;
+}
+
+#navigation .nav-right {
+  right: 0;
+}
+
+.fa-right:before {
+  content: "\232a";
+}
+
+.fa-left:before {
+  content: "\2329";
+}
