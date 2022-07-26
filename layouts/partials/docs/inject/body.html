@@ -1,3 +1,15 @@
+{{ if in .Permalink "/posts/"}}
+<div id="navigation">
+    {{ with .PrevInSection }}{{if .Title}}
+        <a class="nav nav-left" href="{{ .Permalink }}" title="上一篇：{{ .Title }}"><i class="fa-left"></i></a>
+        {{end}}{{end}}
+    {{ with .NextInSection }}{{if .Title}}
+        <a class="nav nav-right" href="{{ .Permalink }}" title="下一篇：{{ .Title }}"><i class="fa-right"></i></a>
+        {{end}}{{end}}
+</div>
+{{ end }}
+
+{{ if in .Permalink "/docs/"}}
 <div id="navigation">
     {{ with .NextInSection }}{{if .Title}}
         <a class="nav nav-left" href="{{ .Permalink }}" title="上一篇：{{ .Title }}"><i class="fa-left"></i></a>
@@ -6,6 +18,7 @@
         <a class="nav nav-right" href="{{ .Permalink }}" title="下一篇：{{ .Title }}"><i class="fa-right"></i></a>
         {{end}}{{end}}
 </div>
+{{ end }}
 
 <script>
     document.onkeydown = function (event) {

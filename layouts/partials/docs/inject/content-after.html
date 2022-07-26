@@ -5,8 +5,8 @@
             {{ $lastmod := .Lastmod.UTC.Format "Jan 2, 2006" }}
             <h5>本文共 {{ .WordCount }} 字，{{ if and (ne $lastmod $date) (gt .Lastmod .Date) }}上次修改于 {{ $lastmod }}，{{ end }}以 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh">CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5>
             <div id="navigation-mobile">
-                <p>{{ with .NextInSection }}上一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
-                <p>{{ with .PrevInSection }}下一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
+                <p>{{ with .PrevInSection }}上一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
+                <p>{{ with .NextInSection }}下一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
             </div>
             {{ $related := .Site.RegularPages.Related . | first 5 }}
             {{ with $related }}

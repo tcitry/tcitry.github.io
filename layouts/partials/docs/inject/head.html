@@ -4,7 +4,12 @@
   window.dataLayer = window.dataLayer || [];
   function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());
-  if (window.location.hostname !== 'localhost') {
+  if (window.location.hostname === 'localhost') {
+    gtag('config', 'G-Q20952BPE6', {
+      'send_page_view': false,
+      'debug_mode': true
+    });
+  } else {
     gtag('config', 'G-Q20952BPE6');
   }
 </script>
