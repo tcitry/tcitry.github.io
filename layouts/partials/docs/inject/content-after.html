@@ -1,9 +1,8 @@
 <div>
+    {{ $lastmod := .Lastmod.UTC.Format "Jan 2, 2006" }}
     {{ if in .Permalink "/posts/"}}
         {{ if or (.PrevInSection) (.NextInSection)}}
-            {{ $date := .Date.UTC.Format "Jan 2, 2006" }}
-            {{ $lastmod := .Lastmod.UTC.Format "Jan 2, 2006" }}
-            <h5>本文共 {{ .WordCount }} 字，{{ if and (ne $lastmod $date) (gt .Lastmod .Date) }}上次修改于 {{ $lastmod }}，{{ end }}以 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh">CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5>
+            <h5>本文共 {{ .WordCount }} 字，{{ if isset .Params "lastmod" }}上次修改于 {{ $lastmod }}，{{ end }}以 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh">CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5>
             <div id="navigation-mobile">
                 <p>{{ with .PrevInSection }}上一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
                 <p>{{ with .NextInSection }}下一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
@@ -23,24 +22,12 @@
                     </div>
                 {{ end }}
             {{ end }}
-            <script src="https://giscus.app/client.js"
-                data-repo="tcitry/tcitry.github.io"
-                data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk="
-                data-category="Announcements"
-                data-category-id="DIC_kwDOCMyx684COMlk"
-                data-mapping="og:title"
-                data-reactions-enabled="1"
-                data-emit-metadata="0"
-                data-input-position="bottom"
-                data-theme="preferred_color_scheme"
-                data-lang="zh-CN"
-                data-loading="lazy"
-                crossorigin="anonymous"
-                async>
-            </script>
         {{ end }}
     {{ end }}
-    {{ if in .Permalink "/docs/Algorithms"}}
+    {{ if or (in .Permalink "/docs/")}}
+        {{ if isset .Params "lastmod" }}<h5 style="text-align: right;">上次修改于 {{ $lastmod }}</h5>{{end}}
+    {{ end }}
+    {{ if or (in .Permalink "/docs/") (in .Permalink "/posts/")}}
         <script src="https://giscus.app/client.js"
             data-repo="tcitry/tcitry.github.io"
             data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk="

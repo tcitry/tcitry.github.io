@@ -1,5 +1,15 @@
 {{ if eq .Page.RelPermalink "/" }}
     {{ .Site.Title }}
 {{ else }}
-    {{ partial "docs/title" . }} | {{ .Site.Title -}}
+    {{ if or (in .Permalink "/docs/")}}
+        {{ if and .IsSection .File }}
+            {{ printf "%s" (path.Base .File.Dir | title) }} | {{ .Site.Title -}}
+        {{ else if .Title }}
+            {{ printf "%s - %s" (path.Base .File.Dir | title) .Title }} | {{ .Site.Title -}}
+        {{ else if and .IsPage .File }}
+            {{ printf "%s" (.File.BaseFileName | title) }} | {{ .Site.Title -}}
+        {{ end }}
+    {{ else}}
+        {{ partial "docs/title" . }} | {{ .Site.Title -}}
+    {{ end }}
 {{ end }}
