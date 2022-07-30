@@ -1,9 +1,11 @@
 <nav>
   {{ $scratch := newScratch }}
-  {{ range (where .Site.RegularPages "Type" "in" .Site.Params.mainSections) }}
+  {{ $pages := and (where .Site.RegularPages "Type" "in" (slice "docs" "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
+
+  {{ range $pages }}
     {{ $scratch.Add "wordcount" .WordCount }}
   {{ end }}
-  <p style="color: darkgrey;">共 {{ len (where .Site.RegularPages "Type" "in" .Site.Params.mainSections) }} 篇，{{ $scratch.Get "wordcount" | lang.NumFmt 0 }} 字</p>
+  <p style="color: dimgray;">共 {{ len $pages }} 篇，{{ $scratch.Get "wordcount" | lang.NumFmt 0 }} 字</p>
   <ul>
     {{ range $term := (slice "Categories") }}
     {{ with $.Site.GetPage (printf "/%s" $term | urlize) }}

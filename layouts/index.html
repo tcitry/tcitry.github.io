@@ -1,9 +1,10 @@
 {{ define "main" }}
-  {{ $paginator := .Paginate (where .Site.RegularPages "Section" "in" .Site.Params.mainSections) }}
-  {{ range sort .Paginator.Pages }}
+  {{ $pages := and (where .Site.RegularPages "Type" "in" (slice "docs" "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
+  {{ range sort (.Paginate $pages.ByDate.Reverse).Pages }}
   <article class="markdown book-post">
     <h2>
-      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>
+      {{ if eq .Type "docs"}} <span class="doc-title">[doc]</span>{{ end }}
     </h2>
     {{ partial "docs/post-meta" . }}
     <p>

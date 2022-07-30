@@ -5,7 +5,7 @@
         {{ if and .IsSection .File }}
             {{ printf "%s" (path.Base .File.Dir | title) }} | {{ .Site.Title -}}
         {{ else if .Title }}
-            {{ printf "%s - %s" (path.Base .File.Dir | title) .Title }} | {{ .Site.Title -}}
+            {{ printf "%s — %s" (path.Base .File.Dir | title) .Title }} | {{ .Site.Title -}}
         {{ else if and .IsPage .File }}
             {{ printf "%s" (.File.BaseFileName | title) }} | {{ .Site.Title -}}
         {{ end }}
