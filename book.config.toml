@@ -23,7 +23,7 @@ paginate = 10
 summaryLength = 100
 
 [frontmatter]
-lastmod = ["lastmod"]
+lastmod = ["lastmod", ":fileModTime", ":default"]
 
 [permalinks]
 posts = "/posts/:slug/"
