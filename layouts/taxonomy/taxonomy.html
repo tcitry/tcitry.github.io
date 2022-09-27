@@ -1,12 +1,29 @@
 {{ define "main" }}
-  <h1 style="color: dimgray;">{{ .Title }}</h1>
-  {{ range sort .Pages.ByDate.Reverse }}
-    <div class="post">
-      <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> »
-        <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>
-        {{ if eq .Type "docs"}}<span class="doc-title">[doc]</span>{{ end }}</h3>
-      </p>
-    </div>
+  {{ if in (slice "/tags/" "/categories/") .Page.RelPermalink }}
+    <article class="markdown">
+      <h1>{{ .Title | title }}</h1>
+      {{ $taxonomies := index .Site.Taxonomies "categories" }}
+      {{ range $taxonomies }}
+        <a href="{{ .Page.Permalink }}">{{ .Page.Title }} <sup>{{ .Count }}</sup></a>&nbsp;
+      {{ end }}
+    </article>
+    <br>
+    <article class="markdown">
+      {{ $taxonomies := index .Site.Taxonomies "tags" }}
+      {{ range $taxonomies }}
+        <a href="{{ .Page.Permalink }}">{{ .Page.Title }} <sup>{{ .Count }}</sup></a>&nbsp;
+      {{ end }}
+    </article>
+  {{ else }}
+    <h1 style="color: dimgray;">{{ .Title }}</h1>
+    {{ range sort .Pages.ByDate.Reverse }}
+      <div class="post">
+        <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> »
+          <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>
+          {{ if eq .Type "docs"}}<span class="doc-title">[doc]</span>{{ end }}</h3>
+        </p>
+      </div>
+    {{ end }}
   {{ end }}
 {{ end }}
 
