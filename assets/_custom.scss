@@ -27,6 +27,16 @@ article strong {
   color: #f66;
 }
 
+article h3::before {
+  content: "#";
+  color: dimgray;
+}
+
+article h4::before {
+  content: "##";
+  color: darkgray;
+}
+
 // .markdown table {
 //   margin-left: auto;
 //   margin-right: auto;
