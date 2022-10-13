@@ -74,3 +74,12 @@
           });
     });
 </script>
+
+<script>
+    ts = document.getElementsByTagName("a")
+    for (const t of ts) {
+        if (t.href && !(t.href.startsWith("http://localhost") | t.href.startsWith("{{ .Site.BaseURL }}"))){
+            t.target = "_blank"
+        }
+    }
+</script>
