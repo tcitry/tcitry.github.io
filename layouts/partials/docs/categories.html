@@ -1,6 +1,6 @@
 <nav>
   {{ $scratch := newScratch }}
-  {{ $pages := and (where .Site.RegularPages "Type" "in" (slice "docs" "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
+  {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "docs" "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
 
   {{ range $pages }}
     {{ $scratch.Add "wordcount" .WordCount }}

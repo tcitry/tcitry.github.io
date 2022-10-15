@@ -1,7 +1,7 @@
 {{ if eq .Page.RelPermalink "/" }}
     {{ .Site.Title }}
 {{ else }}
-    {{ if or (in .Permalink "/docs/")}}
+    {{ if (in (slice "docs" "weekly") .Type) }}
         {{ if and .IsSection .File }}
             {{ printf "%s" (path.Base .File.Dir | title) }} | {{ .Site.Title -}}
         {{ else if .Title }}

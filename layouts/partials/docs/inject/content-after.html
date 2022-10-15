@@ -22,7 +22,7 @@
             {{ end }}
         {{ end }}
     {{ end }}
-    {{ if (in (slice "docs") .Type) }}
+    {{ if and (in (slice "docs") .Type) .WordCount }}
         <h5 class="post-after">本文共 {{ .WordCount }} 字{{ if isset .Params "lastmod" }}，上次修改于 {{ $lastmod }}{{ else if isset .Params "date" }}，创建于 {{ $date }}{{end}}</h5>
         {{ with $terms := $.GetTerms "Tags" }}
             <div>相关标签：
@@ -32,7 +32,13 @@
             </div>
         {{ end }}
     {{ end }}
-    {{ if or (in (slice "docs" "posts" "about") .Type) }}
+    {{ if (in (slice "weekly") .Type) }}
+        <div id="navigation-mobile">
+            <p>{{ with .PrevInSection }}上一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
+            <p>{{ with .NextInSection }}下一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
+        </div>
+    {{ end }}
+    {{ if or (in (slice "docs" "posts" "about" "weekly") .Type) }}
         <script src="https://giscus.app/client.js"
             data-repo="tcitry/tcitry.github.io"
             data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk="

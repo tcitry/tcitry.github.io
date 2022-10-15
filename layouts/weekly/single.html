@@ -1,0 +1,14 @@
+{{ define "main" }}
+<article class="markdown">
+  <h1>
+    <a href="{{ .RelPermalink }}">周刊 — {{ .Title }}</a>
+  </h1>
+  {{ partial "docs/post-meta" . }}
+  <blockquote class="doc-title">{{ .Description }}</blockquote>
+  {{- .Content -}}
+</article>
+{{ end }}
+
+{{ define "toc" }}
+  {{ partial "docs/weekly-toc" . }}
+{{ end }}

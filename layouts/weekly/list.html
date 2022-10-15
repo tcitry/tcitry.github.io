@@ -1,0 +1,17 @@
+{{ define "main" }}
+  {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "weekly")) (where .Site.Pages "Params.date" "!=" nil) }}
+  <div class="card-list">
+    {{ range .Pages }}
+      <a href="{{ .RelPermalink }}" class="card">
+        <img src={{ .Params.image | relURL }} />
+        <div class="flex justify-between card-title">
+          <div>{{ .Title }}</div>
+          <div><time style="color: darkgrey;">{{.Date.Format "2006/01"}}</time></div>
+        </div>
+        <div class="card-content">
+          <p>{{ .Description }}</p>
+        </div>
+      </a>
+    {{ end }}
+  </div>
+{{ end }}

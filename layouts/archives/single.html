@@ -1,5 +1,5 @@
 {{ define "main" }}
-{{ $pages := and (where .Site.RegularPages "Type" "in" (slice "docs" "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
+{{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "docs" "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
 
 {{ range $pages.GroupByDate "2006" }}
 <section>
@@ -7,7 +7,7 @@
   <div class="posts">
     {{ range .Pages }}
     <div class="post">
-      <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> » <a href="{{ .RelPermalink }}">
+      <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;<a href="{{ .RelPermalink }}">
         {{ if not .Title}}
           {{ .File }} <span class="danger-title">[Danger]</span>
         {{ else }}

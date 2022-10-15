@@ -1,4 +1,4 @@
-{{ if in .Permalink "/posts/"}}
+{{if (in (slice "posts" "weekly") .Type)}}
 <div id="navigation">
     {{ with .PrevInSection }}{{if .Title}}
         <a class="nav nav-left" href="{{ .Permalink }}" title="上一篇：{{ .Title }}"><i class="fa-left"></i></a>
@@ -40,6 +40,11 @@
     }
 </script>
 
+{{ if (in (slice "weekly") .Type) }}
+<!-- <script src="https://cdn.tailwindcss.com"></script> -->
+{{ end }}
+
+{{if (in (slice "posts" "docs") .Type)}}
 <script src="/gumshoe.polyfills.min.js"></script>
 <script>new Gumshoe('.book-toc a', { nested: true });</script>
 <style>
@@ -47,6 +52,7 @@
     font-weight: bold;
 }
 </style>
+{{ end }}
 
 <script src="/fast-image-zoom.js"></script>
 <script>
