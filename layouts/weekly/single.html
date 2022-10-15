@@ -1,4 +1,6 @@
 {{ define "main" }}
+{{ $date := .Date.UTC.Format "Jan 2, 2006" }}
+{{ $lastmod := .Lastmod.UTC.Format "Jan 2, 2006" }}
 <article class="markdown">
   <h1>
     <a href="{{ .RelPermalink }}">周刊 — {{ .Title }}</a>
@@ -6,6 +8,9 @@
   {{ partial "docs/post-meta" . }}
   <blockquote class="doc-title">{{ .Description }}</blockquote>
   {{- .Content -}}
+  {{if not (eq $date $lastmod) }}
+    <h5 class="post-after">Last Modified at {{ .Lastmod.UTC.Format "Jan 2, 2006" }}</h5>
+  {{end}}
 </article>
 {{ end }}
 
