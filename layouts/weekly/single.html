@@ -3,7 +3,7 @@
 {{ $lastmod := .Lastmod.UTC.Format "Jan 2, 2006" }}
 <article class="markdown">
   <h1>
-    <a href="{{ .RelPermalink }}">周刊 — {{ .Title }}</a>
+    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
   </h1>
   {{ partial "docs/post-meta" . }}
   <blockquote class="doc-title">{{ .Description }}</blockquote>
