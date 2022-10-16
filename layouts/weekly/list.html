@@ -1,8 +1,8 @@
 {{ define "main" }}
   {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "weekly")) (where .Site.Pages "Params.date" "!=" nil) }}
-  <p class="doc-title">目前共 {{ len $pages }} 期周刊，可通过 <a href="/weekly/index.xml">RSS</a> 订阅。</p>
+  <p class="doc-title">目前共 <a href="/tags/周刊/">{{ len $pages }}</a> 期周刊，可通过 <a href="/weekly/index.xml">RSS</a> 订阅。</p>
   <div class="card-list">
-    {{ range .Pages }}
+    {{ range first 99 .Pages }}
       <a href="{{ .RelPermalink }}" class="card">
         <img src={{ .Params.image | relURL }} />
         <div class="flex justify-between card-title">
