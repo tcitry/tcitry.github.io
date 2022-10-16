@@ -38,7 +38,7 @@
             <p>{{ with .NextInSection }}下一刊：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
         </div>
     {{ end }}
-    {{ if or (in (slice "docs" "posts" "about" "weekly") .Type) }}
+    {{ if or (in (slice "docs" "posts" "about" "weekly" "projects") .Type) }}
         <script src="https://giscus.app/client.js"
             data-repo="tcitry/tcitry.github.io"
             data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk="
