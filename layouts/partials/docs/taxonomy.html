@@ -1,3 +1,4 @@
+{{ $curr := .Page.RelPermalink }}
 <nav>
   <ul>
   {{ range $term := (slice "Tags") }}
@@ -6,10 +7,17 @@
       <strong>{{ .Title | title }}</strong>
       <ul>
       {{ range .Pages }}
-        <li class="flex justify-between">
-          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-          <span>{{ len .Pages }}</span>
-        </li>
+        {{ if eq .RelPermalink $curr }}
+            <li class="flex justify-between">
+              <a href="{{ .RelPermalink }}" class="highlight-toc">{{ .Title }}</a>
+              <span>{{ len .Pages }}</span>
+            </li>
+          {{ else }}
+            <li class="flex justify-between">
+              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+              <span>{{ len .Pages }}</span>
+            </li>
+        {{ end }}
       {{ end }}
       </ul>
     </li>
