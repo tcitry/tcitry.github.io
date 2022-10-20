@@ -7,9 +7,9 @@
         {{ range $pages }}
         <li class="flex">
           {{ if eq .RelPermalink $curr }}
-            <time class="doc-title">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;<a href="{{ .RelPermalink }}" class="highlight-toc">{{ .Title }}</a>
+            <time class="doc-title">{{ .File.BaseFileName }}</time>&nbsp;»&nbsp;<a href="{{ .RelPermalink }}" class="highlight-toc">{{ .Title }}</a>
           {{ else }}
-            <time class="doc-title">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;<a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            <time class="doc-title">{{ .File.BaseFileName }}</time>&nbsp;»&nbsp;<a href="{{ .RelPermalink }}">{{ .Title }}</a>
           {{ end }}
         </li>
         {{ end }}
