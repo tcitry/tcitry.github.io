@@ -4,7 +4,11 @@
   <article class="markdown book-post">
     <h2>
       <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>
-      {{ if eq .Type "docs"}} <span class="doc-title">[doc]</span>{{ end }}
+      {{ if eq .Type "docs"}}
+        <span class="doc-title">[doc]</span>
+      {{else if eq .Type "weekly"}}
+        <span class="weekly-title">[weekly]</span>
+      {{ end }}
     </h2>
     {{ partial "docs/post-meta" . }}
     <p>
