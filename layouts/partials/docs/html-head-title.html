@@ -1,23 +1,19 @@
-{{ if eq .Page.RelPermalink "/" }}
-    {{ .Site.Title }}
-{{ else }}
-    {{ if (in (slice "docs") .Type) }}
-        {{ if and .IsSection .File }}
-            {{ printf "%s" (path.Base .File.Dir | title) }} | {{ .Site.Title -}}
-        {{ else if .Title }}
-            {{ printf "%s — %s" (path.Base .File.Dir | title) .Title }} | {{ .Site.Title -}}
-        {{ else if and .IsPage .File }}
-            {{ printf "%s" (.File.BaseFileName | title) }} | {{ .Site.Title -}}
-        {{ end }}
-    {{ else if (in (slice "weekly") .Type) }}
-        {{ if and .IsSection .File }}
-            {{ printf "%s" (path.Base .File.Dir | title) }} | {{ .Site.Title -}}
-        {{ else if .Title }}
-            {{ printf "%s" .Title }} | {{ .Site.Title -}}
-        {{ else if and .IsPage .File }}
-            {{ printf "%s" (.File.BaseFileName | title) }} | {{ .Site.Title -}}
-        {{ end }}
-    {{ else}}
-        {{ partial "docs/title" . }} | {{ .Site.Title -}}
+{{ if (in (slice "docs") .Type) }}
+    {{ if and .IsSection .File }}
+        {{ printf "%s" (path.Base .File.Dir | title) }}
+    {{ else if .Title }}
+        {{ printf "%s — %s" (path.Base .File.Dir | title) .Title }}
+    {{ else if and .IsPage .File }}
+        {{ printf "%s" (.File.BaseFileName | title) }}
     {{ end }}
+{{ else if (in (slice "weekly") .Type) }}
+    {{ if and .IsSection .File }}
+        {{ printf "%s" (path.Base .File.Dir | title) }}
+    {{ else if .Title }}
+        {{ printf "%s %s" .File.BaseFileName .Title }}
+    {{ else if and .IsPage .File }}
+        {{ printf "%s" (.File.BaseFileName | title) }}
+    {{ end }}
+{{ else}}
+    {{ partial "docs/title" . }}
 {{ end }}

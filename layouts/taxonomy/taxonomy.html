@@ -1,15 +1,15 @@
 {{ define "main" }}
   {{ if in (slice "/tags/" "/categories/") .Page.RelPermalink }}
+    <h1>{{ .Title | title }}</h1>
     <article class="markdown">
-      <h1>{{ .Title | title }}</h1>
-      {{ $taxonomies := index .Site.Taxonomies "categories" }}
+      {{ $taxonomies := index .Site.Taxonomies "tags" }}
       {{ range $taxonomies }}
         <a href="{{ .Page.Permalink }}">{{ .Page.Title }} <sup>{{ .Count }}</sup></a>&nbsp;
       {{ end }}
     </article>
     <br>
     <article class="markdown">
-      {{ $taxonomies := index .Site.Taxonomies "tags" }}
+      {{ $taxonomies := index .Site.Taxonomies "categories" }}
       {{ range $taxonomies }}
         <a href="{{ .Page.Permalink }}">{{ .Page.Title }} <sup>{{ .Count }}</sup></a>&nbsp;
       {{ end }}

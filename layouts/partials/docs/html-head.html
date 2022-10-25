@@ -10,7 +10,11 @@
 
 {{- template "_internal/opengraph.html" . -}}
 
-<title>{{ partial "docs/html-head-title" . }}</title>
+{{ if eq .Page.RelPermalink "/" }}
+    <title>{{ .Site.Title -}}</title>
+{{ else }}
+    <title>{{ partial "docs/html-head-title" . }} | {{ .Site.Title -}}</title>
+{{ end }}
 
 {{- $manifest := resources.Get "manifest.json" | resources.ExecuteAsTemplate "manifest.json" . }}
 <link rel="manifest" href="{{ $manifest.RelPermalink }}">
