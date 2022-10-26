@@ -1,7 +1,7 @@
 {{ if (in (slice "docs") .Type) }}
     {{ if and .IsSection .File }}
         {{ printf "%s" (path.Base .File.Dir | title) }}
-    {{ else if .Title }}
+    {{ else if and .Title .File }}
         {{ printf "%s — %s" (path.Base .File.Dir | title) .Title }}
     {{ else if and .IsPage .File }}
         {{ printf "%s" (.File.BaseFileName | title) }}
