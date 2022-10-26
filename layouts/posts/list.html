@@ -1,7 +1,7 @@
 {{ define "main" }}
-{{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "docs" "posts" "weekly" "projects")) (where .Site.Pages "Params.date" "!=" nil)}}
+{{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
 
-<span style="color: darkgrey;">All</span> / <a href="/posts">Posts</a>
+<a href="/archives/">All</a> / <span style="color: darkgrey;">Posts</span>
 
 {{ range $pages.GroupByDate "2006" }}
 <section>
@@ -30,5 +30,5 @@
 {{ end }}
 
 {{ define "toc" }}
-  {{ partial "docs/categories" . }}
+  {{ partial "docs/posts-categories" . }}
 {{ end }}
