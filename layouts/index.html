@@ -5,9 +5,11 @@
     <h2>
       <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>
       {{ if eq .Type "docs"}}
-        <span class="doc-title">[doc]</span>
+        <span class="doc-title">[ Doc ]</span>
       {{else if eq .Type "weekly"}}
-        <span class="weekly-title">[weekly]</span>
+        <span class="weekly-title">[ Weekly ]</span>
+      {{else if eq .Type "projects"}}
+        <span class="project-title">[ Project ]</span>
       {{ end }}
     </h2>
     {{ partial "docs/post-meta" . }}

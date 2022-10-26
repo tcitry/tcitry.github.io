@@ -1,7 +1,7 @@
 {{ define "main" }}
-{{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
+{{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "docs")) (where .Site.Pages "Params.date" "!=" nil)}}
 
-<a href="/archives/">All</a> / <span style="color: darkgrey;">Posts</span> / <a href="/docs/">Docs</a>
+<a href="/archives/">All</a> / <a href="/posts/">Posts</a> / <span style="color: darkgrey;">Docs</span>
 
 {{ range $pages.GroupByDate "2006" }}
 <section>
@@ -13,10 +13,9 @@
         {{ if not .Title}}
           {{ .File }} <span class="danger-title">[Danger]</span>
         {{ else }}
-          {{ .Title }}
+          {{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}
         {{ end }}
-      </a>
-      </h3></p>
+      </a></h3></p>
     </div>
     {{ end }}
   </div>
@@ -25,5 +24,5 @@
 {{ end }}
 
 {{ define "toc" }}
-  {{ partial "docs/posts-categories" . }}
+  {{ partial "docs/docs-categories" . }}
 {{ end }}

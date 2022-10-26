@@ -1,5 +1,6 @@
 {{ define "main" }}
   {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "projects")) (where .Site.Pages "Params.date" "!=" nil) }}
+  <p class="doc-title">目前共 <a href="/tags/Projects/">{{ len $pages }}</a> 个项目，可通过 <a href="/projects/index.xml">RSS</a> 订阅。</p>
   <div class="card-list">
     {{ range .Pages }}
       <a href="{{ .RelPermalink }}" class="card">
