@@ -1,7 +1,7 @@
 {{ define "main" }}
 {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
 
-<a href="/archives/">All</a> / <span style="color: darkgrey;">Posts</span> / <a href="/docs/">Docs</a>
+<a href="/archives/">All</a> / <span style="color: darkgrey;">Posts</span>
 
 {{ range $pages.GroupByDate "2006" }}
 <section>
