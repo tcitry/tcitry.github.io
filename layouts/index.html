@@ -1,5 +1,5 @@
 {{ define "main" }}
-  {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "docs" "posts" "projects")) (where .Site.Pages "Params.date" "!=" nil)}}
+  {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "docs" "posts" "projects" "weekly")) (where .Site.Pages "Params.date" "!=" nil)}}
   {{ range sort (.Paginate $pages.ByDate.Reverse).Pages }}
   <article class="markdown book-post">
     <h2>

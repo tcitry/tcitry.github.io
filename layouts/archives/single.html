@@ -1,5 +1,5 @@
 {{ define "main" }}
-{{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "docs" "posts" "projects")) (where .Site.Pages "Params.date" "!=" nil)}}
+{{ $pages := (where .Site.Pages "Params.date" "!=" nil)}}
 
 <span style="color: darkgrey;">All</span> / <a href="/posts">Posts</a>
 
