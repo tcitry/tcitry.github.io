@@ -34,8 +34,8 @@
     {{ end }}
     {{ if (in (slice "weekly") .Type) }}
         <div id="navigation-mobile">
-            <p>{{ with .PrevInSection }}上一刊：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
-            <p>{{ with .NextInSection }}下一刊：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
+            <p>{{ with .PrevInSection }}上一期：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
+            <p>{{ with .NextInSection }}下一期：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
         </div>
     {{ end }}
     {{ if and (in (slice "docs" "posts" "about" "weekly" "projects") .Type) .IsPage }}
