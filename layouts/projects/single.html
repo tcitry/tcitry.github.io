@@ -7,9 +7,6 @@
   </h1>
   {{ partial "docs/post-meta" . }}
   {{- .Content -}}
-  {{if not (eq $date $lastmod) }}
-    <h5 class="post-after">Last Modified at {{ .Lastmod.UTC.Format "Jan 2, 2006" }}</h5>
-  {{end}}
 </article>
 {{ end }}
 
