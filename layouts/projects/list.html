@@ -4,9 +4,12 @@
     {{ range .Pages }}
         <a href="{{ .RelPermalink }}" class="project">
         <img src={{ .Params.image | relURL }} />
-        <div class="flex justify-between project-header">
-          <p class="project-content">{{ .Description }}</p>
+        <div class="flex justify-between card-title">
+          <div>{{ .Title }}</div>
           <div><time style="color: darkgrey;">{{.Date.Format "2006.01"}}</time></div>
+        </div>
+        <div class="card-content">
+          <p>{{ .Description }}</p>
         </div>
       </a>
     {{ end }}
