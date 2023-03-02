@@ -1,15 +1,12 @@
 {{ define "main" }}
   {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "projects")) (where .Site.Pages "Params.date" "!=" nil) }}
-  <div class="card-list">
+  <div class="project-list">
     {{ range .Pages }}
-      <a href="{{ .RelPermalink }}" class="card">
+        <a href="{{ .RelPermalink }}" class="project">
         <img src={{ .Params.image | relURL }} />
-        <div class="flex justify-between card-title">
-          <div>{{ .File.BaseFileName }}</div>
+        <div class="flex justify-between project-header">
+          <p class="project-content">{{ .Description }}</p>
           <div><time style="color: darkgrey;">{{.Date.Format "2006.01"}}</time></div>
-        </div>
-        <div class="card-content">
-          <p>{{ .Description }}</p>
         </div>
       </a>
     {{ end }}
