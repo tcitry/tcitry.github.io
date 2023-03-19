@@ -4,7 +4,7 @@
   {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "weekly")) (where .Site.Pages "Params.date" "!=" nil) }}
     <li class="book-section-flat">
       <ul>
-        {{ range first 100 $pages }}
+        {{ range $pages }}
         <li class="flex">
           {{ if eq .RelPermalink $curr }}
             <time class="doc-title">{{ .Date.Format "Jan 2006" }}</time>&nbsp;»&nbsp;<a href="{{ .RelPermalink }}" class="highlight-toc">{{ .Title }}</a>
