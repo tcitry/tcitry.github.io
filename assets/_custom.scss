@@ -19,13 +19,9 @@ blockquote {
 
 article em {
   color: #0DA99C;
+  // color: #f66;
   font-weight: bold;
-  // font-style: normal;
-  margin-right: 2px;
-}
-
-article strong {
-  color: #f66;
+  font-style: normal;
 }
 
 article h3::before {
