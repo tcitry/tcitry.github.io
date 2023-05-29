@@ -11,7 +11,7 @@
     <div class="post">
       <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;<a href="{{ .RelPermalink }}">
         {{ if not .Title}}
-          {{ .File }} <span class="danger-title">[Danger]</span>
+          {{ .File }} <span class="danger-title">[Draft]</span>
         {{ else }}
           {{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}
         {{ end }}
