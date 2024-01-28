@@ -1,6 +1,6 @@
 baseURL = "https://yindongliang.com"
 theme = "hugo-book"
-title = "YIN DONGLIANG"
+title = "殷东亮的博客"
 
 hasCJKLanguage = true
 languageCode = "zh-cn"
@@ -63,7 +63,7 @@ unsafe = true # enable raw HTML in Markdown
 [params]
 
 BookTheme = "auto"
-CopyrightHTML = "© 2012-2023 YINDONGLIANG"
+CopyrightHTML = "© 2012-2024 YINDONGLIANG"
 SidebarRecentLimit = 5
 TwitterUser = "tcitry"
 mainSections = ["posts"]
