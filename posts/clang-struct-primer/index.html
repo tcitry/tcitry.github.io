@@ -1,0 +1,496 @@
+<!doctype html><html lang=zh-cn dir=ltr>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=description content="学完结构体发现这一章概括了这本C程序设计的多数知识点，遂做一个总结。 ps：代码在vs2012上测试，从简单的开始。 1.定义一个简单的结构体并输出 #include<stdio.h>#include<stdlib.h>struct stu{ int num; char name[20]; float score; }; struct stu stu_1={01,&#34;张三">
+<meta name=theme-color content="#FFFFFF">
+<meta name=color-scheme content="light dark"><meta property="og:title" content="入门结构体链表">
+<meta property="og:description" content="学完结构体发现这一章概括了这本C程序设计的多数知识点，遂做一个总结。 ps：代码在vs2012上测试，从简单的开始。 1.定义一个简单的结构体并输出 #include<stdio.h>#include<stdlib.h>struct stu{ int num; char name[20]; float score; }; struct stu stu_1={01,&#34;张三">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yindongliang.com/posts/clang-struct-primer/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2013-06-05T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-07-26T22:12:09+08:00">
+<title>
+入门结构体链表
+</title><link rel=manifest href=/manifest.json>
+<link rel=icon href=/favicon.png type=image/x-icon>
+<link rel=stylesheet href=/book.min.7ddffcff7348380c70e43d3b4ab992503f90110553d5bfe5868e7d1aa2b80633.css integrity="sha256-fd/8/3NIOAxw5D07SrmSUD+QEQVT1b/lho59GqK4BjM=" crossorigin=anonymous>
+<script defer src=/flexsearch.min.js></script>
+<script defer src=/zh-cn.search.min.2c190993d62f294238012cea6b0bb36d326434bd9ba923f25c1b780b368e6efa.js integrity="sha256-LBkJk9YvKUI4ASzqawuzbTJkNL2bqSPyXBt4CzaObvo=" crossorigin=anonymous></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),window.location.hostname==="localhost"?gtag("config","G-Q20952BPE6",{send_page_view:!1,debug_mode:!0}):gtag("config","G-Q20952BPE6")</script>
+</head><body dir=ltr>
+<input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control>
+<main class="container flex">
+<aside class=book-menu>
+<div class=book-menu-content>
+<nav>
+<h2 class=book-brand>
+<a class="flex align-center" href=/><img src=/logo.gif alt><span>殷东亮的博客</span>
+</a>
+</h2><div class=book-search>
+<input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/>
+<div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul>
+<li><a href=/archives>Archives</a></li><li><a href=/weekly>Weekly🔥</a></li><li><a href=/projects>Projects</a></li><li><a href=/about>About</a></li><li><a href=https://github.com/tcitry target=_blank>Github</a></li><li><a href=/posts/index.xml target=_blank>RSS</a></li></ul><hr class=hr-edge-weak>
+<ul>
+<li>
+<input type=checkbox id=section-374f93193c235d5a59a63115829f835e class=toggle>
+<label for=section-374f93193c235d5a59a63115829f835e class="flex justify-between">
+<a href=/docs/Algorithms/>Algorithms</a>
+</label>
+<ul>
+<li>
+<input type=checkbox id=section-6fa75fabfcaf0942c2ae40739a024515 class=toggle>
+<label for=section-6fa75fabfcaf0942c2ae40739a024515 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>数据结构</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%93%BE%E8%A1%A8/>链表（Linked list）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E7%BB%84/>数组（Array）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%AD%97%E7%AC%A6%E4%B8%B2/>字符串（String）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%98%9F%E5%88%97/>队列（Queue）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%A0%88/>栈（Stack）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%93%88%E5%B8%8C%E8%A1%A8/>哈希表（Hash Table）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E4%BA%8C%E5%8F%89%E6%A0%91/>二叉树（Binary Tree）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A0%86/>堆（Heap）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%89%8D%E7%BC%80%E6%A0%91/>前缀树（Trie）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%A2%E9%BB%91%E6%A0%91/>红黑树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/B-tree/>B 树</a>
+</li></ul></li><li>
+<input type=checkbox id=section-60c1cc56ab667711423fd030bb7d2ba4 class=toggle>
+<label for=section-60c1cc56ab667711423fd030bb7d2ba4 class="flex justify-between">
+<a role=button>常用算法</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/recursion/>递归</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/>贪心算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/>滑动窗口</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/>动态规划</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8F%8C%E6%8C%87%E9%92%88/>双指针</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/>二分查找</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/>排序算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/BFS-%E5%92%8C-DFS/>BFS 和 DFS</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%88%86%E6%B2%BB%E7%AD%96%E7%95%A5/>分治策略</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%89%8D%E7%BC%80%E5%92%8C/>前缀和</a>
+</li></ul></li><li>
+<input type=checkbox id=section-34a5846db21bfdffc261709474d4c2c2 class=toggle>
+<label for=section-34a5846db21bfdffc261709474d4c2c2 class="flex justify-between">
+<a role=button>经典问题</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/>打家劫舍</a>
+</li><li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/>字符串匹配</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3acc3c018b0cf870114fc4c04b8fe75a class=toggle>
+<label for=section-3acc3c018b0cf870114fc4c04b8fe75a class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/>数学基础</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/>微积分</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/>概率统计</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/>线性代数</a>
+</li></ul></li><li>
+<input type=checkbox id=section-6a4c402b2954211b8a56520549766ad2 class=toggle>
+<label for=section-6a4c402b2954211b8a56520549766ad2 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/>线性模型</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/>周志华西瓜树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/>集体智慧编程</a>
+</li></ul></li></ul></li><li>
+<input type=checkbox id=section-ab6241a9c9348727e1ed30d9d7253a0e class=toggle>
+<label for=section-ab6241a9c9348727e1ed30d9d7253a0e class="flex justify-between">
+<a href=/docs/Golang/>Golang</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Golang/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Golang/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Golang/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/>代码规范</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3ca9a5c09bd1884bf69ade02a8e53628 class=toggle>
+<label for=section-3ca9a5c09bd1884bf69ade02a8e53628 class="flex justify-between">
+<a href=/docs/Linux/>Linux</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Linux/regular-expression/>正则表达式</a>
+</li><li>
+<a href=/docs/Linux/Shell/>Shell</a>
+</li><li>
+<a href=/docs/Linux/Spark/>Spark</a>
+</li><li>
+<a href=/docs/Linux/Docker/>Docker</a>
+</li><li>
+<a href=/docs/Linux/git/>Git 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-fdf3c0f524378d36bb3d2441d08ad8e8 class=toggle>
+<label for=section-fdf3c0f524378d36bb3d2441d08ad8e8 class="flex justify-between">
+<a href=/docs/Rust/>Rust</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Rust/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li></ul></li><li>
+<input type=checkbox id=section-f6f1cb8b3cab23098be63dcbede4acb5 class=toggle>
+<label for=section-f6f1cb8b3cab23098be63dcbede4acb5 class="flex justify-between">
+<a role=button>Xcode</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Xcode/Swift/>Swift</a>
+</li><li>
+<a href=/docs/Xcode/SwiftUI/>SwiftUI</a>
+</li><li>
+<a href=/docs/Xcode/Objective-C-%E8%AF%AD%E6%B3%95/>Objective-C</a>
+</li><li>
+<a href=/docs/Xcode/mac-%E6%8A%80%E5%B7%A7/>Mac 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-5f6c61ca509f9ca14a383db36b14a32f class=toggle>
+<label for=section-5f6c61ca509f9ca14a383db36b14a32f class="flex justify-between">
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/>软件工程</a>
+</label>
+<ul>
+<li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/peopleware/>人件</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/>Unix 编程艺术</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E4%B9%8B%E9%81%93/>程序员修炼之道</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/>一些定律</a>
+</li></ul></li><li>
+<input type=checkbox id=section-b708f687fcc1dc14b13a93ba85e8845b class=toggle>
+<label for=section-b708f687fcc1dc14b13a93ba85e8845b class="flex justify-between">
+<a href=/docs/Clang/>C/C++</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Clang/C/>C 语言基础</a>
+</li><li>
+<a href=/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/>系统调用</a>
+</li><li>
+<a href=/docs/Clang/C-%E6%A0%87%E5%87%86%E5%BA%93/>C 标准库</a>
+</li><li>
+<a href=/docs/Clang/C++/>C++ 语言基础</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3beaf640f7d27429884edb43bd1a0ec7 class=toggle>
+<label for=section-3beaf640f7d27429884edb43bd1a0ec7 class="flex justify-between">
+<a href=/docs/FE/>FE</a>
+</label>
+<ul>
+<li>
+<a href=/docs/FE/JavaScript/>JavaScript</a>
+</li><li>
+<a href=/docs/FE/js-buildin-objects/>JS 内置对象</a>
+</li><li>
+<a href=/docs/FE/TypeScript/>TypeScript</a>
+</li><li>
+<a href=/docs/FE/BOM/>BOM</a>
+</li><li>
+<a href=/docs/FE/DOM/>DOM</a>
+</li><li>
+<a href=/docs/FE/node/>Node</a>
+</li><li>
+<a href=/docs/FE/Deno/>Deno</a>
+</li><li>
+<a href=/docs/FE/vue/>Vue</a>
+</li><li>
+<a href=/docs/FE/react/>React</a>
+</li><li>
+<a href=/docs/FE/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/>依赖管理</a>
+</li><li>
+<a href=/docs/FE/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/>构建工具</a>
+</li><li>
+<a href=/docs/FE/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/FE/%E6%8F%92%E4%BB%B6/>插件</a>
+</li></ul></li><li>
+<input type=checkbox id=section-8ca541663a7d7fd63c79c6ce40ab5b81 class=toggle>
+<label for=section-8ca541663a7d7fd63c79c6ce40ab5b81 class="flex justify-between">
+<a href=/docs/Python/>Python</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/Python/Numpy/>Numpy</a>
+</li><li>
+<a href=/docs/Python/Pandas/>Pandas</a>
+</li></ul></li></ul></nav><script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+</div></aside><div class=book-page>
+<header class=book-header>
+<div class="flex align-center justify-between">
+<label for=menu-control>
+<img src=/svg/menu.svg class=book-icon alt>
+</label>
+<strong>
+入门结构体链表
+</strong>
+<label for=toc-control>
+<img src=/svg/toc.svg class=book-icon alt>
+</label>
+</div><aside class="hidden clearfix">
+<nav id=TableOfContents></nav></aside></header><article class=markdown>
+<h1>
+<a href=/posts/clang-struct-primer/>入门结构体链表</a>
+</h1><h5>Jun 5, 2013</h5><div>
+<a href=/tags/C/C++/>C/C++</a>
+</div><p>学完结构体发现这一章概括了这本<a href=http://book.douban.com/subject/1679623/>C程序设计</a>的多数知识点，遂做一个总结。</p><p>ps：代码在vs2012上测试，从简单的开始。</p><p>1.定义一个简单的结构体并输出</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#75715e>#include</span><span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span><span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>stu</span>{
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>int</span> num;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>char</span> name[<span style=color:#ae81ff>20</span>];
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>float</span> score;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>stu</span> stu_1<span style=color:#f92672>=</span>{<span style=color:#ae81ff>01</span>,<span style=color:#e6db74>&#34;张三&#34;</span>,<span style=color:#ae81ff>90.5</span>};
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span> (){
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>stu</span> <span style=color:#f92672>*</span>p;
+</span></span><span style=display:flex><span>	p<span style=color:#f92672>=&amp;</span>stu_1;
+</span></span><span style=display:flex><span>	printf(<span style=color:#e6db74>&#34;学生数据为：</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>	printf(<span style=color:#e6db74>&#34;%ld%10s%10.2f</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,p<span style=color:#f92672>-&gt;</span>num,p<span style=color:#f92672>-&gt;</span>name,p<span style=color:#f92672>-&gt;</span>score);
+</span></span><span style=display:flex><span>	system(<span style=color:#e6db74>&#34;pause&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>结构体的内容也可以在主函数中这样定义：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#75715e>#include</span><span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span><span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>stu</span>{
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>int</span> num;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>char</span> name[<span style=color:#ae81ff>20</span>];
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>float</span> score;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span> (){
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>stu</span> stu_1;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>stu</span> <span style=color:#f92672>*</span>p;
+</span></span><span style=display:flex><span>	stu_1.num<span style=color:#f92672>=</span><span style=color:#ae81ff>01</span>;
+</span></span><span style=display:flex><span>	strcpy(stu_1.name,<span style=color:#e6db74>&#34;张三&#34;</span>);
+</span></span><span style=display:flex><span>	stu_1.score<span style=color:#f92672>=</span><span style=color:#ae81ff>90.5</span>;
+</span></span><span style=display:flex><span>	p<span style=color:#f92672>=&amp;</span>stu_1;
+</span></span><span style=display:flex><span>	printf(<span style=color:#e6db74>&#34;学生数据为：</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>	printf(<span style=color:#e6db74>&#34;%ld%10s%10.2f</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,p<span style=color:#f92672>-&gt;</span>num,p<span style=color:#f92672>-&gt;</span>name,p<span style=color:#f92672>-&gt;</span>score);
+</span></span><span style=display:flex><span>	system(<span style=color:#e6db74>&#34;pause&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>发现这里的stu有点像面向对象里的类有木有。</p><p>2.上面的代码很容易理解的话，下一步尝试加入指向结构体元素的指针</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>int</span> num;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>char</span> name[<span style=color:#ae81ff>20</span>];
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>float</span> score;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> stu[<span style=color:#ae81ff>3</span>]<span style=color:#f92672>=</span>{{<span style=color:#ae81ff>01</span>,<span style=color:#e6db74>&#34;张三&#34;</span>,<span style=color:#ae81ff>60</span>},{<span style=color:#ae81ff>02</span>,<span style=color:#e6db74>&#34;李四&#34;</span>,<span style=color:#ae81ff>59.5</span>},{<span style=color:#ae81ff>03</span>,<span style=color:#e6db74>&#34;王二&#34;</span>,<span style=color:#ae81ff>93.5</span>}};
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span>(){
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>p;
+</span></span><span style=display:flex><span>	p<span style=color:#f92672>=</span>stu;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> (p<span style=color:#f92672>=</span>stu;p<span style=color:#f92672>&lt;</span>stu<span style=color:#f92672>+</span><span style=color:#ae81ff>3</span>;p<span style=color:#f92672>++</span>){
+</span></span><span style=display:flex><span>		printf(<span style=color:#e6db74>&#34;%d%10s%10.2f</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,p<span style=color:#f92672>-&gt;</span>num,p<span style=color:#f92672>-&gt;</span>name,p<span style=color:#f92672>-&gt;</span>score);
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	system(<span style=color:#e6db74>&#34;pause&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>3.创建一个简单的静态链表</p><p>能够创建一个加入了指针的结构体，理解指针的作用，就可以创建一个简单的链表了：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;string.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>int</span> num;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>char</span> name[<span style=color:#ae81ff>20</span>];
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>float</span> score;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>next;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> stu_1<span style=color:#f92672>=</span>{<span style=color:#ae81ff>01</span>,<span style=color:#e6db74>&#34;张三&#34;</span>,<span style=color:#ae81ff>60</span>},stu_2<span style=color:#f92672>=</span>{<span style=color:#ae81ff>02</span>,<span style=color:#e6db74>&#34;李四&#34;</span>,<span style=color:#ae81ff>59.5</span>},stu_3<span style=color:#f92672>=</span>{<span style=color:#ae81ff>03</span>,<span style=color:#e6db74>&#34;王二&#34;</span>,<span style=color:#ae81ff>93.5</span>};
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span>(){
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>head,<span style=color:#f92672>*</span>p;
+</span></span><span style=display:flex><span>	head<span style=color:#f92672>=&amp;</span>stu_1;
+</span></span><span style=display:flex><span>	p<span style=color:#f92672>=</span>head;
+</span></span><span style=display:flex><span>	stu_1.next<span style=color:#f92672>=&amp;</span>stu_2;
+</span></span><span style=display:flex><span>	stu_2.next<span style=color:#f92672>=&amp;</span>stu_3;
+</span></span><span style=display:flex><span>	stu_3.next<span style=color:#f92672>=</span>NULL;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>do</span>{
+</span></span><span style=display:flex><span>		printf(<span style=color:#e6db74>&#34;%d%10s%10.2f</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,p<span style=color:#f92672>-&gt;</span>num,p<span style=color:#f92672>-&gt;</span>name,p<span style=color:#f92672>-&gt;</span>score);
+</span></span><span style=display:flex><span>		p<span style=color:#f92672>=</span>p<span style=color:#f92672>-&gt;</span>next;
+</span></span><span style=display:flex><span>	}<span style=color:#66d9ef>while</span>(p<span style=color:#f92672>!=</span>NULL);
+</span></span><span style=display:flex><span>	system(<span style=color:#e6db74>&#34;pause&#34;</span>);
+</span></span><span style=display:flex><span>	
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>4.创建一个动态链表</p><p>静态链表是之前都开辟好的空间，已经赋完值，明白malloc函数的用法后加上输入的功能就可以了：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;malloc.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> num;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>float</span> score;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>next;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>head, <span style=color:#f92672>*</span>p, <span style=color:#f92672>*</span>p1;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> n <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, i;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>creat</span>(){
+</span></span><span style=display:flex><span>    p1 <span style=color:#f92672>=</span> p <span style=color:#f92672>=</span> (<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>)malloc(<span style=color:#66d9ef>sizeof</span>(<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span>));
+</span></span><span style=display:flex><span>    scanf_s(<span style=color:#e6db74>&#34;%d%f&#34;</span>, <span style=color:#f92672>&amp;</span>p<span style=color:#f92672>-&gt;</span>num,<span style=color:#f92672>&amp;</span>p<span style=color:#f92672>-&gt;</span>score);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>while</span>(p<span style=color:#f92672>-&gt;</span>num<span style=color:#f92672>!=</span> NULL){
+</span></span><span style=display:flex><span>        n<span style=color:#f92672>++</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>(n <span style=color:#f92672>==</span> <span style=color:#ae81ff>1</span>)head <span style=color:#f92672>=</span> p;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span> p1<span style=color:#f92672>-&gt;</span>next <span style=color:#f92672>=</span> p;
+</span></span><span style=display:flex><span>        p1 <span style=color:#f92672>=</span> p;
+</span></span><span style=display:flex><span>        p <span style=color:#f92672>=</span> (<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>)malloc(<span style=color:#66d9ef>sizeof</span>(<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span>));
+</span></span><span style=display:flex><span>        scanf_s(<span style=color:#e6db74>&#34;%d%f&#34;</span>, <span style=color:#f92672>&amp;</span>p<span style=color:#f92672>-&gt;</span>num,<span style=color:#f92672>&amp;</span>p<span style=color:#f92672>-&gt;</span>score);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    p1<span style=color:#f92672>-&gt;</span>next <span style=color:#f92672>=</span> NULL;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> head;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span> (){
+</span></span><span style=display:flex><span>    head<span style=color:#f92672>=</span>creat();
+</span></span><span style=display:flex><span>    p <span style=color:#f92672>=</span> head;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span>(i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> n; i<span style=color:#f92672>++</span>){
+</span></span><span style=display:flex><span>        printf(<span style=color:#e6db74>&#34;%d%10.2f</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, p<span style=color:#f92672>-&gt;</span>num,p<span style=color:#f92672>-&gt;</span>score);
+</span></span><span style=display:flex><span>        p <span style=color:#f92672>=</span> p<span style=color:#f92672>-&gt;</span>next;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    system(<span style=color:#e6db74>&#34;pause&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>同时贴出一位网友给我的另一段代码：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;malloc.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span> 
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> num;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>float</span> score;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>next;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>creat</span>(){
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>p, <span style=color:#f92672>*</span>curr;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> num;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>float</span> score;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>head <span style=color:#f92672>=</span> (<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>)malloc(<span style=color:#66d9ef>sizeof</span>(<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span>));
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(<span style=color:#f92672>!</span>head) <span style=color:#66d9ef>return</span> NULL;
+</span></span><span style=display:flex><span>    head<span style=color:#f92672>-&gt;</span>next <span style=color:#f92672>=</span> NULL;
+</span></span><span style=display:flex><span>    curr <span style=color:#f92672>=</span> head;
+</span></span><span style=display:flex><span>    printf(<span style=color:#e6db74>&#34;Please enter:num(-1 to break) and score</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    scanf(<span style=color:#e6db74>&#34;%d&#34;</span>, <span style=color:#f92672>&amp;</span>num);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>while</span>(num <span style=color:#f92672>!=</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>){
+</span></span><span style=display:flex><span>        scanf(<span style=color:#e6db74>&#34;%f&#34;</span>, <span style=color:#f92672>&amp;</span>score);
+</span></span><span style=display:flex><span>        p <span style=color:#f92672>=</span> (<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>)malloc(<span style=color:#66d9ef>sizeof</span>(<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span>));
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>(<span style=color:#f92672>!</span>p) <span style=color:#66d9ef>return</span> head;
+</span></span><span style=display:flex><span>        p<span style=color:#f92672>-&gt;</span>num <span style=color:#f92672>=</span> num;
+</span></span><span style=display:flex><span>        p<span style=color:#f92672>-&gt;</span>score <span style=color:#f92672>=</span> score;
+</span></span><span style=display:flex><span>        p<span style=color:#f92672>-&gt;</span>next <span style=color:#f92672>=</span> NULL;
+</span></span><span style=display:flex><span>        curr<span style=color:#f92672>-&gt;</span>next <span style=color:#f92672>=</span> p;
+</span></span><span style=display:flex><span>        curr <span style=color:#f92672>=</span> curr<span style=color:#f92672>-&gt;</span>next;
+</span></span><span style=display:flex><span>        scanf(<span style=color:#e6db74>&#34;%d&#34;</span>, <span style=color:#f92672>&amp;</span>num);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> head;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>(){
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>head, <span style=color:#f92672>*</span>p;
+</span></span><span style=display:flex><span>    head <span style=color:#f92672>=</span> creat();
+</span></span><span style=display:flex><span>    p <span style=color:#f92672>=</span> head<span style=color:#f92672>-&gt;</span>next;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>while</span>(p){
+</span></span><span style=display:flex><span>        printf(<span style=color:#e6db74>&#34;%d%10.2f</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, p<span style=color:#f92672>-&gt;</span>num,p<span style=color:#f92672>-&gt;</span>score);
+</span></span><span style=display:flex><span>        p <span style=color:#f92672>=</span> p<span style=color:#f92672>-&gt;</span>next;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    system(<span style=color:#e6db74>&#34;pause&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>他在一些细节上都做了优化，学习学习~</p><p>5.对动态链表的操作</p><p>1）输出</p><p>输出可以参考上面的代码了。</p><p>2）删除</p><p>删除链表的算法就是输入学号，然后程序要检查是否和已有的结点对应，相等的话把那个结点删掉，不相等的话继续向后扫描，直到相等的时候执行删除的步骤，也就是将p2->next的结点赋值给p1->next而不是p1。如果要删除的是第一个结点，则使p1->head，如果扫描到最后还没有相等的结点，结束程序。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>del</span>(<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>head,<span style=color:#66d9ef>int</span> num){
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (head<span style=color:#f92672>==</span>NULL){
+</span></span><span style=display:flex><span>		printf(<span style=color:#e6db74>&#34;链表为空链表&#34;</span>);
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> head;
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	p1<span style=color:#f92672>=</span>head;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>while</span> (num<span style=color:#f92672>!=</span>p1<span style=color:#f92672>-&gt;</span>num<span style=color:#f92672>&amp;&amp;</span>p1<span style=color:#f92672>-&gt;</span>num<span style=color:#f92672>!=</span>NULL){
+</span></span><span style=display:flex><span>		p2<span style=color:#f92672>=</span>p1;
+</span></span><span style=display:flex><span>		p1<span style=color:#f92672>=</span>p1<span style=color:#f92672>-&gt;</span>next;
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	 <span style=color:#66d9ef>if</span>(num<span style=color:#f92672>==</span>p1<span style=color:#f92672>-&gt;</span>num){
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>if</span> (p1<span style=color:#f92672>==</span>head)head<span style=color:#f92672>=</span>p1<span style=color:#f92672>-&gt;</span>next;
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>else</span> p2<span style=color:#f92672>-&gt;</span>next<span style=color:#f92672>=</span>p1<span style=color:#f92672>-&gt;</span>next;
+</span></span><span style=display:flex><span>		
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> (head);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>3）插入</p><p>插入链表的算法：p0为要插入的结点的指针，将p2->next的值赋给p0，将p0->next的值赋给p1，改变原来p2->next=p1的情况即多出了一个新的结点。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>insert</span> (<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>head,<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>stu){
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>student</span> <span style=color:#f92672>*</span>p0;
+</span></span><span style=display:flex><span>	p0<span style=color:#f92672>=</span>stu;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (head<span style=color:#f92672>==</span>NULL){
+</span></span><span style=display:flex><span>		head<span style=color:#f92672>=</span>p0;
+</span></span><span style=display:flex><span>		p0<span style=color:#f92672>-&gt;</span>next<span style=color:#f92672>=</span>NULL;
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>else</span> {								
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>while</span> ((p0<span style=color:#f92672>-&gt;</span>num<span style=color:#f92672>&gt;</span>p1<span style=color:#f92672>-&gt;</span>num)<span style=color:#f92672>&amp;&amp;</span>(p1<span style=color:#f92672>-&gt;</span>next<span style=color:#f92672>!=</span>NULL)){	
+</span></span><span style=display:flex><span>			p2<span style=color:#f92672>=</span>p1;
+</span></span><span style=display:flex><span>			p1<span style=color:#f92672>=</span>p1<span style=color:#f92672>-&gt;</span>next;            		
+</span></span><span style=display:flex><span>		}
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>if</span> (p0<span style=color:#f92672>-&gt;</span>num<span style=color:#f92672>&lt;=</span>p1<span style=color:#f92672>-&gt;</span>num){
+</span></span><span style=display:flex><span>			<span style=color:#66d9ef>if</span> (head<span style=color:#f92672>=</span>p1)head<span style=color:#f92672>=</span>p0;
+</span></span><span style=display:flex><span>			<span style=color:#66d9ef>else</span> p2<span style=color:#f92672>-&gt;</span>next<span style=color:#f92672>=</span>p0;		
+</span></span><span style=display:flex><span>			p0<span style=color:#f92672>-&gt;</span>next<span style=color:#f92672>=</span>p1;
+</span></span><span style=display:flex><span>		}
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>else</span>{
+</span></span><span style=display:flex><span>			p1<span style=color:#f92672>-&gt;</span>next<span style=color:#f92672>=</span>p0;
+</span></span><span style=display:flex><span>			p0<span style=color:#f92672>-&gt;</span>next<span style=color:#f92672>=</span>NULL;
+</span></span><span style=display:flex><span>		}
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span>(head);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div></article><div>
+<h5 class=post-after>本文共 1240 字，上次修改于 Jul 26, 2022，以 <a href=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh>CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5><div id=navigation-mobile>
+<p>上一篇：<a href=https://yindongliang.com/posts/this-blog/>这个博客</a></p><p>下一篇：<a href=https://yindongliang.com/posts/use-github-page-build-static-website/>使用 Github Pages 建立免费的静态网站</a></p></div><script src=https://giscus.app/client.js data-repo=tcitry/tcitry.github.io data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" data-category=Announcements data-category-id=DIC_kwDOCMyx684COMlk data-mapping=og:title data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script>
+</div><footer class=book-footer>
+<div class="flex flex-wrap justify-between">
+</div><script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+</footer><label for=menu-control class="hidden book-menu-overlay"></label>
+</div><aside class=book-toc>
+<div class=book-toc-content>
+<nav id=TableOfContents></nav></div></aside></main><div id=navigation>
+<a class="nav nav-left" href=https://yindongliang.com/posts/this-blog/ title=上一篇：这个博客><i class=fa-left></i></a>
+<a class="nav nav-right" href=https://yindongliang.com/posts/use-github-page-build-static-website/ title="下一篇：使用 Github Pages 建立免费的静态网站"><i class=fa-right></i></a>
+</div><script>document.onkeydown=function(e){if(e.code==="ArrowLeft"){let e=document.getElementsByClassName("nav nav-left");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}else if(e.code==="ArrowRight"){let e=document.getElementsByClassName("nav nav-right");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}}</script>
+<script src=/gumshoe.polyfills.min.js></script>
+<script>new Gumshoe(".book-toc a",{nested:!0})</script>
+<style>.book-toc li.active>a{font-weight:700}</style><script src=/fast-image-zoom.js></script>
+<script>imageZoom()</script>
+<link rel=stylesheet href=/katex/katex.min.css>
+<script src=/katex/katex.min.js></script>
+<script src=/katex/auto-render.min.js onload=renderMathInElement(document.body)></script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+<script>ts=document.getElementsByTagName("a");for(const e of ts)e.href&&!(e.href.startsWith("http://localhost")|e.href.startsWith("https://yindongliang.com"))&&(e.target="_blank")</script>
+</body></html>

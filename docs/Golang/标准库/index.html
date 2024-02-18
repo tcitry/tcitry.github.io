@@ -1,0 +1,618 @@
+<!doctype html><html lang=zh-cn dir=ltr>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=description content="Buildin # buildin 文档 https://golang.org/pkg/builtin uintptr # 足够大、可以存放任何指针地址的类型。常用来将指针转换后进行寻址计算。 uintptr is an integer type that is large enough to hold the bit pattern of any pointer. func Offsetof(x ArbitraryType) uintptr func Sizeof(x ArbitraryType) uintptr func Alignof(x ArbitraryType) uintptr 错误示例 # func main(){ n := Num{i: &#34;EDDYCJY&#34;, j: 1} nPointer := unsafe.Pointer(&n) ... ptr := uintptr(nPointer) njPointer := (*int64)(unsafe.Pointer(ptr + unsafe.Offsetof(n.j))) ... } uintptr 类">
+<meta name=theme-color content="#FFFFFF">
+<meta name=color-scheme content="light dark"><meta property="og:title" content="标准库">
+<meta property="og:description" content="Buildin # buildin 文档 https://golang.org/pkg/builtin uintptr # 足够大、可以存放任何指针地址的类型。常用来将指针转换后进行寻址计算。 uintptr is an integer type that is large enough to hold the bit pattern of any pointer. func Offsetof(x ArbitraryType) uintptr func Sizeof(x ArbitraryType) uintptr func Alignof(x ArbitraryType) uintptr 错误示例 # func main(){ n := Num{i: &#34;EDDYCJY&#34;, j: 1} nPointer := unsafe.Pointer(&n) ... ptr := uintptr(nPointer) njPointer := (*int64)(unsafe.Pointer(ptr + unsafe.Offsetof(n.j))) ... } uintptr 类">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yindongliang.com/docs/Golang/%E6%A0%87%E5%87%86%E5%BA%93/"><meta property="article:section" content="docs">
+<meta property="article:published_time" content="2020-03-01T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-10-25T15:46:37+08:00">
+<title>
+Golang — 标准库
+</title><link rel=manifest href=/manifest.json>
+<link rel=icon href=/favicon.png type=image/x-icon>
+<link rel=stylesheet href=/book.min.7ddffcff7348380c70e43d3b4ab992503f90110553d5bfe5868e7d1aa2b80633.css integrity="sha256-fd/8/3NIOAxw5D07SrmSUD+QEQVT1b/lho59GqK4BjM=" crossorigin=anonymous>
+<script defer src=/flexsearch.min.js></script>
+<script defer src=/zh-cn.search.min.2c190993d62f294238012cea6b0bb36d326434bd9ba923f25c1b780b368e6efa.js integrity="sha256-LBkJk9YvKUI4ASzqawuzbTJkNL2bqSPyXBt4CzaObvo=" crossorigin=anonymous></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),window.location.hostname==="localhost"?gtag("config","G-Q20952BPE6",{send_page_view:!1,debug_mode:!0}):gtag("config","G-Q20952BPE6")</script>
+</head><body dir=ltr>
+<input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control>
+<main class="container flex">
+<aside class=book-menu>
+<div class=book-menu-content>
+<nav>
+<h2 class=book-brand>
+<a class="flex align-center" href=/><img src=/logo.gif alt><span>殷东亮的博客</span>
+</a>
+</h2><div class=book-search>
+<input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/>
+<div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul>
+<li><a href=/archives>Archives</a></li><li><a href=/weekly>Weekly🔥</a></li><li><a href=/projects>Projects</a></li><li><a href=/about>About</a></li><li><a href=https://github.com/tcitry target=_blank>Github</a></li><li><a href=/posts/index.xml target=_blank>RSS</a></li></ul><hr class=hr-edge-weak>
+<ul>
+<li>
+<input type=checkbox id=section-374f93193c235d5a59a63115829f835e class=toggle>
+<label for=section-374f93193c235d5a59a63115829f835e class="flex justify-between">
+<a href=/docs/Algorithms/>Algorithms</a>
+</label>
+<ul>
+<li>
+<input type=checkbox id=section-6fa75fabfcaf0942c2ae40739a024515 class=toggle>
+<label for=section-6fa75fabfcaf0942c2ae40739a024515 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>数据结构</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%93%BE%E8%A1%A8/>链表（Linked list）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E7%BB%84/>数组（Array）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%AD%97%E7%AC%A6%E4%B8%B2/>字符串（String）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%98%9F%E5%88%97/>队列（Queue）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%A0%88/>栈（Stack）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%93%88%E5%B8%8C%E8%A1%A8/>哈希表（Hash Table）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E4%BA%8C%E5%8F%89%E6%A0%91/>二叉树（Binary Tree）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A0%86/>堆（Heap）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%89%8D%E7%BC%80%E6%A0%91/>前缀树（Trie）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%A2%E9%BB%91%E6%A0%91/>红黑树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/B-tree/>B 树</a>
+</li></ul></li><li>
+<input type=checkbox id=section-60c1cc56ab667711423fd030bb7d2ba4 class=toggle>
+<label for=section-60c1cc56ab667711423fd030bb7d2ba4 class="flex justify-between">
+<a role=button>常用算法</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/recursion/>递归</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/>贪心算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/>滑动窗口</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/>动态规划</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8F%8C%E6%8C%87%E9%92%88/>双指针</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/>二分查找</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/>排序算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/BFS-%E5%92%8C-DFS/>BFS 和 DFS</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%88%86%E6%B2%BB%E7%AD%96%E7%95%A5/>分治策略</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%89%8D%E7%BC%80%E5%92%8C/>前缀和</a>
+</li></ul></li><li>
+<input type=checkbox id=section-34a5846db21bfdffc261709474d4c2c2 class=toggle>
+<label for=section-34a5846db21bfdffc261709474d4c2c2 class="flex justify-between">
+<a role=button>经典问题</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/>打家劫舍</a>
+</li><li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/>字符串匹配</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3acc3c018b0cf870114fc4c04b8fe75a class=toggle>
+<label for=section-3acc3c018b0cf870114fc4c04b8fe75a class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/>数学基础</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/>微积分</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/>概率统计</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/>线性代数</a>
+</li></ul></li><li>
+<input type=checkbox id=section-6a4c402b2954211b8a56520549766ad2 class=toggle>
+<label for=section-6a4c402b2954211b8a56520549766ad2 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/>线性模型</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/>周志华西瓜树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/>集体智慧编程</a>
+</li></ul></li></ul></li><li>
+<input type=checkbox id=section-ab6241a9c9348727e1ed30d9d7253a0e class=toggle checked>
+<label for=section-ab6241a9c9348727e1ed30d9d7253a0e class="flex justify-between">
+<a href=/docs/Golang/>Golang</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Golang/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Golang/%E6%A0%87%E5%87%86%E5%BA%93/ class=active>标准库</a>
+</li><li>
+<a href=/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Golang/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/>代码规范</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3ca9a5c09bd1884bf69ade02a8e53628 class=toggle>
+<label for=section-3ca9a5c09bd1884bf69ade02a8e53628 class="flex justify-between">
+<a href=/docs/Linux/>Linux</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Linux/regular-expression/>正则表达式</a>
+</li><li>
+<a href=/docs/Linux/Shell/>Shell</a>
+</li><li>
+<a href=/docs/Linux/Spark/>Spark</a>
+</li><li>
+<a href=/docs/Linux/Docker/>Docker</a>
+</li><li>
+<a href=/docs/Linux/git/>Git 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-fdf3c0f524378d36bb3d2441d08ad8e8 class=toggle>
+<label for=section-fdf3c0f524378d36bb3d2441d08ad8e8 class="flex justify-between">
+<a href=/docs/Rust/>Rust</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Rust/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li></ul></li><li>
+<input type=checkbox id=section-f6f1cb8b3cab23098be63dcbede4acb5 class=toggle>
+<label for=section-f6f1cb8b3cab23098be63dcbede4acb5 class="flex justify-between">
+<a role=button>Xcode</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Xcode/Swift/>Swift</a>
+</li><li>
+<a href=/docs/Xcode/SwiftUI/>SwiftUI</a>
+</li><li>
+<a href=/docs/Xcode/Objective-C-%E8%AF%AD%E6%B3%95/>Objective-C</a>
+</li><li>
+<a href=/docs/Xcode/mac-%E6%8A%80%E5%B7%A7/>Mac 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-5f6c61ca509f9ca14a383db36b14a32f class=toggle>
+<label for=section-5f6c61ca509f9ca14a383db36b14a32f class="flex justify-between">
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/>软件工程</a>
+</label>
+<ul>
+<li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/peopleware/>人件</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/>Unix 编程艺术</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E4%B9%8B%E9%81%93/>程序员修炼之道</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/>一些定律</a>
+</li></ul></li><li>
+<input type=checkbox id=section-b708f687fcc1dc14b13a93ba85e8845b class=toggle>
+<label for=section-b708f687fcc1dc14b13a93ba85e8845b class="flex justify-between">
+<a href=/docs/Clang/>C/C++</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Clang/C/>C 语言基础</a>
+</li><li>
+<a href=/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/>系统调用</a>
+</li><li>
+<a href=/docs/Clang/C-%E6%A0%87%E5%87%86%E5%BA%93/>C 标准库</a>
+</li><li>
+<a href=/docs/Clang/C++/>C++ 语言基础</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3beaf640f7d27429884edb43bd1a0ec7 class=toggle>
+<label for=section-3beaf640f7d27429884edb43bd1a0ec7 class="flex justify-between">
+<a href=/docs/FE/>FE</a>
+</label>
+<ul>
+<li>
+<a href=/docs/FE/JavaScript/>JavaScript</a>
+</li><li>
+<a href=/docs/FE/js-buildin-objects/>JS 内置对象</a>
+</li><li>
+<a href=/docs/FE/TypeScript/>TypeScript</a>
+</li><li>
+<a href=/docs/FE/BOM/>BOM</a>
+</li><li>
+<a href=/docs/FE/DOM/>DOM</a>
+</li><li>
+<a href=/docs/FE/node/>Node</a>
+</li><li>
+<a href=/docs/FE/Deno/>Deno</a>
+</li><li>
+<a href=/docs/FE/vue/>Vue</a>
+</li><li>
+<a href=/docs/FE/react/>React</a>
+</li><li>
+<a href=/docs/FE/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/>依赖管理</a>
+</li><li>
+<a href=/docs/FE/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/>构建工具</a>
+</li><li>
+<a href=/docs/FE/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/FE/%E6%8F%92%E4%BB%B6/>插件</a>
+</li></ul></li><li>
+<input type=checkbox id=section-8ca541663a7d7fd63c79c6ce40ab5b81 class=toggle>
+<label for=section-8ca541663a7d7fd63c79c6ce40ab5b81 class="flex justify-between">
+<a href=/docs/Python/>Python</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/Python/Numpy/>Numpy</a>
+</li><li>
+<a href=/docs/Python/Pandas/>Pandas</a>
+</li></ul></li></ul></nav><script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+</div></aside><div class=book-page>
+<header class=book-header>
+<div class="flex align-center justify-between">
+<label for=menu-control>
+<img src=/svg/menu.svg class=book-icon alt>
+</label>
+<strong>
+Golang — 标准库
+</strong>
+<label for=toc-control>
+<img src=/svg/toc.svg class=book-icon alt>
+</label>
+</div><aside class="hidden clearfix">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#buildin>Buildin</a>
+<ul>
+<li><a href=#uintptr>uintptr</a></li><li><a href=#错误示例>错误示例</a></li><li><a href=#arbitrarytype>ArbitraryType</a></li></ul></li><li><a href=#fmt>Fmt</a>
+<ul>
+<li><a href=#printf-标准输出>Printf 标准输出</a></li></ul></li><li><a href=#flag>Flag</a></li><li><a href=#reflect>Reflect</a></li><li><a href=#signal>Signal</a></li><li><a href=#context>Context</a>
+<ul>
+<li><a href=#withtimeout>WithTimeout</a></li></ul></li><li><a href=#sync>Sync</a>
+<ul>
+<li><a href=#waitgroup>Waitgroup</a></li><li><a href=#mutex-互斥锁>Mutex 互斥锁</a></li><li><a href=#rwmutex-读写锁>RWMutex 读写锁</a></li><li><a href=#once>Once</a></li><li><a href=#atomic>Atomic</a></li><li><a href=#pool>Pool</a></li><li><a href=#cond>Cond</a></li><li><a href=#map>Map</a></li></ul></li><li><a href=#unsafe>Unsafe</a>
+<ul>
+<li><a href=#pointer>Pointer</a></li></ul></li><li><a href=#runtime>Runtime</a>
+<ul>
+<li><a href=#gomaxprocs>GOMAXPROCS</a></li><li><a href=#gosched>Gosched</a></li><li><a href=#stack>Stack</a></li></ul></li><li><a href=#io>IO</a></li><li><a href=#ioutil>ioutil</a></li><li><a href=#bufio>Bufio</a></li><li><a href=#url>URL</a></li><li><a href=#timer>Timer</a>
+<ul>
+<li><a href=#after>After</a></li><li><a href=#sleep>Sleep</a></li><li><a href=#tick>Tick</a></li><li><a href=#duration>Duration</a></li></ul></li><li><a href=#time>Time</a></li></ul></nav></aside></header><article class=markdown><h2 id=buildin>
+Buildin
+<a class=anchor href=#buildin>#</a>
+</h2><p>buildin 文档 <a href=https://golang.org/pkg/builtin>https://golang.org/pkg/builtin</a></p><h3 id=uintptr>
+uintptr
+<a class=anchor href=#uintptr>#</a>
+</h3><p>足够大、可以存放任何指针地址的类型。常用来将指针转换后进行寻址计算。</p><blockquote>
+<p>uintptr is an integer type that is large enough to hold the bit pattern of any pointer.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>Offsetof</span>(<span style=color:#a6e22e>x</span> <span style=color:#a6e22e>ArbitraryType</span>) <span style=color:#66d9ef>uintptr</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>Sizeof</span>(<span style=color:#a6e22e>x</span> <span style=color:#a6e22e>ArbitraryType</span>) <span style=color:#66d9ef>uintptr</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>Alignof</span>(<span style=color:#a6e22e>x</span> <span style=color:#a6e22e>ArbitraryType</span>) <span style=color:#66d9ef>uintptr</span>
+</span></span></code></pre></div></blockquote><h3 id=错误示例>
+错误示例
+<a class=anchor href=#%e9%94%99%e8%af%af%e7%a4%ba%e4%be%8b>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>(){
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>n</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Num</span>{<span style=color:#a6e22e>i</span>: <span style=color:#e6db74>&#34;EDDYCJY&#34;</span>, <span style=color:#a6e22e>j</span>: <span style=color:#ae81ff>1</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>nPointer</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>unsafe</span>.<span style=color:#a6e22e>Pointer</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>n</span>)
+</span></span><span style=display:flex><span>    <span style=color:#f92672>...</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>:=</span> uintptr(<span style=color:#a6e22e>nPointer</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>njPointer</span> <span style=color:#f92672>:=</span> (<span style=color:#f92672>*</span><span style=color:#66d9ef>int64</span>)(<span style=color:#a6e22e>unsafe</span>.<span style=color:#a6e22e>Pointer</span>(<span style=color:#a6e22e>ptr</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>unsafe</span>.<span style=color:#a6e22e>Offsetof</span>(<span style=color:#a6e22e>n</span>.<span style=color:#a6e22e>j</span>)))
+</span></span><span style=display:flex><span>    <span style=color:#f92672>...</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><code>uintptr</code> 类型不能存储在临时变量中。因为从 GC 的角度来看，<code>uintptr</code> 类型的临时变量只是一个无符号整数，并不知道它是一个指针地址。因此当满足一定条件后，<code>ptr</code>这个临时变量是可能被垃圾回收掉的。</p><h3 id=arbitrarytype>
+ArbitraryType
+<a class=anchor href=#arbitrarytype>#</a>
+</h3><p>表示任意类型，实际上是一个占位符</p><blockquote>
+<p>ArbitraryType is here for the purposes of documentation only and is not actually part of the unsafe package. It represents the type of an arbitrary Go expression.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>ArbitraryType</span> <span style=color:#66d9ef>int</span>
+</span></span></code></pre></div></blockquote><h2 id=fmt>
+Fmt
+<a class=anchor href=#fmt>#</a>
+</h2><h3 id=printf-标准输出>
+Printf 标准输出
+<a class=anchor href=#printf-%e6%a0%87%e5%87%86%e8%be%93%e5%87%ba>#</a>
+</h3><table>
+<thead>
+<tr>
+<th>动词</th><th>含义</th></tr></thead><tbody>
+<tr>
+<td>%v</td><td>按值的本来值输出</td></tr><tr>
+<td>%+v</td><td>在 %v 基础上，对结构体字段名和值进行展开</td></tr><tr>
+<td>%#v</td><td>输出 Go 语言语法格式的值</td></tr><tr>
+<td>%T</td><td>输出 Go 语言语法格式的类型和值</td></tr><tr>
+<td>%%</td><td>输出 % 本体</td></tr><tr>
+<td>%b</td><td>整型以二进制方式显示</td></tr><tr>
+<td>%o</td><td>整型以八进制方式显示</td></tr><tr>
+<td>%d</td><td>整型以十进制方式显示</td></tr><tr>
+<td>%x</td><td>整型以十六进制方式显示</td></tr><tr>
+<td>%X</td><td>整型以十六进制、字母大写方式显示</td></tr><tr>
+<td>%U</td><td>Unicode 字符</td></tr><tr>
+<td>%f</td><td>浮点数</td></tr><tr>
+<td>%p</td><td>指针，十六进制方式显示</td></tr></tbody></table><p>参考</p><ul>
+<li><a href=https://books.studygolang.com/The-Golang-Standard-Library-by-Example/chapter01/01.3.html>https://books.studygolang.com/The-Golang-Standard-Library-by-Example/chapter01/01.3.html</a></li><li><a href=https://yourbasic.org/golang/fmt-printf-reference-cheat-sheet/>https://yourbasic.org/golang/fmt-printf-reference-cheat-sheet/</a></li></ul><h2 id=flag>
+Flag
+<a class=anchor href=#flag>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>flag</span>.<span style=color:#a6e22e>BoolVar</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>all</span>, <span style=color:#e6db74>&#34;all&#34;</span>, <span style=color:#66d9ef>false</span>, <span style=color:#e6db74>&#34;Set to everything&#34;</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>flag</span>.<span style=color:#a6e22e>Parse</span>()
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>all</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#75715e>// true
+</span></span></span></code></pre></div><p>设置过的 flag 参数记得要 parse 。</p><h2 id=reflect>
+Reflect
+<a class=anchor href=#reflect>#</a>
+</h2><p>获取一个结构体中某个字段的 tag 的信息</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>GetStructTagList</span>(<span style=color:#a6e22e>i</span> <span style=color:#66d9ef>interface</span>{}, <span style=color:#a6e22e>tag</span> <span style=color:#66d9ef>string</span>) []<span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>v</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>reflect</span>.<span style=color:#a6e22e>ValueOf</span>(<span style=color:#a6e22e>i</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>t</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>reflect</span>.<span style=color:#a6e22e>TypeOf</span>(<span style=color:#a6e22e>i</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>count</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>v</span>.<span style=color:#a6e22e>NumField</span>()
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ret</span> []<span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>; <span style=color:#a6e22e>i</span> &lt; <span style=color:#a6e22e>count</span>; <span style=color:#a6e22e>i</span><span style=color:#f92672>++</span> {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>ret</span> = append(<span style=color:#a6e22e>ret</span>, <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Sprintf</span>(<span style=color:#e6db74>&#34;%v&#34;</span>, <span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Field</span>(<span style=color:#a6e22e>i</span>).<span style=color:#a6e22e>Tag</span>.<span style=color:#a6e22e>Get</span>(<span style=color:#a6e22e>tag</span>)))
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>ret</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>ValueOf</p><p>TypeOf</p><p>NumField</p><h2 id=signal>
+Signal
+<a class=anchor href=#signal>#</a>
+</h2><p>监听一个信号：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>sigs</span> <span style=color:#f92672>:=</span> make(<span style=color:#66d9ef>chan</span> <span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>Signal</span>, <span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>done</span> <span style=color:#f92672>:=</span> make(<span style=color:#66d9ef>chan</span> <span style=color:#66d9ef>bool</span>, <span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>signal</span>.<span style=color:#a6e22e>Notify</span>(<span style=color:#a6e22e>sigs</span>, <span style=color:#a6e22e>syscall</span>.<span style=color:#a6e22e>SIGINT</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;start...&#34;</span>)
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>go</span> <span style=color:#66d9ef>func</span>() {
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>switch</span> <span style=color:#a6e22e>sig</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&lt;-</span><span style=color:#a6e22e>sigs</span>; <span style=color:#a6e22e>sig</span>.<span style=color:#a6e22e>String</span>() {
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>case</span> <span style=color:#a6e22e>syscall</span>.<span style=color:#a6e22e>SIGINT</span>.<span style=color:#a6e22e>String</span>():
+</span></span><span style=display:flex><span>			<span style=color:#a6e22e>done</span> <span style=color:#f92672>&lt;-</span> <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>default</span>:
+</span></span><span style=display:flex><span>			<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;unknown signal&#34;</span>)
+</span></span><span style=display:flex><span>		}
+</span></span><span style=display:flex><span>	}()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> {
+</span></span><span style=display:flex><span>		<span style=color:#f92672>&lt;-</span><span style=color:#a6e22e>done</span>
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;done&#34;</span>)
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>break</span>
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=context>
+Context
+<a class=anchor href=#context>#</a>
+</h2><h3 id=withtimeout>
+WithTimeout
+<a class=anchor href=#withtimeout>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ctx</span>, <span style=color:#a6e22e>cancel</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>WithTimeout</span>(<span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Background</span>(), <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Second</span><span style=color:#f92672>*</span><span style=color:#ae81ff>2</span>)
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>cancel</span>()
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>work</span>(<span style=color:#a6e22e>ctx</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>work</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>) {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>done</span> <span style=color:#f92672>:=</span> make(<span style=color:#66d9ef>chan</span> <span style=color:#66d9ef>bool</span>)
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>go</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>) {
+</span></span><span style=display:flex><span>		println(<span style=color:#e6db74>&#34;工作中...&#34;</span>)
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Sleep</span>(<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Second</span> <span style=color:#f92672>*</span> <span style=color:#ae81ff>3</span>)
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>done</span> <span style=color:#f92672>&lt;-</span> <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>	}(<span style=color:#a6e22e>ctx</span>)
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>select</span> {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>case</span> <span style=color:#f92672>&lt;-</span><span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>Done</span>():
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;超时了&#34;</span>, <span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>Err</span>())
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>case</span> <span style=color:#f92672>&lt;-</span><span style=color:#a6e22e>done</span>:
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;执行完成&#34;</span>)
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=sync>
+Sync
+<a class=anchor href=#sync>#</a>
+</h2><h3 id=waitgroup>
+Waitgroup
+<a class=anchor href=#waitgroup>#</a>
+</h3><ul>
+<li>
+<p>Add</p></li><li>
+<p>Done</p></li><li>
+<p>Wait</p></li></ul><h3 id=mutex-互斥锁>
+Mutex 互斥锁
+<a class=anchor href=#mutex-%e4%ba%92%e6%96%a5%e9%94%81>#</a>
+</h3><ul>
+<li>
+<p>Lock</p></li><li>
+<p>Unlock</p></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>   <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>mutex</span> <span style=color:#a6e22e>sync</span>.<span style=color:#a6e22e>Mutex</span>
+</span></span><span style=display:flex><span>   <span style=color:#a6e22e>count</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>   <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>; <span style=color:#a6e22e>i</span> &lt; <span style=color:#ae81ff>50</span>; <span style=color:#a6e22e>i</span><span style=color:#f92672>++</span> {
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>go</span> <span style=color:#66d9ef>func</span>() {
+</span></span><span style=display:flex><span>         <span style=color:#a6e22e>mutex</span>.<span style=color:#a6e22e>Lock</span>()
+</span></span><span style=display:flex><span>         <span style=color:#a6e22e>count</span><span style=color:#f92672>++</span>
+</span></span><span style=display:flex><span>         <span style=color:#a6e22e>mutex</span>.<span style=color:#a6e22e>Unlock</span>()
+</span></span><span style=display:flex><span>      }()
+</span></span><span style=display:flex><span>   }
+</span></span><span style=display:flex><span>   <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Sleep</span>(<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Second</span>)
+</span></span><span style=display:flex><span>   <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>count</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#75715e>// 50
+</span></span></span></code></pre></div><p><a href=https://lailin.xyz/post/go-training-week3-sync.html>Mutex 的实现原理</a></p><h3 id=rwmutex-读写锁>
+RWMutex 读写锁
+<a class=anchor href=#rwmutex-%e8%af%bb%e5%86%99%e9%94%81>#</a>
+</h3><p>A RWMutex is a reader/writer mutual exclusion lock. The lock can be held by an arbitrary number of readers or a single writer. The zero value for a RWMutex is an unlocked mutex.</p><p>A RWMutex must not be copied after first use.</p><ul>
+<li>Lock 写锁，对读写锁读或写都将阻塞。</li><li>Unlock</li><li>RLock 读锁，只对写操作阻塞。</li><li>RUnlock</li></ul><p>RLock() 为“读锁定”，调用“读锁定”后，不能有其他 goroutine 进行写操作，但是可以进行读操作。RUnlock() 为“读解锁”，调用“读解锁”后，会唤醒一个因为要进行“写锁定”而被阻塞的 goroutine。</p><p>当 mutex 在 struct 中时，则整个 struct 拥有互斥锁。</p><h3 id=once>
+Once
+<a class=anchor href=#once>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>once</span> <span style=color:#a6e22e>sync</span>.<span style=color:#a6e22e>Once</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>once</span>.<span style=color:#a6e22e>Do</span>(<span style=color:#66d9ef>func</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;init config ...&#34;</span>)
+</span></span><span style=display:flex><span>})
+</span></span></code></pre></div><h3 id=atomic>
+Atomic
+<a class=anchor href=#atomic>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>AddT</span>(<span style=color:#a6e22e>addr</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>T</span>, <span style=color:#a6e22e>delta</span> <span style=color:#a6e22e>T</span>)(<span style=color:#a6e22e>new</span> <span style=color:#a6e22e>T</span>)
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>LoadT</span>(<span style=color:#a6e22e>addr</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>T</span>) (<span style=color:#a6e22e>val</span> <span style=color:#a6e22e>T</span>)
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>StoreT</span>(<span style=color:#a6e22e>addr</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>T</span>, <span style=color:#a6e22e>val</span> <span style=color:#a6e22e>T</span>)
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>SwapT</span>(<span style=color:#a6e22e>addr</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>T</span>, <span style=color:#a6e22e>new</span> <span style=color:#a6e22e>T</span>) (<span style=color:#a6e22e>old</span> <span style=color:#a6e22e>T</span>)
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>CompareAndSwapT</span>(<span style=color:#a6e22e>addr</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>T</span>, <span style=color:#a6e22e>old</span>, <span style=color:#a6e22e>new</span> <span style=color:#a6e22e>T</span>) (<span style=color:#a6e22e>swapped</span> <span style=color:#66d9ef>bool</span>)
+</span></span></code></pre></div><p>可以用 atomic 实现 CAS 乐观锁</p><h3 id=pool>
+Pool
+<a class=anchor href=#pool>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>test</span>() {
+</span></span><span style=display:flex><span>   <span style=color:#75715e>// 初始化一个pool
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>pool</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>sync</span>.<span style=color:#a6e22e>Pool</span>{
+</span></span><span style=display:flex><span>		<span style=color:#75715e>// 默认的返回值设置，不写这个参数，默认是nil
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>		<span style=color:#a6e22e>New</span>: <span style=color:#66d9ef>func</span>() <span style=color:#66d9ef>interface</span>{} {
+</span></span><span style=display:flex><span>			<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>		},
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// 看一下初始的值，这里是返回0，如果不设置New函数，默认返回nil
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>pool</span>.<span style=color:#a6e22e>Get</span>())
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>pool</span>.<span style=color:#a6e22e>Get</span>())
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// 设置一个参数1
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>pool</span>.<span style=color:#a6e22e>Put</span>(<span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>pool</span>.<span style=color:#a6e22e>Put</span>(<span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// 获取查看结果
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>pool</span>.<span style=color:#a6e22e>Get</span>())
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>pool</span>.<span style=color:#a6e22e>Get</span>())
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// 再次获取，会发现，已经是空的了，只能返回默认的值。
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>pool</span>.<span style=color:#a6e22e>Get</span>())
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// 0
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// 0
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// 1
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// 1
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// 0
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}
+</span></span></code></pre></div><h3 id=cond>
+Cond
+<a class=anchor href=#cond>#</a>
+</h3><p>noCopy</p><blockquote>
+<p>noCopy may be embedded into structs which must not be copied after the first use.</p><p><a href=https://github.com/golang/go/issues/8005#issuecomment-190753527>https://github.com/golang/go/issues/8005#issuecomment-190753527</a></p></blockquote><p>Go中没有原生的禁止拷贝的方式，所以如果有的结构体，你希望使用者无法拷贝，只能指针传递保证全局唯一的话，可以这么干，定义一个结构体叫 <code>noCopy</code>，要实现 <code>sync.Locker</code> 这个接口。</p><h3 id=map>
+Map
+<a class=anchor href=#map>#</a>
+</h3><p><a href=https://www.cnblogs.com/qcrao-2018/p/12833787.html>深度解密 Go 语言之 sync.map</a></p><h2 id=unsafe>
+Unsafe
+<a class=anchor href=#unsafe>#</a>
+</h2><h3 id=pointer>
+Pointer
+<a class=anchor href=#pointer>#</a>
+</h3><p>Alignof</p><p>Sizeof</p><p>Offsetof</p><p>ArbitraryType（int）</p><h2 id=runtime>
+Runtime
+<a class=anchor href=#runtime>#</a>
+</h2><h3 id=gomaxprocs>
+GOMAXPROCS
+<a class=anchor href=#gomaxprocs>#</a>
+</h3><blockquote>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>GOMAXPROCS</span>(<span style=color:#a6e22e>n</span> <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>int</span>
+</span></span></code></pre></div><p>GOMAXPROCS sets the maximum number of CPUs that can be executing simultaneously and returns the previous setting. If n &lt; 1, it does not change the current setting. The number of logical CPUs on the local machine can be queried with NumCPU. This call will go away when the scheduler improves.</p></blockquote><p>疑问</p><ol>
+<li>在本地设置了最大的 CPU 数量如何验证生效？</li><li></li></ol><h3 id=gosched>
+Gosched
+<a class=anchor href=#gosched>#</a>
+</h3><p>runtime.Gosched()用于让出CPU时间片。这就像跑接力赛，A跑了一会碰到代码runtime.Gosched()就把接力棒交给B了，A歇着了，B继续跑。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>say</span>(<span style=color:#a6e22e>s</span> <span style=color:#66d9ef>string</span>) {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>; <span style=color:#a6e22e>i</span> &lt; <span style=color:#ae81ff>2</span>; <span style=color:#a6e22e>i</span><span style=color:#f92672>++</span> {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;say: %s\n&#34;</span>, <span style=color:#a6e22e>s</span>)
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>runtime</span>.<span style=color:#a6e22e>Gosched</span>()
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>s</span>)
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>test</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>runtime</span>.<span style=color:#a6e22e>GOMAXPROCS</span>(<span style=color:#ae81ff>0</span>))
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>go</span> <span style=color:#a6e22e>say</span>(<span style=color:#e6db74>&#34;world&#34;</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>say</span>(<span style=color:#e6db74>&#34;hello&#34;</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#75715e>// 12
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// say: hello
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// say: world
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// hello
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// say: hello
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// world
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// say: world
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// hello
+</span></span></span></code></pre></div><p>因为 <code>say("hello")</code> 这句占用了时间，等它执行完，线程也结束了，<code>say("world")</code> 就没有机会了。</p><p>这里同时可以看出，go 中的 goroutines 并不是同时在运行。事实上，如果没有在代码中通过 runtime.GOMAXPROCS(n) 指定使用多核的话，goroutines 都是在一个线程里的，它们之间通过不停的让出时间片轮流运行，达到类似同时运行的效果。</p><h3 id=stack>
+Stack
+<a class=anchor href=#stack>#</a>
+</h3><blockquote>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>Stack</span>(<span style=color:#a6e22e>buf</span> []<span style=color:#66d9ef>byte</span>, <span style=color:#a6e22e>all</span> <span style=color:#66d9ef>bool</span>) <span style=color:#66d9ef>int</span>
+</span></span></code></pre></div><p>Stack formats a stack trace of the calling goroutine into buf and returns the number of bytes written to buf. If all is true, Stack formats stack traces of all other goroutines into buf after the trace for the current goroutine.</p></blockquote><h2 id=io>
+IO
+<a class=anchor href=#io>#</a>
+</h2><h2 id=ioutil>
+ioutil
+<a class=anchor href=#ioutil>#</a>
+</h2><h2 id=bufio>
+Bufio
+<a class=anchor href=#bufio>#</a>
+</h2><h2 id=url>
+URL
+<a class=anchor href=#url>#</a>
+</h2><h2 id=timer>
+Timer
+<a class=anchor href=#timer>#</a>
+</h2><h3 id=after>
+After
+<a class=anchor href=#after>#</a>
+</h3><h3 id=sleep>
+Sleep
+<a class=anchor href=#sleep>#</a>
+</h3><h3 id=tick>
+Tick
+<a class=anchor href=#tick>#</a>
+</h3><h3 id=duration>
+Duration
+<a class=anchor href=#duration>#</a>
+</h3><h2 id=time>
+Time
+<a class=anchor href=#time>#</a>
+</h2><p>格式化基准 <code>2006-01-02 15:04:05</code></p></article><div>
+<h5 class=post-after>本文共 1669 字，上次修改于 Oct 25, 2022</h5><div>相关标签：
+<a href=/tags/Go/>Go</a>
+</div><script src=https://giscus.app/client.js data-repo=tcitry/tcitry.github.io data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" data-category=Announcements data-category-id=DIC_kwDOCMyx684COMlk data-mapping=og:title data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script>
+</div><footer class=book-footer>
+<div class="flex flex-wrap justify-between">
+</div><script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+</footer><label for=menu-control class="hidden book-menu-overlay"></label>
+</div><aside class=book-toc>
+<div class=book-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#buildin>Buildin</a>
+<ul>
+<li><a href=#uintptr>uintptr</a></li><li><a href=#错误示例>错误示例</a></li><li><a href=#arbitrarytype>ArbitraryType</a></li></ul></li><li><a href=#fmt>Fmt</a>
+<ul>
+<li><a href=#printf-标准输出>Printf 标准输出</a></li></ul></li><li><a href=#flag>Flag</a></li><li><a href=#reflect>Reflect</a></li><li><a href=#signal>Signal</a></li><li><a href=#context>Context</a>
+<ul>
+<li><a href=#withtimeout>WithTimeout</a></li></ul></li><li><a href=#sync>Sync</a>
+<ul>
+<li><a href=#waitgroup>Waitgroup</a></li><li><a href=#mutex-互斥锁>Mutex 互斥锁</a></li><li><a href=#rwmutex-读写锁>RWMutex 读写锁</a></li><li><a href=#once>Once</a></li><li><a href=#atomic>Atomic</a></li><li><a href=#pool>Pool</a></li><li><a href=#cond>Cond</a></li><li><a href=#map>Map</a></li></ul></li><li><a href=#unsafe>Unsafe</a>
+<ul>
+<li><a href=#pointer>Pointer</a></li></ul></li><li><a href=#runtime>Runtime</a>
+<ul>
+<li><a href=#gomaxprocs>GOMAXPROCS</a></li><li><a href=#gosched>Gosched</a></li><li><a href=#stack>Stack</a></li></ul></li><li><a href=#io>IO</a></li><li><a href=#ioutil>ioutil</a></li><li><a href=#bufio>Bufio</a></li><li><a href=#url>URL</a></li><li><a href=#timer>Timer</a>
+<ul>
+<li><a href=#after>After</a></li><li><a href=#sleep>Sleep</a></li><li><a href=#tick>Tick</a></li><li><a href=#duration>Duration</a></li></ul></li><li><a href=#time>Time</a></li></ul></nav></div></aside></main><div id=navigation>
+<a class="nav nav-left" href=https://yindongliang.com/docs/Golang/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/ title=上一篇：语言基础><i class=fa-left></i></a>
+<a class="nav nav-right" href=https://yindongliang.com/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/ title=下一篇：命令行><i class=fa-right></i></a>
+</div><script>document.onkeydown=function(e){if(e.code==="ArrowLeft"){let e=document.getElementsByClassName("nav nav-left");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}else if(e.code==="ArrowRight"){let e=document.getElementsByClassName("nav nav-right");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}}</script>
+<script src=/gumshoe.polyfills.min.js></script>
+<script>new Gumshoe(".book-toc a",{nested:!0})</script>
+<style>.book-toc li.active>a{font-weight:700}</style><script src=/fast-image-zoom.js></script>
+<script>imageZoom()</script>
+<link rel=stylesheet href=/katex/katex.min.css>
+<script src=/katex/katex.min.js></script>
+<script src=/katex/auto-render.min.js onload=renderMathInElement(document.body)></script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+<script>ts=document.getElementsByTagName("a");for(const e of ts)e.href&&!(e.href.startsWith("http://localhost")|e.href.startsWith("https://yindongliang.com"))&&(e.target="_blank")</script>
+</body></html>

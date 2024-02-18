@@ -1,0 +1,380 @@
+<!doctype html><html lang=zh-cn dir=ltr>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=description content="Spark 是内存密集型的分布式大数据计算引擎。Apache Spark™ is a multi-language engine for executing data engineering, data science, and machine learning on single-node machines or clusters1. Spark 生态圈以 Spark Core 为核心，支持从 HDFS、Amazon S3、HBase、ElasticSearch、Mon">
+<meta name=theme-color content="#FFFFFF">
+<meta name=color-scheme content="light dark"><meta property="og:title" content="Spark">
+<meta property="og:description" content="Spark 是内存密集型的分布式大数据计算引擎。Apache Spark™ is a multi-language engine for executing data engineering, data science, and machine learning on single-node machines or clusters1. Spark 生态圈以 Spark Core 为核心，支持从 HDFS、Amazon S3、HBase、ElasticSearch、Mon">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yindongliang.com/docs/Linux/Spark/"><meta property="article:section" content="docs">
+<meta property="article:published_time" content="2023-10-16T00:00:00+00:00">
+<meta property="article:modified_time" content="2024-01-28T14:16:39+08:00">
+<title>
+Linux — Spark
+</title><link rel=manifest href=/manifest.json>
+<link rel=icon href=/favicon.png type=image/x-icon>
+<link rel=stylesheet href=/book.min.7ddffcff7348380c70e43d3b4ab992503f90110553d5bfe5868e7d1aa2b80633.css integrity="sha256-fd/8/3NIOAxw5D07SrmSUD+QEQVT1b/lho59GqK4BjM=" crossorigin=anonymous>
+<script defer src=/flexsearch.min.js></script>
+<script defer src=/zh-cn.search.min.2c190993d62f294238012cea6b0bb36d326434bd9ba923f25c1b780b368e6efa.js integrity="sha256-LBkJk9YvKUI4ASzqawuzbTJkNL2bqSPyXBt4CzaObvo=" crossorigin=anonymous></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),window.location.hostname==="localhost"?gtag("config","G-Q20952BPE6",{send_page_view:!1,debug_mode:!0}):gtag("config","G-Q20952BPE6")</script>
+</head><body dir=ltr>
+<input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control>
+<main class="container flex">
+<aside class=book-menu>
+<div class=book-menu-content>
+<nav>
+<h2 class=book-brand>
+<a class="flex align-center" href=/><img src=/logo.gif alt><span>殷东亮的博客</span>
+</a>
+</h2><div class=book-search>
+<input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/>
+<div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul>
+<li><a href=/archives>Archives</a></li><li><a href=/weekly>Weekly🔥</a></li><li><a href=/projects>Projects</a></li><li><a href=/about>About</a></li><li><a href=https://github.com/tcitry target=_blank>Github</a></li><li><a href=/posts/index.xml target=_blank>RSS</a></li></ul><hr class=hr-edge-weak>
+<ul>
+<li>
+<input type=checkbox id=section-374f93193c235d5a59a63115829f835e class=toggle>
+<label for=section-374f93193c235d5a59a63115829f835e class="flex justify-between">
+<a href=/docs/Algorithms/>Algorithms</a>
+</label>
+<ul>
+<li>
+<input type=checkbox id=section-6fa75fabfcaf0942c2ae40739a024515 class=toggle>
+<label for=section-6fa75fabfcaf0942c2ae40739a024515 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>数据结构</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%93%BE%E8%A1%A8/>链表（Linked list）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E7%BB%84/>数组（Array）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%AD%97%E7%AC%A6%E4%B8%B2/>字符串（String）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%98%9F%E5%88%97/>队列（Queue）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%A0%88/>栈（Stack）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%93%88%E5%B8%8C%E8%A1%A8/>哈希表（Hash Table）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E4%BA%8C%E5%8F%89%E6%A0%91/>二叉树（Binary Tree）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A0%86/>堆（Heap）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%89%8D%E7%BC%80%E6%A0%91/>前缀树（Trie）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%A2%E9%BB%91%E6%A0%91/>红黑树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/B-tree/>B 树</a>
+</li></ul></li><li>
+<input type=checkbox id=section-60c1cc56ab667711423fd030bb7d2ba4 class=toggle>
+<label for=section-60c1cc56ab667711423fd030bb7d2ba4 class="flex justify-between">
+<a role=button>常用算法</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/recursion/>递归</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/>贪心算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/>滑动窗口</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/>动态规划</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8F%8C%E6%8C%87%E9%92%88/>双指针</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/>二分查找</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/>排序算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/BFS-%E5%92%8C-DFS/>BFS 和 DFS</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%88%86%E6%B2%BB%E7%AD%96%E7%95%A5/>分治策略</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%89%8D%E7%BC%80%E5%92%8C/>前缀和</a>
+</li></ul></li><li>
+<input type=checkbox id=section-34a5846db21bfdffc261709474d4c2c2 class=toggle>
+<label for=section-34a5846db21bfdffc261709474d4c2c2 class="flex justify-between">
+<a role=button>经典问题</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/>打家劫舍</a>
+</li><li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/>字符串匹配</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3acc3c018b0cf870114fc4c04b8fe75a class=toggle>
+<label for=section-3acc3c018b0cf870114fc4c04b8fe75a class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/>数学基础</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/>微积分</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/>概率统计</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/>线性代数</a>
+</li></ul></li><li>
+<input type=checkbox id=section-6a4c402b2954211b8a56520549766ad2 class=toggle>
+<label for=section-6a4c402b2954211b8a56520549766ad2 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/>线性模型</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/>周志华西瓜树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/>集体智慧编程</a>
+</li></ul></li></ul></li><li>
+<input type=checkbox id=section-ab6241a9c9348727e1ed30d9d7253a0e class=toggle>
+<label for=section-ab6241a9c9348727e1ed30d9d7253a0e class="flex justify-between">
+<a href=/docs/Golang/>Golang</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Golang/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Golang/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Golang/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/>代码规范</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3ca9a5c09bd1884bf69ade02a8e53628 class=toggle checked>
+<label for=section-3ca9a5c09bd1884bf69ade02a8e53628 class="flex justify-between">
+<a href=/docs/Linux/>Linux</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Linux/regular-expression/>正则表达式</a>
+</li><li>
+<a href=/docs/Linux/Shell/>Shell</a>
+</li><li>
+<a href=/docs/Linux/Spark/ class=active>Spark</a>
+</li><li>
+<a href=/docs/Linux/Docker/>Docker</a>
+</li><li>
+<a href=/docs/Linux/git/>Git 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-fdf3c0f524378d36bb3d2441d08ad8e8 class=toggle>
+<label for=section-fdf3c0f524378d36bb3d2441d08ad8e8 class="flex justify-between">
+<a href=/docs/Rust/>Rust</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Rust/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li></ul></li><li>
+<input type=checkbox id=section-f6f1cb8b3cab23098be63dcbede4acb5 class=toggle>
+<label for=section-f6f1cb8b3cab23098be63dcbede4acb5 class="flex justify-between">
+<a role=button>Xcode</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Xcode/Swift/>Swift</a>
+</li><li>
+<a href=/docs/Xcode/SwiftUI/>SwiftUI</a>
+</li><li>
+<a href=/docs/Xcode/Objective-C-%E8%AF%AD%E6%B3%95/>Objective-C</a>
+</li><li>
+<a href=/docs/Xcode/mac-%E6%8A%80%E5%B7%A7/>Mac 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-5f6c61ca509f9ca14a383db36b14a32f class=toggle>
+<label for=section-5f6c61ca509f9ca14a383db36b14a32f class="flex justify-between">
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/>软件工程</a>
+</label>
+<ul>
+<li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/peopleware/>人件</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/>Unix 编程艺术</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E4%B9%8B%E9%81%93/>程序员修炼之道</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/>一些定律</a>
+</li></ul></li><li>
+<input type=checkbox id=section-b708f687fcc1dc14b13a93ba85e8845b class=toggle>
+<label for=section-b708f687fcc1dc14b13a93ba85e8845b class="flex justify-between">
+<a href=/docs/Clang/>C/C++</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Clang/C/>C 语言基础</a>
+</li><li>
+<a href=/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/>系统调用</a>
+</li><li>
+<a href=/docs/Clang/C-%E6%A0%87%E5%87%86%E5%BA%93/>C 标准库</a>
+</li><li>
+<a href=/docs/Clang/C++/>C++ 语言基础</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3beaf640f7d27429884edb43bd1a0ec7 class=toggle>
+<label for=section-3beaf640f7d27429884edb43bd1a0ec7 class="flex justify-between">
+<a href=/docs/FE/>FE</a>
+</label>
+<ul>
+<li>
+<a href=/docs/FE/JavaScript/>JavaScript</a>
+</li><li>
+<a href=/docs/FE/js-buildin-objects/>JS 内置对象</a>
+</li><li>
+<a href=/docs/FE/TypeScript/>TypeScript</a>
+</li><li>
+<a href=/docs/FE/BOM/>BOM</a>
+</li><li>
+<a href=/docs/FE/DOM/>DOM</a>
+</li><li>
+<a href=/docs/FE/node/>Node</a>
+</li><li>
+<a href=/docs/FE/Deno/>Deno</a>
+</li><li>
+<a href=/docs/FE/vue/>Vue</a>
+</li><li>
+<a href=/docs/FE/react/>React</a>
+</li><li>
+<a href=/docs/FE/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/>依赖管理</a>
+</li><li>
+<a href=/docs/FE/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/>构建工具</a>
+</li><li>
+<a href=/docs/FE/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/FE/%E6%8F%92%E4%BB%B6/>插件</a>
+</li></ul></li><li>
+<input type=checkbox id=section-8ca541663a7d7fd63c79c6ce40ab5b81 class=toggle>
+<label for=section-8ca541663a7d7fd63c79c6ce40ab5b81 class="flex justify-between">
+<a href=/docs/Python/>Python</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/Python/Numpy/>Numpy</a>
+</li><li>
+<a href=/docs/Python/Pandas/>Pandas</a>
+</li></ul></li></ul></nav><script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+</div></aside><div class=book-page>
+<header class=book-header>
+<div class="flex align-center justify-between">
+<label for=menu-control>
+<img src=/svg/menu.svg class=book-icon alt>
+</label>
+<strong>
+Linux — Spark
+</strong>
+<label for=toc-control>
+<img src=/svg/toc.svg class=book-icon alt>
+</label>
+</div><aside class="hidden clearfix">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#搭建环境>搭建环境</a></li><li><a href=#相关概念>相关概念</a>
+<ul>
+<li><a href=#执行计划>执行计划</a></li><li><a href=#转化操作和行动操作>转化操作和行动操作</a></li><li><a href=#窄转化和宽转化>窄转化和宽转化</a></li><li><a href=#dag>DAG</a></li><li><a href=#rdd>RDD</a></li></ul></li><li><a href=#api>API</a>
+<ul>
+<li><a href=#spark-sql>Spark SQL</a></li><li><a href=#pandas-api-on-spark>Pandas API on Spark</a></li><li><a href=#dataset>DataSet</a></li><li><a href=#sqldataframe-和-dataset-区别>SQL、DataFrame 和 DataSet 区别</a></li></ul></li><li><a href=#底层引擎>底层引擎</a></li><li><a href=#执行计划-1>执行计划</a></li><li><a href=#spark-sql-1>Spark SQL</a></li><li><a href=#部署模式>部署模式</a></li><li><a href=#命令行>命令行</a></li><li><a href=#其他支持>其他支持</a></li><li><a href=#参考文档>参考文档</a></li></ul></nav></aside></header><article class=markdown><p>Spark 是内存密集型的分布式大数据计算引擎。Apache Spark™ is a multi-language <strong>engine</strong> for executing data engineering, data science, and machine learning on single-node machines or clusters<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup>.</p><p>Spark 生态圈以 Spark Core 为核心，支持从 HDFS、Amazon S3、HBase、ElasticSearch、MongoDB、MySQL、Kafka 等多种数据源读取数据。同时，Spark 支持以 Standalone、Hadoop YARN、Apache Mesos、Kubernetes 为资源管理器调度任务，从而完成 Spark 应用程序的计算任务。</p><h2 id=搭建环境>
+搭建环境
+<a class=anchor href=#%e6%90%ad%e5%bb%ba%e7%8e%af%e5%a2%83>#</a>
+</h2><p>首先，去官网<a href=https://spark.apache.org/downloads.html>下载 Spark</a>，下载下来的 Spark 文件中，常见的目录有 bin、 sbin、kubernetes、data、examples，其中 bin 里面有 <code>pyspark</code> 、<code>spark-submit</code> 、<code>spark-sql</code> 等常用的命令。以 Python 为例，启动 <code>./bin/pyspark</code> 后，可以在 Python Shell 中执行一些 Spark 操作， 通过访问 <code>http://localhost:4040</code> 可以浏览 Spark UI 界面。</p><p><img src=https://raw.githubusercontent.com/tcitry/static/master/2023/R7xJfP.png alt></p><h2 id=相关概念>
+相关概念
+<a class=anchor href=#%e7%9b%b8%e5%85%b3%e6%a6%82%e5%bf%b5>#</a>
+</h2><p>使用之前还需要了解一些基本概念。</p><p>驱动器和执行器</p><p>SparkSession</p><p>可以存在多个 SparkSession 用于连接多个不同的数据库。</p><h3 id=执行计划>
+执行计划
+<a class=anchor href=#%e6%89%a7%e8%a1%8c%e8%ae%a1%e5%88%92>#</a>
+</h3><p>应用</p><p>作业</p><p>RDD</p><p>DataFrame</p><p>Job</p><p>Spark 会将一个应用依次划分为作业、执行阶段和任务。Jobs 标签页和 Stages 标签页让我们能够按照这种划分层级查看应用的执行情况，最低以单个任务为粒度查看详情。我们可以看到各粒度下的完成状态、I/O 相关指标、内存消耗、执行持续时间等信息。</p><p>Stages</p><p>通过 Stages 标签页可以概览所有作业中的所有执行阶段的当前状态。</p><p>Executors</p><p>Executors 标签页提供了应用创建的所有执行器的信息。</p><h3 id=转化操作和行动操作>
+转化操作和行动操作
+<a class=anchor href=#%e8%bd%ac%e5%8c%96%e6%93%8d%e4%bd%9c%e5%92%8c%e8%a1%8c%e5%8a%a8%e6%93%8d%e4%bd%9c>#</a>
+</h3><p>所有 Spark 对数据的操作可以分为两种：转化操作（transformation）和行动操作（action）。</p><p>所有的转化操作都是惰性的，比如 <code>select()</code> 和 <code>filter()</code> 这样的操作不会改变原有的 DataFrame，这些操作只会将转化结果作为新的 DataFrame 返回。惰性意味着不会立即计算结果，而是将转化关系作为血缘（lineage） 记录下来，这将帮助 Spark 在最终生成执行计划时进行合并或优化，从而提高执行效率。</p><p>而行动操作会触发实际求值，包括之前所积累下的转化操作。</p><h3 id=窄转化和宽转化>
+窄转化和宽转化
+<a class=anchor href=#%e7%aa%84%e8%bd%ac%e5%8c%96%e5%92%8c%e5%ae%bd%e8%bd%ac%e5%8c%96>#</a>
+</h3><p>转化操作可以分为两类，根据依赖关系可以判断是属于窄转化还是宽转化。</p><p>如果输出中的单个数据分区是由单个输入分区计算得来的，那么这样的转化操作就称为窄转化，比如 <code>select()</code> 和 <code>filter()</code> 这样的方法就属于窄转化，因为它们在每个数据分区上的操作是独立的，生成输出的数据分区时不需要跨分区交换任何数据。</p><p>宽转化是要从其他分区读取数据并进行整合，可能要写入硬盘，比如 <code>groupBy()</code> 和 <code>orderBy()</code> 就会产生宽转化操作。</p><h3 id=dag>
+DAG
+<a class=anchor href=#dag>#</a>
+</h3><p>Spark 将每个任务构造成 DAG（Directed Acyclic Graph，有向无环图）来执行，其内部计算过程是基于 RDD（Resilient Distributed Dataset，弹性分布式数据集）在内存中对数据进行迭代计算的，因此运行效率很高。</p><h3 id=rdd>
+RDD
+<a class=anchor href=#rdd>#</a>
+</h3><p>RDD（Resilient Distributed Dataset，弹性分布式数据集） 是 Spark 1.0 时期的底层数据对象。</p><h2 id=api>
+API
+<a class=anchor href=#api>#</a>
+</h2><h3 id=spark-sql>
+Spark SQL
+<a class=anchor href=#spark-sql>#</a>
+</h3><p>pyspark.sql.dataframe.DataFrame</p><h3 id=pandas-api-on-spark>
+Pandas API on Spark
+<a class=anchor href=#pandas-api-on-spark>#</a>
+</h3><p>pyspark.pandas.frame.DataFrame</p><h3 id=dataset>
+DataSet
+<a class=anchor href=#dataset>#</a>
+</h3><p>DataSet 也是 Spark 1.6 加入的 feature。</p><p>A DataFrame is a Dataset organized into named columns,  DataFrame is represented by a Dataset of <code>Row</code>s. The Dataset API is available in <a href=https://spark.apache.org/docs/latest/api/scala/org/apache/spark/sql/Dataset.html>Scala</a> and <a href=https://spark.apache.org/docs/latest/api/java/index.html?org/apache/spark/sql/Dataset.html>Java</a>. 并没有针对 Python 提供 DataSet 接口。</p><p>Spark 2.0 用相似的接口统一了 DataFrame API 和 Dataset API。</p><p>DataFrame 没法做到强类型检查，而编译型语言 Scala 和 Java 可以，所以 DataSet 相对于 DataFrame 提供了强类型支持。</p><h3 id=sqldataframe-和-dataset-区别>
+SQL、DataFrame 和 DataSet 区别
+<a class=anchor href=#sqldataframe-%e5%92%8c-dataset-%e5%8c%ba%e5%88%ab>#</a>
+</h3><p>DataFrame 和 Dataset 都是基于 RDD 构建的</p><p><a href=https://raw.githubusercontent.com/tcitry/static/master/2023/biJN7A.png>https://raw.githubusercontent.com/tcitry/static/master/2023/biJN7A.png</a></p><p>Spark 3.0 中有两种 DataFrame。PySpark 中默认的 DataFrame 其实是 Spark SQL 的 <code>pyspark.sql.dataframe.DataFrame</code>，这个 DataFrame 可以通过接口 <a href=https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.pandas_api.html#pyspark-sql-dataframe-pandas-api title="Permalink to this headline">pyspark.sql.DataFrame.pandas_api</a> 转换为 <code>pyspark.pandas.frame.DataFrame</code>。</p><h2 id=底层引擎>
+底层引擎
+<a class=anchor href=#%e5%ba%95%e5%b1%82%e5%bc%95%e6%93%8e>#</a>
+</h2><p>上层的 DataFrame API 和 DataSet API 都是由底层的 Spark SQL 引擎支撑的，Spark SQL 引擎的核心是 Catalyst 优化器和 Tungsten 项目。两者共同支撑着高层的 DataFrame API 和 Dataset API，以及 SQL 查询。</p><p>优化过程都是一样的：先是构建逻辑计划，接着是生成物理计划，最后是生成紧凑的二进制代码。</p><h2 id=执行计划-1>
+执行计划
+<a class=anchor href=#%e6%89%a7%e8%a1%8c%e8%ae%a1%e5%88%92-1>#</a>
+</h2><h2 id=spark-sql-1>
+Spark SQL
+<a class=anchor href=#spark-sql-1>#</a>
+</h2><p>Spark 允许创建两种表，有管理表和无管理表。有管理表既管理元数据，有管理文件存储上的数据。无管理表只能删除元数据，无法删除实际数据。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>us_flights_df <span style=color:#f92672>=</span> spark<span style=color:#f92672>.</span>sql(<span style=color:#e6db74>&#34;SELECT * FROM us_delay_flights_tbl&#34;</span>)
+</span></span><span style=display:flex><span>us_flights_df2 <span style=color:#f92672>=</span> spark<span style=color:#f92672>.</span>table(<span style=color:#e6db74>&#34;us_delay_flights_tbl&#34;</span>)
+</span></span></code></pre></div><p>repartition</p><h2 id=部署模式>
+部署模式
+<a class=anchor href=#%e9%83%a8%e7%bd%b2%e6%a8%a1%e5%bc%8f>#</a>
+</h2><p>Spark Standalone</p><p>Mesos</p><p>YARN</p><p>Kubernetes</p><h2 id=命令行>
+命令行
+<a class=anchor href=#%e5%91%bd%e4%bb%a4%e8%a1%8c>#</a>
+</h2><p>spark-shell</p><p>spark-submit</p><h2 id=其他支持>
+其他支持
+<a class=anchor href=#%e5%85%b6%e4%bb%96%e6%94%af%e6%8c%81>#</a>
+</h2><p>Structured Streaming 流数据处理</p><p>MLlib 机器学习库</p><h2 id=参考文档>
+参考文档
+<a class=anchor href=#%e5%8f%82%e8%80%83%e6%96%87%e6%a1%a3>#</a>
+</h2><p>Spark 2.2.x 中文官方参考文档<br>
+<a href=https://spark-reference-doc-cn.readthedocs.io/zh_CN/latest/index.html>https://spark-reference-doc-cn.readthedocs.io/zh_CN/latest/index.html</a></p><p>SparkBy{Examples}<br>
+<a href=https://sparkbyexamples.com/pyspark-tutorial/>https://sparkbyexamples.com/pyspark-tutorial/</a></p><p>Spark 编程指南<br>
+<a href=https://doc.yonyoucloud.com/doc/spark-programming-guide-zh-cn/index.html>https://doc.yonyoucloud.com/doc/spark-programming-guide-zh-cn/index.html</a></p><p><a href=https://github.com/LearningJournal/Spark-Programming-In-Python>Spark-Programming-In-Python</a></p><p><a href=https://book.douban.com/subject/35627154/>Spark 快速大数据分析（第 2 版）</a></p><p><a href=https://book.douban.com/subject/35782145/>图解Spark 大数据快速分析实战</a></p><p>一些代码示例：</p><ul>
+<li><a href=https://github.com/apache/spark>https://github.com/apache/spark</a></li><li><a href=https://github.com/LearningJournal/Spark-Programming-In-Python>https://github.com/LearningJournal/Spark-Programming-In-Python</a></li></ul><section class=footnotes role=doc-endnotes>
+<hr>
+<ol>
+<li id=fn:1 role=doc-endnote>
+<p>Spark 官网 <a href=https://spark.apache.org>https://spark.apache.org</a>&#160;<a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></article><div>
+<h5 class=post-after>本文共 1693 字，上次修改于 Jan 28, 2024</h5><div>相关标签：
+<a href=/tags/Python/>Python</a>,
+<a href=/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a>
+</div><script src=https://giscus.app/client.js data-repo=tcitry/tcitry.github.io data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" data-category=Announcements data-category-id=DIC_kwDOCMyx684COMlk data-mapping=og:title data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script>
+</div><footer class=book-footer>
+<div class="flex flex-wrap justify-between">
+</div><script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+</footer><label for=menu-control class="hidden book-menu-overlay"></label>
+</div><aside class=book-toc>
+<div class=book-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#搭建环境>搭建环境</a></li><li><a href=#相关概念>相关概念</a>
+<ul>
+<li><a href=#执行计划>执行计划</a></li><li><a href=#转化操作和行动操作>转化操作和行动操作</a></li><li><a href=#窄转化和宽转化>窄转化和宽转化</a></li><li><a href=#dag>DAG</a></li><li><a href=#rdd>RDD</a></li></ul></li><li><a href=#api>API</a>
+<ul>
+<li><a href=#spark-sql>Spark SQL</a></li><li><a href=#pandas-api-on-spark>Pandas API on Spark</a></li><li><a href=#dataset>DataSet</a></li><li><a href=#sqldataframe-和-dataset-区别>SQL、DataFrame 和 DataSet 区别</a></li></ul></li><li><a href=#底层引擎>底层引擎</a></li><li><a href=#执行计划-1>执行计划</a></li><li><a href=#spark-sql-1>Spark SQL</a></li><li><a href=#部署模式>部署模式</a></li><li><a href=#命令行>命令行</a></li><li><a href=#其他支持>其他支持</a></li><li><a href=#参考文档>参考文档</a></li></ul></nav></div></aside></main><div id=navigation>
+<a class="nav nav-left" href=https://yindongliang.com/docs/Linux/Shell/ title=上一篇：Shell><i class=fa-left></i></a>
+<a class="nav nav-right" href=https://yindongliang.com/docs/Linux/Docker/ title=下一篇：Docker><i class=fa-right></i></a>
+</div><script>document.onkeydown=function(e){if(e.code==="ArrowLeft"){let e=document.getElementsByClassName("nav nav-left");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}else if(e.code==="ArrowRight"){let e=document.getElementsByClassName("nav nav-right");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}}</script>
+<script src=/gumshoe.polyfills.min.js></script>
+<script>new Gumshoe(".book-toc a",{nested:!0})</script>
+<style>.book-toc li.active>a{font-weight:700}</style><script src=/fast-image-zoom.js></script>
+<script>imageZoom()</script>
+<link rel=stylesheet href=/katex/katex.min.css>
+<script src=/katex/katex.min.js></script>
+<script src=/katex/auto-render.min.js onload=renderMathInElement(document.body)></script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+<script>ts=document.getElementsByTagName("a");for(const e of ts)e.href&&!(e.href.startsWith("http://localhost")|e.href.startsWith("https://yindongliang.com"))&&(e.target="_blank")</script>
+</body></html>

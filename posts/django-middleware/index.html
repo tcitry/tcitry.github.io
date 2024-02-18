@@ -1,0 +1,409 @@
+<!doctype html><html lang=zh-cn dir=ltr>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=description content="中间件是 Django 用来处理请求和响应的钩子框架。它是一个轻量级的、底层级的“插件”系统，用于全局性地控制 Django 的输入或输出。 MIDDLEWARE # Django 自带了一些已经内置的中间件，你可以直接使用，它们被记录在 built-in middleware reference 中。 MIDDLEWARE = [ 'django.middleware.security.SecurityMiddleware', 'django.contrib.sessions.middleware.SessionMiddleware', 'django.middleware.common.CommonMiddleware', 'django.middleware.csrf.CsrfViewMiddleware', 'django.contrib.auth.middleware.AuthenticationMiddleware',">
+<meta name=theme-color content="#FFFFFF">
+<meta name=color-scheme content="light dark"><meta property="og:title" content="Django 的中间件执行顺序">
+<meta property="og:description" content="中间件是 Django 用来处理请求和响应的钩子框架。它是一个轻量级的、底层级的“插件”系统，用于全局性地控制 Django 的输入或输出。 MIDDLEWARE # Django 自带了一些已经内置的中间件，你可以直接使用，它们被记录在 built-in middleware reference 中。 MIDDLEWARE = [ 'django.middleware.security.SecurityMiddleware', 'django.contrib.sessions.middleware.SessionMiddleware', 'django.middleware.common.CommonMiddleware', 'django.middleware.csrf.CsrfViewMiddleware', 'django.contrib.auth.middleware.AuthenticationMiddleware',">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yindongliang.com/posts/django-middleware/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2017-11-12T00:00:00+00:00">
+<meta property="article:modified_time" content="2023-09-27T22:58:08+08:00">
+<title>
+Django 的中间件执行顺序
+</title><link rel=manifest href=/manifest.json>
+<link rel=icon href=/favicon.png type=image/x-icon>
+<link rel=stylesheet href=/book.min.7ddffcff7348380c70e43d3b4ab992503f90110553d5bfe5868e7d1aa2b80633.css integrity="sha256-fd/8/3NIOAxw5D07SrmSUD+QEQVT1b/lho59GqK4BjM=" crossorigin=anonymous>
+<script defer src=/flexsearch.min.js></script>
+<script defer src=/zh-cn.search.min.2c190993d62f294238012cea6b0bb36d326434bd9ba923f25c1b780b368e6efa.js integrity="sha256-LBkJk9YvKUI4ASzqawuzbTJkNL2bqSPyXBt4CzaObvo=" crossorigin=anonymous></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),window.location.hostname==="localhost"?gtag("config","G-Q20952BPE6",{send_page_view:!1,debug_mode:!0}):gtag("config","G-Q20952BPE6")</script>
+</head><body dir=ltr>
+<input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control>
+<main class="container flex">
+<aside class=book-menu>
+<div class=book-menu-content>
+<nav>
+<h2 class=book-brand>
+<a class="flex align-center" href=/><img src=/logo.gif alt><span>殷东亮的博客</span>
+</a>
+</h2><div class=book-search>
+<input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/>
+<div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul>
+<li><a href=/archives>Archives</a></li><li><a href=/weekly>Weekly🔥</a></li><li><a href=/projects>Projects</a></li><li><a href=/about>About</a></li><li><a href=https://github.com/tcitry target=_blank>Github</a></li><li><a href=/posts/index.xml target=_blank>RSS</a></li></ul><hr class=hr-edge-weak>
+<ul>
+<li>
+<input type=checkbox id=section-374f93193c235d5a59a63115829f835e class=toggle>
+<label for=section-374f93193c235d5a59a63115829f835e class="flex justify-between">
+<a href=/docs/Algorithms/>Algorithms</a>
+</label>
+<ul>
+<li>
+<input type=checkbox id=section-6fa75fabfcaf0942c2ae40739a024515 class=toggle>
+<label for=section-6fa75fabfcaf0942c2ae40739a024515 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>数据结构</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%93%BE%E8%A1%A8/>链表（Linked list）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E7%BB%84/>数组（Array）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%AD%97%E7%AC%A6%E4%B8%B2/>字符串（String）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%98%9F%E5%88%97/>队列（Queue）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%A0%88/>栈（Stack）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%93%88%E5%B8%8C%E8%A1%A8/>哈希表（Hash Table）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E4%BA%8C%E5%8F%89%E6%A0%91/>二叉树（Binary Tree）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A0%86/>堆（Heap）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%89%8D%E7%BC%80%E6%A0%91/>前缀树（Trie）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%A2%E9%BB%91%E6%A0%91/>红黑树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/B-tree/>B 树</a>
+</li></ul></li><li>
+<input type=checkbox id=section-60c1cc56ab667711423fd030bb7d2ba4 class=toggle>
+<label for=section-60c1cc56ab667711423fd030bb7d2ba4 class="flex justify-between">
+<a role=button>常用算法</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/recursion/>递归</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/>贪心算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/>滑动窗口</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/>动态规划</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8F%8C%E6%8C%87%E9%92%88/>双指针</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/>二分查找</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/>排序算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/BFS-%E5%92%8C-DFS/>BFS 和 DFS</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%88%86%E6%B2%BB%E7%AD%96%E7%95%A5/>分治策略</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%89%8D%E7%BC%80%E5%92%8C/>前缀和</a>
+</li></ul></li><li>
+<input type=checkbox id=section-34a5846db21bfdffc261709474d4c2c2 class=toggle>
+<label for=section-34a5846db21bfdffc261709474d4c2c2 class="flex justify-between">
+<a role=button>经典问题</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/>打家劫舍</a>
+</li><li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/>字符串匹配</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3acc3c018b0cf870114fc4c04b8fe75a class=toggle>
+<label for=section-3acc3c018b0cf870114fc4c04b8fe75a class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/>数学基础</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/>微积分</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/>概率统计</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/>线性代数</a>
+</li></ul></li><li>
+<input type=checkbox id=section-6a4c402b2954211b8a56520549766ad2 class=toggle>
+<label for=section-6a4c402b2954211b8a56520549766ad2 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/>线性模型</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/>周志华西瓜树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/>集体智慧编程</a>
+</li></ul></li></ul></li><li>
+<input type=checkbox id=section-ab6241a9c9348727e1ed30d9d7253a0e class=toggle>
+<label for=section-ab6241a9c9348727e1ed30d9d7253a0e class="flex justify-between">
+<a href=/docs/Golang/>Golang</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Golang/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Golang/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Golang/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/>代码规范</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3ca9a5c09bd1884bf69ade02a8e53628 class=toggle>
+<label for=section-3ca9a5c09bd1884bf69ade02a8e53628 class="flex justify-between">
+<a href=/docs/Linux/>Linux</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Linux/regular-expression/>正则表达式</a>
+</li><li>
+<a href=/docs/Linux/Shell/>Shell</a>
+</li><li>
+<a href=/docs/Linux/Spark/>Spark</a>
+</li><li>
+<a href=/docs/Linux/Docker/>Docker</a>
+</li><li>
+<a href=/docs/Linux/git/>Git 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-fdf3c0f524378d36bb3d2441d08ad8e8 class=toggle>
+<label for=section-fdf3c0f524378d36bb3d2441d08ad8e8 class="flex justify-between">
+<a href=/docs/Rust/>Rust</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Rust/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li></ul></li><li>
+<input type=checkbox id=section-f6f1cb8b3cab23098be63dcbede4acb5 class=toggle>
+<label for=section-f6f1cb8b3cab23098be63dcbede4acb5 class="flex justify-between">
+<a role=button>Xcode</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Xcode/Swift/>Swift</a>
+</li><li>
+<a href=/docs/Xcode/SwiftUI/>SwiftUI</a>
+</li><li>
+<a href=/docs/Xcode/Objective-C-%E8%AF%AD%E6%B3%95/>Objective-C</a>
+</li><li>
+<a href=/docs/Xcode/mac-%E6%8A%80%E5%B7%A7/>Mac 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-5f6c61ca509f9ca14a383db36b14a32f class=toggle>
+<label for=section-5f6c61ca509f9ca14a383db36b14a32f class="flex justify-between">
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/>软件工程</a>
+</label>
+<ul>
+<li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/peopleware/>人件</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/>Unix 编程艺术</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E4%B9%8B%E9%81%93/>程序员修炼之道</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/>一些定律</a>
+</li></ul></li><li>
+<input type=checkbox id=section-b708f687fcc1dc14b13a93ba85e8845b class=toggle>
+<label for=section-b708f687fcc1dc14b13a93ba85e8845b class="flex justify-between">
+<a href=/docs/Clang/>C/C++</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Clang/C/>C 语言基础</a>
+</li><li>
+<a href=/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/>系统调用</a>
+</li><li>
+<a href=/docs/Clang/C-%E6%A0%87%E5%87%86%E5%BA%93/>C 标准库</a>
+</li><li>
+<a href=/docs/Clang/C++/>C++ 语言基础</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3beaf640f7d27429884edb43bd1a0ec7 class=toggle>
+<label for=section-3beaf640f7d27429884edb43bd1a0ec7 class="flex justify-between">
+<a href=/docs/FE/>FE</a>
+</label>
+<ul>
+<li>
+<a href=/docs/FE/JavaScript/>JavaScript</a>
+</li><li>
+<a href=/docs/FE/js-buildin-objects/>JS 内置对象</a>
+</li><li>
+<a href=/docs/FE/TypeScript/>TypeScript</a>
+</li><li>
+<a href=/docs/FE/BOM/>BOM</a>
+</li><li>
+<a href=/docs/FE/DOM/>DOM</a>
+</li><li>
+<a href=/docs/FE/node/>Node</a>
+</li><li>
+<a href=/docs/FE/Deno/>Deno</a>
+</li><li>
+<a href=/docs/FE/vue/>Vue</a>
+</li><li>
+<a href=/docs/FE/react/>React</a>
+</li><li>
+<a href=/docs/FE/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/>依赖管理</a>
+</li><li>
+<a href=/docs/FE/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/>构建工具</a>
+</li><li>
+<a href=/docs/FE/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/FE/%E6%8F%92%E4%BB%B6/>插件</a>
+</li></ul></li><li>
+<input type=checkbox id=section-8ca541663a7d7fd63c79c6ce40ab5b81 class=toggle>
+<label for=section-8ca541663a7d7fd63c79c6ce40ab5b81 class="flex justify-between">
+<a href=/docs/Python/>Python</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/Python/Numpy/>Numpy</a>
+</li><li>
+<a href=/docs/Python/Pandas/>Pandas</a>
+</li></ul></li></ul></nav><script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+</div></aside><div class=book-page>
+<header class=book-header>
+<div class="flex align-center justify-between">
+<label for=menu-control>
+<img src=/svg/menu.svg class=book-icon alt>
+</label>
+<strong>
+Django 的中间件执行顺序
+</strong>
+<label for=toc-control>
+<img src=/svg/toc.svg class=book-icon alt>
+</label>
+</div><aside class="hidden clearfix">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#middleware>MIDDLEWARE</a></li><li><a href=#process_request>process_request</a></li><li><a href=#process_view>process_view</a></li><li><a href=#process_exception>process_exception</a></li><li><a href=#process_template_response>process_template_response</a></li><li><a href=#process_response>process_response</a></li><li><a href=#总结>总结</a></li></ul></nav></aside></header><article class=markdown>
+<h1>
+<a href=/posts/django-middleware/>Django 的中间件执行顺序</a>
+</h1><h5>Nov 12, 2017</h5><div>
+<a href=/tags/Python/>Python</a>
+</div><p>中间件是 Django 用来处理请求和响应的钩子框架。它是一个轻量级的、底层级的“插件”系统，用于全局性地控制 Django 的输入或输出。</p><h2 id=middleware>
+MIDDLEWARE
+<a class=anchor href=#middleware>#</a>
+</h2><p>Django 自带了一些已经内置的中间件，你可以直接使用，它们被记录在 <a href=https://docs.djangoproject.com/zh-hans/4.0/ref/middleware/>built-in middleware reference</a> 中。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>MIDDLEWARE <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#39;django.middleware.security.SecurityMiddleware&#39;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#39;django.contrib.sessions.middleware.SessionMiddleware&#39;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#39;django.middleware.common.CommonMiddleware&#39;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#39;django.middleware.csrf.CsrfViewMiddleware&#39;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#39;django.contrib.messages.middleware.MessageMiddleware&#39;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#39;django.middleware.clickjacking.XFrameOptionsMiddleware&#39;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#39;api_permission.middleware.APIPermCheckMiddleware&#39;</span>,
+</span></span><span style=display:flex><span>]
+</span></span></code></pre></div><p>为了能够尽可能使用 Django 自带的中间件的功能和一些安全性校验，一般我们自定义的中间件需要放到 <code>settings.MIDDLEWARE</code> 列表的最后一个，但也需要视实际情况而定。</p><p>Django Middlware 的执行顺序是按照 <code>settings.py</code> 里的 <code>MIDDLEWARE</code> 列表而定的，一个 HTTP 请求是从上到下顺序执行的，而在 View 层中处理完业务逻辑后，又从下往上倒序返回。下面就按照一个请求在中间件的执行顺序来依次介绍。</p><h2 id=process_request>
+process_request
+<a class=anchor href=#process_request>#</a>
+</h2><p>请求在执行 view 层逻辑之前，会 Django 会先执行每个中间件的 <code>process_request</code>，它有一个 <code>request</code> 参数，在这个过程中，如果遇到问题，中间件可能会直接报错并返回请求。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#a6e22e>class</span> <span style=color:#a6e22e>APIPermCheckMiddleware</span>(<span style=color:#a6e22e>MiddlewareMixin</span>):
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>def</span> <span style=color:#a6e22e>process_request</span>(<span style=color:#a6e22e>self</span>, <span style=color:#a6e22e>request</span>):
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>path</span> = <span style=color:#a6e22e>request</span>.<span style=color:#a6e22e>path</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>method</span> = <span style=color:#a6e22e>request</span>.<span style=color:#a6e22e>method</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>header_token</span> = <span style=color:#a6e22e>request</span>.<span style=color:#a6e22e>META</span>.<span style=color:#a6e22e>get</span>(<span style=color:#a6e22e>AUTHORIZATION_HEADER</span>, <span style=color:#a6e22e>None</span>)
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>user</span> = <span style=color:#a6e22e>request</span>.<span style=color:#a6e22e>user</span> <span style=color:#a6e22e>or</span> <span style=color:#a6e22e>AnonymousUser</span>()
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>header_token</span>:
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>try</span>:
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>token</span> = <span style=color:#a6e22e>header_token</span>.<span style=color:#a6e22e>strip</span>().<span style=color:#a6e22e>split</span>(<span style=color:#e6db74>&#39; &#39;</span>)
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>assert</span> len(<span style=color:#a6e22e>token</span>) &gt; <span style=color:#ae81ff>0</span>, <span style=color:#a6e22e>f</span><span style=color:#e6db74>&#34;token maybe invalid: {header_token}&#34;</span>
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>token_obj</span> = <span style=color:#a6e22e>Token</span>.<span style=color:#a6e22e>objects</span>.<span style=color:#a6e22e>get</span>(<span style=color:#a6e22e>key</span>=<span style=color:#a6e22e>token</span>[<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>])
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>user</span> = <span style=color:#a6e22e>token_obj</span>.<span style=color:#a6e22e>user</span>
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>except</span> <span style=color:#a6e22e>Token</span>.<span style=color:#a6e22e>DoesNotExist</span> <span style=color:#a6e22e>as</span> <span style=color:#a6e22e>e</span>:
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>msg</span> = <span style=color:#a6e22e>f</span><span style=color:#e6db74>&#34;api_permission checker: token not exists: {e}&#34;</span>
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>self</span>.<span style=color:#a6e22e>_return_403_res</span>(<span style=color:#a6e22e>msg</span>)
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>except</span> <span style=color:#a6e22e>Exception</span> <span style=color:#a6e22e>as</span> <span style=color:#a6e22e>e</span>:
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>msg</span> = <span style=color:#a6e22e>f</span><span style=color:#e6db74>&#34;{e}&#34;</span>
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>raise</span> <span style=color:#a6e22e>APIPermissionException</span>(<span style=color:#a6e22e>msg</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>api_prefix_list</span> = []
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#66d9ef>type</span>(<span style=color:#a6e22e>API_PREFIX</span>) <span style=color:#f92672>==</span> <span style=color:#a6e22e>str</span>:
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>API_PREFIX</span> <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;/&#39;</span>:
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>api_prefix_list</span> = [<span style=color:#e6db74>&#39;/&#39;</span>]
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>else</span>:
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>not</span> <span style=color:#a6e22e>API_PREFIX</span>.<span style=color:#a6e22e>startswith</span>(<span style=color:#e6db74>&#39;/&#39;</span>):
+</span></span><span style=display:flex><span>                    <span style=color:#a6e22e>api_prefix_list</span>.append(<span style=color:#e6db74>&#39;/&#39;</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>str</span>(<span style=color:#a6e22e>API_PREFIX</span>))
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>else</span>:
+</span></span><span style=display:flex><span>                    <span style=color:#a6e22e>api_prefix_list</span> = <span style=color:#a6e22e>API_PREFIX</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>elif</span> <span style=color:#66d9ef>type</span>(<span style=color:#a6e22e>API_PREFIX</span>) <span style=color:#f92672>==</span> <span style=color:#a6e22e>list</span>:
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>prefix</span> <span style=color:#a6e22e>in</span> <span style=color:#a6e22e>API_PREFIX</span>:
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>not</span> <span style=color:#a6e22e>prefix</span>.<span style=color:#a6e22e>startswith</span>(<span style=color:#e6db74>&#39;/&#39;</span>):
+</span></span><span style=display:flex><span>                    <span style=color:#a6e22e>prefix</span> = <span style=color:#e6db74>&#39;/&#39;</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>str</span>(<span style=color:#a6e22e>prefix</span>)
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>api_prefix_list</span>.append(<span style=color:#a6e22e>prefix</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>not</span> <span style=color:#a6e22e>path</span>.<span style=color:#a6e22e>startswith</span>(<span style=color:#a6e22e>ADMIN_SITE_PATH</span>) <span style=color:#a6e22e>and</span> <span style=color:#a6e22e>not</span> <span style=color:#a6e22e>user</span>.<span style=color:#a6e22e>is_superuser</span>:
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>api_prefix</span> <span style=color:#a6e22e>in</span> <span style=color:#a6e22e>api_prefix_list</span>:
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>path</span>.<span style=color:#a6e22e>startswith</span>(<span style=color:#a6e22e>api_prefix</span>):
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>not</span> <span style=color:#a6e22e>self</span>.<span style=color:#a6e22e>_has_permission</span>(<span style=color:#a6e22e>path</span>, <span style=color:#a6e22e>user</span>, <span style=color:#a6e22e>method</span>):
+</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>self</span>.<span style=color:#a6e22e>_return_403_res</span>(<span style=color:#a6e22e>f</span><span style=color:#960050;background-color:#1e0010>&#39;</span><span style=color:#a6e22e>permission</span> <span style=color:#a6e22e>denied</span>: <span style=color:#a6e22e>user</span>: {<span style=color:#a6e22e>user</span>}, <span style=color:#a6e22e>method</span>: {<span style=color:#a6e22e>method</span>}, <span style=color:#a6e22e>path</span>: {<span style=color:#a6e22e>path</span>}<span style=color:#960050;background-color:#1e0010>&#39;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>def</span> <span style=color:#a6e22e>_has_permission</span>(<span style=color:#a6e22e>self</span>, <span style=color:#a6e22e>path</span>, <span style=color:#a6e22e>user</span>, <span style=color:#a6e22e>method</span>):
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>groups</span> = <span style=color:#a6e22e>user</span>.<span style=color:#a6e22e>groups</span>.<span style=color:#a6e22e>all</span>()
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>queryset</span> = <span style=color:#a6e22e>APIPermissionModel</span>.<span style=color:#a6e22e>objects</span>.<span style=color:#a6e22e>filter</span>(<span style=color:#a6e22e>group__in</span>=<span style=color:#a6e22e>groups</span>, <span style=color:#a6e22e>method__in</span>=[<span style=color:#a6e22e>method</span>, <span style=color:#a6e22e>APIPermissionModel</span>.<span style=color:#a6e22e>ALL</span>], <span style=color:#a6e22e>active</span>=<span style=color:#a6e22e>True</span>)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>api</span> <span style=color:#a6e22e>in</span> <span style=color:#a6e22e>queryset</span>:
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>re</span>.<span style=color:#a6e22e>match</span>(<span style=color:#a6e22e>api</span>.<span style=color:#a6e22e>pattern</span>, <span style=color:#a6e22e>path</span>):
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>api</span>.<span style=color:#a6e22e>method</span> <span style=color:#a6e22e>in</span> [<span style=color:#a6e22e>APIPermissionModel</span>.<span style=color:#a6e22e>ALL</span>, <span style=color:#a6e22e>method</span>]:
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>True</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>False</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>def</span> <span style=color:#a6e22e>_return_403_res</span>(<span style=color:#a6e22e>self</span>, <span style=color:#a6e22e>msg</span>):
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>res</span> = {
+</span></span><span style=display:flex><span>            <span style=color:#960050;background-color:#1e0010>&#39;</span><span style=color:#a6e22e>code</span><span style=color:#960050;background-color:#1e0010>&#39;</span>: <span style=color:#a6e22e>PERMISSION_DENIED_CODE</span>,
+</span></span><span style=display:flex><span>            <span style=color:#960050;background-color:#1e0010>&#39;</span><span style=color:#a6e22e>msg</span><span style=color:#960050;background-color:#1e0010>&#39;</span>: <span style=color:#a6e22e>msg</span>,
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>JsonResponse</span>(<span style=color:#a6e22e>res</span>, <span style=color:#a6e22e>status</span>=<span style=color:#a6e22e>status</span>.<span style=color:#a6e22e>HTTP_403_FORBIDDEN</span>)
+</span></span></code></pre></div><p>比如这个是一个校验请求的用户是否有权限访问相关路径的功能。如果没有报错（返回值为None），Django 就会执行下一个中间件，否则直接把方法 return 的内容返回作为 response，不再执行其他中间件。</p><h2 id=process_view>
+process_view
+<a class=anchor href=#process_view>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>process_view(request, view_func, view_args, view_kwargs)
+</span></span></code></pre></div><ul>
+<li><code>request</code> ： <code>HttpRequest</code> 对象。</li><li><code>view_func</code> ：真正的业务逻辑视图函数。</li><li><code>view_args</code> ：位置参数列表</li><li><code>view_kwargs</code> ：关键字参数字典</li></ul><p>方法的返回值可以是 None 或一个 HttpResponse 对象，如果是 None，则继续按照 django 定义的规则向后继续执行，如果是 HttpResponse 对象，则直接将该对象返回给用户。</p><p><code>process_view</code> 在Django调用真正的业务视图之前被执行，并且以<strong>正序</strong>执行。当 <code>process_request</code> 正常执行完毕后，会进入 urlconf 路由阶段，并查找对应的视图，在执行视图函数之前，会先执行<code>process_view</code> 中间件钩子。</p><h2 id=process_exception>
+process_exception
+<a class=anchor href=#process_exception>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>process_exception(request, exception)
+</span></span></code></pre></div><p>如果一个请求在视图层的执行过程中引发了异常，并且视图代码没有捕获这个错误，就可以 <code>process_exception</code> 来捕获这个异常，<code>process_exception()</code> 要么返回一个 <code>None</code> ，要么返回一个 <code>HttpResponse</code> 对象。如果返回的是<code>HttpResponse</code>对象 ，模板响应和响应中间件将被调用 ，否则进行正常的异常处理流程。</p><p>可以推断出，此时是以逆序的方式调用每个中间件的 <code>process_exception</code>方法。</p><h2 id=process_template_response>
+process_template_response
+<a class=anchor href=#process_template_response>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>process_template_response(request, response)
+</span></span></code></pre></div><p>request 是一个 HttpRequest 对象，response 是 TemplateResponse 对象，它通过 Django 视图或中间件返回。<code>process_template_response</code> 必须返回一个实现了 <code>render</code> 方法的响应对象，否则不会触发此方法。它可以通过改变<code>response.template_name</code> 和 <code>response.context_data</code> 来改变给定的 <code>response</code> ，然后将 <code>response</code> 对象给到 <code>process_response</code>。</p><h2 id=process_response>
+process_response
+<a class=anchor href=#process_response>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span>process_response(request, response)
+</span></span></code></pre></div><p><code>process_response</code> 有两个参数，request 和 response，request是请求内容，response 是视图函数返回的 HttpResponse 对象。该方法的返回值必须是一个 HttpResponse 对象，不能是None。<code>process_response</code> 不会中断整个流程，Django 会依次逆向执行完每个中间件的 <code>process_response</code> 方法。</p><h2 id=总结>
+总结
+<a class=anchor href=#%e6%80%bb%e7%bb%93>#</a>
+</h2><p>每到 Django 需要执行中间件的阶段，都是整个 <code>MIDDLEWARE</code> 列表中每个中间件的 process_xx 方法按顺序走一遍，不过在视图前执行的是正序，在视图后执行的是逆序。</p><p>最后顺便推荐一下我实现的一个基于 Django Middleware 的 API 权限校验器，可以根据正则表达式对各个用户组所请求的 URL 进行校验，只在 URL 对应的正则公式不通过时返回 403，不干预业务，非常实用，发在了 <a href=https://github.com/tcitry/django-api-permission>Github</a>。</p></article><div>
+<h5 class=post-after>本文共 1431 字，上次修改于 Sep 27, 2023，以 <a href=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh>CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5><div id=navigation-mobile>
+<p>上一篇：<a href=https://yindongliang.com/posts/sql-join/>数据库的 join 连接类型</a></p><p>下一篇：<a href=https://yindongliang.com/posts/wow-travel-guide/>魔兽世界漫游指南 - 历史篇</a></p></div><h2 style=color:darkgrey>相关文章</h2><div class=post>
+<p><h3><time style=color:darkgrey>2017-02-23</time> » <a href=/posts/django-soft-delete/>
+Django 的软删除设计
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2016-10-20</time> » <a href=/posts/talk-about-django-rest-framework/>
+浅谈 Django-REST-Framework 的设计与源码
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2015-07-11</time> » <a href=/posts/ubuntu-deploy-django/>
+Ubuntu 下部署 Django 应用
+</a></h3></p></div><script src=https://giscus.app/client.js data-repo=tcitry/tcitry.github.io data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" data-category=Announcements data-category-id=DIC_kwDOCMyx684COMlk data-mapping=og:title data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script>
+</div><footer class=book-footer>
+<div class="flex flex-wrap justify-between">
+</div><script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+</footer><label for=menu-control class="hidden book-menu-overlay"></label>
+</div><aside class=book-toc>
+<div class=book-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#middleware>MIDDLEWARE</a></li><li><a href=#process_request>process_request</a></li><li><a href=#process_view>process_view</a></li><li><a href=#process_exception>process_exception</a></li><li><a href=#process_template_response>process_template_response</a></li><li><a href=#process_response>process_response</a></li><li><a href=#总结>总结</a></li></ul></nav></div></aside></main><div id=navigation>
+<a class="nav nav-left" href=https://yindongliang.com/posts/sql-join/ title="上一篇：数据库的 join 连接类型"><i class=fa-left></i></a>
+<a class="nav nav-right" href=https://yindongliang.com/posts/wow-travel-guide/ title="下一篇：魔兽世界漫游指南 - 历史篇"><i class=fa-right></i></a>
+</div><script>document.onkeydown=function(e){if(e.code==="ArrowLeft"){let e=document.getElementsByClassName("nav nav-left");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}else if(e.code==="ArrowRight"){let e=document.getElementsByClassName("nav nav-right");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}}</script>
+<script src=/gumshoe.polyfills.min.js></script>
+<script>new Gumshoe(".book-toc a",{nested:!0})</script>
+<style>.book-toc li.active>a{font-weight:700}</style><script src=/fast-image-zoom.js></script>
+<script>imageZoom()</script>
+<link rel=stylesheet href=/katex/katex.min.css>
+<script src=/katex/katex.min.js></script>
+<script src=/katex/auto-render.min.js onload=renderMathInElement(document.body)></script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+<script>ts=document.getElementsByTagName("a");for(const e of ts)e.href&&!(e.href.startsWith("http://localhost")|e.href.startsWith("https://yindongliang.com"))&&(e.target="_blank")</script>
+</body></html>

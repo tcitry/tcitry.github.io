@@ -1,0 +1,389 @@
+<!doctype html><html lang=zh-cn dir=ltr>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=description content="正在看王爽的《汇编语言》，因为我在 Mac M1 环境，按书上做汇编实验的话，搜索了一圈发现 DOSBox 应该可以满足我的需要，它是一个跨平台的可以运行 MS-DOS 的模拟器。 DOSBox # 下载地址 https://www.dosbox.com/ 这个模拟器应该是被一些老玩家拿来玩上世纪 80 年代">
+<meta name=theme-color content="#FFFFFF">
+<meta name=color-scheme content="light dark"><meta property="og:title" content="使用 DOSBox 和 Debug 命令调试汇编程序">
+<meta property="og:description" content="正在看王爽的《汇编语言》，因为我在 Mac M1 环境，按书上做汇编实验的话，搜索了一圈发现 DOSBox 应该可以满足我的需要，它是一个跨平台的可以运行 MS-DOS 的模拟器。 DOSBox # 下载地址 https://www.dosbox.com/ 这个模拟器应该是被一些老玩家拿来玩上世纪 80 年代">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yindongliang.com/posts/dosbox-and-debug-usage/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-01-24T00:00:00+00:00">
+<meta property="article:modified_time" content="2024-01-28T14:16:39+08:00">
+<title>
+使用 DOSBox 和 Debug 命令调试汇编程序
+</title><link rel=manifest href=/manifest.json>
+<link rel=icon href=/favicon.png type=image/x-icon>
+<link rel=stylesheet href=/book.min.7ddffcff7348380c70e43d3b4ab992503f90110553d5bfe5868e7d1aa2b80633.css integrity="sha256-fd/8/3NIOAxw5D07SrmSUD+QEQVT1b/lho59GqK4BjM=" crossorigin=anonymous>
+<script defer src=/flexsearch.min.js></script>
+<script defer src=/zh-cn.search.min.2c190993d62f294238012cea6b0bb36d326434bd9ba923f25c1b780b368e6efa.js integrity="sha256-LBkJk9YvKUI4ASzqawuzbTJkNL2bqSPyXBt4CzaObvo=" crossorigin=anonymous></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),window.location.hostname==="localhost"?gtag("config","G-Q20952BPE6",{send_page_view:!1,debug_mode:!0}):gtag("config","G-Q20952BPE6")</script>
+</head><body dir=ltr>
+<input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control>
+<main class="container flex">
+<aside class=book-menu>
+<div class=book-menu-content>
+<nav>
+<h2 class=book-brand>
+<a class="flex align-center" href=/><img src=/logo.gif alt><span>殷东亮的博客</span>
+</a>
+</h2><div class=book-search>
+<input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/>
+<div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul>
+<li><a href=/archives>Archives</a></li><li><a href=/weekly>Weekly🔥</a></li><li><a href=/projects>Projects</a></li><li><a href=/about>About</a></li><li><a href=https://github.com/tcitry target=_blank>Github</a></li><li><a href=/posts/index.xml target=_blank>RSS</a></li></ul><hr class=hr-edge-weak>
+<ul>
+<li>
+<input type=checkbox id=section-374f93193c235d5a59a63115829f835e class=toggle>
+<label for=section-374f93193c235d5a59a63115829f835e class="flex justify-between">
+<a href=/docs/Algorithms/>Algorithms</a>
+</label>
+<ul>
+<li>
+<input type=checkbox id=section-6fa75fabfcaf0942c2ae40739a024515 class=toggle>
+<label for=section-6fa75fabfcaf0942c2ae40739a024515 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>数据结构</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%93%BE%E8%A1%A8/>链表（Linked list）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E7%BB%84/>数组（Array）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%AD%97%E7%AC%A6%E4%B8%B2/>字符串（String）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%98%9F%E5%88%97/>队列（Queue）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%A0%88/>栈（Stack）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%93%88%E5%B8%8C%E8%A1%A8/>哈希表（Hash Table）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E4%BA%8C%E5%8F%89%E6%A0%91/>二叉树（Binary Tree）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A0%86/>堆（Heap）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%89%8D%E7%BC%80%E6%A0%91/>前缀树（Trie）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%A2%E9%BB%91%E6%A0%91/>红黑树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/B-tree/>B 树</a>
+</li></ul></li><li>
+<input type=checkbox id=section-60c1cc56ab667711423fd030bb7d2ba4 class=toggle>
+<label for=section-60c1cc56ab667711423fd030bb7d2ba4 class="flex justify-between">
+<a role=button>常用算法</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/recursion/>递归</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/>贪心算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/>滑动窗口</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/>动态规划</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8F%8C%E6%8C%87%E9%92%88/>双指针</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/>二分查找</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/>排序算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/BFS-%E5%92%8C-DFS/>BFS 和 DFS</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%88%86%E6%B2%BB%E7%AD%96%E7%95%A5/>分治策略</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%89%8D%E7%BC%80%E5%92%8C/>前缀和</a>
+</li></ul></li><li>
+<input type=checkbox id=section-34a5846db21bfdffc261709474d4c2c2 class=toggle>
+<label for=section-34a5846db21bfdffc261709474d4c2c2 class="flex justify-between">
+<a role=button>经典问题</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/>打家劫舍</a>
+</li><li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/>字符串匹配</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3acc3c018b0cf870114fc4c04b8fe75a class=toggle>
+<label for=section-3acc3c018b0cf870114fc4c04b8fe75a class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/>数学基础</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/>微积分</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/>概率统计</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/>线性代数</a>
+</li></ul></li><li>
+<input type=checkbox id=section-6a4c402b2954211b8a56520549766ad2 class=toggle>
+<label for=section-6a4c402b2954211b8a56520549766ad2 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/>线性模型</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/>周志华西瓜树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/>集体智慧编程</a>
+</li></ul></li></ul></li><li>
+<input type=checkbox id=section-ab6241a9c9348727e1ed30d9d7253a0e class=toggle>
+<label for=section-ab6241a9c9348727e1ed30d9d7253a0e class="flex justify-between">
+<a href=/docs/Golang/>Golang</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Golang/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Golang/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Golang/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/>代码规范</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3ca9a5c09bd1884bf69ade02a8e53628 class=toggle>
+<label for=section-3ca9a5c09bd1884bf69ade02a8e53628 class="flex justify-between">
+<a href=/docs/Linux/>Linux</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Linux/regular-expression/>正则表达式</a>
+</li><li>
+<a href=/docs/Linux/Shell/>Shell</a>
+</li><li>
+<a href=/docs/Linux/Spark/>Spark</a>
+</li><li>
+<a href=/docs/Linux/Docker/>Docker</a>
+</li><li>
+<a href=/docs/Linux/git/>Git 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-fdf3c0f524378d36bb3d2441d08ad8e8 class=toggle>
+<label for=section-fdf3c0f524378d36bb3d2441d08ad8e8 class="flex justify-between">
+<a href=/docs/Rust/>Rust</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Rust/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li></ul></li><li>
+<input type=checkbox id=section-f6f1cb8b3cab23098be63dcbede4acb5 class=toggle>
+<label for=section-f6f1cb8b3cab23098be63dcbede4acb5 class="flex justify-between">
+<a role=button>Xcode</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Xcode/Swift/>Swift</a>
+</li><li>
+<a href=/docs/Xcode/SwiftUI/>SwiftUI</a>
+</li><li>
+<a href=/docs/Xcode/Objective-C-%E8%AF%AD%E6%B3%95/>Objective-C</a>
+</li><li>
+<a href=/docs/Xcode/mac-%E6%8A%80%E5%B7%A7/>Mac 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-5f6c61ca509f9ca14a383db36b14a32f class=toggle>
+<label for=section-5f6c61ca509f9ca14a383db36b14a32f class="flex justify-between">
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/>软件工程</a>
+</label>
+<ul>
+<li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/peopleware/>人件</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/>Unix 编程艺术</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E4%B9%8B%E9%81%93/>程序员修炼之道</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/>一些定律</a>
+</li></ul></li><li>
+<input type=checkbox id=section-b708f687fcc1dc14b13a93ba85e8845b class=toggle>
+<label for=section-b708f687fcc1dc14b13a93ba85e8845b class="flex justify-between">
+<a href=/docs/Clang/>C/C++</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Clang/C/>C 语言基础</a>
+</li><li>
+<a href=/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/>系统调用</a>
+</li><li>
+<a href=/docs/Clang/C-%E6%A0%87%E5%87%86%E5%BA%93/>C 标准库</a>
+</li><li>
+<a href=/docs/Clang/C++/>C++ 语言基础</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3beaf640f7d27429884edb43bd1a0ec7 class=toggle>
+<label for=section-3beaf640f7d27429884edb43bd1a0ec7 class="flex justify-between">
+<a href=/docs/FE/>FE</a>
+</label>
+<ul>
+<li>
+<a href=/docs/FE/JavaScript/>JavaScript</a>
+</li><li>
+<a href=/docs/FE/js-buildin-objects/>JS 内置对象</a>
+</li><li>
+<a href=/docs/FE/TypeScript/>TypeScript</a>
+</li><li>
+<a href=/docs/FE/BOM/>BOM</a>
+</li><li>
+<a href=/docs/FE/DOM/>DOM</a>
+</li><li>
+<a href=/docs/FE/node/>Node</a>
+</li><li>
+<a href=/docs/FE/Deno/>Deno</a>
+</li><li>
+<a href=/docs/FE/vue/>Vue</a>
+</li><li>
+<a href=/docs/FE/react/>React</a>
+</li><li>
+<a href=/docs/FE/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/>依赖管理</a>
+</li><li>
+<a href=/docs/FE/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/>构建工具</a>
+</li><li>
+<a href=/docs/FE/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/FE/%E6%8F%92%E4%BB%B6/>插件</a>
+</li></ul></li><li>
+<input type=checkbox id=section-8ca541663a7d7fd63c79c6ce40ab5b81 class=toggle>
+<label for=section-8ca541663a7d7fd63c79c6ce40ab5b81 class="flex justify-between">
+<a href=/docs/Python/>Python</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/Python/Numpy/>Numpy</a>
+</li><li>
+<a href=/docs/Python/Pandas/>Pandas</a>
+</li></ul></li></ul></nav><script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+</div></aside><div class=book-page>
+<header class=book-header>
+<div class="flex align-center justify-between">
+<label for=menu-control>
+<img src=/svg/menu.svg class=book-icon alt>
+</label>
+<strong>
+使用 DOSBox 和 Debug 命令调试汇编程序
+</strong>
+<label for=toc-control>
+<img src=/svg/toc.svg class=book-icon alt>
+</label>
+</div><aside class="hidden clearfix">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#dosbox>DOSBox</a></li><li><a href=#debug>Debug</a></li><li><a href=#masm>MASM</a></li><li><a href=#nasm>NASM</a></li><li><a href=#编译>编译</a></li><li><a href=#链接>链接</a></li><li><a href=#装载>装载</a></li></ul></nav></aside></header><article class=markdown>
+<h1>
+<a href=/posts/dosbox-and-debug-usage/>使用 DOSBox 和 Debug 命令调试汇编程序</a>
+</h1><h5>Jan 24, 2021</h5><div>
+<a href=/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/>操作系统</a>,
+<a href=/tags/%E5%B7%A5%E5%85%B7/>工具</a>,
+<a href=/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/>编译原理</a>
+</div><p>
+<img src=https://raw.githubusercontent.com/tcitry/static/master/uPic/%e6%88%aa%e5%b1%8f2022-06-04%2017.31.36.png>
+</p><p>正在看王爽的《汇编语言》，因为我在 Mac M1 环境，按书上做汇编实验的话，搜索了一圈发现 DOSBox 应该可以满足我的需要，它是一个跨平台的可以运行 MS-DOS 的模拟器。</p><h2 id=dosbox>
+DOSBox
+<a class=anchor href=#dosbox>#</a>
+</h2><p>下载地址 <a href=https://www.dosbox.com/>https://www.dosbox.com/</a></p><p>这个模拟器应该是被一些老玩家拿来玩上世纪 80 年代的 DOS 游戏了，就像美剧少年谢尔顿里面那样的。</p><h2 id=debug>
+Debug
+<a class=anchor href=#debug>#</a>
+</h2><p>介绍 <a href=https://en.wikipedia.org/wiki/Debug_%28command%29>https://en.wikipedia.org/wiki/Debug_(command)</a></p><p>下载地址</p><ul>
+<li><a href=https://github.com/microsoft/MS-DOS/tree/master/v2.0/bin>https://github.com/microsoft/MS-DOS/tree/master/v2.0/bin</a></li></ul><p>使用手册：</p><ul>
+<li><a href=https://thestarman.pcministry.com/asm/debug/debug.htm>A Guide to DEBUG</a></li><li><a href=https://montcs.bloomu.edu/Information/LowLevel/DOS-Debug.html>MS-DOS Debug Commands</a></li></ul><table>
+<thead>
+<tr>
+<th>MS-DOS Debug Commands</th><th>CMD</th><th>PARAM</th></tr></thead><tbody>
+<tr>
+<td>assemble</td><td>A</td><td>[address]</td></tr><tr>
+<td>compare</td><td>C</td><td>range address</td></tr><tr>
+<td>dump</td><td>D</td><td>[range]</td></tr><tr>
+<td>enter</td><td>E</td><td>address [list]</td></tr><tr>
+<td>fill</td><td>F</td><td>range list</td></tr><tr>
+<td>go</td><td>G</td><td>[=address] [addresses]</td></tr><tr>
+<td>hex</td><td>H</td><td>value1 value2</td></tr><tr>
+<td>input</td><td>I</td><td>port</td></tr><tr>
+<td>load</td><td>L</td><td>[address] [drive] [firstsector] [number]</td></tr><tr>
+<td>move</td><td>M</td><td>range address</td></tr><tr>
+<td>name</td><td>N</td><td>[pathname] [arglist]</td></tr><tr>
+<td>output</td><td>O</td><td>port byte</td></tr><tr>
+<td>proceed</td><td>P</td><td>[=address] [number]</td></tr><tr>
+<td>quit</td><td>Q</td><td></td></tr><tr>
+<td>register</td><td>R</td><td>[register]</td></tr><tr>
+<td>search</td><td>S</td><td>range list</td></tr><tr>
+<td>trace</td><td>T</td><td>[=address] [number]</td></tr><tr>
+<td>unassemble</td><td>U</td><td>[range]</td></tr><tr>
+<td>write</td><td>W</td><td>[address] [drive] [firstsector] [number]</td></tr></tbody></table><p>微软的 <a href=https://github.com/microsoft/MS-DOS>MS-DOS</a> 项目里的 <code>DEBUG.COM</code> 文件对应的就是 Debug 程序，它是一个 <code>.COM</code> 类型文件。</p><p><code>.COM</code> 文件也被称为 DOS 命令文件，一个 COM 文件的内容进行编码的二进制格式，可容纳高达 64 KB 的代码。这些 COM 文件也被归类为可执行文件，但不像 EXE 文件，没有连接到一个 COM 文件的元数据信息或文件头。一个的内容 <code>.COM</code> 文件通常包括使用内置的 DOS 资源来执行某些操作的指令或命令。这些指令和命令通过 Windows 命令提示符的正常进行。这些内容 .COM 文件可以查看和使用在其他文本编辑程序 Microsoft 记事本编辑。</p><h2 id=masm>
+MASM
+<a class=anchor href=#masm>#</a>
+</h2><p>是微软公司为 x86 微处理器家族开发的汇编开发环境。</p><p><a href=https://zh.wikipedia.org/zh/MASM>https://zh.wikipedia.org/zh/MASM</a></p><p>下载地址</p><ul>
+<li><a href=https://docs.microsoft.com/en-us/cpp/assembler/masm/masm-for-x64-ml64-exe>https://docs.microsoft.com/en-us/cpp/assembler/masm/masm-for-x64-ml64-exe</a> 有最新的介绍，但是没有下载连接</li><li><a href=http://www2.hawaii.edu/~pager/312/masm%20615%20downloading.htm>http://www2.hawaii.edu/~pager/312/masm%20615%20downloading.htm</a> 三方机构提供的 6.15 版本</li><li><a href=https://github.com/microsoft/MS-DOS>https://github.com/microsoft/MS-DOS</a> 只有更早期的 1.0 版本</li></ul><p>现在寻找能运行的 Debug、MASM 程序，整体感觉是在考古。</p><p>注意有一个 MASM32（https://www.masm32.com/）下载链接已 404，MASM32 并非是指 Microsoft 的 MASM 宏汇编器。MASM32 是一个由个人开发的包含了不同版本工具组建的汇编开发工具包。</p><h2 id=nasm>
+NASM
+<a class=anchor href=#nasm>#</a>
+</h2><p>后来发现在 Mac 上还有另一款编译器来调试汇编程序，就是 NASM。它也是一款基于英特尔 x86 架构的汇编与反汇编工具。它可以用来编写16位、32位（IA-32）和64位（x86-64）的程序。 NASM 被认为是 Linux 平台上最受欢迎的汇编工具之一。</p><p><a href=https://www.nasm.us/>https://www.nasm.us/</a></p><p>直接在 Mac 上编写汇编指令还是挺危险的，因为实验性的代码里指定的内存地址是真实的内存地址，最好还是在虚拟机里面运行，所以还是回到了 DOSBox，NASM 先搁置不细看了。</p><h2 id=编译>
+编译
+<a class=anchor href=#%e7%bc%96%e8%af%91>#</a>
+</h2><p>编译的作用是将汇编程序转化成包含机器代码的目标文件。</p><p>使用 <code>masm</code> 命令进行编译，由 <code>1.ass</code> 生成 <code>1.obj</code>。</p><p>下面是 <code>1.ass</code></p><pre tabindex=0><code class=language-assembly data-lang=assembly>assume cs:codesg
+
+codesg segment
+	mov ax, 0123H
+	mov bx, 0456H
+	add ax, bx
+	add ax, ax
+	
+	mov ax, 4c00H
+	int 21H
+codesg ends
+
+end
+</code></pre><h2 id=链接>
+链接
+<a class=anchor href=#%e9%93%be%e6%8e%a5>#</a>
+</h2><p>只有目标文件还不够，我们还需要链接器完成以下几个任务：</p><ol>
+<li>当源程序很大时，编译器可以可以将文件分别编译成目标文件，然后还需要通过链接器将它们连接到一起，生成一个可执行文件。</li><li>如果程序调用了某个库文件中的子程序，需要将这个库文件和该程序生成的目标文件连接到一起，生成一个可执行文件。</li><li>存有机器码的目标文件还不能直接运行，链接器会将目标文件处理成可执行文件。</li></ol><p>使用 <code>link</code> 程序进行链接，由 <code>1.obj</code> 生成可执行文件 <code>1.exe</code>。</p><h2 id=装载>
+装载
+<a class=anchor href=#%e8%a3%85%e8%bd%bd>#</a>
+</h2><p><code>1.exe</code> 是一个硬盘上的文件，需要运行的话必须要被放入内存中，这个过程叫做“装载”。</p><p>可以通过 <code>debug 1.exe</code> 进行单步调试。</p><img src=https://raw.githubusercontent.com/tcitry/static/master/uPic/image-20220611104216946.png style=zoom:50%>
+<p>程序加载后，寄存器 DS 中存放着程序所在内存区的段地址，这个内存区的偏移地址为 0，则程序所在的内存区的地址为 <code>DS:0</code> 。同时，内存区的前 256 个字节存放的是 PSP（程序段前缀），是 DOS 用来和程序进程通信的，从 256 字节处向后的空间存放的是程序。</p></article><div>
+<h5 class=post-after>本文共 1257 字，上次修改于 Jan 28, 2024，以 <a href=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh>CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5><div id=navigation-mobile>
+<p>上一篇：<a href=https://yindongliang.com/posts/writing-assembly-code/>汇编语言不会编？</a></p><p>下一篇：<a href=https://yindongliang.com/posts/memory-management-in-os/>操作系统的内存管理机制</a></p></div><h2 style=color:darkgrey>相关文章</h2><div class=post>
+<p><h3><time style=color:darkgrey>2021-01-21</time> » <a href=/posts/writing-assembly-code/>
+汇编语言不会编？
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2021-01-02</time> » <a href=/posts/cpu-register/>
+CPU 与寄存器
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2020-04-01</time> » <a href=/posts/use-typora-write-hugo-blog/>
+使用 Typora 来编辑你的 Hugo 博客
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2019-12-01</time> » <a href=/posts/use-github-action/>
+Github Actions 实践总结
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2019-10-11</time> » <a href=/posts/talk-about-graphql/>
+说说实际工作中 GraphQL 的使用体验
+</a></h3></p></div><script src=https://giscus.app/client.js data-repo=tcitry/tcitry.github.io data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" data-category=Announcements data-category-id=DIC_kwDOCMyx684COMlk data-mapping=og:title data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script>
+</div><footer class=book-footer>
+<div class="flex flex-wrap justify-between">
+</div><script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+</footer><label for=menu-control class="hidden book-menu-overlay"></label>
+</div><aside class=book-toc>
+<div class=book-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#dosbox>DOSBox</a></li><li><a href=#debug>Debug</a></li><li><a href=#masm>MASM</a></li><li><a href=#nasm>NASM</a></li><li><a href=#编译>编译</a></li><li><a href=#链接>链接</a></li><li><a href=#装载>装载</a></li></ul></nav></div></aside></main><div id=navigation>
+<a class="nav nav-left" href=https://yindongliang.com/posts/writing-assembly-code/ title=上一篇：汇编语言不会编？><i class=fa-left></i></a>
+<a class="nav nav-right" href=https://yindongliang.com/posts/memory-management-in-os/ title=下一篇：操作系统的内存管理机制><i class=fa-right></i></a>
+</div><script>document.onkeydown=function(e){if(e.code==="ArrowLeft"){let e=document.getElementsByClassName("nav nav-left");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}else if(e.code==="ArrowRight"){let e=document.getElementsByClassName("nav nav-right");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}}</script>
+<script src=/gumshoe.polyfills.min.js></script>
+<script>new Gumshoe(".book-toc a",{nested:!0})</script>
+<style>.book-toc li.active>a{font-weight:700}</style><script src=/fast-image-zoom.js></script>
+<script>imageZoom()</script>
+<link rel=stylesheet href=/katex/katex.min.css>
+<script src=/katex/katex.min.js></script>
+<script src=/katex/auto-render.min.js onload=renderMathInElement(document.body)></script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+<script>ts=document.getElementsByTagName("a");for(const e of ts)e.href&&!(e.href.startsWith("http://localhost")|e.href.startsWith("https://yindongliang.com"))&&(e.target="_blank")</script>
+</body></html>

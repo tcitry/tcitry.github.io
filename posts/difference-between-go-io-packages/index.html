@@ -1,0 +1,487 @@
+<!doctype html><html lang=zh-cn dir=ltr>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=description content="工作中需要用 Go 读写一些 Excel 表等类型的文件，发现 Go 提供了很多关于 I/O 操作的包，比如 io、ioutil、bufio 等，于是在这里总结一下，主要目标是理清几个包之间在使用时如何选择。 io # io 库提供了底层的接口定义">
+<meta name=theme-color content="#FFFFFF">
+<meta name=color-scheme content="light dark"><meta property="og:title" content="Go 标准库中涉及 I/O 操作的几个包的区别">
+<meta property="og:description" content="工作中需要用 Go 读写一些 Excel 表等类型的文件，发现 Go 提供了很多关于 I/O 操作的包，比如 io、ioutil、bufio 等，于是在这里总结一下，主要目标是理清几个包之间在使用时如何选择。 io # io 库提供了底层的接口定义">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yindongliang.com/posts/difference-between-go-io-packages/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2020-01-15T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-06-16T15:22:17+08:00">
+<title>
+Go 标准库中涉及 I/O 操作的几个包的区别
+</title><link rel=manifest href=/manifest.json>
+<link rel=icon href=/favicon.png type=image/x-icon>
+<link rel=stylesheet href=/book.min.7ddffcff7348380c70e43d3b4ab992503f90110553d5bfe5868e7d1aa2b80633.css integrity="sha256-fd/8/3NIOAxw5D07SrmSUD+QEQVT1b/lho59GqK4BjM=" crossorigin=anonymous>
+<script defer src=/flexsearch.min.js></script>
+<script defer src=/zh-cn.search.min.2c190993d62f294238012cea6b0bb36d326434bd9ba923f25c1b780b368e6efa.js integrity="sha256-LBkJk9YvKUI4ASzqawuzbTJkNL2bqSPyXBt4CzaObvo=" crossorigin=anonymous></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),window.location.hostname==="localhost"?gtag("config","G-Q20952BPE6",{send_page_view:!1,debug_mode:!0}):gtag("config","G-Q20952BPE6")</script>
+</head><body dir=ltr>
+<input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control>
+<main class="container flex">
+<aside class=book-menu>
+<div class=book-menu-content>
+<nav>
+<h2 class=book-brand>
+<a class="flex align-center" href=/><img src=/logo.gif alt><span>殷东亮的博客</span>
+</a>
+</h2><div class=book-search>
+<input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/>
+<div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul>
+<li><a href=/archives>Archives</a></li><li><a href=/weekly>Weekly🔥</a></li><li><a href=/projects>Projects</a></li><li><a href=/about>About</a></li><li><a href=https://github.com/tcitry target=_blank>Github</a></li><li><a href=/posts/index.xml target=_blank>RSS</a></li></ul><hr class=hr-edge-weak>
+<ul>
+<li>
+<input type=checkbox id=section-374f93193c235d5a59a63115829f835e class=toggle>
+<label for=section-374f93193c235d5a59a63115829f835e class="flex justify-between">
+<a href=/docs/Algorithms/>Algorithms</a>
+</label>
+<ul>
+<li>
+<input type=checkbox id=section-6fa75fabfcaf0942c2ae40739a024515 class=toggle>
+<label for=section-6fa75fabfcaf0942c2ae40739a024515 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>数据结构</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%93%BE%E8%A1%A8/>链表（Linked list）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E7%BB%84/>数组（Array）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%AD%97%E7%AC%A6%E4%B8%B2/>字符串（String）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%98%9F%E5%88%97/>队列（Queue）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%A0%88/>栈（Stack）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%93%88%E5%B8%8C%E8%A1%A8/>哈希表（Hash Table）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E4%BA%8C%E5%8F%89%E6%A0%91/>二叉树（Binary Tree）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A0%86/>堆（Heap）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%89%8D%E7%BC%80%E6%A0%91/>前缀树（Trie）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%A2%E9%BB%91%E6%A0%91/>红黑树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/B-tree/>B 树</a>
+</li></ul></li><li>
+<input type=checkbox id=section-60c1cc56ab667711423fd030bb7d2ba4 class=toggle>
+<label for=section-60c1cc56ab667711423fd030bb7d2ba4 class="flex justify-between">
+<a role=button>常用算法</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/recursion/>递归</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/>贪心算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/>滑动窗口</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/>动态规划</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8F%8C%E6%8C%87%E9%92%88/>双指针</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/>二分查找</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/>排序算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/BFS-%E5%92%8C-DFS/>BFS 和 DFS</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%88%86%E6%B2%BB%E7%AD%96%E7%95%A5/>分治策略</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%89%8D%E7%BC%80%E5%92%8C/>前缀和</a>
+</li></ul></li><li>
+<input type=checkbox id=section-34a5846db21bfdffc261709474d4c2c2 class=toggle>
+<label for=section-34a5846db21bfdffc261709474d4c2c2 class="flex justify-between">
+<a role=button>经典问题</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/>打家劫舍</a>
+</li><li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/>字符串匹配</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3acc3c018b0cf870114fc4c04b8fe75a class=toggle>
+<label for=section-3acc3c018b0cf870114fc4c04b8fe75a class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/>数学基础</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/>微积分</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/>概率统计</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/>线性代数</a>
+</li></ul></li><li>
+<input type=checkbox id=section-6a4c402b2954211b8a56520549766ad2 class=toggle>
+<label for=section-6a4c402b2954211b8a56520549766ad2 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/>线性模型</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/>周志华西瓜树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/>集体智慧编程</a>
+</li></ul></li></ul></li><li>
+<input type=checkbox id=section-ab6241a9c9348727e1ed30d9d7253a0e class=toggle>
+<label for=section-ab6241a9c9348727e1ed30d9d7253a0e class="flex justify-between">
+<a href=/docs/Golang/>Golang</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Golang/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Golang/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Golang/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/>代码规范</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3ca9a5c09bd1884bf69ade02a8e53628 class=toggle>
+<label for=section-3ca9a5c09bd1884bf69ade02a8e53628 class="flex justify-between">
+<a href=/docs/Linux/>Linux</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Linux/regular-expression/>正则表达式</a>
+</li><li>
+<a href=/docs/Linux/Shell/>Shell</a>
+</li><li>
+<a href=/docs/Linux/Spark/>Spark</a>
+</li><li>
+<a href=/docs/Linux/Docker/>Docker</a>
+</li><li>
+<a href=/docs/Linux/git/>Git 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-fdf3c0f524378d36bb3d2441d08ad8e8 class=toggle>
+<label for=section-fdf3c0f524378d36bb3d2441d08ad8e8 class="flex justify-between">
+<a href=/docs/Rust/>Rust</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Rust/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li></ul></li><li>
+<input type=checkbox id=section-f6f1cb8b3cab23098be63dcbede4acb5 class=toggle>
+<label for=section-f6f1cb8b3cab23098be63dcbede4acb5 class="flex justify-between">
+<a role=button>Xcode</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Xcode/Swift/>Swift</a>
+</li><li>
+<a href=/docs/Xcode/SwiftUI/>SwiftUI</a>
+</li><li>
+<a href=/docs/Xcode/Objective-C-%E8%AF%AD%E6%B3%95/>Objective-C</a>
+</li><li>
+<a href=/docs/Xcode/mac-%E6%8A%80%E5%B7%A7/>Mac 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-5f6c61ca509f9ca14a383db36b14a32f class=toggle>
+<label for=section-5f6c61ca509f9ca14a383db36b14a32f class="flex justify-between">
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/>软件工程</a>
+</label>
+<ul>
+<li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/peopleware/>人件</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/>Unix 编程艺术</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E4%B9%8B%E9%81%93/>程序员修炼之道</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/>一些定律</a>
+</li></ul></li><li>
+<input type=checkbox id=section-b708f687fcc1dc14b13a93ba85e8845b class=toggle>
+<label for=section-b708f687fcc1dc14b13a93ba85e8845b class="flex justify-between">
+<a href=/docs/Clang/>C/C++</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Clang/C/>C 语言基础</a>
+</li><li>
+<a href=/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/>系统调用</a>
+</li><li>
+<a href=/docs/Clang/C-%E6%A0%87%E5%87%86%E5%BA%93/>C 标准库</a>
+</li><li>
+<a href=/docs/Clang/C++/>C++ 语言基础</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3beaf640f7d27429884edb43bd1a0ec7 class=toggle>
+<label for=section-3beaf640f7d27429884edb43bd1a0ec7 class="flex justify-between">
+<a href=/docs/FE/>FE</a>
+</label>
+<ul>
+<li>
+<a href=/docs/FE/JavaScript/>JavaScript</a>
+</li><li>
+<a href=/docs/FE/js-buildin-objects/>JS 内置对象</a>
+</li><li>
+<a href=/docs/FE/TypeScript/>TypeScript</a>
+</li><li>
+<a href=/docs/FE/BOM/>BOM</a>
+</li><li>
+<a href=/docs/FE/DOM/>DOM</a>
+</li><li>
+<a href=/docs/FE/node/>Node</a>
+</li><li>
+<a href=/docs/FE/Deno/>Deno</a>
+</li><li>
+<a href=/docs/FE/vue/>Vue</a>
+</li><li>
+<a href=/docs/FE/react/>React</a>
+</li><li>
+<a href=/docs/FE/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/>依赖管理</a>
+</li><li>
+<a href=/docs/FE/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/>构建工具</a>
+</li><li>
+<a href=/docs/FE/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/FE/%E6%8F%92%E4%BB%B6/>插件</a>
+</li></ul></li><li>
+<input type=checkbox id=section-8ca541663a7d7fd63c79c6ce40ab5b81 class=toggle>
+<label for=section-8ca541663a7d7fd63c79c6ce40ab5b81 class="flex justify-between">
+<a href=/docs/Python/>Python</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/Python/Numpy/>Numpy</a>
+</li><li>
+<a href=/docs/Python/Pandas/>Pandas</a>
+</li></ul></li></ul></nav><script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+</div></aside><div class=book-page>
+<header class=book-header>
+<div class="flex align-center justify-between">
+<label for=menu-control>
+<img src=/svg/menu.svg class=book-icon alt>
+</label>
+<strong>
+Go 标准库中涉及 I/O 操作的几个包的区别
+</strong>
+<label for=toc-control>
+<img src=/svg/toc.svg class=book-icon alt>
+</label>
+</div><aside class="hidden clearfix">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#io>io</a>
+<ul>
+<li><a href=#reader-接口>Reader 接口</a></li><li><a href=#writer-接口>Writer 接口</a></li><li><a href=#closer-接口>Closer 接口</a></li></ul></li><li><a href=#ioioutil>io/ioutil</a>
+<ul>
+<li><a href=#readall>ReadAll</a></li><li><a href=#readfile>ReadFile</a></li><li><a href=#writefile>WriteFile</a></li><li><a href=#readdir>ReadDir</a></li></ul></li><li><a href=#iofs>io/fs</a></li><li><a href=#os>os</a></li><li><a href=#bufio>bufio</a>
+<ul>
+<li><a href=#reader>Reader</a></li><li><a href=#writer>Writer</a></li></ul></li><li><a href=#bytesbuffer>bytes.Buffer</a></li><li><a href=#fmt>fmt</a></li><li><a href=#总结>总结</a></li></ul></nav></aside></header><article class=markdown>
+<h1>
+<a href=/posts/difference-between-go-io-packages/>Go 标准库中涉及 I/O 操作的几个包的区别</a>
+</h1><h5>Jan 15, 2020</h5><div>
+<a href=/tags/Go/>Go</a>
+</div><p>工作中需要用 Go 读写一些 Excel 表等类型的文件，发现 Go 提供了很多关于 I/O 操作的包，比如 io、ioutil、bufio 等，于是在这里总结一下，主要目标是理清几个包之间在使用时如何选择。</p><h2 id=io>
+io
+<a class=anchor href=#io>#</a>
+</h2><p>io 库提供了底层的接口定义，还有一些常量，比如 <code>io.EOF</code>。最主要的，它定义了 <code>io.Reader</code> 、 <code>io.Writer</code> 和 <code>io.Closer</code> 等接口，在 Go 中很多方法都会引用这两些接口作为形参，比如：</p><ul>
+<li>os.File 同时实现了 io.Reader 和 io.Writer</li><li>strings.Reader 实现了 io.Reader</li><li>bufio.Reader/Writer 分别实现了 io.Reader 和 io.Writer</li><li>bytes.Buffer 同时实现了 io.Reader 和 io.Writer</li><li>bytes.Reader 实现了 io.Reader</li></ul><h3 id=reader-接口>
+Reader 接口
+<a class=anchor href=#reader-%e6%8e%a5%e5%8f%a3>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Reader</span> <span style=color:#66d9ef>interface</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Read</span>(<span style=color:#a6e22e>p</span> []<span style=color:#66d9ef>byte</span>) (<span style=color:#a6e22e>n</span> <span style=color:#66d9ef>int</span>, <span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><code>Read</code> 方法指定了读取一个长度为 len(p) 的 <code>[]byte</code> 数组，它需要返回一个读取到的长度 <code>n</code> 和 error，其中 (0 &lt;= n &lt;= len(p))，只要实现了这个方法的，就实现了 <code>Reader</code> 接口。</p><h3 id=writer-接口>
+Writer 接口
+<a class=anchor href=#writer-%e6%8e%a5%e5%8f%a3>#</a>
+</h3><p><code>Writer</code> 接口实现了一个 <code>Write</code> 方法，它接受一个 <code>byte</code> 类型的数组，并返回成功写入的长度 <code>n</code> 和遇到异常情况返回的 error，实现了这个 Write 方法，也就实现了 <code>Writer</code> 接口。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Writer</span> <span style=color:#66d9ef>interface</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Write</span>(<span style=color:#a6e22e>p</span> []<span style=color:#66d9ef>byte</span>) (<span style=color:#a6e22e>n</span> <span style=color:#66d9ef>int</span>, <span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=closer-接口>
+Closer 接口
+<a class=anchor href=#closer-%e6%8e%a5%e5%8f%a3>#</a>
+</h3><p>io 包还有一个 <code>Closer</code> 接口比较重要，很多资源都需要在操作（读写）完毕后进行 <code>close</code>。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Closer</span> <span style=color:#66d9ef>interface</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Close</span>() <span style=color:#66d9ef>error</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=ioioutil>
+io/ioutil
+<a class=anchor href=#ioioutil>#</a>
+</h2><p>ioutil 是 io 包下面的子包，以 io 库里的接口为基础，封装了一些常用的操作，比如读取文件。不过在 go 1.16 以后，这些函数几乎都变成了直接调用 <code>os</code> 包里的函数，除了 <code>ReadDir</code> 和 <code>ReadAll</code>。</p><h3 id=readall>
+<del>ReadAll</del>
+<a class=anchor href=#readall>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// As of Go 1.16, this function simply calls io.ReadAll.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>ReadAll</span>(<span style=color:#a6e22e>r</span> <span style=color:#a6e22e>io</span>.<span style=color:#a6e22e>Reader</span>) ([]<span style=color:#66d9ef>byte</span>, <span style=color:#66d9ef>error</span>) {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>io</span>.<span style=color:#a6e22e>ReadAll</span>(<span style=color:#a6e22e>r</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=readfile>
+<del>ReadFile</del>
+<a class=anchor href=#readfile>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// As of Go 1.16, this function simply calls os.ReadFile.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>ReadFile</span>(<span style=color:#a6e22e>filename</span> <span style=color:#66d9ef>string</span>) ([]<span style=color:#66d9ef>byte</span>, <span style=color:#66d9ef>error</span>) {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>ReadFile</span>(<span style=color:#a6e22e>filename</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=writefile>
+<del>WriteFile</del>
+<a class=anchor href=#writefile>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// As of Go 1.16, this function simply calls os.WriteFile.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>WriteFile</span>(<span style=color:#a6e22e>filename</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>data</span> []<span style=color:#66d9ef>byte</span>, <span style=color:#a6e22e>perm</span> <span style=color:#a6e22e>fs</span>.<span style=color:#a6e22e>FileMode</span>) <span style=color:#66d9ef>error</span> {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>WriteFile</span>(<span style=color:#a6e22e>filename</span>, <span style=color:#a6e22e>data</span>, <span style=color:#a6e22e>perm</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=readdir>
+ReadDir
+<a class=anchor href=#readdir>#</a>
+</h3><p><code>ioutil.ReadDir</code> 读取目录并返回排好序的文件和子目录信息：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// ReadDir reads the directory named by dirname and returns
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// a list of fs.FileInfo for the directory&#39;s contents,
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// sorted by filename. If an error occurs reading the directory,
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// ReadDir returns no directory entries along with the error.
+</span></span></span><span style=display:flex><span><span style=color:#75715e>//
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// As of Go 1.16, os.ReadDir is a more efficient and correct choice:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// it returns a list of fs.DirEntry instead of fs.FileInfo,
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// and it returns partial results in the case of an error
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// midway through reading a directory.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>ReadDir</span>(<span style=color:#a6e22e>dirname</span> <span style=color:#66d9ef>string</span>) ([]<span style=color:#a6e22e>fs</span>.<span style=color:#a6e22e>FileInfo</span>, <span style=color:#66d9ef>error</span>) {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>f</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>Open</span>(<span style=color:#a6e22e>dirname</span>)
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>, <span style=color:#a6e22e>err</span>
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>list</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>f</span>.<span style=color:#a6e22e>Readdir</span>(<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>f</span>.<span style=color:#a6e22e>Close</span>()
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>, <span style=color:#a6e22e>err</span>
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>sort</span>.<span style=color:#a6e22e>Slice</span>(<span style=color:#a6e22e>list</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>i</span>, <span style=color:#a6e22e>j</span> <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>bool</span> { <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>list</span>[<span style=color:#a6e22e>i</span>].<span style=color:#a6e22e>Name</span>() &lt; <span style=color:#a6e22e>list</span>[<span style=color:#a6e22e>j</span>].<span style=color:#a6e22e>Name</span>() })
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>list</span>, <span style=color:#66d9ef>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><code>ReadDir</code> 没有转发到 os 下面，源码的注释强调了 <code>os.ReadDir</code> 是一个更好的选择，对比了下，两个函数的返回值类型是不一样的，下面是 <code>os.ReadDir</code>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// ReadDir reads the named directory,
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// returning all its directory entries sorted by filename.
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// If an error occurs reading the directory,
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// ReadDir returns the entries it was able to read before the error,
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// along with the error.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>ReadDir</span>(<span style=color:#a6e22e>name</span> <span style=color:#66d9ef>string</span>) ([]<span style=color:#a6e22e>DirEntry</span>, <span style=color:#66d9ef>error</span>) {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>f</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Open</span>(<span style=color:#a6e22e>name</span>)
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>, <span style=color:#a6e22e>err</span>
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>f</span>.<span style=color:#a6e22e>Close</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>dirs</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>f</span>.<span style=color:#a6e22e>ReadDir</span>(<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>sort</span>.<span style=color:#a6e22e>Slice</span>(<span style=color:#a6e22e>dirs</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>i</span>, <span style=color:#a6e22e>j</span> <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>bool</span> { <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>dirs</span>[<span style=color:#a6e22e>i</span>].<span style=color:#a6e22e>Name</span>() &lt; <span style=color:#a6e22e>dirs</span>[<span style=color:#a6e22e>j</span>].<span style=color:#a6e22e>Name</span>() })
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>dirs</span>, <span style=color:#a6e22e>err</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>仔细看代码，两者的底层就是 <code>file.Readdir</code> 和 <code>file.ReadDir</code> 的区别（注意大小写），看返回值就是 <code>DirEntry</code> 和 <code>FileInfo</code> 的区别。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>FileInfo</span> <span style=color:#66d9ef>interface</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Name</span>() <span style=color:#66d9ef>string</span>       <span style=color:#75715e>// base name of the file
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>Size</span>() <span style=color:#66d9ef>int64</span>        <span style=color:#75715e>// length in bytes for regular files; system-dependent for others
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>Mode</span>() <span style=color:#a6e22e>FileMode</span>     <span style=color:#75715e>// file mode bits
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>ModTime</span>() <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Time</span> <span style=color:#75715e>// modification time
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>IsDir</span>() <span style=color:#66d9ef>bool</span>        <span style=color:#75715e>// abbreviation for Mode().IsDir()
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>Sys</span>() <span style=color:#a6e22e>any</span>           <span style=color:#75715e>// underlying data source (can return nil)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>DirEntry</span> <span style=color:#66d9ef>interface</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Name</span>() <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>IsDir</span>() <span style=color:#66d9ef>bool</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Type</span>() <span style=color:#a6e22e>FileMode</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Info</span>() (<span style=color:#a6e22e>FileInfo</span>, <span style=color:#66d9ef>error</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=iofs>
+io/fs
+<a class=anchor href=#iofs>#</a>
+</h2><p><code>io/fs</code> 封装的是针对 file 的操作，同时也为很多其他包定义了底层接口，比如前面的 <code>FileInfo</code> 和 <code>DirEntry</code>。</p><p>有一点需要注意，<code>fs.ReadFile</code> 和 <code>os.ReadFile</code> 的实现不太一样，先看 <code>fs.ReadFile</code>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>ReadFile</span>(<span style=color:#a6e22e>fsys</span> <span style=color:#a6e22e>FS</span>, <span style=color:#a6e22e>name</span> <span style=color:#66d9ef>string</span>) ([]<span style=color:#66d9ef>byte</span>, <span style=color:#66d9ef>error</span>)
+</span></span></code></pre></div><p>而 <code>os.ReadFile</code> 为：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>ReadFile</span>(<span style=color:#a6e22e>name</span> <span style=color:#66d9ef>string</span>) ([]<span style=color:#66d9ef>byte</span>, <span style=color:#66d9ef>error</span>)
+</span></span></code></pre></div><h2 id=os>
+os
+<a class=anchor href=#os>#</a>
+</h2><p>os 包，本身就是和操作系统打交道，其中有相当一部分是文件的 I/O 相关，通过一个 <code>os.File</code> 对象来专门管理。</p><p>os 还有一些其他的内容比如和进程管理相关的 <code>Process</code>，信号相关的 <code>Signal</code>，以及一些常用的环境变量、系统调用等。</p><h2 id=bufio>
+bufio
+<a class=anchor href=#bufio>#</a>
+</h2><p>bufio 顾名思义和缓存有关，相比 io 包，bufio 的 <code>Reader</code> 和 <code>Writer</code> 实现 <code>io.Reader</code> 和 <code>io.Writer</code> 接口，即同样可以进行文件读写，同时加强了缓存功能。比如使用 io 包读取文件只能一次性全部读取，但是使用 bufio 就可以指定字节的大小，这样可操作性更强，对内存更加友好。</p><h3 id=reader>
+Reader
+<a class=anchor href=#reader>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// Reader implements buffering for an io.Reader object.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Reader</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>buf</span>          []<span style=color:#66d9ef>byte</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>rd</span>           <span style=color:#a6e22e>io</span>.<span style=color:#a6e22e>Reader</span> <span style=color:#75715e>// reader provided by the client
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>r</span>, <span style=color:#a6e22e>w</span>         <span style=color:#66d9ef>int</span>       <span style=color:#75715e>// buf read and write positions
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>err</span>          <span style=color:#66d9ef>error</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>lastByte</span>     <span style=color:#66d9ef>int</span> <span style=color:#75715e>// last byte read for UnreadByte; -1 means invalid
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>lastRuneSize</span> <span style=color:#66d9ef>int</span> <span style=color:#75715e>// size of last rune read for UnreadRune; -1 means invalid
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}
+</span></span></code></pre></div><p>可以通过 <code>bufio.NewReader</code> 初始化自己的 Reader：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// NewReader returns a new Reader whose buffer has the default size.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewReader</span>(<span style=color:#a6e22e>rd</span> <span style=color:#a6e22e>io</span>.<span style=color:#a6e22e>Reader</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>Reader</span> {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>NewReaderSize</span>(<span style=color:#a6e22e>rd</span>, <span style=color:#a6e22e>defaultBufSize</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewReaderSize</span>(<span style=color:#a6e22e>rd</span> <span style=color:#a6e22e>io</span>.<span style=color:#a6e22e>Reader</span>, <span style=color:#a6e22e>size</span> <span style=color:#66d9ef>int</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>Reader</span> {
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// Is it already a Reader?
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>b</span>, <span style=color:#a6e22e>ok</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>rd</span>.(<span style=color:#f92672>*</span><span style=color:#a6e22e>Reader</span>)
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>ok</span> <span style=color:#f92672>&amp;&amp;</span> len(<span style=color:#a6e22e>b</span>.<span style=color:#a6e22e>buf</span>) <span style=color:#f92672>&gt;=</span> <span style=color:#a6e22e>size</span> {
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>b</span>
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>size</span> &lt; <span style=color:#a6e22e>minReadBufferSize</span> {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>size</span> = <span style=color:#a6e22e>minReadBufferSize</span>
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>r</span> <span style=color:#f92672>:=</span> new(<span style=color:#a6e22e>Reader</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>reset</span>(make([]<span style=color:#66d9ef>byte</span>, <span style=color:#a6e22e>size</span>), <span style=color:#a6e22e>rd</span>)
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>r</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>可见，所有实现了 <code>io.Reader</code> 的实例都可以初始化一个 <code>bufio.Reader</code>。</p><h3 id=writer>
+Writer
+<a class=anchor href=#writer>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Writer</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>buf</span> []<span style=color:#66d9ef>byte</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>n</span>   <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>wr</span>  <span style=color:#a6e22e>io</span>.<span style=color:#a6e22e>Writer</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=bytesbuffer>
+bytes.Buffer
+<a class=anchor href=#bytesbuffer>#</a>
+</h2><p>bytes.Buffer 和 bufio 两者都提供一层缓存功能，它们的不同主要在于 bufio 针对的是<strong>文件到内存</strong>的缓存，而 bytes.Buffer 的针对的是<strong>内存到内存</strong>的缓存，所以在使用场景上，不算有交集，但是比较容易混淆。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Buffer</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>buf</span>      []<span style=color:#66d9ef>byte</span> <span style=color:#75715e>// contents are the bytes buf[off : len(buf)]
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>off</span>      <span style=color:#66d9ef>int</span>    <span style=color:#75715e>// read at &amp;buf[off], write at &amp;buf[len(buf)]
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>lastRead</span> <span style=color:#a6e22e>readOp</span> <span style=color:#75715e>// last read operation, so that Unread* can work correctly.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>readOp</span> <span style=color:#66d9ef>int8</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewBuffer</span>(<span style=color:#a6e22e>buf</span> []<span style=color:#66d9ef>byte</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>Buffer</span> { <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>Buffer</span>{<span style=color:#a6e22e>buf</span>: <span style=color:#a6e22e>buf</span>} }
+</span></span></code></pre></div><h2 id=fmt>
+fmt
+<a class=anchor href=#fmt>#</a>
+</h2><p>还有一个 I/O 相关的包就是 <code>fmt</code>，但是这个好像不用介绍了，它负责格式化 I/O，使用起来和上面几个包没有交集，不会造成困扰。</p><h2 id=总结>
+总结
+<a class=anchor href=#%e6%80%bb%e7%bb%93>#</a>
+</h2><p>总结下来，关于文件的操作，如果没有特殊需要（明确知道自己在做什么），一般先去 os 包里找就可以了，如果对内存空间或性能有要求，可以再考虑使用 bufio 来逐行读取和处理。</p></article><div>
+<h5 class=post-after>本文共 1753 字，上次修改于 Jun 16, 2022，以 <a href=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh>CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5><div id=navigation-mobile>
+<p>上一篇：<a href=https://yindongliang.com/posts/redis-distribute-lock/>Redis 的分布式锁使用注意</a></p><p>下一篇：<a href=https://yindongliang.com/posts/use-typora-write-hugo-blog/>使用 Typora 来编辑你的 Hugo 博客</a></p></div><script src=https://giscus.app/client.js data-repo=tcitry/tcitry.github.io data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" data-category=Announcements data-category-id=DIC_kwDOCMyx684COMlk data-mapping=og:title data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script>
+</div><footer class=book-footer>
+<div class="flex flex-wrap justify-between">
+</div><script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+</footer><label for=menu-control class="hidden book-menu-overlay"></label>
+</div><aside class=book-toc>
+<div class=book-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#io>io</a>
+<ul>
+<li><a href=#reader-接口>Reader 接口</a></li><li><a href=#writer-接口>Writer 接口</a></li><li><a href=#closer-接口>Closer 接口</a></li></ul></li><li><a href=#ioioutil>io/ioutil</a>
+<ul>
+<li><a href=#readall>ReadAll</a></li><li><a href=#readfile>ReadFile</a></li><li><a href=#writefile>WriteFile</a></li><li><a href=#readdir>ReadDir</a></li></ul></li><li><a href=#iofs>io/fs</a></li><li><a href=#os>os</a></li><li><a href=#bufio>bufio</a>
+<ul>
+<li><a href=#reader>Reader</a></li><li><a href=#writer>Writer</a></li></ul></li><li><a href=#bytesbuffer>bytes.Buffer</a></li><li><a href=#fmt>fmt</a></li><li><a href=#总结>总结</a></li></ul></nav></div></aside></main><div id=navigation>
+<a class="nav nav-left" href=https://yindongliang.com/posts/redis-distribute-lock/ title="上一篇：Redis 的分布式锁使用注意"><i class=fa-left></i></a>
+<a class="nav nav-right" href=https://yindongliang.com/posts/use-typora-write-hugo-blog/ title="下一篇：使用 Typora 来编辑你的 Hugo 博客"><i class=fa-right></i></a>
+</div><script>document.onkeydown=function(e){if(e.code==="ArrowLeft"){let e=document.getElementsByClassName("nav nav-left");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}else if(e.code==="ArrowRight"){let e=document.getElementsByClassName("nav nav-right");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}}</script>
+<script src=/gumshoe.polyfills.min.js></script>
+<script>new Gumshoe(".book-toc a",{nested:!0})</script>
+<style>.book-toc li.active>a{font-weight:700}</style><script src=/fast-image-zoom.js></script>
+<script>imageZoom()</script>
+<link rel=stylesheet href=/katex/katex.min.css>
+<script src=/katex/katex.min.js></script>
+<script src=/katex/auto-render.min.js onload=renderMathInElement(document.body)></script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+<script>ts=document.getElementsByTagName("a");for(const e of ts)e.href&&!(e.href.startsWith("http://localhost")|e.href.startsWith("https://yindongliang.com"))&&(e.target="_blank")</script>
+</body></html>

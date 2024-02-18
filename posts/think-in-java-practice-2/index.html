@@ -1,0 +1,526 @@
+<!doctype html><html lang=zh-cn dir=ltr>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=description content="练习1 # /*创建一个类，它包含一个int域和一个char域， 他们都没有被初始化，将他们打印出来， 以验证java执行了默认初始化。*/ public class Test{ int i; char c; public Test(){ System.out.println(&#34;i=&#34;+i); System.out.println(&#34;c=[&#34;+ c + ']'); } public static void main(String[] args){ new Test(); } }/*output: i=0 c=[ ] */ 练习2 # /*">
+<meta name=theme-color content="#FFFFFF">
+<meta name=color-scheme content="light dark"><meta property="og:title" content="Thinking in Java 习题 - 第二章">
+<meta property="og:description" content="练习1 # /*创建一个类，它包含一个int域和一个char域， 他们都没有被初始化，将他们打印出来， 以验证java执行了默认初始化。*/ public class Test{ int i; char c; public Test(){ System.out.println(&#34;i=&#34;+i); System.out.println(&#34;c=[&#34;+ c + ']'); } public static void main(String[] args){ new Test(); } }/*output: i=0 c=[ ] */ 练习2 # /*">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yindongliang.com/posts/think-in-java-practice-2/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2013-09-08T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-03-22T21:48:57+08:00">
+<title>
+Thinking in Java 习题 - 第二章
+</title><link rel=manifest href=/manifest.json>
+<link rel=icon href=/favicon.png type=image/x-icon>
+<link rel=stylesheet href=/book.min.7ddffcff7348380c70e43d3b4ab992503f90110553d5bfe5868e7d1aa2b80633.css integrity="sha256-fd/8/3NIOAxw5D07SrmSUD+QEQVT1b/lho59GqK4BjM=" crossorigin=anonymous>
+<script defer src=/flexsearch.min.js></script>
+<script defer src=/zh-cn.search.min.2c190993d62f294238012cea6b0bb36d326434bd9ba923f25c1b780b368e6efa.js integrity="sha256-LBkJk9YvKUI4ASzqawuzbTJkNL2bqSPyXBt4CzaObvo=" crossorigin=anonymous></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),window.location.hostname==="localhost"?gtag("config","G-Q20952BPE6",{send_page_view:!1,debug_mode:!0}):gtag("config","G-Q20952BPE6")</script>
+</head><body dir=ltr>
+<input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control>
+<main class="container flex">
+<aside class=book-menu>
+<div class=book-menu-content>
+<nav>
+<h2 class=book-brand>
+<a class="flex align-center" href=/><img src=/logo.gif alt><span>殷东亮的博客</span>
+</a>
+</h2><div class=book-search>
+<input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/>
+<div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul>
+<li><a href=/archives>Archives</a></li><li><a href=/weekly>Weekly🔥</a></li><li><a href=/projects>Projects</a></li><li><a href=/about>About</a></li><li><a href=https://github.com/tcitry target=_blank>Github</a></li><li><a href=/posts/index.xml target=_blank>RSS</a></li></ul><hr class=hr-edge-weak>
+<ul>
+<li>
+<input type=checkbox id=section-374f93193c235d5a59a63115829f835e class=toggle>
+<label for=section-374f93193c235d5a59a63115829f835e class="flex justify-between">
+<a href=/docs/Algorithms/>Algorithms</a>
+</label>
+<ul>
+<li>
+<input type=checkbox id=section-6fa75fabfcaf0942c2ae40739a024515 class=toggle>
+<label for=section-6fa75fabfcaf0942c2ae40739a024515 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>数据结构</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%93%BE%E8%A1%A8/>链表（Linked list）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E7%BB%84/>数组（Array）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%AD%97%E7%AC%A6%E4%B8%B2/>字符串（String）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%98%9F%E5%88%97/>队列（Queue）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%A0%88/>栈（Stack）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%93%88%E5%B8%8C%E8%A1%A8/>哈希表（Hash Table）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E4%BA%8C%E5%8F%89%E6%A0%91/>二叉树（Binary Tree）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A0%86/>堆（Heap）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%89%8D%E7%BC%80%E6%A0%91/>前缀树（Trie）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%A2%E9%BB%91%E6%A0%91/>红黑树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/B-tree/>B 树</a>
+</li></ul></li><li>
+<input type=checkbox id=section-60c1cc56ab667711423fd030bb7d2ba4 class=toggle>
+<label for=section-60c1cc56ab667711423fd030bb7d2ba4 class="flex justify-between">
+<a role=button>常用算法</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/recursion/>递归</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/>贪心算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/>滑动窗口</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/>动态规划</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8F%8C%E6%8C%87%E9%92%88/>双指针</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/>二分查找</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/>排序算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/BFS-%E5%92%8C-DFS/>BFS 和 DFS</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%88%86%E6%B2%BB%E7%AD%96%E7%95%A5/>分治策略</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%89%8D%E7%BC%80%E5%92%8C/>前缀和</a>
+</li></ul></li><li>
+<input type=checkbox id=section-34a5846db21bfdffc261709474d4c2c2 class=toggle>
+<label for=section-34a5846db21bfdffc261709474d4c2c2 class="flex justify-between">
+<a role=button>经典问题</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/>打家劫舍</a>
+</li><li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/>字符串匹配</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3acc3c018b0cf870114fc4c04b8fe75a class=toggle>
+<label for=section-3acc3c018b0cf870114fc4c04b8fe75a class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/>数学基础</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/>微积分</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/>概率统计</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/>线性代数</a>
+</li></ul></li><li>
+<input type=checkbox id=section-6a4c402b2954211b8a56520549766ad2 class=toggle>
+<label for=section-6a4c402b2954211b8a56520549766ad2 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/>线性模型</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/>周志华西瓜树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/>集体智慧编程</a>
+</li></ul></li></ul></li><li>
+<input type=checkbox id=section-ab6241a9c9348727e1ed30d9d7253a0e class=toggle>
+<label for=section-ab6241a9c9348727e1ed30d9d7253a0e class="flex justify-between">
+<a href=/docs/Golang/>Golang</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Golang/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Golang/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Golang/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/>代码规范</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3ca9a5c09bd1884bf69ade02a8e53628 class=toggle>
+<label for=section-3ca9a5c09bd1884bf69ade02a8e53628 class="flex justify-between">
+<a href=/docs/Linux/>Linux</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Linux/regular-expression/>正则表达式</a>
+</li><li>
+<a href=/docs/Linux/Shell/>Shell</a>
+</li><li>
+<a href=/docs/Linux/Spark/>Spark</a>
+</li><li>
+<a href=/docs/Linux/Docker/>Docker</a>
+</li><li>
+<a href=/docs/Linux/git/>Git 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-fdf3c0f524378d36bb3d2441d08ad8e8 class=toggle>
+<label for=section-fdf3c0f524378d36bb3d2441d08ad8e8 class="flex justify-between">
+<a href=/docs/Rust/>Rust</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Rust/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li></ul></li><li>
+<input type=checkbox id=section-f6f1cb8b3cab23098be63dcbede4acb5 class=toggle>
+<label for=section-f6f1cb8b3cab23098be63dcbede4acb5 class="flex justify-between">
+<a role=button>Xcode</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Xcode/Swift/>Swift</a>
+</li><li>
+<a href=/docs/Xcode/SwiftUI/>SwiftUI</a>
+</li><li>
+<a href=/docs/Xcode/Objective-C-%E8%AF%AD%E6%B3%95/>Objective-C</a>
+</li><li>
+<a href=/docs/Xcode/mac-%E6%8A%80%E5%B7%A7/>Mac 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-5f6c61ca509f9ca14a383db36b14a32f class=toggle>
+<label for=section-5f6c61ca509f9ca14a383db36b14a32f class="flex justify-between">
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/>软件工程</a>
+</label>
+<ul>
+<li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/peopleware/>人件</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/>Unix 编程艺术</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E4%B9%8B%E9%81%93/>程序员修炼之道</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/>一些定律</a>
+</li></ul></li><li>
+<input type=checkbox id=section-b708f687fcc1dc14b13a93ba85e8845b class=toggle>
+<label for=section-b708f687fcc1dc14b13a93ba85e8845b class="flex justify-between">
+<a href=/docs/Clang/>C/C++</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Clang/C/>C 语言基础</a>
+</li><li>
+<a href=/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/>系统调用</a>
+</li><li>
+<a href=/docs/Clang/C-%E6%A0%87%E5%87%86%E5%BA%93/>C 标准库</a>
+</li><li>
+<a href=/docs/Clang/C++/>C++ 语言基础</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3beaf640f7d27429884edb43bd1a0ec7 class=toggle>
+<label for=section-3beaf640f7d27429884edb43bd1a0ec7 class="flex justify-between">
+<a href=/docs/FE/>FE</a>
+</label>
+<ul>
+<li>
+<a href=/docs/FE/JavaScript/>JavaScript</a>
+</li><li>
+<a href=/docs/FE/js-buildin-objects/>JS 内置对象</a>
+</li><li>
+<a href=/docs/FE/TypeScript/>TypeScript</a>
+</li><li>
+<a href=/docs/FE/BOM/>BOM</a>
+</li><li>
+<a href=/docs/FE/DOM/>DOM</a>
+</li><li>
+<a href=/docs/FE/node/>Node</a>
+</li><li>
+<a href=/docs/FE/Deno/>Deno</a>
+</li><li>
+<a href=/docs/FE/vue/>Vue</a>
+</li><li>
+<a href=/docs/FE/react/>React</a>
+</li><li>
+<a href=/docs/FE/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/>依赖管理</a>
+</li><li>
+<a href=/docs/FE/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/>构建工具</a>
+</li><li>
+<a href=/docs/FE/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/FE/%E6%8F%92%E4%BB%B6/>插件</a>
+</li></ul></li><li>
+<input type=checkbox id=section-8ca541663a7d7fd63c79c6ce40ab5b81 class=toggle>
+<label for=section-8ca541663a7d7fd63c79c6ce40ab5b81 class="flex justify-between">
+<a href=/docs/Python/>Python</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/Python/Numpy/>Numpy</a>
+</li><li>
+<a href=/docs/Python/Pandas/>Pandas</a>
+</li></ul></li></ul></nav><script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+</div></aside><div class=book-page>
+<header class=book-header>
+<div class="flex align-center justify-between">
+<label for=menu-control>
+<img src=/svg/menu.svg class=book-icon alt>
+</label>
+<strong>
+Thinking in Java 习题 - 第二章
+</strong>
+<label for=toc-control>
+<img src=/svg/toc.svg class=book-icon alt>
+</label>
+</div><aside class="hidden clearfix">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#练习1>练习1</a></li><li><a href=#练习2>练习2</a></li><li><a href=#练习3>练习3</a></li><li><a href=#练习4>练习4</a></li><li><a href=#练习5>练习5</a></li><li><a href=#练习6>练习6</a></li><li><a href=#练习7>练习7</a></li><li><a href=#练习8>练习8</a></li><li><a href=#练习9>练习9</a></li><li><a href=#练习10>练习10</a></li><li><a href=#练习11>练习11</a></li><li><a href=#练习12>练习12</a></li></ul></nav></aside></header><article class=markdown>
+<h1>
+<a href=/posts/think-in-java-practice-2/>Thinking in Java 习题 - 第二章</a>
+</h1><h5>Sep 8, 2013</h5><div>
+<a href=/tags/Java/>Java</a>
+</div><h2 id=练习1>
+练习1
+<a class=anchor href=#%e7%bb%83%e4%b9%a01>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>/*创建一个类，它包含一个int域和一个char域，
+</span></span></span><span style=display:flex><span><span style=color:#75715e>他们都没有被初始化，将他们打印出来，
+</span></span></span><span style=display:flex><span><span style=color:#75715e>以验证java执行了默认初始化。*/</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Test</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> i<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>char</span> c<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>public</span> <span style=color:#a6e22e>Test</span><span style=color:#f92672>(){</span>
+</span></span><span style=display:flex><span>		System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;i=&#34;</span><span style=color:#f92672>+</span>i<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>		System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;c=[&#34;</span><span style=color:#f92672>+</span> c <span style=color:#f92672>+</span> <span style=color:#e6db74>&#39;]&#39;</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>	<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span><span style=color:#f92672>(</span>String<span style=color:#f92672>[]</span> args<span style=color:#f92672>){</span>
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>new</span> Test<span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>	<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span><span style=color:#75715e>/*output:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>i=0
+</span></span></span><span style=display:flex><span><span style=color:#75715e>c=[ ]
+</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
+</span></span></code></pre></div><h2 id=练习2>
+练习2
+<a class=anchor href=#%e7%bb%83%e4%b9%a02>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>/*创建一个Hello，world程序，该程序只要输出这句话即可。*/</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Test</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span><span style=color:#f92672>(</span>String<span style=color:#f92672>[]</span> args<span style=color:#f92672>){</span>
+</span></span><span style=display:flex><span>		System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;Hello World&#34;</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>	<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span><span style=color:#75715e>/*output:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>Hello World
+</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
+</span></span></code></pre></div><h2 id=练习3>
+练习3
+<a class=anchor href=#%e7%bb%83%e4%b9%a03>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>/*找出含有ATypeName的代码段，将其改写成完整的程序，
+</span></span></span><span style=display:flex><span><span style=color:#75715e>然后编译，运行。
+</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>ATypeName</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span><span style=color:#f92672>(</span>String<span style=color:#f92672>[]</span> args<span style=color:#f92672>){</span>
+</span></span><span style=display:flex><span>		ATypeName a <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> ATypeName<span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>	<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span><span style=color:#75715e>///:~
+</span></span></span></code></pre></div><h2 id=练习4>
+练习4
+<a class=anchor href=#%e7%bb%83%e4%b9%a04>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>/*将DataOnly代码段改写成一个程序，然后编译，运行。*/</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>DataOnly</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> i<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>double</span> d<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>boolean</span> b<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span> <span style=color:#f92672>(</span>String<span style=color:#f92672>[]</span> args<span style=color:#f92672>){</span>
+</span></span><span style=display:flex><span>        DataOnly D <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> DataOnly<span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        D<span style=color:#f92672>.</span><span style=color:#a6e22e>i</span><span style=color:#f92672>=</span>1<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        D<span style=color:#f92672>.</span><span style=color:#a6e22e>d</span><span style=color:#f92672>=</span>1<span style=color:#f92672>.</span><span style=color:#a6e22e>23</span><span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        D<span style=color:#f92672>.</span><span style=color:#a6e22e>b</span><span style=color:#f92672>=</span><span style=color:#66d9ef>false</span><span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span><span style=color:#75715e>/*Output:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>D.i=1
+</span></span></span><span style=display:flex><span><span style=color:#75715e>D.d=1.23
+</span></span></span><span style=display:flex><span><span style=color:#75715e>D.b=false
+</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
+</span></span></code></pre></div><h2 id=练习5>
+练习5
+<a class=anchor href=#%e7%bb%83%e4%b9%a05>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>/*修改前一个练习，将DataOnly中的数据在main（）方法中赋值并打印出来。*/</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>DataOnly</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> i<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>double</span> d<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>boolean</span> b<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span> <span style=color:#f92672>(</span>String<span style=color:#f92672>[]</span> args<span style=color:#f92672>){</span>
+</span></span><span style=display:flex><span>        DataOnly D <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> DataOnly<span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        D<span style=color:#f92672>.</span><span style=color:#a6e22e>i</span><span style=color:#f92672>=</span>1<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        D<span style=color:#f92672>.</span><span style=color:#a6e22e>d</span><span style=color:#f92672>=</span>1<span style=color:#f92672>.</span><span style=color:#a6e22e>23</span><span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        D<span style=color:#f92672>.</span><span style=color:#a6e22e>b</span><span style=color:#f92672>=</span><span style=color:#66d9ef>false</span><span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;D.i=&#34;</span><span style=color:#f92672>+</span>D<span style=color:#f92672>.</span><span style=color:#a6e22e>i</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;D.d=&#34;</span><span style=color:#f92672>+</span>D<span style=color:#f92672>.</span><span style=color:#a6e22e>d</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;D.b=&#34;</span><span style=color:#f92672>+</span>D<span style=color:#f92672>.</span><span style=color:#a6e22e>b</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span><span style=color:#75715e>/*Output:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>D.i=1
+</span></span></span><span style=display:flex><span><span style=color:#75715e>D.d=1.23
+</span></span></span><span style=display:flex><span><span style=color:#75715e>D.b=false
+</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
+</span></span></code></pre></div><h2 id=练习6>
+练习6
+<a class=anchor href=#%e7%bb%83%e4%b9%a06>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>/*编写一个程序，让它含有本章所定义的storage（）方法的代码段，并调用之。*/</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Storage</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>static</span> String s<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;Hello&#34;</span><span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> <span style=color:#a6e22e>storage</span><span style=color:#f92672>(</span>String s<span style=color:#f92672>){</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> s<span style=color:#f92672>.</span><span style=color:#a6e22e>length</span><span style=color:#f92672>()*</span>2<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span><span style=color:#f92672>(</span>String<span style=color:#f92672>[]</span> args<span style=color:#f92672>){</span>
+</span></span><span style=display:flex><span>        Storage st <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> Storage<span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;Storage(s)=&#34;</span> <span style=color:#f92672>+</span> st<span style=color:#f92672>.</span><span style=color:#a6e22e>storage</span><span style=color:#f92672>(</span>s<span style=color:#f92672>));</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span> <span style=color:#75715e>/*output:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    Storage(s)=10  
+</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
+</span></span></code></pre></div><h2 id=练习7>
+练习7
+<a class=anchor href=#%e7%bb%83%e4%b9%a07>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>/*将Incrementable的代码段改写成一个完整的可运行程序*/</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>StaticTest</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> 0<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Incrementable</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>increment</span><span style=color:#f92672>(){</span>
+</span></span><span style=display:flex><span>        StaticTest<span style=color:#f92672>.</span><span style=color:#a6e22e>i</span><span style=color:#f92672>++;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span> <span style=color:#f92672>(</span>String args<span style=color:#f92672>[]){</span>
+</span></span><span style=display:flex><span>        Incrementable st <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> Incrementable<span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        Incrementable<span style=color:#f92672>.</span><span style=color:#a6e22e>increment</span><span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span>
+</span></span></code></pre></div><h2 id=练习8>
+练习8
+<a class=anchor href=#%e7%bb%83%e4%b9%a08>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>/*编写一个程序，展示无论你创建了某个特定类的多少个对象，
+</span></span></span><span style=display:flex><span><span style=color:#75715e>这个类中的某个特定的static域只有一个实例*/</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Test</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> 21<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span><span style=color:#f92672>(</span>String args<span style=color:#f92672>[]){</span>
+</span></span><span style=display:flex><span>        Test t1 <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> Test<span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        Test t2 <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> Test<span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;t1.i=&#34;</span><span style=color:#f92672>+</span>t1<span style=color:#f92672>.</span><span style=color:#a6e22e>i</span><span style=color:#f92672>+</span><span style=color:#e6db74>&#34;;t2.i=&#34;</span><span style=color:#f92672>+</span>t2<span style=color:#f92672>.</span><span style=color:#a6e22e>i</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        t1<span style=color:#f92672>.</span><span style=color:#a6e22e>i</span><span style=color:#f92672>++;</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;t1.i=&#34;</span><span style=color:#f92672>+</span>t1<span style=color:#f92672>.</span><span style=color:#a6e22e>i</span><span style=color:#f92672>+</span><span style=color:#e6db74>&#34;;t2.i=&#34;</span><span style=color:#f92672>+</span>t2<span style=color:#f92672>.</span><span style=color:#a6e22e>i</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span>   <span style=color:#75715e>/*output:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>t1.i=21;t2.i=21
+</span></span></span><span style=display:flex><span><span style=color:#75715e>t1.i=22;t2.i=22
+</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
+</span></span></code></pre></div><h2 id=练习9>
+练习9
+<a class=anchor href=#%e7%bb%83%e4%b9%a09>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>/*编写一个程序，展示自动包装功能对所有的基本类型和包装器类型都起作用*/</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>AutoBoxTest</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span> <span style=color:#f92672>(</span>String args<span style=color:#f92672>[]){</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>boolean</span> b <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span><span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> i <span style=color:#f92672>=</span> 21<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>char</span> c <span style=color:#f92672>=</span><span style=color:#e6db74>&#39;c&#39;</span><span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>long</span> l <span style=color:#f92672>=</span> 1L<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>double</span> d <span style=color:#f92672>=</span> 2<span style=color:#f92672>.</span><span style=color:#a6e22e>1d</span><span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>float</span> f <span style=color:#f92672>=</span> 2<span style=color:#f92672>.</span><span style=color:#a6e22e>1f</span><span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>boolean</span> B <span style=color:#f92672>=</span> b<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> I <span style=color:#f92672>=</span> i<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>char</span> C <span style=color:#f92672>=</span> c<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>long</span> L <span style=color:#f92672>=</span> l<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>double</span> D <span style=color:#f92672>=</span> d<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>float</span> F <span style=color:#f92672>=</span> f<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;boolean=&#34;</span><span style=color:#f92672>+</span>B<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;int=&#34;</span><span style=color:#f92672>+</span>I<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;char=&#34;</span><span style=color:#f92672>+</span>C<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;long=&#34;</span><span style=color:#f92672>+</span>L<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;double=&#34;</span><span style=color:#f92672>+</span>D<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;float=&#34;</span><span style=color:#f92672>+</span>F<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span><span style=color:#75715e>/*Output:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>boolean=true
+</span></span></span><span style=display:flex><span><span style=color:#75715e>int=21
+</span></span></span><span style=display:flex><span><span style=color:#75715e>char=c
+</span></span></span><span style=display:flex><span><span style=color:#75715e>long=1
+</span></span></span><span style=display:flex><span><span style=color:#75715e>double=2.1
+</span></span></span><span style=display:flex><span><span style=color:#75715e>float=2.1
+</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
+</span></span></code></pre></div><h2 id=练习10>
+练习10
+<a class=anchor href=#%e7%bb%83%e4%b9%a010>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>/*编写一个程序，打印出从命令行获得的三个参数，为此，
+</span></span></span><span style=display:flex><span><span style=color:#75715e>* 需要确定命令行数组中String的下表。*/</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Test</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span><span style=color:#f92672>(</span>String<span style=color:#f92672>[]</span> args<span style=color:#f92672>){</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span>args<span style=color:#f92672>[</span>0<span style=color:#f92672>]);</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span>args<span style=color:#f92672>[</span>1<span style=color:#f92672>]);</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span>args<span style=color:#f92672>[</span>2<span style=color:#f92672>]);</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span><span style=color:#75715e>/*答案是这样写的，编译不过，也不懂，求解！！*/</span>
+</span></span></code></pre></div><h2 id=练习11>
+练习11
+<a class=anchor href=#%e7%bb%83%e4%b9%a011>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>/*将AllTheColorsOfTheRainbow这个实例改写成一个程序，然后编译，运行*/</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>AllTheColorsOfTheRainbow</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> AnIntegerRepresentingColors<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>changeTheHueOfTheColor</span><span style=color:#f92672>(</span><span style=color:#66d9ef>int</span> newHue<span style=color:#f92672>){</span>
+</span></span><span style=display:flex><span>        AnIntegerRepresentingColors <span style=color:#f92672>=</span> newHue<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span> <span style=color:#f92672>(</span>String<span style=color:#f92672>[]</span> args<span style=color:#f92672>){</span>
+</span></span><span style=display:flex><span>        AllTheColorsOfTheRainbow all <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> AllTheColorsOfTheRainbow<span style=color:#f92672>();</span>
+</span></span><span style=display:flex><span>        all<span style=color:#f92672>.</span><span style=color:#a6e22e>changeTheHueOfTheColor</span><span style=color:#f92672>(</span>27<span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span>
+</span></span></code></pre></div><h2 id=练习12>
+练习12
+<a class=anchor href=#%e7%bb%83%e4%b9%a012>#</a>
+</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>/*找出HelloData.java的第二个版本，也就是那个简单注释文档的示例，对该文件执行javadoc，然后通过web浏览器观看运行结果*/</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> java.util.*<span style=color:#f92672>;</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/*The first Thinking in Java example program.
+</span></span></span><span style=display:flex><span><span style=color:#75715e>* Displays a string and today&#39;s date
+</span></span></span><span style=display:flex><span><span style=color:#75715e>* @author Bruce Eckel
+</span></span></span><span style=display:flex><span><span style=color:#75715e>* @author www.MindView.net
+</span></span></span><span style=display:flex><span><span style=color:#75715e>* @version 4.0
+</span></span></span><span style=display:flex><span><span style=color:#75715e>* */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>HelloDate</span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>/*Entry point to class &amp;application.
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    * @param args array of string arguments
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    * @throws exceptions No exceptions thrown
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    * */</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span> <span style=color:#f92672>(</span>String<span style=color:#f92672>[]</span> args<span style=color:#f92672>){</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#e6db74>&#34;Hello,it&#39;s:&#34;</span><span style=color:#f92672>);</span>
+</span></span><span style=display:flex><span>        System<span style=color:#f92672>.</span><span style=color:#a6e22e>out</span><span style=color:#f92672>.</span><span style=color:#a6e22e>println</span><span style=color:#f92672>(</span><span style=color:#66d9ef>new</span> Date<span style=color:#f92672>());</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span><span style=color:#75715e>/*Output:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>Hello,it&#39;s:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>Sun Sep 08 12:11:08 CST 201  
+</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
+</span></span></code></pre></div><p>后面的几个练习是关于 javadoc 的，不涉及程序问题。</p><p>第二章习题完结。</p></article><div>
+<h5 class=post-after>本文共 1036 字，上次修改于 Mar 22, 2022，以 <a href=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh>CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5><div id=navigation-mobile>
+<p>上一篇：<a href=https://yindongliang.com/posts/use-github-page-build-static-website/>使用 Github Pages 建立免费的静态网站</a></p><p>下一篇：<a href=https://yindongliang.com/posts/think-in-java-practice-3/>Thinking in Java 习题 - 第三章</a></p></div><script src=https://giscus.app/client.js data-repo=tcitry/tcitry.github.io data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" data-category=Announcements data-category-id=DIC_kwDOCMyx684COMlk data-mapping=og:title data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script>
+</div><footer class=book-footer>
+<div class="flex flex-wrap justify-between">
+</div><script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+</footer><label for=menu-control class="hidden book-menu-overlay"></label>
+</div><aside class=book-toc>
+<div class=book-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#练习1>练习1</a></li><li><a href=#练习2>练习2</a></li><li><a href=#练习3>练习3</a></li><li><a href=#练习4>练习4</a></li><li><a href=#练习5>练习5</a></li><li><a href=#练习6>练习6</a></li><li><a href=#练习7>练习7</a></li><li><a href=#练习8>练习8</a></li><li><a href=#练习9>练习9</a></li><li><a href=#练习10>练习10</a></li><li><a href=#练习11>练习11</a></li><li><a href=#练习12>练习12</a></li></ul></nav></div></aside></main><div id=navigation>
+<a class="nav nav-left" href=https://yindongliang.com/posts/use-github-page-build-static-website/ title="上一篇：使用 Github Pages 建立免费的静态网站"><i class=fa-left></i></a>
+<a class="nav nav-right" href=https://yindongliang.com/posts/think-in-java-practice-3/ title="下一篇：Thinking in Java 习题 - 第三章"><i class=fa-right></i></a>
+</div><script>document.onkeydown=function(e){if(e.code==="ArrowLeft"){let e=document.getElementsByClassName("nav nav-left");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}else if(e.code==="ArrowRight"){let e=document.getElementsByClassName("nav nav-right");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}}</script>
+<script src=/gumshoe.polyfills.min.js></script>
+<script>new Gumshoe(".book-toc a",{nested:!0})</script>
+<style>.book-toc li.active>a{font-weight:700}</style><script src=/fast-image-zoom.js></script>
+<script>imageZoom()</script>
+<link rel=stylesheet href=/katex/katex.min.css>
+<script src=/katex/katex.min.js></script>
+<script src=/katex/auto-render.min.js onload=renderMathInElement(document.body)></script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+<script>ts=document.getElementsByTagName("a");for(const e of ts)e.href&&!(e.href.startsWith("http://localhost")|e.href.startsWith("https://yindongliang.com"))&&(e.target="_blank")</script>
+</body></html>

@@ -1,0 +1,407 @@
+<!doctype html><html lang=zh-cn dir=ltr>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=description content="工作中排查数据问题发现了前端按钮可能会触发两次点击的情况，这个问题除了要在后端做幂等以外，正好最近我也在做一些前端的工作，也就专门研究了下前端的解决方案。本来要解决的是防抖问题，但是查了些资料发现一般">
+<meta name=theme-color content="#FFFFFF">
+<meta name=color-scheme content="light dark"><meta property="og:title" content="前端的节流和防抖">
+<meta property="og:description" content="工作中排查数据问题发现了前端按钮可能会触发两次点击的情况，这个问题除了要在后端做幂等以外，正好最近我也在做一些前端的工作，也就专门研究了下前端的解决方案。本来要解决的是防抖问题，但是查了些资料发现一般">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yindongliang.com/posts/throttle-and-debounce-in-fe/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-05-16T00:00:00+00:00">
+<meta property="article:modified_time" content="2024-01-28T14:16:39+08:00">
+<title>
+前端的节流和防抖
+</title><link rel=manifest href=/manifest.json>
+<link rel=icon href=/favicon.png type=image/x-icon>
+<link rel=stylesheet href=/book.min.7ddffcff7348380c70e43d3b4ab992503f90110553d5bfe5868e7d1aa2b80633.css integrity="sha256-fd/8/3NIOAxw5D07SrmSUD+QEQVT1b/lho59GqK4BjM=" crossorigin=anonymous>
+<script defer src=/flexsearch.min.js></script>
+<script defer src=/zh-cn.search.min.2c190993d62f294238012cea6b0bb36d326434bd9ba923f25c1b780b368e6efa.js integrity="sha256-LBkJk9YvKUI4ASzqawuzbTJkNL2bqSPyXBt4CzaObvo=" crossorigin=anonymous></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),window.location.hostname==="localhost"?gtag("config","G-Q20952BPE6",{send_page_view:!1,debug_mode:!0}):gtag("config","G-Q20952BPE6")</script>
+</head><body dir=ltr>
+<input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control>
+<main class="container flex">
+<aside class=book-menu>
+<div class=book-menu-content>
+<nav>
+<h2 class=book-brand>
+<a class="flex align-center" href=/><img src=/logo.gif alt><span>殷东亮的博客</span>
+</a>
+</h2><div class=book-search>
+<input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/>
+<div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul>
+<li><a href=/archives>Archives</a></li><li><a href=/weekly>Weekly🔥</a></li><li><a href=/projects>Projects</a></li><li><a href=/about>About</a></li><li><a href=https://github.com/tcitry target=_blank>Github</a></li><li><a href=/posts/index.xml target=_blank>RSS</a></li></ul><hr class=hr-edge-weak>
+<ul>
+<li>
+<input type=checkbox id=section-374f93193c235d5a59a63115829f835e class=toggle>
+<label for=section-374f93193c235d5a59a63115829f835e class="flex justify-between">
+<a href=/docs/Algorithms/>Algorithms</a>
+</label>
+<ul>
+<li>
+<input type=checkbox id=section-6fa75fabfcaf0942c2ae40739a024515 class=toggle>
+<label for=section-6fa75fabfcaf0942c2ae40739a024515 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>数据结构</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%93%BE%E8%A1%A8/>链表（Linked list）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E7%BB%84/>数组（Array）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%AD%97%E7%AC%A6%E4%B8%B2/>字符串（String）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%98%9F%E5%88%97/>队列（Queue）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%A0%88/>栈（Stack）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%93%88%E5%B8%8C%E8%A1%A8/>哈希表（Hash Table）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E4%BA%8C%E5%8F%89%E6%A0%91/>二叉树（Binary Tree）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A0%86/>堆（Heap）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%89%8D%E7%BC%80%E6%A0%91/>前缀树（Trie）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%A2%E9%BB%91%E6%A0%91/>红黑树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/B-tree/>B 树</a>
+</li></ul></li><li>
+<input type=checkbox id=section-60c1cc56ab667711423fd030bb7d2ba4 class=toggle>
+<label for=section-60c1cc56ab667711423fd030bb7d2ba4 class="flex justify-between">
+<a role=button>常用算法</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/recursion/>递归</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/>贪心算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/>滑动窗口</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/>动态规划</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8F%8C%E6%8C%87%E9%92%88/>双指针</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/>二分查找</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/>排序算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/BFS-%E5%92%8C-DFS/>BFS 和 DFS</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%88%86%E6%B2%BB%E7%AD%96%E7%95%A5/>分治策略</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%89%8D%E7%BC%80%E5%92%8C/>前缀和</a>
+</li></ul></li><li>
+<input type=checkbox id=section-34a5846db21bfdffc261709474d4c2c2 class=toggle>
+<label for=section-34a5846db21bfdffc261709474d4c2c2 class="flex justify-between">
+<a role=button>经典问题</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/>打家劫舍</a>
+</li><li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/>字符串匹配</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3acc3c018b0cf870114fc4c04b8fe75a class=toggle>
+<label for=section-3acc3c018b0cf870114fc4c04b8fe75a class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/>数学基础</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/>微积分</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/>概率统计</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/>线性代数</a>
+</li></ul></li><li>
+<input type=checkbox id=section-6a4c402b2954211b8a56520549766ad2 class=toggle>
+<label for=section-6a4c402b2954211b8a56520549766ad2 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/>线性模型</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/>周志华西瓜树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/>集体智慧编程</a>
+</li></ul></li></ul></li><li>
+<input type=checkbox id=section-ab6241a9c9348727e1ed30d9d7253a0e class=toggle>
+<label for=section-ab6241a9c9348727e1ed30d9d7253a0e class="flex justify-between">
+<a href=/docs/Golang/>Golang</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Golang/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Golang/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Golang/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/>代码规范</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3ca9a5c09bd1884bf69ade02a8e53628 class=toggle>
+<label for=section-3ca9a5c09bd1884bf69ade02a8e53628 class="flex justify-between">
+<a href=/docs/Linux/>Linux</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Linux/regular-expression/>正则表达式</a>
+</li><li>
+<a href=/docs/Linux/Shell/>Shell</a>
+</li><li>
+<a href=/docs/Linux/Spark/>Spark</a>
+</li><li>
+<a href=/docs/Linux/Docker/>Docker</a>
+</li><li>
+<a href=/docs/Linux/git/>Git 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-fdf3c0f524378d36bb3d2441d08ad8e8 class=toggle>
+<label for=section-fdf3c0f524378d36bb3d2441d08ad8e8 class="flex justify-between">
+<a href=/docs/Rust/>Rust</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Rust/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li></ul></li><li>
+<input type=checkbox id=section-f6f1cb8b3cab23098be63dcbede4acb5 class=toggle>
+<label for=section-f6f1cb8b3cab23098be63dcbede4acb5 class="flex justify-between">
+<a role=button>Xcode</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Xcode/Swift/>Swift</a>
+</li><li>
+<a href=/docs/Xcode/SwiftUI/>SwiftUI</a>
+</li><li>
+<a href=/docs/Xcode/Objective-C-%E8%AF%AD%E6%B3%95/>Objective-C</a>
+</li><li>
+<a href=/docs/Xcode/mac-%E6%8A%80%E5%B7%A7/>Mac 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-5f6c61ca509f9ca14a383db36b14a32f class=toggle>
+<label for=section-5f6c61ca509f9ca14a383db36b14a32f class="flex justify-between">
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/>软件工程</a>
+</label>
+<ul>
+<li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/peopleware/>人件</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/>Unix 编程艺术</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E4%B9%8B%E9%81%93/>程序员修炼之道</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/>一些定律</a>
+</li></ul></li><li>
+<input type=checkbox id=section-b708f687fcc1dc14b13a93ba85e8845b class=toggle>
+<label for=section-b708f687fcc1dc14b13a93ba85e8845b class="flex justify-between">
+<a href=/docs/Clang/>C/C++</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Clang/C/>C 语言基础</a>
+</li><li>
+<a href=/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/>系统调用</a>
+</li><li>
+<a href=/docs/Clang/C-%E6%A0%87%E5%87%86%E5%BA%93/>C 标准库</a>
+</li><li>
+<a href=/docs/Clang/C++/>C++ 语言基础</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3beaf640f7d27429884edb43bd1a0ec7 class=toggle>
+<label for=section-3beaf640f7d27429884edb43bd1a0ec7 class="flex justify-between">
+<a href=/docs/FE/>FE</a>
+</label>
+<ul>
+<li>
+<a href=/docs/FE/JavaScript/>JavaScript</a>
+</li><li>
+<a href=/docs/FE/js-buildin-objects/>JS 内置对象</a>
+</li><li>
+<a href=/docs/FE/TypeScript/>TypeScript</a>
+</li><li>
+<a href=/docs/FE/BOM/>BOM</a>
+</li><li>
+<a href=/docs/FE/DOM/>DOM</a>
+</li><li>
+<a href=/docs/FE/node/>Node</a>
+</li><li>
+<a href=/docs/FE/Deno/>Deno</a>
+</li><li>
+<a href=/docs/FE/vue/>Vue</a>
+</li><li>
+<a href=/docs/FE/react/>React</a>
+</li><li>
+<a href=/docs/FE/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/>依赖管理</a>
+</li><li>
+<a href=/docs/FE/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/>构建工具</a>
+</li><li>
+<a href=/docs/FE/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/FE/%E6%8F%92%E4%BB%B6/>插件</a>
+</li></ul></li><li>
+<input type=checkbox id=section-8ca541663a7d7fd63c79c6ce40ab5b81 class=toggle>
+<label for=section-8ca541663a7d7fd63c79c6ce40ab5b81 class="flex justify-between">
+<a href=/docs/Python/>Python</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/Python/Numpy/>Numpy</a>
+</li><li>
+<a href=/docs/Python/Pandas/>Pandas</a>
+</li></ul></li></ul></nav><script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+</div></aside><div class=book-page>
+<header class=book-header>
+<div class="flex align-center justify-between">
+<label for=menu-control>
+<img src=/svg/menu.svg class=book-icon alt>
+</label>
+<strong>
+前端的节流和防抖
+</strong>
+<label for=toc-control>
+<img src=/svg/toc.svg class=book-icon alt>
+</label>
+</div><aside class="hidden clearfix">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#防抖debounce>防抖（debounce）</a>
+<ul>
+<li><a href=#问题描述>问题描述</a></li><li><a href=#解决方案>解决方案</a></li></ul></li><li><a href=#节流throttle>节流（throttle）</a>
+<ul>
+<li><a href=#问题描述-1>问题描述</a></li><li><a href=#解决方案-1>解决方案</a></li></ul></li><li><a href=#节流和防抖的区别>节流和防抖的区别</a>
+<ul>
+<li><a href=#防抖适用场景>防抖适用场景</a></li><li><a href=#节流适用场景>节流适用场景</a></li></ul></li><li><a href=#参考>参考</a></li></ul></nav></aside></header><article class=markdown>
+<h1>
+<a href=/posts/throttle-and-debounce-in-fe/>前端的节流和防抖</a>
+</h1><h5>May 16, 2021</h5><div>
+<a href=/tags/%E5%89%8D%E7%AB%AF/>前端</a>,
+<a href=/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/>系统设计</a>
+</div><p>工作中排查数据问题发现了前端按钮可能会触发两次点击的情况，这个问题除了要在后端做幂等以外，正好最近我也在做一些前端的工作，也就专门研究了下前端的解决方案。本来要解决的是防抖问题，但是查了些资料发现一般都是防抖和节流一起，它们解决方案相似但又不完全相同，下面就分别介绍下方便对比使用。</p><h2 id=防抖debounce>
+防抖（debounce）
+<a class=anchor href=#%e9%98%b2%e6%8a%96debounce>#</a>
+</h2><h3 id=问题描述>
+问题描述
+<a class=anchor href=#%e9%97%ae%e9%a2%98%e6%8f%8f%e8%bf%b0>#</a>
+</h3><p>防抖很容易理解，有时如果鼠标连按，那么在很短的时间内就会触发两次点击，从而触发了两次请求。要解决这个问题，就需要保证按了鼠标的一段时间内的再次点按不能生效，或者两次点按只能生效一次。由于可能还会再连按三次，所以解决方案还是让前一次点按失效，让最后一次的点按生效。</p><p>所以防抖的解决方案是，按钮点击的 n 秒后再执行，如果 n 秒内再次触发了点击，就重新计时，通过这样的方式来保证<strong>点击的 n 秒后函数只被执行一次</strong>。</p><h3 id=解决方案>
+解决方案
+<a class=anchor href=#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88>#</a>
+</h3><p>根据上面的思路，可以维护一个计时器变量，下面是一个简单实现：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>timer</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>function</span> <span style=color:#a6e22e>debounce</span>(<span style=color:#a6e22e>fn</span>, <span style=color:#a6e22e>delay</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>clearTimeout</span>(<span style=color:#a6e22e>timer</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>timer</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>setTimeout</span>(<span style=color:#66d9ef>function</span>(){
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fn</span>();
+</span></span><span style=display:flex><span>    }, <span style=color:#a6e22e>delay</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>这里使用了 <code>setTimeout</code> 和 <code>clearTimeout</code> 内置函数来实现。其中 <code>setTimeout</code> 的返回值是一个正整数，表示定时器的编号，这个值可以传递给 <a href=https://developer.mozilla.org/zh-CN/docs/Web/API/clearTimeout><code>clearTimeout()</code></a> 来取消该定时器。</p><p>在使用这个函数时，将 <code>debounce</code> 包含在实际函数外面即可：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js><span style=display:flex><span><span style=color:#66d9ef>function</span> <span style=color:#a6e22e>doSomething</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>log</span>(<span style=color:#e6db74>&#39;mounse moved&#39;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>document.<span style=color:#a6e22e>onmousemove</span> <span style=color:#f92672>=</span> () =&gt; {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>debounce</span>(<span style=color:#a6e22e>doSomething</span>, <span style=color:#ae81ff>1000</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Lodash 也提供了相关的<a href=https://www.lodashjs.com/docs/lodash.debounce>实现</a>，可以直接使用：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js><span style=display:flex><span><span style=color:#a6e22e>jQuery</span>(window).<span style=color:#a6e22e>on</span>(<span style=color:#e6db74>&#39;resize&#39;</span>, <span style=color:#a6e22e>_</span>.<span style=color:#a6e22e>debounce</span>(<span style=color:#a6e22e>doSomething</span>, <span style=color:#ae81ff>150</span>));
+</span></span></code></pre></div><h2 id=节流throttle>
+节流（throttle）
+<a class=anchor href=#%e8%8a%82%e6%b5%81throttle>#</a>
+</h2><h3 id=问题描述-1>
+问题描述
+<a class=anchor href=#%e9%97%ae%e9%a2%98%e6%8f%8f%e8%bf%b0-1>#</a>
+</h3><p>节流在后端的场景里很常见：当请求的并发量超出设置的流量控制策略时，只能有一部分流量能进入实际业务，其余流量被过滤掉。我之前也介绍过<a href=/posts/go-rate-limit/>几个流量控制策略</a>，前端里的流量控制策略没有那么复杂，基本就是固定窗口算法（计数法）。</p><p>所以节流要解决的问题是：<strong>每隔 n 秒的时间只执行一次函数</strong>。</p><h3 id=解决方案-1>
+解决方案
+<a class=anchor href=#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88-1>#</a>
+</h3><p>同样是利用 <code>setTimeout</code> 来定义一个定时器，在 <code>delay</code> 毫秒以后进行函数调用同时设置 <code>timer = null</code>，下一次函数调用就根据 <code>timer</code> 是否为空来判断是否进行限流。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>timer</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>function</span> <span style=color:#a6e22e>throttle</span>(<span style=color:#a6e22e>fn</span>, <span style=color:#a6e22e>delay</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>function</span> () {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>_this</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>this</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>args</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>arguments</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>timer</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>timer</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>setTimeout</span>(<span style=color:#66d9ef>function</span> () {
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>fn</span>.<span style=color:#a6e22e>apply</span>(<span style=color:#a6e22e>_this</span>, <span style=color:#a6e22e>args</span>);
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>timer</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>null</span>;
+</span></span><span style=display:flex><span>        }, <span style=color:#a6e22e>delay</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>使用起来和 <code>debounce</code> 一样：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js><span style=display:flex><span><span style=color:#66d9ef>function</span> <span style=color:#a6e22e>doSomething</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>log</span>(<span style=color:#e6db74>&#39;mounse moved&#39;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>document.<span style=color:#a6e22e>onmousemove</span> <span style=color:#f92672>=</span> () =&gt; {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>throttle</span>(<span style=color:#a6e22e>doSomething</span>, <span style=color:#ae81ff>1000</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Lodash 同样提供了<a href=https://www.lodashjs.com/docs/lodash.throttle>方案</a>，可以直接使用：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js><span style=display:flex><span><span style=color:#a6e22e>jQuery</span>(window).<span style=color:#a6e22e>on</span>(<span style=color:#e6db74>&#39;scroll&#39;</span>, <span style=color:#a6e22e>_</span>.<span style=color:#a6e22e>throttle</span>(<span style=color:#a6e22e>doSomething</span>, <span style=color:#ae81ff>100</span>));
+</span></span></code></pre></div><p>Lodash 为节流和防抖都提供了 <code>cancel</code> 方法用于取消调用，非常完善，所以绝大部分情况下还是推荐直接用 Lodash 了。</p><h2 id=节流和防抖的区别>
+节流和防抖的区别
+<a class=anchor href=#%e8%8a%82%e6%b5%81%e5%92%8c%e9%98%b2%e6%8a%96%e7%9a%84%e5%8c%ba%e5%88%ab>#</a>
+</h2><p>下面这个图很直观的反映了节流和防抖的区别：防抖把一段时间内的触发取最后一次按生效进行调用，基本上是期望合并后的调用产生的结果是幂等的；而节流是在每一个时间段内取一个生效的调用，多数情况下是期望每次调用的结果会不一样，所以也可以根据自己想要的结果进行选择。</p><p><img src=https://raw.githubusercontent.com/tcitry/static/master/uPic/a2c81b50-8787-11eb-ab90-d9ae814b240d.png alt></p><h3 id=防抖适用场景>
+防抖适用场景
+<a class=anchor href=#%e9%98%b2%e6%8a%96%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af>#</a>
+</h3><ul>
+<li>
+<p>按钮，按钮一般期望只会点一次。</p></li><li>
+<p>窗口 resize，调整窗口大小一般也是期望拿到最终调整后的结果。</p></li></ul><h3 id=节流适用场景>
+节流适用场景
+<a class=anchor href=#%e8%8a%82%e6%b5%81%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af>#</a>
+</h3><ul>
+<li>
+<p>滚动加载，减少刷新列表的次数，优化体验和性能。</p></li><li>
+<p>搜索联想，减少因不断拼写而产生的联想次数，优化体验。</p></li></ul><h2 id=参考>
+参考
+<a class=anchor href=#%e5%8f%82%e8%80%83>#</a>
+</h2><p><a href=https://jinlong.github.io/2016/04/24/Debouncing-and-Throttling-Explained-Through-Examples/>实例解析防抖动（Debouncing）和节流阀（Throttling）</a>(<a href=https://css-tricks.com/debouncing-throttling-explained-examples/>英文版</a>)</p></article><div>
+<h5 class=post-after>本文共 1153 字，上次修改于 Jan 28, 2024，以 <a href=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh>CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5><div id=navigation-mobile>
+<p>上一篇：<a href=https://yindongliang.com/posts/device-management-in-os/>操作系统的设备管理</a></p><p>下一篇：<a href=https://yindongliang.com/posts/http-caching-in-browser/>浏览器中的 HTTP 缓存使用策略</a></p></div><h2 style=color:darkgrey>相关文章</h2><div class=post>
+<p><h3><time style=color:darkgrey>2019-10-11</time> » <a href=/posts/talk-about-graphql/>
+说说实际工作中 GraphQL 的使用体验
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2021-04-04</time> » <a href=/posts/go-rate-limit/>
+实现限流的几种方案
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2020-12-21</time> » <a href=/posts/go-mpg-concurrency/>
+Go 语言的 MPG 并发调度模型
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2020-10-29</time> » <a href=/posts/permission-system-models/>
+权限系统通用的设计模型
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2020-09-22</time> » <a href=/posts/hello-protobuf/>
+了解下 Protobuf 相关概念
+</a></h3></p></div><script src=https://giscus.app/client.js data-repo=tcitry/tcitry.github.io data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" data-category=Announcements data-category-id=DIC_kwDOCMyx684COMlk data-mapping=og:title data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script>
+</div><footer class=book-footer>
+<div class="flex flex-wrap justify-between">
+</div><script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+</footer><label for=menu-control class="hidden book-menu-overlay"></label>
+</div><aside class=book-toc>
+<div class=book-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#防抖debounce>防抖（debounce）</a>
+<ul>
+<li><a href=#问题描述>问题描述</a></li><li><a href=#解决方案>解决方案</a></li></ul></li><li><a href=#节流throttle>节流（throttle）</a>
+<ul>
+<li><a href=#问题描述-1>问题描述</a></li><li><a href=#解决方案-1>解决方案</a></li></ul></li><li><a href=#节流和防抖的区别>节流和防抖的区别</a>
+<ul>
+<li><a href=#防抖适用场景>防抖适用场景</a></li><li><a href=#节流适用场景>节流适用场景</a></li></ul></li><li><a href=#参考>参考</a></li></ul></nav></div></aside></main><div id=navigation>
+<a class="nav nav-left" href=https://yindongliang.com/posts/device-management-in-os/ title=上一篇：操作系统的设备管理><i class=fa-left></i></a>
+<a class="nav nav-right" href=https://yindongliang.com/posts/http-caching-in-browser/ title="下一篇：浏览器中的 HTTP 缓存使用策略"><i class=fa-right></i></a>
+</div><script>document.onkeydown=function(e){if(e.code==="ArrowLeft"){let e=document.getElementsByClassName("nav nav-left");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}else if(e.code==="ArrowRight"){let e=document.getElementsByClassName("nav nav-right");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}}</script>
+<script src=/gumshoe.polyfills.min.js></script>
+<script>new Gumshoe(".book-toc a",{nested:!0})</script>
+<style>.book-toc li.active>a{font-weight:700}</style><script src=/fast-image-zoom.js></script>
+<script>imageZoom()</script>
+<link rel=stylesheet href=/katex/katex.min.css>
+<script src=/katex/katex.min.js></script>
+<script src=/katex/auto-render.min.js onload=renderMathInElement(document.body)></script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+<script>ts=document.getElementsByTagName("a");for(const e of ts)e.href&&!(e.href.startsWith("http://localhost")|e.href.startsWith("https://yindongliang.com"))&&(e.target="_blank")</script>
+</body></html>

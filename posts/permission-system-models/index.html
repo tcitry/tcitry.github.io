@@ -1,0 +1,463 @@
+<!doctype html><html lang=zh-cn dir=ltr>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=description content="权限系统是一个比较通用的系统，几乎所有的后台业务都会涉及到，关于权限系统的设计经过一些最佳实践也已经被总结成各种模型，比如 ACL、RBAC、ABAC、PBAC等，下面开始详细介绍。 基本概念 # 在很多权限">
+<meta name=theme-color content="#FFFFFF">
+<meta name=color-scheme content="light dark"><meta property="og:title" content="权限系统通用的设计模型">
+<meta property="og:description" content="权限系统是一个比较通用的系统，几乎所有的后台业务都会涉及到，关于权限系统的设计经过一些最佳实践也已经被总结成各种模型，比如 ACL、RBAC、ABAC、PBAC等，下面开始详细介绍。 基本概念 # 在很多权限">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yindongliang.com/posts/permission-system-models/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2020-10-29T00:00:00+00:00">
+<meta property="article:modified_time" content="2024-01-28T14:16:39+08:00">
+<title>
+权限系统通用的设计模型
+</title><link rel=manifest href=/manifest.json>
+<link rel=icon href=/favicon.png type=image/x-icon>
+<link rel=stylesheet href=/book.min.7ddffcff7348380c70e43d3b4ab992503f90110553d5bfe5868e7d1aa2b80633.css integrity="sha256-fd/8/3NIOAxw5D07SrmSUD+QEQVT1b/lho59GqK4BjM=" crossorigin=anonymous>
+<script defer src=/flexsearch.min.js></script>
+<script defer src=/zh-cn.search.min.2c190993d62f294238012cea6b0bb36d326434bd9ba923f25c1b780b368e6efa.js integrity="sha256-LBkJk9YvKUI4ASzqawuzbTJkNL2bqSPyXBt4CzaObvo=" crossorigin=anonymous></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),window.location.hostname==="localhost"?gtag("config","G-Q20952BPE6",{send_page_view:!1,debug_mode:!0}):gtag("config","G-Q20952BPE6")</script>
+</head><body dir=ltr>
+<input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control>
+<main class="container flex">
+<aside class=book-menu>
+<div class=book-menu-content>
+<nav>
+<h2 class=book-brand>
+<a class="flex align-center" href=/><img src=/logo.gif alt><span>殷东亮的博客</span>
+</a>
+</h2><div class=book-search>
+<input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/>
+<div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul>
+<li><a href=/archives>Archives</a></li><li><a href=/weekly>Weekly🔥</a></li><li><a href=/projects>Projects</a></li><li><a href=/about>About</a></li><li><a href=https://github.com/tcitry target=_blank>Github</a></li><li><a href=/posts/index.xml target=_blank>RSS</a></li></ul><hr class=hr-edge-weak>
+<ul>
+<li>
+<input type=checkbox id=section-374f93193c235d5a59a63115829f835e class=toggle>
+<label for=section-374f93193c235d5a59a63115829f835e class="flex justify-between">
+<a href=/docs/Algorithms/>Algorithms</a>
+</label>
+<ul>
+<li>
+<input type=checkbox id=section-6fa75fabfcaf0942c2ae40739a024515 class=toggle>
+<label for=section-6fa75fabfcaf0942c2ae40739a024515 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>数据结构</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%93%BE%E8%A1%A8/>链表（Linked list）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E7%BB%84/>数组（Array）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%AD%97%E7%AC%A6%E4%B8%B2/>字符串（String）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%98%9F%E5%88%97/>队列（Queue）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%A0%88/>栈（Stack）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%93%88%E5%B8%8C%E8%A1%A8/>哈希表（Hash Table）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E4%BA%8C%E5%8F%89%E6%A0%91/>二叉树（Binary Tree）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A0%86/>堆（Heap）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%89%8D%E7%BC%80%E6%A0%91/>前缀树（Trie）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%A2%E9%BB%91%E6%A0%91/>红黑树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/B-tree/>B 树</a>
+</li></ul></li><li>
+<input type=checkbox id=section-60c1cc56ab667711423fd030bb7d2ba4 class=toggle>
+<label for=section-60c1cc56ab667711423fd030bb7d2ba4 class="flex justify-between">
+<a role=button>常用算法</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/recursion/>递归</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/>贪心算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/>滑动窗口</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/>动态规划</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8F%8C%E6%8C%87%E9%92%88/>双指针</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/>二分查找</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/>排序算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/BFS-%E5%92%8C-DFS/>BFS 和 DFS</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%88%86%E6%B2%BB%E7%AD%96%E7%95%A5/>分治策略</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%89%8D%E7%BC%80%E5%92%8C/>前缀和</a>
+</li></ul></li><li>
+<input type=checkbox id=section-34a5846db21bfdffc261709474d4c2c2 class=toggle>
+<label for=section-34a5846db21bfdffc261709474d4c2c2 class="flex justify-between">
+<a role=button>经典问题</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/>打家劫舍</a>
+</li><li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/>字符串匹配</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3acc3c018b0cf870114fc4c04b8fe75a class=toggle>
+<label for=section-3acc3c018b0cf870114fc4c04b8fe75a class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/>数学基础</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/>微积分</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/>概率统计</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/>线性代数</a>
+</li></ul></li><li>
+<input type=checkbox id=section-6a4c402b2954211b8a56520549766ad2 class=toggle>
+<label for=section-6a4c402b2954211b8a56520549766ad2 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/>线性模型</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/>周志华西瓜树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/>集体智慧编程</a>
+</li></ul></li></ul></li><li>
+<input type=checkbox id=section-ab6241a9c9348727e1ed30d9d7253a0e class=toggle>
+<label for=section-ab6241a9c9348727e1ed30d9d7253a0e class="flex justify-between">
+<a href=/docs/Golang/>Golang</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Golang/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Golang/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Golang/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/>代码规范</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3ca9a5c09bd1884bf69ade02a8e53628 class=toggle>
+<label for=section-3ca9a5c09bd1884bf69ade02a8e53628 class="flex justify-between">
+<a href=/docs/Linux/>Linux</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Linux/regular-expression/>正则表达式</a>
+</li><li>
+<a href=/docs/Linux/Shell/>Shell</a>
+</li><li>
+<a href=/docs/Linux/Spark/>Spark</a>
+</li><li>
+<a href=/docs/Linux/Docker/>Docker</a>
+</li><li>
+<a href=/docs/Linux/git/>Git 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-fdf3c0f524378d36bb3d2441d08ad8e8 class=toggle>
+<label for=section-fdf3c0f524378d36bb3d2441d08ad8e8 class="flex justify-between">
+<a href=/docs/Rust/>Rust</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Rust/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li></ul></li><li>
+<input type=checkbox id=section-f6f1cb8b3cab23098be63dcbede4acb5 class=toggle>
+<label for=section-f6f1cb8b3cab23098be63dcbede4acb5 class="flex justify-between">
+<a role=button>Xcode</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Xcode/Swift/>Swift</a>
+</li><li>
+<a href=/docs/Xcode/SwiftUI/>SwiftUI</a>
+</li><li>
+<a href=/docs/Xcode/Objective-C-%E8%AF%AD%E6%B3%95/>Objective-C</a>
+</li><li>
+<a href=/docs/Xcode/mac-%E6%8A%80%E5%B7%A7/>Mac 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-5f6c61ca509f9ca14a383db36b14a32f class=toggle>
+<label for=section-5f6c61ca509f9ca14a383db36b14a32f class="flex justify-between">
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/>软件工程</a>
+</label>
+<ul>
+<li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/peopleware/>人件</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/>Unix 编程艺术</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E4%B9%8B%E9%81%93/>程序员修炼之道</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/>一些定律</a>
+</li></ul></li><li>
+<input type=checkbox id=section-b708f687fcc1dc14b13a93ba85e8845b class=toggle>
+<label for=section-b708f687fcc1dc14b13a93ba85e8845b class="flex justify-between">
+<a href=/docs/Clang/>C/C++</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Clang/C/>C 语言基础</a>
+</li><li>
+<a href=/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/>系统调用</a>
+</li><li>
+<a href=/docs/Clang/C-%E6%A0%87%E5%87%86%E5%BA%93/>C 标准库</a>
+</li><li>
+<a href=/docs/Clang/C++/>C++ 语言基础</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3beaf640f7d27429884edb43bd1a0ec7 class=toggle>
+<label for=section-3beaf640f7d27429884edb43bd1a0ec7 class="flex justify-between">
+<a href=/docs/FE/>FE</a>
+</label>
+<ul>
+<li>
+<a href=/docs/FE/JavaScript/>JavaScript</a>
+</li><li>
+<a href=/docs/FE/js-buildin-objects/>JS 内置对象</a>
+</li><li>
+<a href=/docs/FE/TypeScript/>TypeScript</a>
+</li><li>
+<a href=/docs/FE/BOM/>BOM</a>
+</li><li>
+<a href=/docs/FE/DOM/>DOM</a>
+</li><li>
+<a href=/docs/FE/node/>Node</a>
+</li><li>
+<a href=/docs/FE/Deno/>Deno</a>
+</li><li>
+<a href=/docs/FE/vue/>Vue</a>
+</li><li>
+<a href=/docs/FE/react/>React</a>
+</li><li>
+<a href=/docs/FE/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/>依赖管理</a>
+</li><li>
+<a href=/docs/FE/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/>构建工具</a>
+</li><li>
+<a href=/docs/FE/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/FE/%E6%8F%92%E4%BB%B6/>插件</a>
+</li></ul></li><li>
+<input type=checkbox id=section-8ca541663a7d7fd63c79c6ce40ab5b81 class=toggle>
+<label for=section-8ca541663a7d7fd63c79c6ce40ab5b81 class="flex justify-between">
+<a href=/docs/Python/>Python</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/Python/Numpy/>Numpy</a>
+</li><li>
+<a href=/docs/Python/Pandas/>Pandas</a>
+</li></ul></li></ul></nav><script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+</div></aside><div class=book-page>
+<header class=book-header>
+<div class="flex align-center justify-between">
+<label for=menu-control>
+<img src=/svg/menu.svg class=book-icon alt>
+</label>
+<strong>
+权限系统通用的设计模型
+</strong>
+<label for=toc-control>
+<img src=/svg/toc.svg class=book-icon alt>
+</label>
+</div><aside class="hidden clearfix">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#基本概念>基本概念</a>
+<ul>
+<li><a href=#主体subject>主体（Subject）</a></li><li><a href=#对象object>对象（Object）</a></li><li><a href=#动作action>动作（Action）</a></li></ul></li><li><a href=#acl>ACL</a>
+<ul>
+<li><a href=#dac>DAC</a></li><li><a href=#mac>MAC</a></li></ul></li><li><a href=#rbac>RBAC</a>
+<ul>
+<li><a href=#rbac0>RBAC0</a></li><li><a href=#rbac1>RBAC1</a></li><li><a href=#rbac2>RBAC2</a></li><li><a href=#rbac3>RBAC3</a></li><li><a href=#rbac-的优缺点>RBAC 的优缺点</a></li><li><a href=#用户组>用户组</a>
+<ul>
+<li><a href=#角色和组的区别>角色和组的区别</a></li></ul></li></ul></li><li><a href=#abac>ABAC</a>
+<ul>
+<li><a href=#如何使用属性进行动态计算>如何使用属性进行动态计算</a></li><li><a href=#优缺点>优缺点</a></li><li><a href=#选择-rbac-还是-abac>选择 RBAC 还是 ABAC</a></li><li><a href=#pbac>PBAC</a></li></ul></li><li><a href=#框架实现>框架实现</a>
+<ul>
+<li><a href=#casbin>Casbin</a></li><li><a href=#shiro>Shiro</a></li><li><a href=#spring-security>Spring Security</a></li><li><a href=#django>Django</a></li><li><a href=#总结>总结</a></li></ul></li></ul></nav></aside></header><article class=markdown>
+<h1>
+<a href=/posts/permission-system-models/>权限系统通用的设计模型</a>
+</h1><h5>Oct 29, 2020</h5><div>
+<a href=/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/>系统设计</a>
+</div><p>权限系统是一个比较通用的系统，几乎所有的后台业务都会涉及到，关于权限系统的设计经过一些最佳实践也已经被总结成各种模型，比如 ACL、RBAC、ABAC、PBAC等，下面开始详细介绍。</p><h2 id=基本概念>
+基本概念
+<a class=anchor href=#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5>#</a>
+</h2><p>在很多权限系统的框架和服务，包括 <a href=https://casbin.org/zh-CN/>Casbin</a>、<a href=https://www.authing.cn/>Authing</a> 里面，都有下面这些名词作为基础，所以在开始之前，还要先理解这些概念。</p><h3 id=主体subject>
+主体（Subject）
+<a class=anchor href=#%e4%b8%bb%e4%bd%93subject>#</a>
+</h3><p>想要访问资源的主体，可以先理解为用户。</p><h3 id=对象object>
+对象（Object）
+<a class=anchor href=#%e5%af%b9%e8%b1%a1object>#</a>
+</h3><p>用户要访问（或更改）的资源。</p><h3 id=动作action>
+动作（Action）
+<a class=anchor href=#%e5%8a%a8%e4%bd%9caction>#</a>
+</h3><p>用户对资源执行的操作，比如文件的读写，数据是否能访问、操作。</p><h2 id=acl>
+ACL
+<a class=anchor href=#acl>#</a>
+</h2><p>权限控制表简称 ACL（Access-Control List），ACL 记录了哪些<strong>资源</strong>可以被哪些<strong>主体</strong>进行哪些<strong>操作</strong>，是一个关系表，大部分的权限系统里都会有这张表。而在一个 ACL 表里，一般会有主体、对象和动作三个要素，设计出来的库表一般为：</p><table>
+<thead>
+<tr>
+<th>id</th><th>subject</th><th>object</th><th>action</th></tr></thead><tbody>
+<tr>
+<td>1</td><td>user1</td><td>文档 1</td><td>查看</td></tr><tr>
+<td>2</td><td>user1</td><td>文档 2</td><td>编辑</td></tr><tr>
+<td>3</td><td>user2</td><td>文档 2</td><td>删除</td></tr></tbody></table><h3 id=dac>
+DAC
+<a class=anchor href=#dac>#</a>
+</h3><p>自主访问控制简称 DAC（Discretionary Access Control），DAC 是 ACL 的一种实现，里面的主体就是用户。这样的设计简单直接，查询效率很高，强调自主是因为 DAC 模型将授权的权利下放，允许拥有指定权限的用户可以自主地将权限授予给其他用户。比如，在纯粹 ACL 模型下，每次新人培训，人事总监都要通知 IT 部，将培训文档的访问权限授予新人。在 DAC 模型下，人事总监只需将文档的访问权限授予人事专员。之后，每次新人培训，由人事专员将文档的访问权限授予不同的新人。</p><p>DAC 的缺点也很明显，比如在一家公司，每有一个新人入职，就需要人事专员给新人添加各种系统的权限，这些工作的重复性很大，而且文档越多，工作量越大。</p><h3 id=mac>
+MAC
+<a class=anchor href=#mac>#</a>
+</h3><p>强制访问控制简称 MAC（Mandatory Access Control），是为了弥补 DAC 权限控制过于分散的问题而诞生的，在 MAC 模型中，会对资源进行类别划分、对主体进行等级划分。在进行权限校验时，会同时对主体的等级和资源的类别进行匹配，实现资源与主体的双重验证，确保资源的交叉隔离，提高安全性。比如情报局的任务有秘密级、机密级、绝密级，角色有007、M 和 Q，MAC 非常适合机密机构或者其他等级观念强烈的行业，但对于类似商业服务系统，则因为不够灵活而不能适用。</p><p>MAC的权限库表设计可能为：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-markdown data-lang=markdown><span style=display:flex><span>资源配置表
+</span></span><span style=display:flex><span>  资源: 财务文档
+</span></span><span style=display:flex><span>    主体: 财务人员
+</span></span><span style=display:flex><span>    等级：经理级
+</span></span><span style=display:flex><span>    操作：查看
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>主体配置表
+</span></span><span style=display:flex><span>	主体: 李女士
+</span></span><span style=display:flex><span>  	类别: 财务人员
+</span></span><span style=display:flex><span>  	等级：经理级
+</span></span></code></pre></div><h2 id=rbac>
+RBAC
+<a class=anchor href=#rbac>#</a>
+</h2><p>基于角色的访问控制简称 RBAC（Role-Based Access Control）。在 RBAC 里面，一个人有了一些固定的权限后，他就是一个角色，于是引入了“角色”的概念，可以理解为角色就是一组权限的集合。这个模型有效的解决了 ACL 模型里面管理员给每一个新人逐个系统加权限的问题，只需要在最初配置好角色所拥有的权限，在新人入职时给新人分配一个角色就可以了，大大减少重复性操作负担。需要注意的是，实现时要验证角色是否有某个权限，而不是去验证用户是否是某个角色。</p><p>引入角色概念后，RBAC 演进出了 4 种细分模型：RBAC0、RBAC1、RBAC2、RBAC3。</p><p><img src=https://raw.githubusercontent.com/tcitry/static/master/uPic/yGR97r.jpg alt></p><h3 id=rbac0>
+RBAC0
+<a class=anchor href=#rbac0>#</a>
+</h3><p>RBAC0 就是上面说的最基础的 RBAC 模型，只引入了角色的概念，在这个模型下，用户和角色是多对多的关系，角色和权限之间也是多对多的关系，角色实现了用户和权限间的解耦：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-markdown data-lang=markdown><span style=display:flex><span>用户 <span style=color:#960050;background-color:#1e0010>&lt;</span>=关系表=&gt; 角色 <span style=color:#960050;background-color:#1e0010>&lt;</span>=关系表=&gt; 权限
+</span></span></code></pre></div><h3 id=rbac1>
+RBAC1
+<a class=anchor href=#rbac1>#</a>
+</h3><p>RBAC1 模型是 RBAC0 的升级版，它对角色这层元素上进行了细分，引入<strong>角色继承</strong>的概念，也就是可以继承某个基础角色生成子角色。RBAC1 模型可以更好地在角色层面进行细分，更好地映射了企业组织架构中的职能的权限，根据实际的管理权限对相似职能的角色进行删减以达到级别分明的效果。</p><p><strong>应用场景</strong>：市场经理岗位可能会分为总监级别、经理级别、副经理级别，这时候如果小陈只是一个副经理级别的，那么他所拥有的市场经理的权限肯定就没有总监级别的多<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup>。</p><h3 id=rbac2>
+RBAC2
+<a class=anchor href=#rbac2>#</a>
+</h3><p>在 RBAC2 中对角色层面增加了<strong>职责分离</strong>的限制：</p><p>（1）静态职责分离（Static Separation of Duty)）</p><ul>
+<li>角色互斥：相同用户不能同时拥有互斥关系的角色，例如会计和出纳两个角色就是互斥的</li><li>基数约束：角色被分配到的用户有数量上限，例如公司中只有一个 CEO 职位，那么这个角色的数量就是有限的</li><li>先决条件角色：要拥有更高级别的角色权限，需要先获取到相对来说低级别的一些权限，例如副经理要想获取到总监级别权限，那么他需要先获取到经理级别的权限。</li></ul><p>（2）动态职责分离（Dynamic Separation of Duty）</p><p>用户在一次会话（Session）中不能同时激活自身所拥有的、互相有冲突的角色，只能选择其一。</p><h3 id=rbac3>
+RBAC3
+<a class=anchor href=#rbac3>#</a>
+</h3><p>RBAC3 模型就是 <code>RBAC1 + RBAC2</code> 两个模型的合集，所以 RBAC3 既有 RBAC1 的角色等级划分，也有 RBAC2 的角色限制。这种模型只有在系统比较复杂的时候才派得上用场，不然设计得过度复杂，对开发和后期维护也不是好事情。</p><h3 id=rbac-的优缺点>
+RBAC 的优缺点
+<a class=anchor href=#rbac-%e7%9a%84%e4%bc%98%e7%bc%ba%e7%82%b9>#</a>
+</h3><p>RBAC 的优点很明显就是只需要分配一次角色，大大减少了重复性操作负担，解耦了用户和权限的关系。</p><p>但是 RBAC 并不总能满足所有权限的场景。比如，我们无法对销售角色进行个体定制。比如，销售角色拥有创建、删除的权限。如果我们要对销售小李，去掉删除的权限。那么，我们就必须创建另一个角色，来满足需求。如果这种情况很频繁，就会丧失角色的统一性，降低系统的可维护性。</p><h3 id=用户组>
+用户组
+<a class=anchor href=#%e7%94%a8%e6%88%b7%e7%bb%84>#</a>
+</h3><p>很多情况下权限系统还会在<code>用户&lt;-->角色&lt;-->权限</code>的基础上引入<strong>用户组</strong>的概念，用户组就是用户（主体）的集合，打个比方，在一家公司需要将岗位 A 的所有人都调配到岗位 B，如果单纯的更改用户的角色，操作量还是很大，加入用户组的概念后，只需要将一个用户组的角色从岗位 A 改为岗位 B 就可以了。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-markdown data-lang=markdown><span style=display:flex><span>用户<span style=color:#960050;background-color:#1e0010>&lt;</span>=关系表=&gt;用户组<span style=color:#960050;background-color:#1e0010>&lt;</span>=关系表=&gt;角色<span style=color:#960050;background-color:#1e0010>&lt;</span>=关系表=&gt;权限
+</span></span></code></pre></div><h4 id=角色和组的区别>
+角色和组的区别
+<a class=anchor href=#%e8%a7%92%e8%89%b2%e5%92%8c%e7%bb%84%e7%9a%84%e5%8c%ba%e5%88%ab>#</a>
+</h4><p>角色和组两个概念可能会让人混淆，这里做个区分：</p><ul>
+<li>主体可以是用户，也可以是组，角色赋予的是主体。</li><li>角色是权限的集合。</li><li>组是用户的集合</li></ul><h2 id=abac>
+ABAC
+<a class=anchor href=#abac>#</a>
+</h2><p>基于属性的访问控制（Attribute-Based Access Control，简称 ABAC）是一种非常灵活的授权模型，不同于 RBAC，在 ABAC 中，一个操作是否被允许是基于对象、资源、操作和环境信息共同动态计算决定的<sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup>。</p><ul>
+<li>对象：对象是当前请求访问资源的用户。用户的属性包括ID，个人资源，角色，部门和组织成员身份等；</li><li>资源：资源是当前访问用户要访问的资产或对象（例如文件，数据，服务器，甚至API）。资源属性包含文件的创建日期，文件所有者，文件名和类型以及数据敏感性等等；</li><li>操作：操作是用户试图对资源进行的操作。常见的操作包括“读取”，“写入”，“编辑”，“复制”和“删除”；</li><li>环境：环境是每个访问请求的上下文。环境属性包含访问尝试的时间和位置，对象的设备，通信协议和加密强度等。</li></ul><h3 id=如何使用属性进行动态计算>
+如何使用属性进行动态计算
+<a class=anchor href=#%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8%e5%b1%9e%e6%80%a7%e8%bf%9b%e8%a1%8c%e5%8a%a8%e6%80%81%e8%ae%a1%e7%ae%97>#</a>
+</h3><p>在 ABAC 的决策语句的执行过程中，决策引擎会根据定义好的决策语句，结合对象、资源、操作、环境等因素动态计算出决策结果。每当发生访问请求时，ABAC 决策系统都会分析属性值是否与已建立的策略匹配。如果有匹配的策略，访问请求就会被通过。</p><p>例如，策略「当一个文档的所属部门跟用户的部门相同时，用户可以访问这个文档」会被以下属性匹配：</p><ul>
+<li>对象（用户）的部门 = 资源的所属部门；</li><li>资源 = “文档”；</li><li>操作 = “访问”；</li></ul><p>策略「早上九点前禁止 A 部门的人访问B系统；」会被以下属性匹配：</p><ul>
+<li>对象的部门 = A 部门；</li><li>资源 = “B 系统”；</li><li>操作 = “访问”；</li><li>环境 = “时间是早上 9 点”。</li></ul><p>浓缩到一句话，在 ABAC 模型下你可以<strong>细粒度地授权在何种情况下对某个资源具备某个特定的权限。</strong></p><h3 id=优缺点>
+优缺点
+<a class=anchor href=#%e4%bc%98%e7%bc%ba%e7%82%b9>#</a>
+</h3><p>基于了这些属性，就可以进行规则的定制，可见灵活但是复杂，配置的工作量根据实际业务的复杂度成正比。kubernetes 也因为其过于复杂改用了 RBAC<sup id=fnref:3><a href=#fn:3 class=footnote-ref role=doc-noteref>3</a></sup>。</p><blockquote>
+<p>ABAC, Attribute Based Access Control, is a powerful concept. However, as implemented in Kubernetes, ABAC is difficult to manage and understand. It requires ssh and root filesystem access on the master VM of the cluster to make authorization policy changes. For permission changes to take effect the cluster API server must be restarted.</p></blockquote><p>RBAC 也相应解决了使用 ABAC 时面临的问题：</p><blockquote>
+<p>RBAC permission policies are configured using kubectl or the Kubernetes API directly. Users can be authorized to make authorization policy changes using RBAC itself, making it possible to delegate resource management without giving away ssh access to the cluster master. RBAC policies map easily to the resources and operations used in the Kubernetes API.</p></blockquote><p>除了维护难度高以外，ABAC 的规则判断是实时执行，规则过多或者需求复杂时需要关注性能问题。</p><h3 id=选择-rbac-还是-abac>
+选择 RBAC 还是 ABAC
+<a class=anchor href=#%e9%80%89%e6%8b%a9-rbac-%e8%bf%98%e6%98%af-abac>#</a>
+</h3><p>在这里，组织的规模是至关重要的因素。由于 ABAC 最初的设计和实施困难，对于小型企业而言，考虑起来可能太复杂了。</p><p>对于中小型企业，RBAC 是 ABAC 的简单替代方案。每个用户都有一个唯一的角色，并具有相应的权限和限制。当用户转移到新角色时，其权限将更改为新职位的权限。这意味着，在明确定义角色的层次结构中，可以轻松管理少量内部和外部用户。</p><p>但是，当必须手动建立新角色时，对于大型组织而言，效率不高。一旦定义了属性和规则，当用户和利益相关者众多时，ABAC 的策略就更容易应用，同时还降低了安全风险。</p><p>简而言之，如果满足以下条件，请选择 ABAC：</p><ul>
+<li>你在一个拥有许多用户的大型组织中；</li><li>你需要深入的特定访问控制功能；</li><li>你有时间投资远距离的模型；</li><li>你需要确保隐私和安全合规；</li></ul><p>但是，如果满足以下条件，请考虑 RBAC：</p><ul>
+<li>你所在的是中小型企业；</li><li>你的访问控制策略广泛；</li><li>你的外部用户很少，并且你的组织角色得到了明确定义。</li></ul><h3 id=pbac>
+PBAC
+<a class=anchor href=#pbac>#</a>
+</h3><p>PBAC（Policy-Based Access Control）是基于策略的权限控制，其实 ABAC 里已经开始有策略的味道了，PBAC 就是相对于传统的 ABAC 更加强调策略（Policy），故 PBAC 也是 ABAC。参考维基百科 XACML 里的描述<sup id=fnref:4><a href=#fn:4 class=footnote-ref role=doc-noteref>4</a></sup>：</p><blockquote>
+<p>XACML is primarily an <a href=https://en.wikipedia.org/wiki/Attribute-based_access_control>attribute-based access control</a> system (ABAC), also known as a policy-based access control (PBAC) system, where attributes (bits of data) associated with a user or action or resource are inputs into the decision of whether a given user may access a given resource in a particular way.</p></blockquote><h2 id=框架实现>
+框架实现
+<a class=anchor href=#%e6%a1%86%e6%9e%b6%e5%ae%9e%e7%8e%b0>#</a>
+</h2><h3 id=casbin>
+Casbin
+<a class=anchor href=#casbin>#</a>
+</h3><p>Casbin 是一个强大的、高效的开源访问控制框架，其权限管理机制支持多种访问控制模型。上述的权限模型，都可以通过 Casbin 来实现，非常好上手，文档提供了工作原理<sup id=fnref:5><a href=#fn:5 class=footnote-ref role=doc-noteref>5</a></sup>的介绍，可以进行详细了解。</p><p>不过注意，Casbin 没有以下功能：</p><ol>
+<li>身份认证 authentication（即验证用户的用户名和密码），Casbin 只负责访问控制。应该有其他专门的组件负责身份认证，然后由 Casbin 进行访问控制，二者是相互配合的关系。</li><li>管理用户列表或角色列表。 Casbin 认为由项目自身来管理用户、角色列表更为合适， 用户通常有他们的密码，但是 Casbin 的设计思想并不是把它作为一个存储密码的容器。 而是存储 RBAC 方案中用户和角色之间的映射关系。</li></ol><h3 id=shiro>
+Shiro
+<a class=anchor href=#shiro>#</a>
+</h3><p>Apache Shiro 是一个强大而灵活的开源安全框架，可以干净地处理身份验证、授权、企业会话管理和加密，是 Java 技术栈，感兴趣可以了解下。</p><h3 id=spring-security>
+Spring Security
+<a class=anchor href=#spring-security>#</a>
+</h3><p>Spring Security 是一个强大的和高度可定制的身份验证和访问控制框架，也是 Java 技术栈，感兴趣可以了解下。</p><h3 id=django>
+Django
+<a class=anchor href=#django>#</a>
+</h3><p>Django 是一个 Web 框架，因为以前用过 Django 比较了解，顺便说一下，Django 自带的基础功能也实现了一层针对 Model 层数据的 RBAC，可以在此基础上做一些业务开发。另外我也在其 Admin 的基础上做了一个针对 API 的权限校验，感兴趣可以看下：<a href=https://github.com/tcitry/django-api-permission>django-api-permission</a>。</p><h3 id=总结>
+总结
+<a class=anchor href=#%e6%80%bb%e7%bb%93>#</a>
+</h3><p>不过 Shiro 和 Spring Security 甚至 Django 都不支持 ABAC 模型，需要另外开发业务逻辑，Casbin 可以通过模型配置文件的方式原生支持，且常用语言都提供了 SDK。</p><section class=footnotes role=doc-endnotes>
+<hr>
+<ol>
+<li id=fn:1 role=doc-endnote>
+<p><a href=https://tsejx.github.io/blog/architect-design-based-on-rbac/>https://tsejx.github.io/blog/architect-design-based-on-rbac/</a>&#160;<a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2 role=doc-endnote>
+<p><a href=https://docs.authing.cn/v2/guides/access-control/>https://docs.authing.cn/v2/guides/access-control/</a>&#160;<a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:3 role=doc-endnote>
+<p><a href=https://kubernetes.io/blog/2017/04/rbac-support-in-kubernetes/>https://kubernetes.io/blog/2017/04/rbac-support-in-kubernetes/</a>&#160;<a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:4 role=doc-endnote>
+<p><a href=https://en.wikipedia.org/wiki/XACML>https://en.wikipedia.org/wiki/XACML</a>&#160;<a href=#fnref:4 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:5 role=doc-endnote>
+<p><a href=https://casbin.org/docs/zh-CN/how-it-works>https://casbin.org/docs/zh-CN/how-it-works</a>&#160;<a href=#fnref:5 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></article><div>
+<h5 class=post-after>本文共 4413 字，上次修改于 Jan 28, 2024，以 <a href=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh>CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5><div id=navigation-mobile>
+<p>上一篇：<a href=https://yindongliang.com/posts/hello-protobuf/>了解下 Protobuf 相关概念</a></p><p>下一篇：<a href=https://yindongliang.com/posts/golang-channel/>Go 语言中 Channel 的实现</a></p></div><h2 style=color:darkgrey>相关文章</h2><div class=post>
+<p><h3><time style=color:darkgrey>2020-09-22</time> » <a href=/posts/hello-protobuf/>
+了解下 Protobuf 相关概念
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2020-07-11</time> » <a href=/posts/compare-kafka-and-rabbitmq/>
+Kafka 和 RabbitMQ 对比
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2020-01-03</time> » <a href=/posts/redis-distribute-lock/>
+Redis 的分布式锁使用注意
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2019-11-12</time> » <a href=/posts/bloom-filter/>
+Redis 实现布隆过滤器
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2019-10-11</time> » <a href=/posts/talk-about-graphql/>
+说说实际工作中 GraphQL 的使用体验
+</a></h3></p></div><script src=https://giscus.app/client.js data-repo=tcitry/tcitry.github.io data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" data-category=Announcements data-category-id=DIC_kwDOCMyx684COMlk data-mapping=og:title data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script>
+</div><footer class=book-footer>
+<div class="flex flex-wrap justify-between">
+</div><script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+</footer><label for=menu-control class="hidden book-menu-overlay"></label>
+</div><aside class=book-toc>
+<div class=book-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#基本概念>基本概念</a>
+<ul>
+<li><a href=#主体subject>主体（Subject）</a></li><li><a href=#对象object>对象（Object）</a></li><li><a href=#动作action>动作（Action）</a></li></ul></li><li><a href=#acl>ACL</a>
+<ul>
+<li><a href=#dac>DAC</a></li><li><a href=#mac>MAC</a></li></ul></li><li><a href=#rbac>RBAC</a>
+<ul>
+<li><a href=#rbac0>RBAC0</a></li><li><a href=#rbac1>RBAC1</a></li><li><a href=#rbac2>RBAC2</a></li><li><a href=#rbac3>RBAC3</a></li><li><a href=#rbac-的优缺点>RBAC 的优缺点</a></li><li><a href=#用户组>用户组</a>
+<ul>
+<li><a href=#角色和组的区别>角色和组的区别</a></li></ul></li></ul></li><li><a href=#abac>ABAC</a>
+<ul>
+<li><a href=#如何使用属性进行动态计算>如何使用属性进行动态计算</a></li><li><a href=#优缺点>优缺点</a></li><li><a href=#选择-rbac-还是-abac>选择 RBAC 还是 ABAC</a></li><li><a href=#pbac>PBAC</a></li></ul></li><li><a href=#框架实现>框架实现</a>
+<ul>
+<li><a href=#casbin>Casbin</a></li><li><a href=#shiro>Shiro</a></li><li><a href=#spring-security>Spring Security</a></li><li><a href=#django>Django</a></li><li><a href=#总结>总结</a></li></ul></li></ul></nav></div></aside></main><div id=navigation>
+<a class="nav nav-left" href=https://yindongliang.com/posts/hello-protobuf/ title="上一篇：了解下 Protobuf 相关概念"><i class=fa-left></i></a>
+<a class="nav nav-right" href=https://yindongliang.com/posts/golang-channel/ title="下一篇：Go 语言中 Channel 的实现"><i class=fa-right></i></a>
+</div><script>document.onkeydown=function(e){if(e.code==="ArrowLeft"){let e=document.getElementsByClassName("nav nav-left");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}else if(e.code==="ArrowRight"){let e=document.getElementsByClassName("nav nav-right");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}}</script>
+<script src=/gumshoe.polyfills.min.js></script>
+<script>new Gumshoe(".book-toc a",{nested:!0})</script>
+<style>.book-toc li.active>a{font-weight:700}</style><script src=/fast-image-zoom.js></script>
+<script>imageZoom()</script>
+<link rel=stylesheet href=/katex/katex.min.css>
+<script src=/katex/katex.min.js></script>
+<script src=/katex/auto-render.min.js onload=renderMathInElement(document.body)></script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+<script>ts=document.getElementsByTagName("a");for(const e of ts)e.href&&!(e.href.startsWith("http://localhost")|e.href.startsWith("https://yindongliang.com"))&&(e.target="_blank")</script>
+</body></html>

@@ -1,0 +1,535 @@
+<!doctype html><html lang=zh-cn dir=ltr>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=description content="虽然 Goroutine 号称占用的内存非常小，初始化只有几 K 大小，但是很多时候确实还是需要控制一台机器的 Goroutine 的并发数量，以进行业务上的可控并发场景的需要，或防止异常情况下的CPU、内存过载进而导致服务不可用的情况。 通过 Channel">
+<meta name=theme-color content="#FFFFFF">
+<meta name=color-scheme content="light dark"><meta property="og:title" content="Go 语言中 Goroutine 的并发数量控制">
+<meta property="og:description" content="虽然 Goroutine 号称占用的内存非常小，初始化只有几 K 大小，但是很多时候确实还是需要控制一台机器的 Goroutine 的并发数量，以进行业务上的可控并发场景的需要，或防止异常情况下的CPU、内存过载进而导致服务不可用的情况。 通过 Channel">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yindongliang.com/posts/go-concurrency/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2020-06-19T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-03-28T13:46:56+08:00">
+<title>
+Go 语言中 Goroutine 的并发数量控制
+</title><link rel=manifest href=/manifest.json>
+<link rel=icon href=/favicon.png type=image/x-icon>
+<link rel=stylesheet href=/book.min.7ddffcff7348380c70e43d3b4ab992503f90110553d5bfe5868e7d1aa2b80633.css integrity="sha256-fd/8/3NIOAxw5D07SrmSUD+QEQVT1b/lho59GqK4BjM=" crossorigin=anonymous>
+<script defer src=/flexsearch.min.js></script>
+<script defer src=/zh-cn.search.min.2c190993d62f294238012cea6b0bb36d326434bd9ba923f25c1b780b368e6efa.js integrity="sha256-LBkJk9YvKUI4ASzqawuzbTJkNL2bqSPyXBt4CzaObvo=" crossorigin=anonymous></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),window.location.hostname==="localhost"?gtag("config","G-Q20952BPE6",{send_page_view:!1,debug_mode:!0}):gtag("config","G-Q20952BPE6")</script>
+</head><body dir=ltr>
+<input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control>
+<main class="container flex">
+<aside class=book-menu>
+<div class=book-menu-content>
+<nav>
+<h2 class=book-brand>
+<a class="flex align-center" href=/><img src=/logo.gif alt><span>殷东亮的博客</span>
+</a>
+</h2><div class=book-search>
+<input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/>
+<div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul>
+<li><a href=/archives>Archives</a></li><li><a href=/weekly>Weekly🔥</a></li><li><a href=/projects>Projects</a></li><li><a href=/about>About</a></li><li><a href=https://github.com/tcitry target=_blank>Github</a></li><li><a href=/posts/index.xml target=_blank>RSS</a></li></ul><hr class=hr-edge-weak>
+<ul>
+<li>
+<input type=checkbox id=section-374f93193c235d5a59a63115829f835e class=toggle>
+<label for=section-374f93193c235d5a59a63115829f835e class="flex justify-between">
+<a href=/docs/Algorithms/>Algorithms</a>
+</label>
+<ul>
+<li>
+<input type=checkbox id=section-6fa75fabfcaf0942c2ae40739a024515 class=toggle>
+<label for=section-6fa75fabfcaf0942c2ae40739a024515 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>数据结构</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%93%BE%E8%A1%A8/>链表（Linked list）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E7%BB%84/>数组（Array）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%AD%97%E7%AC%A6%E4%B8%B2/>字符串（String）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%98%9F%E5%88%97/>队列（Queue）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%A0%88/>栈（Stack）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%93%88%E5%B8%8C%E8%A1%A8/>哈希表（Hash Table）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E4%BA%8C%E5%8F%89%E6%A0%91/>二叉树（Binary Tree）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A0%86/>堆（Heap）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%89%8D%E7%BC%80%E6%A0%91/>前缀树（Trie）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%A2%E9%BB%91%E6%A0%91/>红黑树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/B-tree/>B 树</a>
+</li></ul></li><li>
+<input type=checkbox id=section-60c1cc56ab667711423fd030bb7d2ba4 class=toggle>
+<label for=section-60c1cc56ab667711423fd030bb7d2ba4 class="flex justify-between">
+<a role=button>常用算法</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/recursion/>递归</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/>贪心算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/>滑动窗口</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/>动态规划</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8F%8C%E6%8C%87%E9%92%88/>双指针</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/>二分查找</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/>排序算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/BFS-%E5%92%8C-DFS/>BFS 和 DFS</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%88%86%E6%B2%BB%E7%AD%96%E7%95%A5/>分治策略</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%89%8D%E7%BC%80%E5%92%8C/>前缀和</a>
+</li></ul></li><li>
+<input type=checkbox id=section-34a5846db21bfdffc261709474d4c2c2 class=toggle>
+<label for=section-34a5846db21bfdffc261709474d4c2c2 class="flex justify-between">
+<a role=button>经典问题</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/>打家劫舍</a>
+</li><li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/>字符串匹配</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3acc3c018b0cf870114fc4c04b8fe75a class=toggle>
+<label for=section-3acc3c018b0cf870114fc4c04b8fe75a class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/>数学基础</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/>微积分</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/>概率统计</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/>线性代数</a>
+</li></ul></li><li>
+<input type=checkbox id=section-6a4c402b2954211b8a56520549766ad2 class=toggle>
+<label for=section-6a4c402b2954211b8a56520549766ad2 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/>线性模型</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/>周志华西瓜树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/>集体智慧编程</a>
+</li></ul></li></ul></li><li>
+<input type=checkbox id=section-ab6241a9c9348727e1ed30d9d7253a0e class=toggle>
+<label for=section-ab6241a9c9348727e1ed30d9d7253a0e class="flex justify-between">
+<a href=/docs/Golang/>Golang</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Golang/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Golang/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Golang/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/>代码规范</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3ca9a5c09bd1884bf69ade02a8e53628 class=toggle>
+<label for=section-3ca9a5c09bd1884bf69ade02a8e53628 class="flex justify-between">
+<a href=/docs/Linux/>Linux</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Linux/regular-expression/>正则表达式</a>
+</li><li>
+<a href=/docs/Linux/Shell/>Shell</a>
+</li><li>
+<a href=/docs/Linux/Spark/>Spark</a>
+</li><li>
+<a href=/docs/Linux/Docker/>Docker</a>
+</li><li>
+<a href=/docs/Linux/git/>Git 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-fdf3c0f524378d36bb3d2441d08ad8e8 class=toggle>
+<label for=section-fdf3c0f524378d36bb3d2441d08ad8e8 class="flex justify-between">
+<a href=/docs/Rust/>Rust</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Rust/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li></ul></li><li>
+<input type=checkbox id=section-f6f1cb8b3cab23098be63dcbede4acb5 class=toggle>
+<label for=section-f6f1cb8b3cab23098be63dcbede4acb5 class="flex justify-between">
+<a role=button>Xcode</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Xcode/Swift/>Swift</a>
+</li><li>
+<a href=/docs/Xcode/SwiftUI/>SwiftUI</a>
+</li><li>
+<a href=/docs/Xcode/Objective-C-%E8%AF%AD%E6%B3%95/>Objective-C</a>
+</li><li>
+<a href=/docs/Xcode/mac-%E6%8A%80%E5%B7%A7/>Mac 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-5f6c61ca509f9ca14a383db36b14a32f class=toggle>
+<label for=section-5f6c61ca509f9ca14a383db36b14a32f class="flex justify-between">
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/>软件工程</a>
+</label>
+<ul>
+<li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/peopleware/>人件</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/>Unix 编程艺术</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E4%B9%8B%E9%81%93/>程序员修炼之道</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/>一些定律</a>
+</li></ul></li><li>
+<input type=checkbox id=section-b708f687fcc1dc14b13a93ba85e8845b class=toggle>
+<label for=section-b708f687fcc1dc14b13a93ba85e8845b class="flex justify-between">
+<a href=/docs/Clang/>C/C++</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Clang/C/>C 语言基础</a>
+</li><li>
+<a href=/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/>系统调用</a>
+</li><li>
+<a href=/docs/Clang/C-%E6%A0%87%E5%87%86%E5%BA%93/>C 标准库</a>
+</li><li>
+<a href=/docs/Clang/C++/>C++ 语言基础</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3beaf640f7d27429884edb43bd1a0ec7 class=toggle>
+<label for=section-3beaf640f7d27429884edb43bd1a0ec7 class="flex justify-between">
+<a href=/docs/FE/>FE</a>
+</label>
+<ul>
+<li>
+<a href=/docs/FE/JavaScript/>JavaScript</a>
+</li><li>
+<a href=/docs/FE/js-buildin-objects/>JS 内置对象</a>
+</li><li>
+<a href=/docs/FE/TypeScript/>TypeScript</a>
+</li><li>
+<a href=/docs/FE/BOM/>BOM</a>
+</li><li>
+<a href=/docs/FE/DOM/>DOM</a>
+</li><li>
+<a href=/docs/FE/node/>Node</a>
+</li><li>
+<a href=/docs/FE/Deno/>Deno</a>
+</li><li>
+<a href=/docs/FE/vue/>Vue</a>
+</li><li>
+<a href=/docs/FE/react/>React</a>
+</li><li>
+<a href=/docs/FE/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/>依赖管理</a>
+</li><li>
+<a href=/docs/FE/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/>构建工具</a>
+</li><li>
+<a href=/docs/FE/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/FE/%E6%8F%92%E4%BB%B6/>插件</a>
+</li></ul></li><li>
+<input type=checkbox id=section-8ca541663a7d7fd63c79c6ce40ab5b81 class=toggle>
+<label for=section-8ca541663a7d7fd63c79c6ce40ab5b81 class="flex justify-between">
+<a href=/docs/Python/>Python</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/Python/Numpy/>Numpy</a>
+</li><li>
+<a href=/docs/Python/Pandas/>Pandas</a>
+</li></ul></li></ul></nav><script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+</div></aside><div class=book-page>
+<header class=book-header>
+<div class="flex align-center justify-between">
+<label for=menu-control>
+<img src=/svg/menu.svg class=book-icon alt>
+</label>
+<strong>
+Go 语言中 Goroutine 的并发数量控制
+</strong>
+<label for=toc-control>
+<img src=/svg/toc.svg class=book-icon alt>
+</label>
+</div><aside class="hidden clearfix">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#通过-channel-控制>通过 Channel 控制</a></li><li><a href=#协程池---ants>协程池 - ants</a>
+<ul>
+<li><a href=#默认-pool>默认 pool</a></li><li><a href=#自定义-pool>自定义 pool</a></li></ul></li><li><a href=#全局变量加锁>全局变量加锁</a></li><li><a href=#通过-context-进行控制>通过 Context 进行控制</a></li><li><a href=#通过-waitgroup-进行控制>通过 WaitGroup 进行控制</a></li><li><a href=#总结>总结</a></li></ul></nav></aside></header><article class=markdown>
+<h1>
+<a href=/posts/go-concurrency/>Go 语言中 Goroutine 的并发数量控制</a>
+</h1><h5>Jun 19, 2020</h5><div>
+<a href=/tags/Go/>Go</a>
+</div><p>虽然 Goroutine 号称占用的内存非常小，初始化只有几 K 大小，但是很多时候确实还是需要控制一台机器的 Goroutine 的并发数量，以进行业务上的可控并发场景的需要，或防止异常情况下的CPU、内存过载进而导致服务不可用的情况。</p><h2 id=通过-channel-控制>
+通过 Channel 控制
+<a class=anchor href=#%e9%80%9a%e8%bf%87-channel-%e6%8e%a7%e5%88%b6>#</a>
+</h2><p>利用带缓冲区的 Channel 可以实现一个分发队列，队列里有值时就可以给 Goroutine 使用，没有值时 Goroutine 阻塞进行等待。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;log&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ch</span> <span style=color:#f92672>:=</span> make(<span style=color:#66d9ef>chan</span> <span style=color:#66d9ef>struct</span>{}, <span style=color:#ae81ff>3</span>)
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>; <span style=color:#a6e22e>i</span> &lt; <span style=color:#ae81ff>10</span>; <span style=color:#a6e22e>i</span><span style=color:#f92672>++</span> {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>ch</span> <span style=color:#f92672>&lt;-</span> <span style=color:#66d9ef>struct</span>{}{}
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>go</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>i</span> <span style=color:#66d9ef>int</span>) {
+</span></span><span style=display:flex><span>			<span style=color:#a6e22e>log</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>i</span>)
+</span></span><span style=display:flex><span>			<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Sleep</span>(<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Second</span>)
+</span></span><span style=display:flex><span>			<span style=color:#f92672>&lt;-</span><span style=color:#a6e22e>ch</span>
+</span></span><span style=display:flex><span>		}(<span style=color:#a6e22e>i</span>)
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#75715e>// 2022/03/22 19:53:55 2
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 2022/03/22 19:53:55 1
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 2022/03/22 19:53:55 0
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 2022/03/22 19:53:56 5
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 2022/03/22 19:53:56 4
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 2022/03/22 19:53:56 3
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 2022/03/22 19:53:57 6
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 2022/03/22 19:53:57 7
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 2022/03/22 19:53:57 8
+</span></span></span></code></pre></div><h2 id=协程池---ants>
+协程池 - ants
+<a class=anchor href=#%e5%8d%8f%e7%a8%8b%e6%b1%a0---ants>#</a>
+</h2><p>更加比较成熟的方案是使用开源的协程池实现，这里使用 <a href=https://github.com/panjf2000/ants>ants</a> 来介绍一下协程池的概念。ants 是一个高性能且低损耗的 goroutine 池，实现了对大规模 goroutine 的调度管理、goroutine 复用，允许使用者在开发并发程序的时候限制 goroutine 数量，复用资源，达到更高效执行任务的效果。</p><h3 id=默认-pool>
+默认 pool
+<a class=anchor href=#%e9%bb%98%e8%ae%a4-pool>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;sync&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;sync/atomic&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;github.com/panjf2000/ants/v2&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>sum</span> <span style=color:#66d9ef>int32</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>demoFunc</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Sleep</span>(<span style=color:#ae81ff>10</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Millisecond</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;Hello World!&#34;</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>ants</span>.<span style=color:#a6e22e>Release</span>()
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>runTimes</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>1000</span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// Use the common pool.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>wg</span> <span style=color:#a6e22e>sync</span>.<span style=color:#a6e22e>WaitGroup</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>syncCalculateSum</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>func</span>() {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>demoFunc</span>()
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Done</span>()
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>; <span style=color:#a6e22e>i</span> &lt; <span style=color:#a6e22e>runTimes</span>; <span style=color:#a6e22e>i</span><span style=color:#f92672>++</span> {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Add</span>(<span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>_</span> = <span style=color:#a6e22e>ants</span>.<span style=color:#a6e22e>Submit</span>(<span style=color:#a6e22e>syncCalculateSum</span>)
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Wait</span>()
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;running goroutines: %d\n&#34;</span>, <span style=color:#a6e22e>ants</span>.<span style=color:#a6e22e>Running</span>())
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;finish all tasks.\n&#34;</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=自定义-pool>
+自定义 pool
+<a class=anchor href=#%e8%87%aa%e5%ae%9a%e4%b9%89-pool>#</a>
+</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;sync&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;sync/atomic&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;github.com/panjf2000/ants/v2&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>sum</span> <span style=color:#66d9ef>int32</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>myFunc</span>(<span style=color:#a6e22e>i</span> <span style=color:#66d9ef>interface</span>{}) {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>n</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>i</span>.(<span style=color:#66d9ef>int32</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>atomic</span>.<span style=color:#a6e22e>AddInt32</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>sum</span>, <span style=color:#a6e22e>n</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;run with %d\n&#34;</span>, <span style=color:#a6e22e>n</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>ants</span>.<span style=color:#a6e22e>Release</span>()
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>runTimes</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>1000</span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// Use the pool with a function,
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// set 10 to the capacity of goroutine pool and 1 second for expired duration.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>p</span>, <span style=color:#a6e22e>_</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>ants</span>.<span style=color:#a6e22e>NewPoolWithFunc</span>(<span style=color:#ae81ff>10</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>i</span> <span style=color:#66d9ef>interface</span>{}) {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>myFunc</span>(<span style=color:#a6e22e>i</span>)
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Done</span>()
+</span></span><span style=display:flex><span>	})
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Release</span>()
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// Submit tasks one by one.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>; <span style=color:#a6e22e>i</span> &lt; <span style=color:#a6e22e>runTimes</span>; <span style=color:#a6e22e>i</span><span style=color:#f92672>++</span> {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Add</span>(<span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>_</span> = <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Invoke</span>(int32(<span style=color:#a6e22e>i</span>))
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Wait</span>()
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;running goroutines: %d\n&#34;</span>, <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Running</span>())
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;finish all tasks, result is %d\n&#34;</span>, <span style=color:#a6e22e>sum</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>ants 也提供了很多自定义的选项来支持各种场景需要。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Options</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// ExpiryDuration is a period for the scavenger goroutine to clean up those expired workers,
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// the scavenger scans all workers every `ExpiryDuration` and clean up those workers that haven&#39;t been
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// used for more than `ExpiryDuration`.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>ExpiryDuration</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Duration</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// PreAlloc indicates whether to make memory pre-allocation when initializing Pool.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>PreAlloc</span> <span style=color:#66d9ef>bool</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// Max number of goroutine blocking on pool.Submit.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// 0 (default value) means no such limit.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>MaxBlockingTasks</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// When Nonblocking is true, Pool.Submit will never be blocked.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// ErrPoolOverload will be returned when Pool.Submit cannot be done at once.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// When Nonblocking is true, MaxBlockingTasks is inoperative.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>Nonblocking</span> <span style=color:#66d9ef>bool</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// PanicHandler is used to handle panics from each worker goroutine.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// if nil, panics will be thrown out again from worker goroutines.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>PanicHandler</span> <span style=color:#66d9ef>func</span>(<span style=color:#66d9ef>interface</span>{})
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// Logger is the customized logger for logging info, if it is not set,
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// default standard logger from log package is used.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>Logger</span> <span style=color:#a6e22e>Logger</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>具体的使用方法可以参考官方文档了，因为 ants 确实非常好用且性能出众，后面可能会专门从源码角度分析一下 ants。</p><h2 id=全局变量加锁>
+全局变量加锁
+<a class=anchor href=#%e5%85%a8%e5%b1%80%e5%8f%98%e9%87%8f%e5%8a%a0%e9%94%81>#</a>
+</h2><p>当然还有一个最传统的方案，就是使用互斥锁维护一个全局变量的并发安全。变量可以是一个 <code>struct</code>，记录当前的并发数量和需要控制的并发数量，然后在 goroutine 出去方法之前，对全局变量的数量值进行校验。不过这种使用场景可能比较局限，慎用。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;sync&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>GoNum</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Max</span>   <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Curr</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Mutex</span> <span style=color:#a6e22e>sync</span>.<span style=color:#a6e22e>Mutex</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>GONUM</span> = <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>GoNum</span>{
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Max</span>:  <span style=color:#ae81ff>10</span>,
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Curr</span>: <span style=color:#ae81ff>0</span>,
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>gofunc</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>GONUM</span>.<span style=color:#a6e22e>Curr</span> &lt; <span style=color:#a6e22e>GONUM</span>.<span style=color:#a6e22e>Max</span> {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>GONUM</span>.<span style=color:#a6e22e>Mutex</span>.<span style=color:#a6e22e>Lock</span>()
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>GONUM</span>.<span style=color:#a6e22e>Mutex</span>.<span style=color:#a6e22e>Unlock</span>()
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;curr:&#34;</span>, <span style=color:#a6e22e>GONUM</span>.<span style=color:#a6e22e>Curr</span>)
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>GONUM</span>.<span style=color:#a6e22e>Curr</span><span style=color:#f92672>++</span>
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> {
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>go</span> <span style=color:#a6e22e>gofunc</span>()
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Sleep</span>(<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Second</span>)
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=通过-context-进行控制>
+通过 Context 进行控制
+<a class=anchor href=#%e9%80%9a%e8%bf%87-context-%e8%bf%9b%e8%a1%8c%e6%8e%a7%e5%88%b6>#</a>
+</h2><p>通过 Context 主要就是指通过 <code>Context.WithValue</code> 方法生成根节点，同时维护一个变量，后面的故事就可以参考上面的“全局变量”小节了。</p><h2 id=通过-waitgroup-进行控制>
+通过 WaitGroup 进行控制
+<a class=anchor href=#%e9%80%9a%e8%bf%87-waitgroup-%e8%bf%9b%e8%a1%8c%e6%8e%a7%e5%88%b6>#</a>
+</h2><p>说起同步原语，就不得不说使用 <code>sync.WaitGroup</code> ，可能更加简单，都不用手动加锁了，Go 封装的 <code>WaitGroup</code> 已经解决了并发安全问题，只需要通过 <code>Add()</code> 设置 WaitGroup 的计数器数量、通过 <code>Done()</code> 表示一个 Goroutine 的完成、通过 <code>Wait()</code> 进行阻塞，等待所有 Goroutine 的执行完成，就可以进行并发数量的限制了。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;sync&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>wg</span> <span style=color:#a6e22e>sync</span>.<span style=color:#a6e22e>WaitGroup</span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>; <span style=color:#a6e22e>i</span> &lt; <span style=color:#ae81ff>10</span>; <span style=color:#a6e22e>i</span><span style=color:#f92672>++</span> {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Add</span>(<span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>go</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>v</span> <span style=color:#66d9ef>int</span>) {
+</span></span><span style=display:flex><span>			<span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Done</span>()
+</span></span><span style=display:flex><span>			<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>v</span>)
+</span></span><span style=display:flex><span>		}(<span style=color:#a6e22e>i</span>)
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Wait</span>()
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;work done!&#34;</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#75715e>// output:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 9
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 5
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 1
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 7
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 6
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 3
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 8
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 4
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 2
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// 0
+</span></span></span><span style=display:flex><span><span style=color:#75715e>// work done!
+</span></span></span></code></pre></div><h2 id=总结>
+总结
+<a class=anchor href=#%e6%80%bb%e7%bb%93>#</a>
+</h2><p>上面所有的方法，都有适合的场景，可以根据业务的需要灵活选择和结合使用，但有一个原则需要注意，也是 Go 语言里的一句名言：如果你不知道如何退出一个协程，那么就不要创建这个协程。</p></article><div>
+<h5 class=post-after>本文共 1258 字，上次修改于 Mar 28, 2022，以 <a href=https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh>CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5><div id=navigation-mobile>
+<p>上一篇：<a href=https://yindongliang.com/posts/go-gin-validate/>Gin Web 框架中 Validate 使用总结</a></p><p>下一篇：<a href=https://yindongliang.com/posts/gin-middleware/>Gin Web 框架中 Middleware 的实现原理</a></p></div><h2 style=color:darkgrey>相关文章</h2><div class=post>
+<p><h3><time style=color:darkgrey>2020-06-07</time> » <a href=/posts/go-gin-validate/>
+Gin Web 框架中 Validate 使用总结
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2020-05-21</time> » <a href=/posts/a-few-ways-goroutine-cancel-child-goroutines/>
+Go 程序取消子 Goroutine 的几种方式
+</a></h3></p></div><div class=post>
+<p><h3><time style=color:darkgrey>2020-01-15</time> » <a href=/posts/difference-between-go-io-packages/>
+Go 标准库中涉及 I/O 操作的几个包的区别
+</a></h3></p></div><script src=https://giscus.app/client.js data-repo=tcitry/tcitry.github.io data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" data-category=Announcements data-category-id=DIC_kwDOCMyx684COMlk data-mapping=og:title data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script>
+</div><footer class=book-footer>
+<div class="flex flex-wrap justify-between">
+</div><script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+</footer><label for=menu-control class="hidden book-menu-overlay"></label>
+</div><aside class=book-toc>
+<div class=book-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#通过-channel-控制>通过 Channel 控制</a></li><li><a href=#协程池---ants>协程池 - ants</a>
+<ul>
+<li><a href=#默认-pool>默认 pool</a></li><li><a href=#自定义-pool>自定义 pool</a></li></ul></li><li><a href=#全局变量加锁>全局变量加锁</a></li><li><a href=#通过-context-进行控制>通过 Context 进行控制</a></li><li><a href=#通过-waitgroup-进行控制>通过 WaitGroup 进行控制</a></li><li><a href=#总结>总结</a></li></ul></nav></div></aside></main><div id=navigation>
+<a class="nav nav-left" href=https://yindongliang.com/posts/go-gin-validate/ title="上一篇：Gin Web 框架中 Validate 使用总结"><i class=fa-left></i></a>
+<a class="nav nav-right" href=https://yindongliang.com/posts/gin-middleware/ title="下一篇：Gin Web 框架中 Middleware 的实现原理"><i class=fa-right></i></a>
+</div><script>document.onkeydown=function(e){if(e.code==="ArrowLeft"){let e=document.getElementsByClassName("nav nav-left");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}else if(e.code==="ArrowRight"){let e=document.getElementsByClassName("nav nav-right");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}}</script>
+<script src=/gumshoe.polyfills.min.js></script>
+<script>new Gumshoe(".book-toc a",{nested:!0})</script>
+<style>.book-toc li.active>a{font-weight:700}</style><script src=/fast-image-zoom.js></script>
+<script>imageZoom()</script>
+<link rel=stylesheet href=/katex/katex.min.css>
+<script src=/katex/katex.min.js></script>
+<script src=/katex/auto-render.min.js onload=renderMathInElement(document.body)></script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+<script>ts=document.getElementsByTagName("a");for(const e of ts)e.href&&!(e.href.startsWith("http://localhost")|e.href.startsWith("https://yindongliang.com"))&&(e.target="_blank")</script>
+</body></html>

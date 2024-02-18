@@ -1,0 +1,356 @@
+<!doctype html><html lang=zh-cn dir=ltr>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=description content="B 树是为磁盘或其他直接存取的辅助存储设备而设计的一种平衡搜索树。B 树类似于红黑树，但它们在降低磁盘 I/O 操作数方面要更好一点，比如很多数据库都使用 B 树或 B 树的变种来存储信息。 B 树 # B 树有的地方也称 B-tr">
+<meta name=theme-color content="#FFFFFF">
+<meta name=color-scheme content="light dark"><meta property="og:title" content="B 树">
+<meta property="og:description" content="B 树是为磁盘或其他直接存取的辅助存储设备而设计的一种平衡搜索树。B 树类似于红黑树，但它们在降低磁盘 I/O 操作数方面要更好一点，比如很多数据库都使用 B 树或 B 树的变种来存储信息。 B 树 # B 树有的地方也称 B-tr">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yindongliang.com/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/B-tree/"><meta property="article:section" content="docs">
+<meta property="article:published_time" content="2022-08-27T00:00:00+00:00">
+<meta property="article:modified_time" content="2024-01-28T14:16:39+08:00">
+<title>
+数据结构 — B 树
+</title><link rel=manifest href=/manifest.json>
+<link rel=icon href=/favicon.png type=image/x-icon>
+<link rel=stylesheet href=/book.min.7ddffcff7348380c70e43d3b4ab992503f90110553d5bfe5868e7d1aa2b80633.css integrity="sha256-fd/8/3NIOAxw5D07SrmSUD+QEQVT1b/lho59GqK4BjM=" crossorigin=anonymous>
+<script defer src=/flexsearch.min.js></script>
+<script defer src=/zh-cn.search.min.2c190993d62f294238012cea6b0bb36d326434bd9ba923f25c1b780b368e6efa.js integrity="sha256-LBkJk9YvKUI4ASzqawuzbTJkNL2bqSPyXBt4CzaObvo=" crossorigin=anonymous></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),window.location.hostname==="localhost"?gtag("config","G-Q20952BPE6",{send_page_view:!1,debug_mode:!0}):gtag("config","G-Q20952BPE6")</script>
+</head><body dir=ltr>
+<input type=checkbox class="hidden toggle" id=menu-control>
+<input type=checkbox class="hidden toggle" id=toc-control>
+<main class="container flex">
+<aside class=book-menu>
+<div class=book-menu-content>
+<nav>
+<h2 class=book-brand>
+<a class="flex align-center" href=/><img src=/logo.gif alt><span>殷东亮的博客</span>
+</a>
+</h2><div class=book-search>
+<input type=text id=book-search-input placeholder=Search aria-label=Search maxlength=64 data-hotkeys=s/>
+<div class="book-search-spinner hidden"></div><ul id=book-search-results></ul></div><ul>
+<li><a href=/archives>Archives</a></li><li><a href=/weekly>Weekly🔥</a></li><li><a href=/projects>Projects</a></li><li><a href=/about>About</a></li><li><a href=https://github.com/tcitry target=_blank>Github</a></li><li><a href=/posts/index.xml target=_blank>RSS</a></li></ul><hr class=hr-edge-weak>
+<ul>
+<li>
+<input type=checkbox id=section-374f93193c235d5a59a63115829f835e class=toggle checked>
+<label for=section-374f93193c235d5a59a63115829f835e class="flex justify-between">
+<a href=/docs/Algorithms/>Algorithms</a>
+</label>
+<ul>
+<li>
+<input type=checkbox id=section-6fa75fabfcaf0942c2ae40739a024515 class=toggle checked>
+<label for=section-6fa75fabfcaf0942c2ae40739a024515 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>数据结构</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%93%BE%E8%A1%A8/>链表（Linked list）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E7%BB%84/>数组（Array）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%AD%97%E7%AC%A6%E4%B8%B2/>字符串（String）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E9%98%9F%E5%88%97/>队列（Queue）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%A0%88/>栈（Stack）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%93%88%E5%B8%8C%E8%A1%A8/>哈希表（Hash Table）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E4%BA%8C%E5%8F%89%E6%A0%91/>二叉树（Binary Tree）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%A0%86/>堆（Heap）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E5%89%8D%E7%BC%80%E6%A0%91/>前缀树（Trie）</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%A2%E9%BB%91%E6%A0%91/>红黑树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/B-tree/ class=active>B 树</a>
+</li></ul></li><li>
+<input type=checkbox id=section-60c1cc56ab667711423fd030bb7d2ba4 class=toggle>
+<label for=section-60c1cc56ab667711423fd030bb7d2ba4 class="flex justify-between">
+<a role=button>常用算法</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/recursion/>递归</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/>贪心算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/>滑动窗口</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/>动态规划</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%8F%8C%E6%8C%87%E9%92%88/>双指针</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/>二分查找</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/>排序算法</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/BFS-%E5%92%8C-DFS/>BFS 和 DFS</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%88%86%E6%B2%BB%E7%AD%96%E7%95%A5/>分治策略</a>
+</li><li>
+<a href=/docs/Algorithms/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/%E5%89%8D%E7%BC%80%E5%92%8C/>前缀和</a>
+</li></ul></li><li>
+<input type=checkbox id=section-34a5846db21bfdffc261709474d4c2c2 class=toggle>
+<label for=section-34a5846db21bfdffc261709474d4c2c2 class="flex justify-between">
+<a role=button>经典问题</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/>打家劫舍</a>
+</li><li>
+<a href=/docs/Algorithms/%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/>字符串匹配</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3acc3c018b0cf870114fc4c04b8fe75a class=toggle>
+<label for=section-3acc3c018b0cf870114fc4c04b8fe75a class="flex justify-between">
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/>数学基础</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/>微积分</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/>概率统计</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/>线性代数</a>
+</li></ul></li><li>
+<input type=checkbox id=section-6a4c402b2954211b8a56520549766ad2 class=toggle>
+<label for=section-6a4c402b2954211b8a56520549766ad2 class="flex justify-between">
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/>机器学习</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/>线性模型</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/>周志华西瓜树</a>
+</li><li>
+<a href=/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/>集体智慧编程</a>
+</li></ul></li></ul></li><li>
+<input type=checkbox id=section-ab6241a9c9348727e1ed30d9d7253a0e class=toggle>
+<label for=section-ab6241a9c9348727e1ed30d9d7253a0e class="flex justify-between">
+<a href=/docs/Golang/>Golang</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Golang/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Golang/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Golang/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/>代码规范</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3ca9a5c09bd1884bf69ade02a8e53628 class=toggle>
+<label for=section-3ca9a5c09bd1884bf69ade02a8e53628 class="flex justify-between">
+<a href=/docs/Linux/>Linux</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li><li>
+<a href=/docs/Linux/regular-expression/>正则表达式</a>
+</li><li>
+<a href=/docs/Linux/Shell/>Shell</a>
+</li><li>
+<a href=/docs/Linux/Spark/>Spark</a>
+</li><li>
+<a href=/docs/Linux/Docker/>Docker</a>
+</li><li>
+<a href=/docs/Linux/git/>Git 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-fdf3c0f524378d36bb3d2441d08ad8e8 class=toggle>
+<label for=section-fdf3c0f524378d36bb3d2441d08ad8e8 class="flex justify-between">
+<a href=/docs/Rust/>Rust</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Rust/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/>命令行</a>
+</li></ul></li><li>
+<input type=checkbox id=section-f6f1cb8b3cab23098be63dcbede4acb5 class=toggle>
+<label for=section-f6f1cb8b3cab23098be63dcbede4acb5 class="flex justify-between">
+<a role=button>Xcode</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Xcode/Swift/>Swift</a>
+</li><li>
+<a href=/docs/Xcode/SwiftUI/>SwiftUI</a>
+</li><li>
+<a href=/docs/Xcode/Objective-C-%E8%AF%AD%E6%B3%95/>Objective-C</a>
+</li><li>
+<a href=/docs/Xcode/mac-%E6%8A%80%E5%B7%A7/>Mac 技巧</a>
+</li></ul></li><li>
+<input type=checkbox id=section-5f6c61ca509f9ca14a383db36b14a32f class=toggle>
+<label for=section-5f6c61ca509f9ca14a383db36b14a32f class="flex justify-between">
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/>软件工程</a>
+</label>
+<ul>
+<li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/peopleware/>人件</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/>Unix 编程艺术</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BF%AE%E7%82%BC%E4%B9%8B%E9%81%93/>程序员修炼之道</a>
+</li><li>
+<a href=/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/>一些定律</a>
+</li></ul></li><li>
+<input type=checkbox id=section-b708f687fcc1dc14b13a93ba85e8845b class=toggle>
+<label for=section-b708f687fcc1dc14b13a93ba85e8845b class="flex justify-between">
+<a href=/docs/Clang/>C/C++</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Clang/C/>C 语言基础</a>
+</li><li>
+<a href=/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/>系统调用</a>
+</li><li>
+<a href=/docs/Clang/C-%E6%A0%87%E5%87%86%E5%BA%93/>C 标准库</a>
+</li><li>
+<a href=/docs/Clang/C++/>C++ 语言基础</a>
+</li></ul></li><li>
+<input type=checkbox id=section-3beaf640f7d27429884edb43bd1a0ec7 class=toggle>
+<label for=section-3beaf640f7d27429884edb43bd1a0ec7 class="flex justify-between">
+<a href=/docs/FE/>FE</a>
+</label>
+<ul>
+<li>
+<a href=/docs/FE/JavaScript/>JavaScript</a>
+</li><li>
+<a href=/docs/FE/js-buildin-objects/>JS 内置对象</a>
+</li><li>
+<a href=/docs/FE/TypeScript/>TypeScript</a>
+</li><li>
+<a href=/docs/FE/BOM/>BOM</a>
+</li><li>
+<a href=/docs/FE/DOM/>DOM</a>
+</li><li>
+<a href=/docs/FE/node/>Node</a>
+</li><li>
+<a href=/docs/FE/Deno/>Deno</a>
+</li><li>
+<a href=/docs/FE/vue/>Vue</a>
+</li><li>
+<a href=/docs/FE/react/>React</a>
+</li><li>
+<a href=/docs/FE/%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86/>依赖管理</a>
+</li><li>
+<a href=/docs/FE/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/>构建工具</a>
+</li><li>
+<a href=/docs/FE/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/FE/%E6%8F%92%E4%BB%B6/>插件</a>
+</li></ul></li><li>
+<input type=checkbox id=section-8ca541663a7d7fd63c79c6ce40ab5b81 class=toggle>
+<label for=section-8ca541663a7d7fd63c79c6ce40ab5b81 class="flex justify-between">
+<a href=/docs/Python/>Python</a>
+</label>
+<ul>
+<li>
+<a href=/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/>语言基础</a>
+</li><li>
+<a href=/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/>标准库</a>
+</li><li>
+<a href=/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/>可视化工具</a>
+</li><li>
+<a href=/docs/Python/Numpy/>Numpy</a>
+</li><li>
+<a href=/docs/Python/Pandas/>Pandas</a>
+</li></ul></li></ul></nav><script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+</div></aside><div class=book-page>
+<header class=book-header>
+<div class="flex align-center justify-between">
+<label for=menu-control>
+<img src=/svg/menu.svg class=book-icon alt>
+</label>
+<strong>
+数据结构 — B 树
+</strong>
+<label for=toc-control>
+<img src=/svg/toc.svg class=book-icon alt>
+</label>
+</div><aside class="hidden clearfix">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#b-树>B 树</a>
+<ul>
+<li><a href=#性质>性质</a></li><li><a href=#基本操作>基本操作</a>
+<ul>
+<li><a href=#搜索>搜索</a></li><li><a href=#初始化>初始化</a></li><li><a href=#插入>插入</a></li><li><a href=#分裂>分裂</a></li><li><a href=#删除>删除</a></li></ul></li></ul></li><li><a href=#b-树-1>B+ 树</a></li><li><a href=#b-树-2>B* 树</a></li><li><a href=#r-树>R 树</a></li><li><a href=#r-树-1>R* 树</a></li><li><a href=#参考>参考</a></li></ul></nav></aside></header><article class=markdown><p>B 树是为磁盘或其他直接存取的辅助存储设备而设计的一种<strong>平衡搜索树</strong>。B 树类似于红黑树，但它们在降低磁盘 I/O 操作数方面要更好一点，比如很多数据库都使用 B 树或 B 树的变种来存储信息。</p><p><img src=https://raw.githubusercontent.com/tcitry/static/master/2022/output253.png alt></p><h2 id=b-树>
+B 树
+<a class=anchor href=#b-%e6%a0%91>#</a>
+</h2><p>B 树有的地方也称 <code>B-tree</code>，但不要叫“B 减树”。B 树与红黑树的不同之处在于 B 树的结点可以有从数个到数千个很多孩子，也就是说，一个 B 树的“分支因子”可以相当大，它通常依赖于所使用的磁盘单元的特性。</p><p>由于在大部分系统中，一个 B 树算法的运行时间主要由它所执行的磁盘读和写的次数决定，所以我们希望这些操作能够读或写尽可能多的信息。因此，一个 B 树结点通常和一个完整磁盘页一样大，并且磁盘页的大小限制了一个 B 树结点可以含有的孩子个数。比如一棵分子因子为 1001、高度为 2 的 B 树，它可以存储超过 10 亿个关键字。由于根节点可以持久地保存在主存中，所以在这棵树中查找某个关键字至多只需要两次磁盘存取。</p><p><strong>任何和关键字相联系的“卫星数据”将于关键字一样存放在同一个结点中，而且多数情况下，人们只是为每个关键字 <code>key</code> 存放一个指针，这个指针指向存放该关键字的卫星数据的磁盘页。</strong></p><h3 id=性质>
+性质
+<a class=anchor href=#%e6%80%a7%e8%b4%a8>#</a>
+</h3><p>除了上面简单介绍的之外，一棵 B 树 T 还具有以下性质的有根树（根为 <code>T.root</code>）：</p><ol>
+<li>每个结点 x 有以下属性：
+<ol>
+<li><code>x.n</code>，当前存储在结点 x 中的关键字（非子结点概念）个数。</li><li><code>x.n</code> 个关键字本身 $x.key_1$、$x.key_2$、$x.key_3$ &mldr; $x.key_n$ 以非降序存放，使得 $x.key_1$ &lt;= $x.key_2$ &lt;= &mldr; &lt;= $x.key_n$</li><li><code>x.leaf</code> ，一个布尔值，如果 x 是叶结点，则为 True；如果 x 为内部结点，则为 False</li></ol></li><li>每个内部结点 x 还包含 <code>x.n+1</code> 个指向其孩子的指针 <code>x.c1</code>、<code>x.c2</code>、<code>x.c3</code>、$x.c_{x.n+1}$ ，叶子结点没有孩子，所以它们的 $c_i$ 属性没有定义。</li><li>关键字 $x.key_i$ 对存储在各子树中的关键字范围加以分割：如果 $k_i$ 为任意一个存储在以 $x.c_i$ 为根的子树中的关键字，那么 $k_1$ &lt;= $x.key_1$ &lt;= $k_2$ &lt;= $x.key_2$ &lt;= &mldr; &lt;= $x.key_{x.n}$ &lt;= $k_{x.n+1}$ 。</li><li>每个叶结点具有相同的深度，即树的高度 h</li><li><strong>每个结点所包含的关键字个数有上界和下界</strong>，用一个被称为 B 树的<em>最小度数</em>的固定整数 <code>t>=2</code> 来表示这些界。
+<ol>
+<li>除了根结点以外的每个结点必须至少有 <code>t-1</code> 个关键字，因此，除了根结点以外的每个内部结点至少有 t 个孩子，如果树非空，根结点至少有一个关键字。</li><li>每个结点至多可包含 <code>2t-1</code> 个关键字，因此，一个内部结点至多可有 <code>2t</code> 个孩子，当一个结点恰好有 <code>2t-1</code> 个关键字时，称该结点是满的（full）。</li></ol></li></ol><p>虽然和红黑树一样，B 树每棵包含有 n 个结点的 B 树的高度为 $O(lgn)$。但是 B 树的分支可以非常大，故 log 计算的底数就非常大。严格来说，如果 <code>n >= 1</code>，那么对于任意一棵包含 n 个关键字、高度为 h、最小度数 <code>t >= 2</code> 的 B 树 T，有：</p><p>$$ h &lt;= log_t{\frac{n+1}{2}} $$</p><h3 id=基本操作>
+基本操作
+<a class=anchor href=#%e5%9f%ba%e6%9c%ac%e6%93%8d%e4%bd%9c>#</a>
+</h3><h4 id=搜索>
+搜索
+<a class=anchor href=#%e6%90%9c%e7%b4%a2>#</a>
+</h4><h4 id=初始化>
+初始化
+<a class=anchor href=#%e5%88%9d%e5%a7%8b%e5%8c%96>#</a>
+</h4><h4 id=插入>
+插入
+<a class=anchor href=#%e6%8f%92%e5%85%a5>#</a>
+</h4><p>在二叉搜索树中，要先查找插入新关键字的叶结点的位置。然而在 B 树中，不能简单地创建一个新的叶结点，然后将其插入，因为这样得到的树将不再是合法的 B 树，相反，我们是将新的关键字插入一个已经存在的叶结点上。</p><p>由于不能将关键字插入一个满的叶结点，此时需要引入一个操作，讲一个满的结点 y 按其中间关键字 $y.key_t$ <strong>分裂</strong>成两个各含 <code>t-1</code> 个关键字的结点。中间关键字被提升为 y 的父结点，以标识两个新树的划分点。但如果 y 的父结点也是满的，就必须在插入新的关键字之前将其分裂，最终满结点的分裂会沿着树向上传播。</p><h4 id=分裂>
+分裂
+<a class=anchor href=#%e5%88%86%e8%a3%82>#</a>
+</h4><p>接着分裂说，我们并不是要等到找出插入过程中实际要分裂的满结点时才做分裂。相反，当沿着树往下查找新的关键字所属位置时，就分裂沿途遇到的每个满结点。这样的话，每当要分裂一个满结点 y 时，就能确保它的父结点不是满的。</p><h4 id=删除>
+删除
+<a class=anchor href=#%e5%88%a0%e9%99%a4>#</a>
+</h4><p>从 B 树删除关键字与插入操作类似，但是是反方向的，略微复杂一点。</p><h2 id=b-树-1>
+B+ 树
+<a class=anchor href=#b-%e6%a0%91-1>#</a>
+</h2><p>B+ 树是 B 树的一个变种，<strong>它把所有的卫星数据都存储在叶结点中，内部结点只存放关键字和孩子指针</strong>，因此最大化了内部结点的分支因子。</p><h2 id=b-树-2>
+B* 树
+<a class=anchor href=#b-%e6%a0%91-2>#</a>
+</h2><h2 id=r-树>
+R 树
+<a class=anchor href=#r-%e6%a0%91>#</a>
+</h2><h2 id=r-树-1>
+R* 树
+<a class=anchor href=#r-%e6%a0%91-1>#</a>
+</h2><h2 id=参考>
+参考
+<a class=anchor href=#%e5%8f%82%e8%80%83>#</a>
+</h2><p>算法导论第 18 章</p></article><div>
+<h5 class=post-after>本文共 1542 字，上次修改于 Jan 28, 2024</h5><div>相关标签：
+<a href=/tags/%E7%AE%97%E6%B3%95/>算法</a>,
+<a href=/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>数据结构</a>
+</div><script src=https://giscus.app/client.js data-repo=tcitry/tcitry.github.io data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" data-category=Announcements data-category-id=DIC_kwDOCMyx684COMlk data-mapping=og:title data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script>
+</div><footer class=book-footer>
+<div class="flex flex-wrap justify-between">
+</div><script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+</footer><label for=menu-control class="hidden book-menu-overlay"></label>
+</div><aside class=book-toc>
+<div class=book-toc-content>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#b-树>B 树</a>
+<ul>
+<li><a href=#性质>性质</a></li><li><a href=#基本操作>基本操作</a>
+<ul>
+<li><a href=#搜索>搜索</a></li><li><a href=#初始化>初始化</a></li><li><a href=#插入>插入</a></li><li><a href=#分裂>分裂</a></li><li><a href=#删除>删除</a></li></ul></li></ul></li><li><a href=#b-树-1>B+ 树</a></li><li><a href=#b-树-2>B* 树</a></li><li><a href=#r-树>R 树</a></li><li><a href=#r-树-1>R* 树</a></li><li><a href=#参考>参考</a></li></ul></nav></div></aside></main><div id=navigation>
+<a class="nav nav-left" href=https://yindongliang.com/docs/Algorithms/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E7%BA%A2%E9%BB%91%E6%A0%91/ title=上一篇：红黑树><i class=fa-left></i></a>
+</div><script>document.onkeydown=function(e){if(e.code==="ArrowLeft"){let e=document.getElementsByClassName("nav nav-left");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}else if(e.code==="ArrowRight"){let e=document.getElementsByClassName("nav nav-right");e.length>0&&e[0].hasAttribute("href")&&window.open(e[0].href,"_self")}}</script>
+<script src=/gumshoe.polyfills.min.js></script>
+<script>new Gumshoe(".book-toc a",{nested:!0})</script>
+<style>.book-toc li.active>a{font-weight:700}</style><script src=/fast-image-zoom.js></script>
+<script>imageZoom()</script>
+<link rel=stylesheet href=/katex/katex.min.css>
+<script src=/katex/katex.min.js></script>
+<script src=/katex/auto-render.min.js onload=renderMathInElement(document.body)></script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+<script>ts=document.getElementsByTagName("a");for(const e of ts)e.href&&!(e.href.startsWith("http://localhost")|e.href.startsWith("https://yindongliang.com"))&&(e.target="_blank")</script>
+</body></html>
