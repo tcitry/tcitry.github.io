@@ -46,8 +46,7 @@ lineNoStart = 1
 lineNos = false
 lineNumbersInTable = true
 noClasses = true
-# style = "dracula"
-# style = "perldoc"
+style = "doom-one2"
 tabWidth = 4
 
 [markup.tableOfContents]
