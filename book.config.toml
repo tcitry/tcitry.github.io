@@ -30,9 +30,6 @@ lastmod = ["lastmod", ":fileModTime", ":default"]
 [permalinks]
 posts = "/posts/:slug/"
 
-[author]
-name = "殷东亮"
-
 [sitemap]
 changefreq = "weekly"
 filename = "sitemap.xml"
