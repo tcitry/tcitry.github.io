@@ -7,7 +7,7 @@
   {{ end }}
   <p style="color: dimgray;">共 {{ len $pages }} 篇，{{ $scratch.Get "wordcount" | lang.NumFmt 0 }} 字</p>
   <ul>
-    {{ range $term := (slice "Categories") }}
+    {{ range $term := (slice "categories") }}
     {{ with $.Site.GetPage (printf "/%s" $term | urlize) }}
     <li class="book-section-flat">
       <ul>

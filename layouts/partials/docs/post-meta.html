@@ -2,7 +2,7 @@
   <h5>{{ partial "docs/date" (dict "Date" . "Format" $.Site.Params.BookDateFormat) }}</h5>
 {{ end }}
 
-{{ with $terms := $.GetTerms "Tags" }}
+{{ with $terms := $.GetTerms "tags" }}
 <div>
 {{ range $n, $term := $terms }}{{ if $n }}, {{ end }}
     <a href="{{ $term.RelPermalink }}">{{ $term.Title }}</a>

@@ -1,7 +1,7 @@
 {{ $curr := .Page.RelPermalink }}
 <nav>
   <ul>
-  {{ range $term := (slice "Tags") }}
+  {{ range $term := (slice "tags") }}
     {{ with $.Site.GetPage (printf "/%s" $term | urlize) }}
     <li class="book-section-flat">
       <strong>{{ .Title | title }}</strong>
