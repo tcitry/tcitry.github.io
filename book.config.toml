@@ -4,7 +4,7 @@ title = "殷东亮的博客"
 
 hasCJKLanguage = true
 languageCode = "zh-cn"
-defaultContentLanguage = "zh-cn"
+defaultContentLanguage = "zh"
 
 # Book configuration
 disablePathToLower = true
