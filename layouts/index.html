@@ -5,11 +5,14 @@
     <h2>
       <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>
       {{ if eq .Type "docs"}}
-        <span class="doc-title">[ Doc ]</span>
+        <span class="docs-title">Doc</span>
       {{else if eq .Type "weekly"}}
-        <span class="weekly-title">[ Weekly ]</span>
+        <span class="weekly-title">Weekly</span>
       {{else if eq .Type "projects"}}
-        <span class="project-title">[ Project ]</span>
+        <span class="project-title">Project</span>
+      {{ end }}
+      {{ if in .Params.tags "ByAI" }}
+        <span class="ai-title">AI</span>
       {{ end }}
     </h2>
     {{ partial "docs/post-meta" . }}
