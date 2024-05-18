@@ -1,0 +1,15 @@
+{{ if or (not .Title) (not .Date) (not .Params.categories) (not .Params.tags) }}
+    {{ .File }} <span class="danger-title">Draft</span>
+{{ end }}
+
+{{ if eq .Type "docs"}}
+    <span class="title-label docs-title">Doc</span>
+{{else if eq .Type "weekly"}}
+    <span class="title-label weekly-title">Weekly</span>
+{{else if eq .Type "projects"}}
+    <span class="title-label project-title">Project</span>
+{{ end }}
+
+{{ if in .Params.tags "ByAI" }}
+    <span class="title-label ai-title">AI</span>
+{{ end }}

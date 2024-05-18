@@ -1,9 +1,7 @@
 {{ define "main" }}
-{{ $date := .Date.UTC.Format "Jan 2, 2006" }}
-{{ $lastmod := .Lastmod.UTC.Format "Jan 2, 2006" }}
 <article class="markdown">
   <h1>
-    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    <a href="{{ .RelPermalink }}">{{ partial "docs/title.html" . }}</a>{{ partial "title-label" . }}
   </h1>
   {{ partial "docs/post-meta" . }}
   {{- .Content -}}

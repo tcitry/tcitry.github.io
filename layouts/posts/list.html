@@ -9,16 +9,8 @@
   <div class="posts">
     {{ range .Pages }}
     <div class="post">
-      <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;<a href="{{ .RelPermalink }}">
-        {{ if or (not .Title) (not .Date) (not .Params.categories) (not .Params.tags) }}
-          {{ .File }} <span class="danger-title">[Danger]</span>
-        {{ else }}
-          {{ .Title }}
-        {{ end }}
-        {{ if in .Params.tags "ByAI" }}
-          <span class="ai-title">AI</span>
-        {{ end }}
-      </a>
+      <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ partial "title-label" . }}
       </h3></p>
     </div>
     {{ end }}
@@ -28,5 +20,5 @@
 {{ end }}
 
 {{ define "toc" }}
-  {{ partial "docs/posts-categories" . }}
+  {{ partial "posts-categories" . }}
 {{ end }}

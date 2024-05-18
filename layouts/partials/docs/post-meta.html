@@ -12,7 +12,9 @@
 
 {{ if .Params.image }}
 {{ if .Params.github }}
-  <div style="display: flex;justify-content: center;align-items: center;"><a class="project-img" href="{{ .Params.github }}"><img src={{ .Params.image }} /></a></div>
+  <div style="display: flex;justify-content: center;align-items: center;">
+    <a class="project-img" href="{{ .Params.github }}"><img src={{ .Params.image }} /></a>
+  </div>
 {{ else }}
 <p>
   {{ with .Resources.GetMatch .Params.image }}

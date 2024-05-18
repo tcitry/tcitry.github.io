@@ -134,49 +134,43 @@ a.project-img[target="_blank"]::after {
   font-size: small;
 }
 
+.title-label {
+  border-radius: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  position: relative;
+  top: -1px;
+}
+
 .docs-title {
   color: dimgray;
   font-size: small;
   border: dimgray 1px solid;
-  border-radius: 4px;
-  padding-left: 4px;
-  padding-right: 4px;
 }
 
 .danger-title {
-  color: #f66;
+  color: #fff;
   font-size: small;
+  background-color: #f66;
   border: #f66 1px solid;
-  border-radius: 4px;
-  padding-left: 4px;
-  padding-right: 4px;
 }
 
 .weekly-title {
   color: #0DA99C;
   font-size: small;
   border: #0DA99C 1px solid;
-  border-radius: 4px;
-  padding-left: 4px;
-  padding-right: 4px;
 }
 
 .project-title {
-  color: #8250df;
+  color: #f66;
   font-size: small;
-  border: #8250df 1px solid;
-  border-radius: 4px;
-  padding-left: 4px;
-  padding-right: 4px;
+  border: #f66 1px solid;
 }
 
 .ai-title {
   color: #74AA9C;
   font-size: small;
   border: #74AA9C 1px solid;
-  border-radius: 4px;
-  padding-left: 4px;
-  padding-right: 4px;
 }
 
 .post-after {

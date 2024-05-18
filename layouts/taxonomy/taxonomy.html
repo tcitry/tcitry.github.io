@@ -19,18 +19,9 @@
     {{ range sort .Pages.ByDate.Reverse }}
       <div class="post">
         <p><h3>
-          <time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> »
+          <time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> » 
           <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>
-          {{ if eq .Type "docs"}}
-            <span class="docs-title">Doc</span>
-          {{else if eq .Type "weekly"}}
-            <span class="weekly-title">Weekly</span>
-          {{else if eq .Type "projects"}}
-            <span class="project-title">Project</span>
-          {{ end }}
-          {{ if in .Params.tags "ByAI" }}
-            <span class="ai-title">AI</span>
-          {{ end }}
+          {{ partial "title-label" . }}
         </h3>
         </p>
       </div>
