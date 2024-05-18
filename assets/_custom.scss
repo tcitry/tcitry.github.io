@@ -2,6 +2,16 @@ blockquote {
   font-style: italic;
 }
 
+li:has(> input[type="checkbox"]) {
+  list-style-type: none;
+}
+
+li > input[type="checkbox"] {
+  margin-left: -20px;
+  margin-right: 10px;
+  transform: scale(1.5);
+}
+
 .book-hint {
   font-style: normal;
 }
