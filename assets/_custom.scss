@@ -85,17 +85,17 @@ a.project-img[target="_blank"]::after {
   content: "";
 }
 
-@media screen and (max-width: 1400px) {
-  #navigation {
-    display: none;
-  }
-}
+// @media screen and (max-width: 1400px) {
+//   #navigation {
+//     display: none;
+//   }
+// }
 
-@media screen and (min-width: 1400px) {
-  #navigation-mobile {
-    display: none;
-  }
-}
+// @media screen and (min-width: 1400px) {
+//   #navigation-mobile {
+//     display: none;
+//   }
+// }
 
 #navigation .nav {
   position: fixed;
@@ -105,7 +105,7 @@ a.project-img[target="_blank"]::after {
   font-size: 50px;
   height: 100%;
   cursor: pointer;
-  display: table;
+  display: none;
   text-align: center;
 }
 
