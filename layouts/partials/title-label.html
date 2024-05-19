@@ -5,9 +5,13 @@
 {{ if eq .Type "docs"}}
     <span class="title-label docs-title">Doc</span>
 {{else if eq .Type "weekly"}}
-    <span class="title-label weekly-title">Weekly</span>
+    <span class="title-label weekly-title"><a href="/weekly/">Weekly</a></span>
 {{else if eq .Type "projects"}}
-    <span class="title-label project-title">Project</span>
+    <span class="title-label project-title"><a href="/projects/">Project</a></span>
+{{ end }}
+
+{{ if in .Params.tags "推荐阅读" }}
+    <span class="title-label recommended-title"><a href="/tags/推荐阅读/">Recommended</a></span>
 {{ end }}
 
 {{ if in .Params.tags "ByAI" }}
