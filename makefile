@@ -1,8 +1,6 @@
 server:
-	hugo -c ~/Library/Mobile\ Documents/com~apple~CloudDocs/Blog --config book.config.toml server --disableFastRender
-fast:
-	hugo -c ~/Library/Mobile\ Documents/com~apple~CloudDocs/Blog --config book.config.toml server --renderToMemory
-gen:
-	hugo -c ~/Library/Mobile\ Documents/com~apple~CloudDocs/Blog --config book.config.toml --minify
+	hugo server --renderToMemory
+build:
+	hugo --minify --ignoreCache --cleanDestinationDir
 sub:
 	git submodule update --init --recursive
