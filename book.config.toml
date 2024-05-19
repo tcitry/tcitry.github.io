@@ -22,7 +22,7 @@ paginate = 10
 
 summaryLength = 100
 
-ignorefiles = ["template", ".obsidian"]
+ignorefiles = ["template", ".obsidian", "draft"]
 
 [frontmatter]
 lastmod = ["lastmod", ":fileModTime", ":default"]
