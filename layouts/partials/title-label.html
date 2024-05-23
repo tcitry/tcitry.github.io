@@ -6,8 +6,6 @@
     <span class="title-label docs-title">Doc</span>
 {{else if eq .Type "weekly"}}
     <span class="title-label weekly-title"><a href="/weekly/">Weekly</a></span>
-{{else if eq .Type "projects"}}
-    <span class="title-label project-title"><a href="/projects/">Project</a></span>
 {{ end }}
 
 {{ if in .Params.tags "推荐阅读" }}

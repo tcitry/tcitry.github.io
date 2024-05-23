@@ -1,8 +1,17 @@
+<div id="react-root"></div>
 <div>
     {{ $date := .Date.UTC.Format "Jan 2, 2006" }}
     {{ $lastmod := .Lastmod.UTC.Format "Jan 2, 2006" }}
     {{ if and (in (slice "posts") .Type) .IsPage }}
         <h5 class="post-after">本文共 {{ .WordCount }} 字，{{ if isset .Params "lastmod" }}上次修改于 {{ $lastmod }}，{{ end }}以 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh">CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5>
+        <div id="navigation">
+            {{ with .PrevInSection }}{{if .Title}}
+                <a class="nav nav-left" href="{{ .Permalink }}" title="上一篇：{{ .Title }}"><i class="fa-left"></i></a>
+                {{end}}{{end}}
+            {{ with .NextInSection }}{{if .Title}}
+                <a class="nav nav-right" href="{{ .Permalink }}" title="下一篇：{{ .Title }}"><i class="fa-right"></i></a>
+                {{end}}{{end}}
+        </div>
         <div id="navigation-mobile">
             <p>{{ with .PrevInSection }}上一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
             <p>{{ with .NextInSection }}下一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
@@ -31,14 +40,30 @@
             {{- end }}
             </div>
         {{ end }}
-    {{ end }}
-    {{ if (in (slice "weekly") .Type) }}
+        <div id="navigation">
+            {{ with .NextInSection }}{{if .Title}}
+                <a class="nav nav-left" href="{{ .Permalink }}" title="上一篇：{{ .Title }}"><i class="fa-left"></i></a>
+                {{end}}{{end}}
+            {{ with .PrevInSection }}{{if .Title}}
+                <a class="nav nav-right" href="{{ .Permalink }}" title="下一篇：{{ .Title }}"><i class="fa-right"></i></a>
+                {{end}}{{end}}
+        </div>
         <div id="navigation-mobile">
-            <p>{{ with .PrevInSection }}上一期：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
-            <p>{{ with .NextInSection }}下一期：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
+            <p>{{ with .NextInSection }}上一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
+            <p>{{ with .PrevInSection }}下一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
         </div>
     {{ end }}
-    {{ if and (in (slice "docs" "posts" "about" "weekly" "projects") .Type) .IsPage }}
+    {{ if (in (slice "weekly") .Type) }}
+      {{if not (eq $date $lastmod) }}
+        <h5 class="post-after">Last Modified at {{ .Lastmod.UTC.Format "Jan 2, 2006" }}</h5>
+      {{end}}
+      <div id="navigation-mobile">
+          <p>{{ with .PrevInSection }}上一期：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
+          <p>{{ with .NextInSection }}下一期：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
+      </div>
+    {{ end }}
+
+    {{ if and (in (slice "docs" "posts" "about" "weekly") .Type) .IsPage }}
         <script src="https://giscus.app/client.js"
             data-repo="tcitry/tcitry.github.io"
             data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk="
@@ -56,3 +81,77 @@
         </script>
     {{ end }}
 </div>
+
+{{ if .Page.Store.Get "hasMermaid" }}
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+{{ end }}
+
+<script>
+    document.onkeydown = function (event) {
+        if (event.code === "ArrowLeft") {
+            let ele = document.getElementsByClassName("nav nav-left")
+            if (ele.length > 0) {
+                if (ele[0].hasAttribute("href")) {
+                    window.open(ele[0].href, "_self");
+                }
+            }
+        } else if (event.code === "ArrowRight") {
+            let ele = document.getElementsByClassName("nav nav-right")
+            if (ele.length > 0) {
+                if (ele[0].hasAttribute("href")) {
+                    window.open(ele[0].href, "_self");
+                }
+            }
+        }
+    }
+</script>
+
+<!-- <script src="https://cdn.tailwindcss.com"></script> -->
+
+<script src="/gumshoe.polyfills.min.js"></script>
+<script>new Gumshoe('.book-toc a', { nested: true });</script>
+<style>
+.book-toc li.active > a {
+    font-weight: bold;
+}
+</style>
+
+<script src="/fast-image-zoom.js"></script>
+<script>
+  imageZoom()
+</script>
+
+<!-- KaTeX -->
+<link rel="stylesheet" href="/katex/katex.min.css">
+
+<!-- The loading of KaTeX is deferred to speed up page rendering -->
+<script src="/katex/katex.min.js"></script>
+
+<!-- To automatically render math in text elements, include the auto-render extension: -->
+<script src="/katex/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+              delimiters: [
+                  {left: "$$", right: "$$", display: true},
+                  {left: "$", right: "$", display: false},
+                  {left: "\\(", right: "\\)", display: false},
+                  {left: "\\[", right: "\\]", display: true}
+              ]
+          });
+    });
+</script>
+
+<script>
+    ts = document.getElementsByTagName("a")
+    for (const t of ts) {
+        if (t.href && !(t.href.startsWith("http://localhost") | t.href.startsWith("{{ .Site.BaseURL }}"))){
+            t.target = "_blank"
+            t.rel = "noopener noreferrer"
+        }
+    }
+</script>

@@ -1,6 +1,7 @@
 server:
 	hugo server --renderToMemory
 build:
-	hugo --minify --ignoreCache --cleanDestinationDir
+	npm run build:prod
+	hugo --minify --ignoreCache --cleanDestinationDir --gc
 sub:
 	git submodule update --init --recursive
