@@ -119,9 +119,9 @@ const Timeline = () => {
       items={items}
       theme={{
         primary: "#74AA9C",
-        secondary: "#FF7E67",
+        secondary: "#0DA99C",
         cardBgColor: "#F1FAEE",
-        titleColor: "#74AA9C",
+        titleColor: "#0DA99C",
         titleColorActive: "#FFF",
       }}
       mode="VERTICAL_ALTERNATING"
