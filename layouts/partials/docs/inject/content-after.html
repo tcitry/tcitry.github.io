@@ -57,6 +57,14 @@
       {{if not (eq $date $lastmod) }}
         <h5 class="post-after">Last Modified at {{ .Lastmod.UTC.Format "Jan 2, 2006" }}</h5>
       {{end}}
+      <div id="navigation">
+        {{ with .PrevInSection }}{{if .Title}}
+          <a class="nav nav-left" href="{{ .Permalink }}" title="上一期：{{ .Title }}"><i class="fa-left"></i></a>
+        {{end}}{{end}}
+        {{ with .NextInSection }}{{if .Title}}
+          <a class="nav nav-right" href="{{ .Permalink }}" title="下一期：{{ .Title }}"><i class="fa-right"></i></a>
+        {{end}}{{end}}
+      </div>
       <div id="navigation-mobile">
           <p>{{ with .PrevInSection }}上一期：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
           <p>{{ with .NextInSection }}下一期：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
@@ -150,8 +158,8 @@
     ts = document.getElementsByTagName("a")
     for (const t of ts) {
         if (t.href && !(t.href.startsWith("http://localhost") | t.href.startsWith("{{ .Site.BaseURL }}"))){
-            t.target = "_blank"
-            t.rel = "noopener noreferrer"
+            t.target = "_blank";
+            t.rel = "noopener noreferrer";
         }
     }
 </script>
