@@ -248,10 +248,7 @@ a.card, a.card:hover, a.card:visited {
 }
 
 .card-content {
-  display: -webkit-box;
   overflow: hidden;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
   text-overflow: ellipsis;
   margin: 0rem 0.75rem 0.5rem 0.75rem;
   color: darkgray;
