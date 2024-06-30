@@ -140,7 +140,7 @@ const App = () => {
 
 const path = window.location.pathname;
 const container = document.getElementById("react-root");
-if (container && (path === "/portfolio/" || path === "/portfolio")) {
+if (container && (path === "/projects/" || path === "/projects")) {
   const root = createRoot(container);
   root.render(<Timeline />);
 }
