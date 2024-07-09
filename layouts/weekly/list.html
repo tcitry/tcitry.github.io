@@ -1,6 +1,6 @@
 {{ define "main" }}
   {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "weekly")) (where .Site.Pages "Params.date" "!=" nil) }}
-  <p class="secondary-info">目前共 <a href="/tags/周刊/">{{ len $pages }}</a> 期周刊，可通过 <a href="/weekly/index.xml">RSS</a> 订阅</p>
+  <p class="secondary-info">目前共 <a href="/tags/Weekly/">{{ len $pages }}</a> 期周刊，可通过 <a href="/weekly/index.xml">RSS</a> 订阅</p>
   <div class="card-list">
     {{ range sort (.Paginate $pages.ByDate.Reverse 100).Pages }}
       <a href="{{ .RelPermalink }}" class="card">
