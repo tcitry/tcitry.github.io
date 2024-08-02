@@ -53,7 +53,7 @@
             <p>{{ with .PrevInSection }}下一篇：<a href="{{ .Permalink }}">{{ .Title }}</a>{{end}}</p>
         </div>
     {{ end }}
-    {{ if (in (slice "weekly") .Type) }}
+    {{ if and (in (slice "weekly") .Type) .IsPage }}
       {{if not (eq $date $lastmod) }}
         <h5 class="post-after">Last Modified at {{ .Lastmod.UTC.Format "Jan 2, 2006" }}</h5>
       {{end}}
