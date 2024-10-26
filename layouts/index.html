@@ -1,10 +1,9 @@
 {{ define "main" }}
-  {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
+  {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "posts" "weekly")) (where .Site.Pages "Params.date" "!=" nil)}}
   {{ range sort (.Paginate $pages.ByDate.Reverse).Pages }}
   <article class="markdown book-post">
     <h2>
-      <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>
-      {{ partial "title-label" . }}
+      <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>{{ partial "title-label" . }}
     </h2>
     {{ partial "docs/post-meta" . }}
     <p>

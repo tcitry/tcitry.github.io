@@ -13,7 +13,7 @@
           <a href="{{ .RelPermalink }}">
             {{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}
           </a>
-          {{ partial "title-label" . }}
+          {{ partial "tags-label" . }}
         </h3>
       </p>
     </div>

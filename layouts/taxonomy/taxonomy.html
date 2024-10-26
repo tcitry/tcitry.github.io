@@ -19,9 +19,9 @@
     {{ range sort .Pages.ByDate.Reverse }}
       <div class="post">
         <p><h3>
-          <time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> » 
+          <time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;
           <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>
-          {{ partial "title-label" . }}
+          {{ partial "tags-label" . }}
         </h3>
         </p>
       </div>
