@@ -3,7 +3,7 @@
   <ul>
     {{ with $.Site.GetPage (printf "/%s" "tags" | urlize) }}
     <li class="book-section-flat">
-      <strong>{{ .Title | title }}</strong>
+      <strong>{{ .Title | title }}<sup>{{ len .Site.Taxonomies.tags }}</sup></strong>
       <ul>
       {{ range .Pages }}
         {{ if eq .RelPermalink $currentLink }}
