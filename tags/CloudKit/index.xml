@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CloudKit on Yin 东亮</title><link>https://yindongliang.com/tags/CloudKit/</link><description>Recent content in CloudKit on Yin 东亮</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Fri, 06 Dec 2024 23:40:46 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/CloudKit/index.xml" rel="self" type="application/rss+xml"/><item><title>SwiftData</title><link>https://yindongliang.com/docs/Xcode/SwiftData/</link><pubDate>Sat, 07 Sep 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Xcode/SwiftData/</guid><description>SwiftData makes it easy to persist data using declarative code. You can query and filter data using regular Swift code. And it’s designed to integrate seamlessly with SwiftUI.
+Related docs：
+https://developer.apple.com/xcode/swiftdata/ https://developer.apple.com/documentation/swiftdata Preserving # Model # @Model
+import SwiftData @Model class Trip { var name: String var destination: String var startDate: Date var endDate: Date var accommodation: Accommodation? } Customize persistence behavior # @Attribute
+@Attribute(.unique) var name: String @Relationship
+@Relationship(.cascade) var accommodation: Accommodation? @Transient
+temporary data that doesn’t need saving.
+@Transient var destinationWeather = Weather.current() Configure Container # ModelContainer
+ModelConfiguration
+Save Model for later use # ModelContext
+import SwiftUI import SwiftData struct ContentView: View { @Environment(\.</description></item></channel></rss>
