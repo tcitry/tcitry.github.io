@@ -16,6 +16,7 @@
       {{ end }}
     </article>
   {{ else }}
+    {{ partial "tags-navbar" . }}
     {{ $postList := .Pages.ByDate.Reverse}}
     <h1 style="color: dimgray;">{{ .Title }}&nbsp;<sup>{{ len $postList }}</sup></h1></h1>
     {{ range sort $postList }}

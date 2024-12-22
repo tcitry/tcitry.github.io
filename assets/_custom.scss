@@ -266,3 +266,17 @@ a.card, a.card:hover, a.card:visited {
   line-height: 1.25rem;
   height: 3.5rem;
 }
+
+.open-obsidian-btn {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background-color: #4CAF50; /* 绿色背景 */
+  color: white; /* 白色文字 */
+  text-decoration: none; /* 去掉下划线 */
+  border-radius: 5px; /* 圆角 */
+}
+
+.open-obsidian-btn:hover {
+  background-color: #45a049; /* 悬停时的背景颜色 */
+}
