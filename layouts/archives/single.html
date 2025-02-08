@@ -9,22 +9,10 @@
     <div class="post">
       <p>
         <h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;
-          {{ if eq .Type "docs"}}
-            <a href="{{ .RelPermalink }}" style="color: gray;">
-            {{- $currentDir := path.Base .File.Dir | title -}}
-            {{- $parentDir := path.Base (path.Dir (path.Dir .File.Dir)) | title -}}
-            {{- if eq $parentDir "Docs" -}}
-              {{- $currentDir -}} »
-            {{- else -}}
-              {{- $parentDir -}} » {{- $currentDir -}} »
-            {{- end -}}
+          {{ partial "docs-title-tree" . }}
+          <a href="{{ .RelPermalink }}">
             {{ .Title }}
-            </a>
-          {{ else }}
-            <a href="{{ .RelPermalink }}">
-              {{ .Title }}
-            </a>
-          {{ end }}
+          </a>
           {{ partial "tags-label" . }}
         </h3>
       </p>
