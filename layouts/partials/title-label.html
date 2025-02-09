@@ -1,10 +1,10 @@
 {{ if eq .Type "docs"}}
   <span class="title-label docs-title">Doc</span>
 {{else if eq .Type "weekly"}}
-  <span class="title-label weekly-title"><a href="/tags/Weekly/">Weekly</a></span>
+  <span class="title-label weekly-title"><a href="/tags/Weekly/">W</a></span>
 {{ end }}
 {{ if in .Params.tags "Recommended" }}
-  <span class="title-label recommended-title"><a href="/tags/Recommended/">Recommended</a></span>
+  <span class="title-label recommended-title"><a href="/tags/Recommended/">R</a></span>
 {{ else if in .Params.tags "ByAI" }}
   <span class="title-label byAI-title"><a href="/tags/ByAI/">ByAI</a></span>
 {{ end }}
