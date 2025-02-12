@@ -5,3 +5,4 @@
 .hugo_build.lock
 **/node_modules
 dist
+package-lock.json
