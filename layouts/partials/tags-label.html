@@ -1,0 +1,16 @@
+{{ if or (not .Title) (not .Date) (not .Params.categories) (not .Params.tags) }}
+  {{ .File }} <span class="danger-title">Draft</span>
+{{ end }}
+
+{{ partial "title-label" . }}
+
+{{ if .Params.tags }}
+  {{ $firstTag := index .Params.tags 0 }}
+  {{ $excludeTags := slice "Weekly" "Recommended" "ByAI" }}
+  {{ range $tag := .Params.tags }}
+    {{ if not (in $excludeTags $tag) }}
+      {{ $tagUrl := printf "/tags/%s" ($tag | urlize) }}
+      <span class="title-label tags-title"><a href="{{ $tagUrl }}">{{ $tag }}</a></span>
+    {{ end }}
+  {{ end }}
+{{ end }}

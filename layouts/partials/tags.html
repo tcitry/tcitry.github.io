@@ -1,13 +1,12 @@
-{{ $curr := .Page.RelPermalink }}
+{{ $currentLink := .Page.RelPermalink }}
 <nav>
   <ul>
-  {{ range $term := (slice "tags") }}
-    {{ with $.Site.GetPage (printf "/%s" $term | urlize) }}
+    {{ with $.Site.GetPage (printf "/%s" "tags" | urlize) }}
     <li class="book-section-flat">
-      <strong>{{ .Title | title }}</strong>
+      <strong>{{ .Title | title }}<sup>{{ len .Site.Taxonomies.tags }}</sup></strong>
       <ul>
       {{ range .Pages }}
-        {{ if eq .RelPermalink $curr }}
+        {{ if eq .RelPermalink $currentLink }}
             <li class="flex justify-between">
               <a href="{{ .RelPermalink }}" class="highlight-toc">{{ .Title }}</a>
               <span>{{ len .Pages }}</span>
@@ -22,6 +21,5 @@
       </ul>
     </li>
     {{ end }}
-  {{ end }}
   </ul>
 </nav>

@@ -1,34 +1,53 @@
 {{ define "main" }}
+  {{ $taxonomies := index .Site.Taxonomies "tags" }}
   {{ if in (slice "/tags/" "/categories/") .Page.RelPermalink }}
-    <h1>{{ .Title | title }}</h1>
+    <h1>{{ .Title | title }}&nbsp;<sup>{{ len $taxonomies }}</sup></h1>
     <article class="markdown">
-      {{ $taxonomies := index .Site.Taxonomies "tags" }}
+      {{ $totalPages := len (intersect (where .Site.RegularPages "Type" "in" (slice "docs" "posts" "weekly")) (where .Site.Pages "Params.date" "!=" nil)) }}
       {{ range $taxonomies }}
-        <a href="{{ .Page.Permalink }}">{{ .Page.Title }} <sup>{{ .Count }}</sup></a>&nbsp;
-      {{ end }}
-    </article>
-    <br>
-    <article class="markdown">
-      {{ $taxonomies := index .Site.Taxonomies "categories" }}
-      {{ range $taxonomies }}
-        <a href="{{ .Page.Permalink }}">{{ .Page.Title }} <sup>{{ .Count }}</sup></a>&nbsp;
+        {{ $defaultSize := 12 }}
+        {{ $maxSize := 60 }}
+        {{ $count := .Count }}
+        {{ $restCount := sub $totalPages $count }}
+        
+        {{/* 计算当前数量在总数中的百分比位置 */}}
+        {{ $percentage := div (float $count) (float $restCount) }}
+        
+        {{/* 线性计算字体大小 */}}
+        {{ $range := sub $maxSize $defaultSize }}
+        {{ $fontSize := int (add $defaultSize (mul $range $percentage 6)) }}
+        
+        {{/* 确保字体大小在限制范围内 */}}
+        {{ if lt $fontSize $defaultSize }}{{ $fontSize = $defaultSize }}{{ end }}
+        {{ if gt $fontSize $maxSize }}{{ $fontSize = $maxSize }}{{ end }}
+        <a href="{{ .Page.Permalink }}" style="font-size: {{ $fontSize }}px;word-break: keep-all;">
+          {{ .Page.Title }}&#8205;<sup>{{ .Count }}</sup>
+        </a>&nbsp;
       {{ end }}
     </article>
   {{ else }}
-    <h1 style="color: dimgray;">{{ .Title }}</h1>
-    {{ range sort .Pages.ByDate.Reverse }}
+    {{ partial "tags-navbar" . }}
+    {{ $postList := .Pages.ByDate.Reverse}}
+    <h1 style="color: dimgray;">{{ .Title }}&nbsp;<sup>{{ len $postList }}</sup></h1>
+    {{ range sort $postList }}
       <div class="post">
         <p><h3>
-          <time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> » 
-          <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>
-          {{ partial "title-label" . }}
-        </h3>
-        </p>
+          <time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;
+          {{ partial "docs-title-tree" . }}
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          {{ partial "tags-label" . }}
+        </h3></p>
       </div>
     {{ end }}
   {{ end }}
 {{ end }}
 
 {{ define "toc" }}
-  {{ partial "docs/taxonomy" . }}
+  {{ if in (slice "/tags/" "/categories/") .Page.RelPermalink }}
+    {{ partial "categories" . }}
+  {{ else if in .Page.RelPermalink "/tags/" }}
+    {{ partial "tags" . }}
+  {{ else if in .Page.RelPermalink "/categories/" }}
+    {{ partial "categories" . }}
+  {{ end }}
 {{ end }}

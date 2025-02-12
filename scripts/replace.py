@@ -28,7 +28,7 @@ script_name = os.path.basename(__file__)  # 获取当前脚本的文件名
 if sys.argv[1] == '--path':
     folder_path = sys.argv[2]
 else:
-    folder_path = os.getcwd()
+    folder_path = os.path.dirname(os.getcwd())
 
 replace_string_in_folder(folder_path, old_string, new_string, skip_folder, script_name)
 

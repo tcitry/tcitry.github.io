@@ -1,0 +1,11 @@
+<span style="color: gray;">
+{{ if eq .Type "docs"}}
+  {{- $currentDir := path.Base .File.Dir | title -}}
+  {{- $parentDir := path.Base (path.Dir (path.Dir .File.Dir)) | title -}}
+  {{- if eq $parentDir "Docs" -}}
+    {{- $currentDir -}} »
+  {{- else -}}
+    {{- $parentDir -}} » {{- $currentDir -}} »
+  {{- end -}}
+{{ end }}
+</span>

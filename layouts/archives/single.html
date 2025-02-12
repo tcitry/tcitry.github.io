@@ -1,7 +1,6 @@
 {{ define "main" }}
 {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "docs" "posts" "weekly")) (where .Site.Pages "Params.date" "!=" nil)}}
-<span style="color: darkgrey;">All</span> / <a href="/posts">Posts</a>
-
+{{partial "tags-navbar" .}}
 {{ range $pages.GroupByDate "2006" }}
 <section>
   <h1 style="color: dimgray;" id="{{ .Key }}">{{ .Key }}</h1>
@@ -10,10 +9,11 @@
     <div class="post">
       <p>
         <h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;
+          {{ partial "docs-title-tree" . }}
           <a href="{{ .RelPermalink }}">
-            {{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}
+            {{ .Title }}
           </a>
-          {{ partial "title-label" . }}
+          {{ partial "tags-label" . }}
         </h3>
       </p>
     </div>

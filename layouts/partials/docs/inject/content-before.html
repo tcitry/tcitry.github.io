@@ -1,0 +1,3 @@
+{{ if and (eq .Site.BaseURL "http://localhost:1313/") .File }}
+  <p><a href="obsidian://open?vault=Blog&file={{ .File.Path }}" class="open-obsidian-btn" target="_blank">在 Obsidian 打开笔记</a></p>
+{{ end }}

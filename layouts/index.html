@@ -3,8 +3,7 @@
   {{ range sort (.Paginate $pages.ByDate.Reverse).Pages }}
   <article class="markdown book-post">
     <h2>
-      <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>
-      {{ partial "title-label" . }}
+      <a href="{{ .RelPermalink }}">{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}</a>{{ partial "title-label" . }}
     </h2>
     {{ partial "docs/post-meta" . }}
     <p>
@@ -26,5 +25,5 @@
 {{ end }}
 
 {{ define "toc" }}
-  {{ partial "docs/taxonomy" . }}
+  {{ partial "tags" . }}
 {{ end }}

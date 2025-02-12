@@ -1,5 +1,6 @@
 <nav>
   {{ $scratch := newScratch }}
+  {{ $currentLink := .Page.RelPermalink }}
   {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "docs" "posts" "weekly")) (where .Site.Pages "Params.date" "!=" nil)}}
 
   {{ range $pages }}
@@ -13,7 +14,15 @@
       <ul>
         {{ range .Pages }}
         <li class="flex justify-between">
+        {{ if or (in $currentLink "/tags/") (in $currentLink "/categories/") }}
+          {{ if eq .RelPermalink $currentLink }}
+            <a href="{{ .RelPermalink }}" class="highlight-toc">{{ .Title }}</a>
+          {{ else }}
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          {{ end }}
+        {{ else }}
           <a href="#{{ .Title }}">{{ .Title }}</a>
+        {{ end }}
           <span>{{ len (intersect .Pages $pages) }}</span>
         </li>
         {{ end }}
