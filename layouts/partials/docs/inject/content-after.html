@@ -32,7 +32,7 @@
         {{ end }}
     {{ end }}
     {{ if and (in (slice "docs") .Type) .IsPage }}
-        <h5 class="post-after">本文共 {{ .WordCount }} 字{{ if isset .Params "lastmod" }}，上次修改于 {{ $lastmod }}{{ else if isset .Params "date" }}，创建于 {{ $date }}{{end}}</h5>
+        <h5 class="post-after">本文共 {{ .WordCount }} 字{{ if isset .Params "date" }}，创建于 {{ $date }}{{end}}</h5>
         {{ with $terms := $.GetTerms "tags" }}
             <div>相关标签：
             {{ range $n, $term := $terms }}{{ if $n }}, {{ end }}
