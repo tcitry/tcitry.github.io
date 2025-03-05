@@ -7,6 +7,13 @@ items:
       - '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=tcitry.github.io&hide_border=true&theme=ambient_gradient" height="120" />'
       - "目前博客的结构、功能目前我认为都到了一个相对稳定的阶段，应该可以不折腾地使用相当长一段时间了。"
 
+  - title: "October 2022"
+    cardTitle: "做了个周刊"
+    url: "/weekly/"
+    cardSubtitle: "Weekly"
+    cardDetailedText:
+      - '在 Hugo 模版基础上新加了一个 Weekly 功能，受<a href="https://weekly.tw93.fun/">潮流周刊</a>启发，详见<a href="/weekly/2022/2022-W41/">第一期</a>。'
+
   - title: "September 2021"
     cardTitle: "跟 winter 老师学钱端"
     url: "https://github.com/tcitry/winter-fe"
