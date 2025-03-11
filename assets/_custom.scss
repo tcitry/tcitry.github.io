@@ -371,6 +371,7 @@ a.card, a.card:hover, a.card:visited {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  line-height: normal;
 
   @media (max-width: 768px) {
     margin-left: 0;
