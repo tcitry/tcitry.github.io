@@ -4,13 +4,13 @@
   window.dataLayer = window.dataLayer || [];
   function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());
-  if (window.location.hostname === 'localhost') {
-    gtag('config', 'G-Q20952BPE6', {
-      'send_page_view': false,
-      'debug_mode': true
-    });
-  } else {
+  
+  // 完全排除 localhost 流量
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
     gtag('config', 'G-Q20952BPE6');
+  } else {
+    // 在本地环境中禁用 Google Analytics 跟踪
+    console.log('Google Analytics 在本地环境已禁用');
   }
 </script>
 <script defer src="/js/bundle.js"></script>
