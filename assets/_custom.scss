@@ -415,3 +415,20 @@ a.card, a.card:hover, a.card:visited {
     }
   }
 }
+
+.ai-content-warning {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  background-color: rgba(250, 128, 114, 0.1);
+  border-left: 4px solid #FA8072;
+  color: #9e4b44;
+}
+.ai-content-warning svg {
+  margin-right: 0.5rem;
+}
+.ai-content-warning span {
+  font-weight: 500;
+}
