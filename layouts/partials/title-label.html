@@ -1,10 +1,10 @@
 {{ if eq .Type "docs"}}
-  <span class="title-label docs-title">Doc</span>
+  <span class="title-label docs-title" aria-label="文档" data-label="Doc"><!-- Doc --></span>
 {{else if eq .Type "weekly"}}
-  <span class="title-label weekly-title"><a href="/tags/Weekly/">W</a></span>
+  <a href="/tags/Weekly/" class="title-label weekly-title" aria-label="周报" data-label="W"><!-- Weekly --></a>
 {{ end }}
 {{ if in .Params.tags "Recommended" }}
-  <span class="title-label recommended-title"><a href="/tags/Recommended/">R</a></span>
+  <a href="/tags/Recommended/" class="title-label recommended-title" aria-label="推荐" data-label="R"><!-- Recommended --></a>
 {{ else if in .Params.tags "ByAI" }}
-  <span class="title-label byAI-title"><a href="/tags/ByAI/">ByAI</a></span>
+  <a href="/tags/ByAI/" class="title-label byAI-title" aria-label="AI创作" data-label="ByAI"><!-- ByAI --></a>
 {{ end }}

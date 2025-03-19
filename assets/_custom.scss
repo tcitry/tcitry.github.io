@@ -133,55 +133,71 @@ main a[target="_blank"]::after {
   font-size: small;
 }
 
+// 全局标签样式
 .title-label {
-  border-radius: 4px;
-  padding-left: 4px;
-  padding-right: 4px;
-  position: relative;
-  top: -1px;
-}
-
-.title-label a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.title-label a:hover {
-  text-decoration: none;
-  color: inherit;
-}
-
-.title-label a:visited {
-  text-decoration: none;
-  color: inherit;
-}
-
-.docs-title {
-  color: dimgray;
   font-size: small;
   font-weight: bold;
+  border-radius: 4px;
+  padding: 2px 6px;
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  line-height: 1;
+  top: -1px;
+  
+  // 所有链接样式
+  a, a:hover, a:visited {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  // 使用伪元素显示标签内容
+  &[data-label]::before {
+    content: attr(data-label);
+  }
+}
+
+// 标签链接元素样式
+a.title-label {
+  color: inherit; /* 确保链接元素继承颜色 */
+  text-decoration: none !important;
+}
+
+a.title-label:hover, a.title-label:visited, a.title-label:focus {
+  text-decoration: none !important;
+}
+
+// 文档标签
+.docs-title {
+  color: dimgray;
   border: dimgray 1px solid;
 }
 
+// 危险标签
 .danger-title {
   color: #FFF;
-  font-size: small;
   background-color: #FF7E67;
   border: #FF7E67 1px solid;
 }
 
+// AI创作标签
 .byAI-title {
   color: #FA8072;
-  font-size: small;
   font-weight: bold;
   border: #FA8072 1px solid;
+  
+  // 覆盖继承的链接颜色
+  &[data-label]::before {
+    color: #FA8072;
+  }
 }
 
+// 推荐标签 - 默认样式
 .recommended-title {
-  color: #9B59B6;
-  font-size: small;
-  font-weight: bold;
+  color: #FFF !important; // 强制设置白色文字
+  background-color: #9B59B6;
   border: #9B59B6 1px solid;
+  font-weight: bold;
 }
 
 .tags-title {
@@ -239,17 +255,29 @@ main a[target="_blank"]::after {
 
 @media (prefers-color-scheme: light) {
   .weekly-title {
-    color: #FFFFE0;
+    color: #FFF;
     border: #20B2AA 1px solid;
     background-color: #20B2AA;
+  }
+  
+  .recommended-title {
+    color: #FFF;
+    border: #9B59B6 1px solid;
+    background-color: #9B59B6;
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .weekly-title {
-    color: #FFFFE0;
+    color: #FFF;
     border: #008080 1px solid;
     background-color: #008080;
+  }
+  
+  .recommended-title {
+    color: #FFF;
+    border: #8E44AD 1px solid;
+    background-color: #8E44AD;
   }
   
   // 莫兰迪色系渐变色标签 - 深色模式
@@ -284,9 +312,10 @@ main a[target="_blank"]::after {
   }
 }
 
+// 周报标签
 .weekly-title {
-  font-size: small;
-  font-weight: bold;
+  // 样式在深色和浅色模式已定义
+  color: #FFF !important; // 强制设置白色文字
 }
 
 .post-after {

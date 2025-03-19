@@ -2,11 +2,7 @@
 <article class="markdown book-post">
   <h1>
     <a href="{{ .RelPermalink }}">{{ partial "docs/title.html" . }}</a>
-    {{ if in .Params.tags "Recommended" }}
-      <span class="title-label recommended-title"><a href="/tags/Recommended/">Recommended</a></span>
-    {{ else if in .Params.tags "ByAI" }}
-      <span class="title-label byAI-title"><a href="/tags/ByAI/">ByAI</a></span>
-    {{ end }}
+    {{ partial "title-label" . }}
   </h1>
   {{ partial "docs/post-meta" . }}
 
