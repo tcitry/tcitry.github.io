@@ -2,24 +2,24 @@ items:
   - title: "March 2023"
     cardTitle: "博客源码"
     url: "https://github.com/tcitry/tcitry.github.io"
-    cardSubtitle: "tcitry.github.io"
+    tagList: ["Hugo", "Blog", "GitHub"]
+    imageURL: '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=tcitry.github.io&hide_border=true&theme=ambient_gradient" height="120" />'
     cardDetailedText:
-      - '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=tcitry.github.io&hide_border=true&theme=ambient_gradient" height="120" />'
       - "目前博客的结构、功能目前我认为都到了一个相对稳定的阶段，应该可以不折腾地使用相当长一段时间了。"
 
   - title: "October 2022"
     cardTitle: "做了个周刊"
     url: "/weekly/"
-    cardSubtitle: "Weekly"
+    tagList: ["Hugo", "Weekly"]
     cardDetailedText:
       - '在 Hugo 模版基础上新加了一个 Weekly 功能，受<a href="https://weekly.tw93.fun/">潮流周刊</a>启发，详见<a href="/weekly/2022/2022-W41/">第一期</a>。'
 
   - title: "September 2021"
     cardTitle: "跟 winter 老师学钱端"
     url: "https://github.com/tcitry/winter-fe"
-    cardSubtitle: "winter-fe"
+    tagList: ["Frontend", "JavaScript", "Browser"]
+    imageURL: '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=winter-fe&hide_border=true&theme=gruvbox_light" height="120" />'
     cardDetailedText:
-      - '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=winter-fe&hide_border=true&theme=gruvbox_light" height="120" />'
       - |
         这个项目是 winter 老师在极客时间的最后一期前端训练营的课后作业。包含以下目录：
         <ul class="timeline-text">
@@ -34,63 +34,63 @@ items:
   - title: "May 2021"
     url: "https://github.com/tcitry/make-choice-net"
     cardTitle: "一个帮助做出选择的工具"
-    cardSubtitle: "make-choice-net"
+    tagList: ["Vue", "Tool", "Frontend"]
+    imageURL: '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=make-choice-net&hide_border=true&theme=vue" height="120" />'
     cardDetailedText:
-      - '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=make-choice-net&hide_border=true&theme=vue" height="120" />'
       - "学习 Vue 过程中产出的项目，基于 Vue2 的类似于 Todo List 的列表 demo。"
 
   - title: "June 2020"
     url: "https://github.com/tcitry/django-api-permission"
     cardTitle: "一个基于 Django 的 API 权限管理工具"
-    cardSubtitle: "django-api-permission"
+    tagList: ["Django", "Python", "API"]
+    imageURL: '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=django-api-permission&hide_border=true&theme=panda" height="120" />'
     cardDetailedText:
-      - '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=django-api-permission&hide_border=true&theme=panda" height="120" />'
       - "基于 Django Middleware 通过对 URL 进行正则匹配实现的一个 API 权限管理中间件。"
 
   - title: "May 2019"
     url: "https://github.com/luojilab/django-mirage-field"
-    cardTitle: "一个基于 Django 的数据脱敏工具。"
-    cardSubtitle: "django-mirage-field"
+    cardTitle: "一个基于 Django 的数据脱敏工具"
+    tagList: ["Django", "Python", "Security", "AES"]
+    imageURL: '<img src="https://github-readme-stats.vercel.app/api/pin/?username=luojilab&repo=django-mirage-field&hide_border=true&theme=ambient_gradient" height="120" />'
     cardDetailedText:
-      - '<img src="https://github-readme-stats.vercel.app/api/pin/?username=luojilab&repo=django-mirage-field&hide_border=true&theme=ambient_gradient" height="120" />'
       - '在得到 APP 时根据数据安全需要开发的脱敏工具，使用 AES 对称加密算法，使用 Python 基于 Django 框架进行开发，它实现了在保存数据时加密、读取数据时解密的功能，同时支持通过 Django Model 层进行 ORM 方式查询。该项目目前已经被几个知名项目<a href="https://github.com/luojilab/django-mirage-field/network/dependents?package_id=UGFja2FnZS00MDE2MjM2MDg%3D" target="_blank">使用</a>。'
 
   - title: "April 2019"
     url: "https://github.com/cgfly/jeecf-cli"
     cardTitle: "为 Jeecf 做了一个命令行代码生成工具"
-    cardSubtitle: "jeecf-cli"
+    tagList: ["Python", "CLI", "Tool"]
+    imageURL: '<img src="https://github-readme-stats.vercel.app/api/pin/?username=cgfly&repo=jeecf-cli&hide_border=true&theme=moltack" height="120" />'
     cardDetailedText:
-      - '<img src="https://github-readme-stats.vercel.app/api/pin/?username=cgfly&repo=jeecf-cli&hide_border=true&theme=moltack" height="120" />'
       - "基于 Python 的 Click 库为 Jeecf 开发的命令行工具，配合 jeecf-server 实现在本地生成指定的代码模板。"
 
   - title: "March 2019"
     url: "https://github.com/tcitry/publish-hugo-site"
     cardTitle: "通过 GitHub Action 发布你的 Hugo 网站"
-    cardSubtitle: "publish-hugo-site"
+    tagList: ["Hugo", "GitHub", "CI/CD"]
+    imageURL: '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=publish-hugo-site&hide_border=true&theme=calm" height="120" />'
     cardDetailedText:
-      - '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=publish-hugo-site&hide_border=true&theme=calm" height="120" />'
       - "Publish your hugo site to master or other gh-pages"
 
   - title: "March 2019"
     url: "https://github.com/tcitry/push-to-master"
     cardTitle: "通过 Github Action 将代码发布到指定分支"
-    cardSubtitle: "push-to-master"
+    tagList: ["GitHub", "CI/CD", "Automation"]
+    imageURL: '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=push-to-master&hide_border=true&theme=rose" height="120" />'
     cardDetailedText:
-      - '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=push-to-master&hide_border=true&theme=rose" height="120" />'
       - "Push your code to master or other branch."
 
   - title: "March 2017"
     url: "https://github.com/tcitry/drforum"
     cardTitle: "做了一个基于 DRF 的论坛后端 Demo"
-    cardSubtitle: "drforum"
+    tagList: ["Django", "DRF", "API", "Backend"]
+    imageURL: '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=drforum&hide_border=true&theme=buefy" height="120" />'
     cardDetailedText:
-      - '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=drforum&hide_border=true&theme=buefy" height="120" />'
       - "基于 Django-Rest-Framework 实现的论坛后端 API"
 
   - title: "November 2016"
     url: "https://github.com/tcitry/dotfiles"
     cardTitle: "我的 Vim、Zsh 等工具的配置文件"
-    cardSubtitle: "dotfiles"
+    tagList: ["Vim", "Zsh", "Config", "Tools"]
+    imageURL: '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=dotfiles&hide_border=true&theme=vue-dark" height="120" />'
     cardDetailedText:
-      - '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=dotfiles&hide_border=true&theme=vue-dark" height="120" />'
       - "我的开发工具配置文件，包括 Vim、Zsh 等工具的配置。"

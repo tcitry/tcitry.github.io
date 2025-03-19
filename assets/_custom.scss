@@ -191,6 +191,52 @@ main a[target="_blank"]::after {
   border: #74AA9C 1px solid;
 }
 
+// Timeline 标签基本样式
+.timeline-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 16px; /* 统一标签与下方内容的间距 */
+}
+
+.timeline-tag {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 0.3rem;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+// 莫兰迪色系渐变色标签 - 浅色模式
+.tag-0 {
+  background: linear-gradient(135deg, #d8e2dc 0%, #ffe5d9 100%);
+  color: #696969;
+}
+
+.tag-1 {
+  background: linear-gradient(135deg, #d5c3c6 0%, #e3d5da 100%);
+  color: #696969;
+}
+
+.tag-2 {
+  background: linear-gradient(135deg, #cad2c5 0%, #e0e5e7 100%);
+  color: #696969;
+}
+
+.tag-3 {
+  background: linear-gradient(135deg, #c6cdd3 0%, #e2eafc 100%);
+  color: #696969;
+}
+
+.tag-4 {
+  background: linear-gradient(135deg, #e0c2a7 0%, #f4e1d2 100%);
+  color: #696969;
+}
+
 @media (prefers-color-scheme: light) {
   .weekly-title {
     color: #FFFFE0;
@@ -204,6 +250,37 @@ main a[target="_blank"]::after {
     color: #FFFFE0;
     border: #008080 1px solid;
     background-color: #008080;
+  }
+  
+  // 莫兰迪色系渐变色标签 - 深色模式
+  .tag-0 {
+    background: linear-gradient(135deg, #4a5759 0%, #5b6e70 100%);
+    color: #e0e0e0;
+    border: none;
+  }
+  
+  .tag-1 {
+    background: linear-gradient(135deg, #595062 0%, #6e6a7c 100%);
+    color: #e0e0e0;
+    border: none;
+  }
+  
+  .tag-2 {
+    background: linear-gradient(135deg, #4d5e56 0%, #607069 100%);
+    color: #e0e0e0;
+    border: none;
+  }
+  
+  .tag-3 {
+    background: linear-gradient(135deg, #4c5b70 0%, #607286 100%);
+    color: #e0e0e0;
+    border: none;
+  }
+  
+  .tag-4 {
+    background: linear-gradient(135deg, #645a52 0%, #7a7066 100%);
+    color: #e0e0e0;
+    border: none;
   }
 }
 
@@ -310,7 +387,7 @@ a.card, a.card:hover, a.card:visited {
 .timeline-item {
   display: flex;
   align-items: flex-start;
-  padding: 32px 0;
+  padding: 24px 0; /* 调整项目上下间距，使各项目之间的间距更一致 */
   position: relative;
   
   @media (max-width: 768px) {
@@ -366,9 +443,9 @@ a.card, a.card:hover, a.card:visited {
 .timeline-content {
   flex: 1;
   margin-left: 80px;
-  margin-top: -20px; /* 向上偏移，使内容与日期更紧凑 */
+  margin-top: -10px; /* 将向上偏移减小，使内容与日期保持适当距离 */
   background: #F1FAEE;
-  padding: 20px;
+  padding: 24px; /* 增加内边距，使内容更加宽松 */
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   line-height: normal;
@@ -379,7 +456,7 @@ a.card, a.card:hover, a.card:visited {
   }
   
   .timeline-title {
-    margin: 0 0 10px;
+    margin: 0 0 16px; /* 增加标题下方的间距 */
     font-size: 1.2em;
     color: #000;
     
@@ -398,8 +475,21 @@ a.card, a.card:hover, a.card:visited {
     color: #000;
   }
   
+  /* 时间线图片容器样式 */
+  .timeline-image {
+    margin-bottom: 16px;
+    text-align: center;
+    
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
   .timeline-text {
-    margin-bottom: 10px;
+    margin-bottom: 16px; /* 统一文本段落的间距 */
     color: dimgray;
     
     img {
