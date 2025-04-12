@@ -18,11 +18,12 @@ enableRobotsTXT = true
 # Google Analytics
 # googleAnalytics = "UA-50554094-4"
 
-paginate = 10
+[pagination]
+pagerSize = 10
 
 summaryLength = 100
 
-ignorefiles = ["template", ".obsidian", "draft"]
+ignorefiles = ["content/template/*", ".obsidian", "draft"]
 
 [frontmatter]
 lastmod = ["lastmod", ":fileModTime", ":default"]
