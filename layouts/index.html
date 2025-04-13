@@ -10,7 +10,7 @@
   </h2>
   {{ partial "docs/post-meta" . }}
   <p>
-    {{- .Plain | truncate 70 -}} {{ if .Truncated }}
+    {{- .Plain | truncate 200 -}} {{ if .Truncated }}
     <a href="{{ .RelPermalink }}">...</a>
     {{ end }}
   </p>
