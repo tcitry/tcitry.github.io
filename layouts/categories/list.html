@@ -1,0 +1,37 @@
+{{ define "main" }}
+  {{ $taxonomies := index .Site.Taxonomies "categories" }}
+  <h1>{{ .Title | title }}&nbsp;<sup>{{ len $taxonomies }}</sup></h1>
+  <article class="markdown">
+    {{ $totalPages := len (intersect (where .Site.RegularPages "Type" "in" (slice "docs" "posts" "weekly")) (where .Site.Pages "Params.date" "!=" nil)) }}
+    {{ range $taxonomies }}
+      {{ $defaultSize := 12 }}
+      {{ $maxSize := 60 }}
+      {{ $count := .Count }}
+      {{ $restCount := sub $totalPages $count }}
+
+      {{/* 计算当前数量在总数中的百分比位置 */}}
+      {{ $percentage := div (float $count) (float $restCount) }}
+
+      {{/* 线性计算字体大小 */}}
+      {{ $range := sub $maxSize $defaultSize }}
+      {{ $fontSize := int (add $defaultSize (mul $range $percentage 6)) }}
+
+      {{/* 确保字体大小在限制范围内 */}}
+      {{ if lt $fontSize $defaultSize }}{{ $fontSize = $defaultSize }}{{ end }}
+      {{ if gt $fontSize $maxSize }}{{ $fontSize = $maxSize }}{{ end }}
+      <a href="{{ .Page.Permalink }}" style="font-size: {{ $fontSize }}px;word-break: keep-all;">
+        {{ .Page.Title }}&#8205;<sup>{{ .Count }}</sup>
+      </a>&nbsp;
+    {{ end }}
+  </article>
+{{ end }}
+
+{{ define "toc" }}
+  {{ if in (slice "/tags/" "/categories/") .Page.RelPermalink }}
+    {{ partial "categories" . }}
+  {{ else if in .Page.RelPermalink "/tags/" }}
+    {{ partial "tags" . }}
+  {{ else if in .Page.RelPermalink "/categories/" }}
+    {{ partial "categories" . }}
+  {{ end }}
+{{ end }}

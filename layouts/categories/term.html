@@ -1,0 +1,25 @@
+{{ define "main" }}
+  {{ partial "tags-navbar" . }}
+  {{ $postList := .Pages.ByDate.Reverse}}
+  <h1 style="color: dimgray;">{{ .Title }}&nbsp;<sup>{{ len $postList }}</sup></h1>
+  {{ range sort $postList }}
+    <div class="post">
+      <p><h3>
+          <time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;
+          {{ partial "docs-title-tree" . }}
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          {{ partial "tags-label" . }}
+        </h3></p>
+      </div>
+  {{ end }}
+{{ end }}
+
+{{ define "toc" }}
+  {{ if in (slice "/tags/" "/categories/") .Page.RelPermalink }}
+    {{ partial "categories" . }}
+  {{ else if in .Page.RelPermalink "/tags/" }}
+    {{ partial "tags" . }}
+  {{ else if in .Page.RelPermalink "/categories/" }}
+    {{ partial "categories" . }}
+  {{ end }}
+{{ end }}

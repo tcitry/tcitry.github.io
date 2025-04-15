@@ -3,21 +3,21 @@
   <ul>
     {{ with $.Site.GetPage (printf "/%s" "tags" | urlize) }}
     <li class="book-section-flat">
-      <strong>{{ .Title | title }}<sup>{{ len .Site.Taxonomies.tags }}</sup></strong>
+      <strong
+        >{{ .Title | title }}<sup>{{ len .Site.Taxonomies.tags }}</sup></strong
+      >
       <ul>
-      {{ range .Pages }}
-        {{ if eq .RelPermalink $currentLink }}
-            <li class="flex justify-between">
-              <a href="{{ .RelPermalink }}" class="highlight-toc">{{ .Title }}</a>
-              <span>{{ len .Pages }}</span>
-            </li>
-          {{ else }}
-            <li class="flex justify-between">
-              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-              <span>{{ len .Pages }}</span>
-            </li>
-        {{ end }}
-      {{ end }}
+        {{ range .Pages }} {{ if eq .RelPermalink $currentLink }}
+        <li class="flex justify-between">
+          <a href="{{ .RelPermalink }}" class="highlight-toc">{{ .Title }}</a>
+          <span>{{ len .Pages }}</span>
+        </li>
+        {{ else }}
+        <li class="flex justify-between">
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          <span>{{ len .Pages }}</span>
+        </li>
+        {{ end }} {{ end }}
       </ul>
     </li>
     {{ end }}
