@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Python on LYon's Blog</title><link>https://yindongliang.com/docs/Python/</link><description>Recent content in Python on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Python/index.xml" rel="self" type="application/rss+xml"/><item><title>语言基础</title><link>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/</link><pubDate>Fri, 10 Apr 2015 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/</guid><description>&lt;h2 id="数据结构">
+ 数据结构
+ &lt;a class="anchor" href="#%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="int">
+ int
+ &lt;a class="anchor" href="#int">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="str">
+ str
+ &lt;a class="anchor" href="#str">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="list">
+ list
+ &lt;a class="anchor" href="#list">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="tuple">
+ tuple
+ &lt;a class="anchor" href="#tuple">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="dict">
+ dict
+ &lt;a class="anchor" href="#dict">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="set">
+ set
+ &lt;a class="anchor" href="#set">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;strong>&lt;code>list(set([1, 2, 2, 3]))&lt;/code> 转化时是不能保证顺序的，慎用。&lt;/strong>&lt;/p>
+&lt;p>可以使用 &lt;code>dict.fromkeys()&lt;/code> 因为 Python 的 &lt;code>dict&lt;/code> 在 3.6 及以后就支持顺序了。&lt;/p></description></item><item><title>标准库</title><link>https://yindongliang.com/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/</link><pubDate>Sat, 11 Apr 2015 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/</guid><description>&lt;h2 id="email">
+ email
+ &lt;a class="anchor" href="#email">#&lt;/a>
+&lt;/h2>
+&lt;h2 id="multiprocessing">
+ multiprocessing
+ &lt;a class="anchor" href="#multiprocessing">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="pool">
+ Pool
+ &lt;a class="anchor" href="#pool">#&lt;/a>
+&lt;/h3>
+&lt;h2 id="unittest">
+ unittest
+ &lt;a class="anchor" href="#unittest">#&lt;/a>
+&lt;/h2>
+&lt;h2 id="unittestmock">
+ unittest.mock
+ &lt;a class="anchor" href="#unittestmock">#&lt;/a>
+&lt;/h2></description></item><item><title>并行与并发</title><link>https://yindongliang.com/docs/Python/%E5%B9%B6%E8%A1%8C%E4%B8%8E%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E5%B9%B6%E8%A1%8C%E4%B8%8E%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/</guid><description/></item><item><title>可视化工具</title><link>https://yindongliang.com/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/</link><pubDate>Mon, 10 Apr 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/</guid><description>&lt;h2 id="matplotlib">
+ Matplotlib
+ &lt;a class="anchor" href="#matplotlib">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://matplotlib.org/">https://matplotlib.org/&lt;/a>&lt;/p>
+&lt;h3 id="基本概念">
+ 基本概念
+ &lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">import&lt;/span> &lt;span style="color:#ca72ff">matplotlib.pyplot&lt;/span> &lt;span style="color:#76a9f9">as&lt;/span> &lt;span style="color:#ca72ff">plt&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">fig&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">ax&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">plt&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">subplots&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># Create a figure containing a single axes.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">ax&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">plot&lt;/span>&lt;span style="color:#abb2bf">([&lt;/span>&lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">3&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">],&lt;/span> &lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">3&lt;/span>&lt;span style="color:#abb2bf">]);&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># Plot some data on the axes.&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>plt.plot(x, y)&lt;/code> 用绘制图形，&lt;code>plt.show()&lt;/code> 用于显示图形，但是在 &lt;code>Jupyter&lt;/code> 中，即使没有 &lt;code>show()&lt;/code> 也会显示出来。&lt;/p>
+&lt;h3 id="二维数据">
+ 二维数据
+ &lt;a class="anchor" href="#%e4%ba%8c%e7%bb%b4%e6%95%b0%e6%8d%ae">#&lt;/a>
+&lt;/h3>
+&lt;p>pcolor&lt;/p></description></item><item><title>Numpy</title><link>https://yindongliang.com/docs/Python/Numpy/</link><pubDate>Sat, 12 Nov 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/Numpy/</guid><description>&lt;h2 id="一些例子">
+ 一些例子
+ &lt;a class="anchor" href="#%e4%b8%80%e4%ba%9b%e4%be%8b%e5%ad%90">#&lt;/a>
+&lt;/h2>
+&lt;p>可以创建一维/多维数组&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">import&lt;/span> &lt;span style="color:#ca72ff">numpy&lt;/span> &lt;span style="color:#76a9f9">as&lt;/span> &lt;span style="color:#ca72ff">np&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">array&lt;/span>&lt;span style="color:#abb2bf">([&lt;/span>&lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>&lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>&lt;span style="color:#d19a66">3&lt;/span>&lt;span style="color:#abb2bf">])&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">arange&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">zeros&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">ones&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">random&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">rand&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">2&lt;/span>， &lt;span style="color:#d19a66">5&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>还可以改变矩阵的维度&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">x&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">arange&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># [1, 2, 3...., 8, 9, 10]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">a&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">reshape&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">5&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># [[1, 2, ..., 5],[6, 7, ..., 10]]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>支持矩阵间的四则运算等&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">x&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">array&lt;/span>&lt;span style="color:#abb2bf">([[&lt;/span>&lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">],&lt;/span> &lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#d19a66">8&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">8&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">8&lt;/span>&lt;span style="color:#abb2bf">]])&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">y&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">array&lt;/span>&lt;span style="color:#abb2bf">([[&lt;/span>&lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">],&lt;/span> &lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">]])&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e5c07b">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">x&lt;/span> &lt;span style="color:#54b1c7">+&lt;/span> &lt;span style="color:#aa89ea">y&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>支持切片&lt;/p>
+&lt;p>支持筛选&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">x&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">arange&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#54b1c7">&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#aa89ea">array&lt;/span>&lt;span style="color:#abb2bf">([&lt;/span>&lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">3&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">5&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">6&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">7&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">8&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">9&lt;/span>&lt;span style="color:#abb2bf">])&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">a&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#54b1c7">&amp;gt;&lt;/span>&lt;span style="color:#d19a66">8&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#54b1c7">&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#aa89ea">array&lt;/span>&lt;span style="color:#abb2bf">([&lt;/span>&lt;span style="color:#d19a66">9&lt;/span>&lt;span style="color:#abb2bf">])&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>支持读取文件为对象或将对象保存成文件&lt;/p></description></item><item><title>Pandas</title><link>https://yindongliang.com/docs/Python/Pandas/</link><pubDate>Sat, 12 Nov 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/Pandas/</guid><description>&lt;p>官方文档 &lt;a href="https://pandas.pydata.org/docs/index.html">https://pandas.pydata.org/docs/index.html&lt;/a>&lt;/p>
+&lt;h2 id="数据集">
+ 数据集
+ &lt;a class="anchor" href="#%e6%95%b0%e6%8d%ae%e9%9b%86">#&lt;/a>
+&lt;/h2>
+&lt;p>列几个数据集用于测试：&lt;/p>
+&lt;ol>
+&lt;li>&lt;a href="https://learn.microsoft.com/en-us/power-bi/create-reports/sample-financial-download">https://learn.microsoft.com/en-us/power-bi/create-reports/sample-financial-download&lt;/a> (Financial.xlsx)&lt;/li>
+&lt;li>&lt;a href="https://www.gairuo.com/file/data/dataset/team.xlsx">https://www.gairuo.com/file/data/dataset/team.xlsx&lt;/a> （team.xlsx）&lt;/li>
+&lt;/ol>
+&lt;h2 id="查看数据">
+ 查看数据
+ &lt;a class="anchor" href="#%e6%9f%a5%e7%9c%8b%e6%95%b0%e6%8d%ae">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">head&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 头部 5 条&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">tail&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 尾部 5 条&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">sample&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 随机查看 5 条&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">shape&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># (100, 6) 查看行数和列数&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">info&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 查看索引、数据类型和内存信息&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">describe&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 查看数值型列的汇总统计&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">dtypes&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 查看各字段类型&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">axes&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 显示数据行和列名&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">columns&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 列名&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="选取数据">
+ 选取数据
+ &lt;a class="anchor" href="#%e9%80%89%e5%8f%96%e6%95%b0%e6%8d%ae">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="选择列">
+ 选择列
+ &lt;a class="anchor" href="#%e9%80%89%e6%8b%a9%e5%88%97">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#63c381">&amp;#34;Q1&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 指定列&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">Q1&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 同上一行&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[[&lt;/span>&lt;span style="color:#98c379">&amp;#39;team&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q1&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 只看这两列&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">loc&lt;/span>&lt;span style="color:#abb2bf">[:,&lt;/span> &lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#98c379">&amp;#39;team&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q1&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 同上一行&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="选择行">
+ 选择行
+ &lt;a class="anchor" href="#%e9%80%89%e6%8b%a9%e8%a1%8c">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">index&lt;/span> &lt;span style="color:#54b1c7">==&lt;/span> &lt;span style="color:#98c379">&amp;#39;Liver&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 根据索引名称&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic"># 根据自然索引&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span>&lt;span style="color:#d19a66">3&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 取前三个&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span>&lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 前 10 个每隔两个取一个&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">iloc&lt;/span>&lt;span style="color:#abb2bf">[:&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#abb2bf">:]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 前 10 个&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="指定行和列">
+ 指定行和列
+ &lt;a class="anchor" href="#%e6%8c%87%e5%ae%9a%e8%a1%8c%e5%92%8c%e5%88%97">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">loc&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#98c379">&amp;#39;Ben&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q1&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span>&lt;span style="color:#98c379">&amp;#39;Q4&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">loc&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#98c379">&amp;#39;A&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#39;D&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q1&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q4&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="条件选择">
+ 条件选择
+ &lt;a class="anchor" href="#%e6%9d%a1%e4%bb%b6%e9%80%89%e6%8b%a9">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">Q1&lt;/span> &lt;span style="color:#54b1c7">&amp;gt;&lt;/span> &lt;span style="color:#d19a66">90&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># Q1 大于 90 的&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">team&lt;/span> &lt;span style="color:#54b1c7">==&lt;/span> &lt;span style="color:#98c379">&amp;#39;C&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># team 列为 &amp;#39;C&amp;#39; 的&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">index&lt;/span> &lt;span style="color:#54b1c7">==&lt;/span> &lt;span style="color:#98c379">&amp;#39;Oscar&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 指定 index 名称&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="运算数据">
+ 运算数据
+ &lt;a class="anchor" href="#%e8%bf%90%e7%ae%97%e6%95%b0%e6%8d%ae">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="排序">
+ 排序
+ &lt;a class="anchor" href="#%e6%8e%92%e5%ba%8f">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">sort_values&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">by&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#63c381">&amp;#34;Q1&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">ascending&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#e5c07b">False&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 按 Q1 降序排列, default is True&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="分组聚合">
+ 分组聚合
+ &lt;a class="anchor" href="#%e5%88%86%e7%bb%84%e8%81%9a%e5%90%88">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">groupby&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#39;team&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">sum&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 求和&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">groupby&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#39;team&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">mean&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 求平均&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">groupby&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#39;team&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">agg&lt;/span>&lt;span style="color:#abb2bf">({&lt;/span>&lt;span style="color:#98c379">&amp;#39;Q1&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">sum&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q2&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">count&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q3&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#39;mean&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q4&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">max&lt;/span>&lt;span style="color:#abb2bf">})&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># agg 很强大&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="数据反转">
+ 数据反转
+ &lt;a class="anchor" href="#%e6%95%b0%e6%8d%ae%e5%8f%8d%e8%bd%ac">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;code>df.T&lt;/code> 应该能玩出花。&lt;/p></description></item><item><title/><link>https://yindongliang.com/docs/Python/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83/</guid><description/></item></channel></rss>

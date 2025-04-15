@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>LYon's Blog</title><link>https://yindongliang.com/weekly/</link><description>Recent content on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/weekly/index.xml" rel="self" type="application/rss+xml"/><item><title>参访 Let's Vision 2025</title><link>https://yindongliang.com/weekly/2025/2025-W09/</link><pubDate>Tue, 25 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2025/2025-W09/</guid><description>&lt;p>本周末参加了 &lt;a href="https://letsvision.swiftgg.team/cn/">Let&amp;rsquo;s Vision 2025&lt;/a>，见识了很多新鲜事物。首先是认识到了这个领域内的很多新朋友，有一些是在职的 iOS 资深开发者，有一些是独立运转的 App 小团队成员，还有甚至包括大会的组织者，Apple 的官方人员和演讲嘉宾。另外参加了一些展会的活动，还有一个工作坊，比如 &lt;a href="https://www.hackingwithswift.com">Hacking with Swift&lt;/a> 的作者 Paul Hudson 组织的两个小时的线下 SwiftUI 实战课程，受益良多。&lt;/p></description></item><item><title>关于对 Cursor 类工具的认识</title><link>https://yindongliang.com/weekly/2025/2025-W01/</link><pubDate>Wed, 01 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2025/2025-W01/</guid><description>&lt;ul>
+&lt;li>题图的生成链接在&lt;a href="https://postspark.app/github-contributions">这里&lt;/a>&lt;/li>
+&lt;li>打个比方，在 AI 辅助编程的角度来说，如果说最初的 ChatGPT 是小学生级别，那么 Copilot 就是中学生级别，而 Cursor 和 Windsurf 就是大学生级别。&lt;/li>
+&lt;li>Cursor 产品形式的出现是真正帮助那些没有编程基础的人做出产品的分水岭，当然这里也有 Sonnet 的功劳。&lt;/li>
+&lt;li>未来做不做开发岗可能已经不重要，重要的是，还是要选择进入互联网行业，混迹几年之后可能就会有相关的概念和认知，然后就有机会自己做产品。&lt;/li>
+&lt;li>当我说 Cursor 角色时，同时指代 Windsurf / Alex Siderbar 等同类型工具。&lt;/li>
+&lt;li>于是最近甚至没有时间去整理周报和博客了，切身体会到 Cursor 确实在解放生产力，之前很多学习成本太高的问题现在都解决了，直接开始做就可以了。&lt;/li>
+&lt;/ul>
+&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>腾讯云手机&lt;br>
+&lt;a href="https://wetest.qq.com/products/cloud-phone">https://wetest.qq.com/products/cloud-phone&lt;/a>&lt;br>
+头一次知道云真机测试的概念，下面还有其他链接可以参考&lt;/p></description></item><item><title>被 Windsurf 惊艳到了</title><link>https://yindongliang.com/weekly/2024/2024-W52/</link><pubDate>Mon, 23 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W52/</guid><description>&lt;ul>
+&lt;li>在上海远程办公了大半个月，工作日每天固定时间出来和媳妇吃午饭和晚饭，感觉上海的 12 月尤其是下旬，真不算冷。&lt;/li>
+&lt;li>在追剧，清明上河图密码和天下长河，前者属于快餐，后者有点好看。&lt;/li>
+&lt;li>之前收藏的几个 &lt;a href="https://yindongliang.com/docs/Awesome/awesome-ai-tools/">Awesome AI Chat 工具&lt;/a>，初步体验下来，目前觉得 &lt;a href="https://devv.ai">devv.ai&lt;/a> 做的相对较好，条理性比较强。&lt;a href="https://v0.dev">v0.dev&lt;/a> 也不错，但是优势尤其在 Vercel 相关生态和 web 前端技术栈，我还没应用到相关场景。&lt;/li>
+&lt;li>周末装上了 &lt;a href="https://codeium.com/">Windsurf&lt;/a>，试了下也很惊艳，也很好用，目前都没付费，先观望着。&lt;/li>
+&lt;li>估计是迫于 Cursor 和 Windsurf 的压力，Copilot for VS Code &lt;a href="https://code.visualstudio.com/blogs/2024/12/18/free-github-copilot">免费&lt;/a>了，有 GitHub 账户就行。
+&lt;ul>
+&lt;li>之前我的 VS Code 还在用免费的 Cody 和 Codeium，Copilot 只在公司能用，现在虽然免费了可能也已经晚了，估计 Copilot 也在开发类似 Cursor 的工作流吧，主要是模型不知道能用什么，我猜毕竟大厂不好意思用别人的 Sonnet 吧。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>关于最适合使用 Cursor 和 Windsurf 的场景，目前结论是：
+&lt;ul>
+&lt;li>搭建项目框架初期、缺乏技术实现能力还想快速验证 demo 时（这一点非常非常有用），这里是 AI 在技术广度上的优势。
+&lt;ul>
+&lt;li>技术是可以后续花时间学习掌握的，但是做决策需要先有 demo 展示。&lt;/li>
+&lt;li>这些场景在前端和小型的独立软件比较常见。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>随着项目复杂度增加，使用 Cursor 工具的场景可能会越少，尤其是很多需要微调细节、关联业务逻辑、代码文件之间相互交叉影响、优化性能之类的场景，尤其是线上千万级用户时，还是需要技术深度、业务理解能力、软件工程能力做支撑。
+&lt;ul>
+&lt;li>这些场景在大型系统级软件以及后端（简单说就是大厂）比较常见。&lt;/li>
+&lt;li>所以基于此，我猜大厂这次不会跟进太快，反而是个人独立开发领域会快速上手。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Cursor / Windsurf 都应该是目前写单测的最佳工具了吧。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>IndieGoodies&lt;br>
+&lt;a href="https://indiegoodies.com/">https://indiegoodies.com/&lt;/a>&lt;/p></description></item><item><title>买了 Apple 开发者账号</title><link>https://yindongliang.com/weekly/2024/2024-W51/</link><pubDate>Mon, 16 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W51/</guid><description>&lt;p>前两天买了 Apple 开发者账号，然后通过 Cloudkit 跑通了设备间数据的同步，虽然功能很简单，但是也很有收获感，先从一个 Todo App 开始吧 🐶，跑通流程。&lt;/p>
+&lt;p>本周看完村上的《小城与不确定性的墙》，看村上的书有个问题，不好做条理性总结，他自己强调小说家只是起到润滑剂的作用，我也没期望有什么太多收获，无非是制造无聊然后再打发无聊。也许未来生活的某一刻我会想起书中的内容，就是很好的体验了。&lt;/p></description></item><item><title>小红书正在聚集独立开发者</title><link>https://yindongliang.com/weekly/2024/2024-W50/</link><pubDate>Wed, 11 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W50/</guid><description>&lt;p>12 月以来，在小红书已经关注了将近 100 位已经在 iOS 平台上架 App 的独立开发者，他们在小红书通过视频和卡片形式推荐自己的 App，而且推荐算法还在不断给我推荐新博主。从体感来看，这其中有一半是本就有编程经验的程序员出身，剩下的则是一些大厂出身的产品经理和设计师比较多（特意强调大厂可能因为他们学习能力确实比较强），而他们又大多是通过 Cursor 来帮助自己实现代码功能并上架了 App，而我关注到的这至少 100 位独立开发者则清一色都是在 iOS 的 App Store 上架的苹果手机专属 App，这些现象都说明了很多事情。&lt;/p></description></item><item><title>周末苏州两日游</title><link>https://yindongliang.com/weekly/2024/2024-W46/</link><pubDate>Mon, 11 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W46/</guid><description>&lt;p>苏州两日游：&lt;/p>
+&lt;ul>
+&lt;li>第一天上午上海站到苏州站，也就是半小时高铁。&lt;/li>
+&lt;li>入住平江路「三千载民宿」，4 号线察院场地铁站，离火车站也是两站地铁。&lt;/li>
+&lt;li>中午吃了阳澄湖大闸蟹。&lt;/li>
+&lt;li>顺便观前街逛街，排队茶颜悦色。&lt;/li>
+&lt;li>下午从平江路走到拙政园，俩人额外花了 100 元跟导游免排队+讲解。&lt;/li>
+&lt;li>傍晚金鸡湖遛弯、吃饭。&lt;/li>
+&lt;li>晚上回观前街，到琵琶语评弹馆听吴亮莹老师演唱「声声慢」。&lt;/li>
+&lt;li>第二天上午先到沧浪亭，后到留园，中午在山塘街吃了蟹黄面。&lt;/li>
+&lt;li>下午游虎丘，这里景观和人文历史都非常值得游览。&lt;/li>
+&lt;li>傍晚火车到上海，不虚此行。&lt;/li>
+&lt;/ul>
+&lt;p>整体下来，最喜欢评弹「声声慢」和留园，沧浪亭也不错，拙政园虽然听了讲解，但要我自己评价的话也就那样，人太多了，另外还有一些园林比如网师园、狮子林、可园等等都没去，苏博更是预约不上，下次一定。总体感受，苏州的历史文化真是厚重，完全不是几首诗、几个名人就能概括的。还有苏州老城区的水路是真发达，不愧是真江南。&lt;/p></description></item><item><title>如何写出垃圾代码</title><link>https://yindongliang.com/weekly/2024/2024-W45/</link><pubDate>Tue, 05 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W45/</guid><description>&lt;p>看完了《太白金星有点烦》，这个视角的西游题材真是头一次看到，但是逻辑上好像还真没什么毛病，就是后面结尾部分明显作者不想继续编了，但也还好，要展现的视角已经足够读者理解，原来我之前看的西游都是「揭帖」。&lt;/p></description></item><item><title>奇鸟行状录</title><link>https://yindongliang.com/weekly/2024/2024-W41/</link><pubDate>Mon, 07 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W41/</guid><description>&lt;p>最近一个月加上十一假期看完了村上春树的《奇鸟行状录》，这本书情节和人物关系还算正常，能够拿出来公开讨论，就以下几点想说的。&lt;/p>
+&lt;p>仅仅从不吸引人的书名来看，比读之前预想得要好，并不亚于已经相当知名的其他作品，推荐。&lt;/p></description></item><item><title>最近参加开球网积分赛🏓</title><link>https://yindongliang.com/weekly/2024/2024-W38/</link><pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W38/</guid><description>&lt;p>停了一个半月的周报，主要原因是业余时间确实没投入精力去关注技术，只是晚上回家偶尔看看文档。也许是受奥运会的影响，也许是前两个月好东西吃多了导致长了点肉，于是乎最近一段时间下班就跑球馆打球去了，周末还参加了几次积分赛，以至于经过一个多月的密集练习和比赛，最后还拿了俱乐部 U1600 分段的一次季军和一次亚军，也算小有收获，当然还会继续努力，争取早日进入下一分段。&lt;/p></description></item><item><title>本周奥运周</title><link>https://yindongliang.com/weekly/2024/2024-W31/</link><pubDate>Thu, 01 Aug 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W31/</guid><description>&lt;p>本周是精彩的一周！关注的奥运会乒乓球赛事有惊无险，周六还去看了许嵩的演唱会，周天终于看到樊振东拿下男单金牌，自从四分之一决赛樊振东赢下张本智和，生死一线时不负众望，可以说樊振东真是经历了一次奥运级蜕变，从今以后他就是当之无愧的大将、主帅。可能很多人无法想象这一场比赛的压力有多大，这么说吧，这场球如果输了，就是国乒 30 年来最差成绩：奥运会男子单打没有奖牌，这就不只是八一献礼这么简单了，我想说樊振东在这场比赛中真是经历了非人类的压力。&lt;/p></description></item><item><title>又看了下 SwiftUI</title><link>https://yindongliang.com/weekly/2024/2024-W29/</link><pubDate>Wed, 17 Jul 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W29/</guid><description>&lt;p>夏天消化慢，最近跑了几趟医院，做了 CT 和无痛胃镜，好在问题不大，又需要养一养了。身体一旦出问题，其他事情的优先级瞬间都要往后排。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Button&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">isSet&lt;/span> &lt;span style="color:#abb2bf">?&lt;/span> &lt;span style="color:#98c379">&amp;#34;Pause&amp;#34;&lt;/span> &lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#34;Play&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">isSet&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">toggle&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Button&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">action&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>&lt;span style="color:#aa89ea">isSet&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">toggle&lt;/span>&lt;span style="color:#abb2bf">()})&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">isSet&lt;/span> &lt;span style="color:#abb2bf">?&lt;/span> &lt;span style="color:#98c379">&amp;#34;Pause&amp;#34;&lt;/span> &lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#34;Play&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Button&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">isSet&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">toggle&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span> &lt;span style="color:#aa89ea">label&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">isSet&lt;/span> &lt;span style="color:#abb2bf">?&lt;/span> &lt;span style="color:#98c379">&amp;#34;Pause&amp;#34;&lt;/span> &lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#34;Play&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>同样的功能，就有不止三种写法，苹果搞这么复杂有点蛋疼啊，涉及的点：&lt;/p></description></item><item><title>技术大牛也会焦虑</title><link>https://yindongliang.com/weekly/2024/2024-W28/</link><pubDate>Mon, 08 Jul 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W28/</guid><description>&lt;p>下面这段话是本周摸鱼时在图拉鼎的博客中重新读到的，之前没有注意到，但是最近同时在读《当下的力量》这本书，突然就产生了共鸣，这也是我一直想解决的问题不是么，看到大佬们都有这个问题，我也感觉轻松多了。&lt;/p></description></item><item><title>体验 Vision Pro</title><link>https://yindongliang.com/weekly/2024/2024-W27/</link><pubDate>Mon, 01 Jul 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W27/</guid><description>&lt;p>本周见闻：&lt;/p>
+&lt;ul>
+&lt;li>上周 Vision Pro 开放购买了，周围竟然一点动静没有，是环境变了还是时代变了，所以我周末来线下店体验了一下，总的来说，很沉也很贵，但是戴上后空间真实感非常到位，屏幕分辨率刷新率都不会影响到视觉体验，期待后续的轻量版本，什么时候如果能戴头上两个小时无不适感我就真的会下单了，毕竟可以顶好几个 Studio Display 了吧。&lt;/li>
+&lt;li>这两天在 Reddit 论坛上看一些显示器的评测，发现 Reddit 社区氛围真的非常棒，友善且专业，细看的话，Reddit 话题区分布非常之广，网友也真正遍布世界各地。&lt;/li>
+&lt;li>新版本 Sider.AI 在 Mac 端的公式显示终于正常了。&lt;/li>
+&lt;/ul>
+&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>Create beautiful applications using Go&lt;br>
+&lt;a href="https://github.com/wailsapp/wails">https://github.com/wailsapp/wails&lt;/a>&lt;/p></description></item><item><title>为什么面相对象很糟糕</title><link>https://yindongliang.com/weekly/2024/2024-W26/</link><pubDate>Mon, 24 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W26/</guid><description>&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>为什么面向对象很糟糕&lt;br>
+&lt;a href="https://harmful.cat-v.org/software/OO_programming/why_oo_sucks">https://harmful.cat-v.org/software/OO_programming/why_oo_sucks&lt;/a>&lt;/p>
+&lt;p>鸢(yuān)尾花书：从加减乘除到机器学习; 全套7册。&lt;br>
+&lt;a href="https://github.com/Visualize-ML">https://github.com/Visualize-ML&lt;/a>&lt;/p>
+&lt;p>一系列基于 CloudFlare 的开源工具 &amp;amp; 技术栈，旨在帮助独立开发者快速构建和发布 SaaS 产品&lt;br>
+&lt;a href="https://cloudflare.chuhai.tools/">https://cloudflare.chuhai.tools/&lt;/a>&lt;/p></description></item><item><title>开顺风车的一周</title><link>https://yindongliang.com/weekly/2024/2024-W25/</link><pubDate>Mon, 17 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W25/</guid><description>&lt;p>这周工作不忙，六点准时下班，加上媳妇出差，于是下班后开顺风车体验下生活，发现如果每天两单的话，基本可以覆盖每天的饭钱了，代价就是可能会至少多花半小时到一小时的通勤时间，我周末也出去转了一下午，这样算下来本周有差不多 500 的顺风车收入（电车每公里 1 毛钱，成本可以忽略不计），但这已经是业余时间的满负荷工作了，长久下来估计身体会吃不消。&lt;/p></description></item><item><title>本周上海回大连</title><link>https://yindongliang.com/weekly/2024/2024-W24/</link><pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W24/</guid><description>&lt;p>从上周末到现在的 8 天走了大连 -&amp;gt; 上海 -&amp;gt; 济南 -&amp;gt; 聊城 -&amp;gt; 济南 -&amp;gt; 大连这几座城市，得出一个结论：这个时间点必然是大连最宜居，依然凉风拂面，而济南、聊城已经热成蒸笼，上海早晚还是很凉快（就是有点潮），出乎意料，上海六月的气候比我预想的好很多。另外感觉这 9 天过得好长，果然旅行可以让时间变慢，关于工作的事好像已经忘干净了。&lt;/p></description></item><item><title>字体的绘制原理？</title><link>https://yindongliang.com/weekly/2024/2024-W23/</link><pubDate>Mon, 03 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W23/</guid><description>&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>Linear.app 是一款现代化的软件开发工具，提供直观的用户界面和高效的工作流程，帮助团队进行问题跟踪、任务管理、冲刺规划和产品路线图等，使软件开发流程更加优化和简化。&lt;br>
+&lt;a href="https://linear.app/">https://linear.app/&lt;/a>&lt;/p></description></item><item><title>你有过高考梦魇吗？</title><link>https://yindongliang.com/weekly/2024/2024-W22/</link><pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W22/</guid><description>&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>原来很多人和我一样有过这样的高考梦魇。。&lt;br>
+&lt;a href="https://www.v2ex.com/t/1044208">https://www.v2ex.com/t/1044208&lt;/a>&lt;/p>
+&lt;h2 id="工具">
+ 工具
+ &lt;a class="anchor" href="#%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;p>一个非常直观好用的文本对比工具：Mergely&lt;br>
+&lt;a href="https://www.mergely.com/">https://www.mergely.com/&lt;/a>&lt;/p>
+&lt;p>Wappalyzer：这个工具很好用，可以分析出网站的技术架构，虽然不是 100% 准确，但很有参考性，而且提供了 Chrome 插件。&lt;br>
+&lt;a href="https://www.wappalyzer.com/">https://www.wappalyzer.com/&lt;/a>&lt;/p></description></item><item><title>尝试在周报里管理 ToDo</title><link>https://yindongliang.com/weekly/2024/2024-W21/</link><pubDate>Mon, 20 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W21/</guid><description>&lt;p>本周业余时间改造了下 &lt;a href="portfolio/_index.md">Projects 页面&lt;/a>，从之前的 Card 模式切换到了 Timeline 模式。&lt;/p>
+&lt;p>Discourse：一个广泛使用的社区论坛框架，应用非常广泛，从 &lt;a href="https://community.bear.app/">Bear Community&lt;/a> 再次发现了它。&lt;br>
+&lt;a href="https://www.discourse.org/">https://www.discourse.org/&lt;/a>&lt;/p>
+&lt;p>浏览 Bear 社区是因为发现最近 Bear for macOS 的渲染好像有点问题，内容经常会突然消失，需要回车强制刷新一下才可以，是因为我的笔记太多了吗，一般这个时候又要考虑替代品了。。于是我觉得不如就合并到 Obsidian 上面，然后就尝试了下 Obsidian for iOS，现在可以通过 iCloud 把笔记在手机和电脑同步起来了。&lt;/p></description></item><item><title>Next.js 好用！</title><link>https://yindongliang.com/weekly/2024/2024-W20/</link><pubDate>Mon, 13 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W20/</guid><description>&lt;p>本周 GPT 4o 发布，最大的感觉就是更快了，这个时候再看文字一个个蹦出来已经有些眼花缭乱了。。。&lt;/p>
+&lt;h2 id="关于-nextjs">
+ 关于 Next.js
+ &lt;a class="anchor" href="#%e5%85%b3%e4%ba%8e-nextjs">#&lt;/a>
+&lt;/h2>
+&lt;p>是否可以说，Next.js 已经是目前全栈开发领域的最佳解决方案（之一），尤其是 AI 板块，随便列几个项目。&lt;/p></description></item><item><title>使用 Gin 代理静态文件</title><link>https://yindongliang.com/weekly/2024/2024-W16/</link><pubDate>Mon, 15 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W16/</guid><description>&lt;p>使用 Gin 自带的路由功能就可以直接代理静态文件，之前写过 Gin + Vue 的前后端组合，将代码放在同一个项目中，根目录直接转发到前端文件，时过境迁竟然忘了，可直接参考&lt;a href="https://gin-gonic.com/docs/examples/serving-static-files/">文档&lt;/a>。&lt;/p></description></item><item><title>将 pytest 速度提高 10 倍</title><link>https://yindongliang.com/weekly/2024/2024-W15/</link><pubDate>Mon, 08 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W15/</guid><description>&lt;p>最近每个月好像都能听说暴雪要回归，与网易和好，但是一直没有证实，本周终于官宣了。附上星际争霸&lt;a href="https://zh.moegirl.org.cn/zh-hans/%E6%98%9F%E9%99%85%E4%BA%89%E9%9C%B8/%E6%88%98%E6%9C%AF">战术列表&lt;/a>，开始热身。&lt;/p>
+&lt;p>本周仍在使用 &lt;a href="https://github.com/eosphoros-ai/DB-GPT">DB-GPT&lt;/a>来探索相关功能，发现更多使用技巧，比如结合 Knowledge 和 Database 一起使用，可以更精准地让 AI 了解数据库结构，尤其是带中文注释描述的时候，从而使 SQL 结果或图表展示也就会更加正确。&lt;/p></description></item><item><title>试玩 DB-GPT</title><link>https://yindongliang.com/weekly/2024/2024-W14/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W14/</guid><description>&lt;iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/7cv28LXcjAC3GsXbUvXKbX?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy">&lt;/iframe>
+&lt;p>清明假期在 Steam 上入坑了游戏《图灵完备》，以后如果没有网络的情况下可以继续玩一下子，主要还是太硬核了。&lt;/p>
+&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>冴羽写博客的地方，好像一直没有专门提过这个系列，但是我在 Github 上 Watch 了更新提醒所以经常会看。作者本职是一名 Taobao FED 的前端工程师，经常会写一些前端技术文章，同时还会分享很多人生思考，内容非常减压治愈诚恳。&lt;br>
+&lt;a href="https://github.com/mqyqingfeng/Blog">https://github.com/mqyqingfeng/Blog&lt;/a>&lt;/p></description></item><item><title>对 Python 的刻板印象</title><link>https://yindongliang.com/weekly/2024/2024-W13/</link><pubDate>Mon, 25 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W13/</guid><description>&lt;p>Python 黑魔法手册&lt;br>
+&lt;a href="https://github.com/iswbm/magic-python">https://github.com/iswbm/magic-python&lt;/a>&lt;br>
+之前也看过另外一版别人写的 Python 黑魔法的指南，不是这一篇，好像是国外翻译过来的，但没找到链接，等我再找找。。&lt;/p>
+&lt;p>虽然 Python 用了很多年，但一直还是觉得 Python 是个“底层比较黑暗”的语言，很多东西看不透，只能在上层 API 来回调用。这里的原因有很多，最主要的原因我觉得应该还是 Python 是一个解释型语言，无法实现自举。一方面这意味着很多 bug 可能是在运行时才能被发现，缺少编译期和类型系统带来的安全感。另一方面，相比 Go 语言，可以说 Go 的底层非常清晰因为它实现了自举，当我们在讨论 Go 底层的时候实际上还是在讨论 Go 语言，上层和底层完全可以快速找到对应关系，但是 Python 就不行了，一旦我们想要讨论 Python 的底层，我们就瞬间切换到了 C 语言的世界，而且是那种到处用地址和指针操作、经过奇技淫巧高度性能优化后的 C 源码，想找到上层和底层的通道本身就比较困难了，可能只能靠想象力，所以 Python 看着简单，但我一直对 Python 还是保持着 Panic。也许这也是为什么网上有很多 Go 源码分析的文章，但是却鲜有讲 Python 源码的原因吧。&lt;/p></description></item><item><title>为什么你的多进程池卡住了</title><link>https://yindongliang.com/weekly/2024/2024-W12/</link><pubDate>Mon, 18 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W12/</guid><description>&lt;p>之前遇到的一个问题，在多进程池中并行运行的任务，有一定几率会全部卡住，问题的原因是 Python 的 logging 模块在单进程下虽然是线程安全的，但是在多进程并行模型下，多个任务同时写同一 log 文件处理不好就可能会有死锁问题，而这又是因为在 &lt;code>fork()&lt;/code> 时，子进程复制了父进程的所有（除了父进程本身）内容，这其中就可能包含了一个正在未被释放的锁。这个问题目前解决起来最简单靠谱的方案就是创建子进程时不使用默认的 &lt;code>fork&lt;/code> 方式，而是使用 &lt;code>spawn&lt;/code> 方式，后续 Python 3.14 也会将 &lt;code>spawn&lt;/code> 改为默认的创建进程的方式。下面是两条可参考的资料：&lt;/p></description></item><item><title>咖啡，以及三体</title><link>https://yindongliang.com/weekly/2024/2024-W11/</link><pubDate>Mon, 11 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W11/</guid><description>&lt;p>自从有了咖啡机，媳妇几乎每天早晨都热衷于练习拉花，而我目前已经连续喝了小半个月的咖啡，逐渐觉得身体有点吃不消了。一方面晚上睡不着，经常 12 点也不困，然后早上还起不来，尤其最近几天身体还有迷迷糊的无力感，下班到家就感觉睁不开眼可还是不想睡觉，心慌的感觉。&lt;/p></description></item><item><title>使用 Selenium 自动化测试</title><link>https://yindongliang.com/weekly/2024/2024-W10/</link><pubDate>Mon, 04 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W10/</guid><description>&lt;p>本周在车位上安装了家用充电桩，幸福感亦有显著提升。之前习惯去商场附近的充电桩充电，顺便在商场吃饭，去一次经常是充电 20 块钱，逛街吃饭 200 块钱，在家充电的话目测能省下一笔。话说回来，想要在自己家的车位安装充电桩，有可能并不是一件顺利的事情，其中最大的阻碍可能是需要物业开“允许施工充电桩的证明”，有了这个证明，后面就会非常顺利了。&lt;/p></description></item><item><title>把玩 SD-WebUI</title><link>https://yindongliang.com/weekly/2024/2024-W09/</link><pubDate>Mon, 26 Feb 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W09/</guid><description>&lt;p>本周继续玩 SD-WebUI，发现了网站 &lt;a href="https://civitai.com/">civitai&lt;/a>，找到了更多 Checkpoint 和 LoRA 等目前还说不太清楚的模型、参数集。至于上周提到的自己生成的图片不太能看，到本周问题基本就解决了，核心改变就是：各种调参，比如面部修复等等。这一次，我的 M1 Max 的 MacBook Pro 的风扇终于开始转了，本地生成的图片和一些 AI 图片网站上的 Demo 也能相提并论了。&lt;/p></description></item><item><title>还是阳了，以及在读动物农场</title><link>https://yindongliang.com/weekly/2024/2024-W08/</link><pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W08/</guid><description>&lt;p>大年初二就开始测出阳性了，这回是第一次明确测出来，敢情之前的发烧还真不是新冠呗，这回的症状也确实和新冠症状基本符合，嗓子不舒服，一直干咳，发烧一次吃了退烧药就下来了，即使现在已经转阴了，身上还是说不出来的哪里不对，偶尔莫名酸痛，偶尔有气无力，偶尔拉肚子，偶尔心跳加速，有点意思。&lt;/p></description></item><item><title>LLM 技术原理入门</title><link>https://yindongliang.com/weekly/2024/2024-W06/</link><pubDate>Mon, 05 Feb 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W06/</guid><description>&lt;p>今年和爸妈在大连新家过年。&lt;/p>
+&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>布朗大学的一个小组出品的关于概率统计的入门级文档，图文结合非常通俗易懂&lt;br>
+&lt;a href="https://seeing-theory.brown.edu/">https://seeing-theory.brown.edu/&lt;/a>&lt;/p>
+&lt;p>一份飞书文档：一站式 LLM 底层技术原理入门指南&lt;br>
+&lt;a href="https://s3tlxskbq3.feishu.cn/docx/NyPqdCKraoXz9gxNVCfcIFdnnAc">https://s3tlxskbq3.feishu.cn/docx/NyPqdCKraoXz9gxNVCfcIFdnnAc&lt;/a>&lt;/p></description></item><item><title>入住新家了</title><link>https://yindongliang.com/weekly/2024/2024-W04/</link><pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W04/</guid><description>&lt;p>上周五开始入住新家，这一周来隔三差五还是回去收拾一下剩下的东西，到这周五终于完全搬完了，这也宣告着我的装修之旅终于结束，正式开始新生活了。&lt;/p>
+&lt;p>周末又去了趟宜家，买了些收纳盒之类的，我觉得新家剩下的可以慢慢放手交给媳妇打理了，我不需要再操心更多事情。经过这次装修，我攒齐了相当一套工具，包括电钻、胶枪、网线钳、电线钳等等专业设备，工人师傅留下的细碎活、换智能开关、换下水三通等等都可以自己解决。&lt;/p></description></item><item><title>赏读大佬们的 2023</title><link>https://yindongliang.com/weekly/2024/2024-W03/</link><pubDate>Mon, 15 Jan 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W03/</guid><description>&lt;p>这周看到了几个高质量 2023 年终总结，依然是之前已经关注的几位大佬，优秀还是有原因的。&lt;/p>
+&lt;p>2023 列表&lt;br>
+&lt;a href="https://github.com/saveweb/review-2023">https://github.com/saveweb/review-2023&lt;/a>&lt;/p>
+&lt;p>2023 年总结：向外连接与恢复成长的一年 - 图拉鼎&lt;br>
+&lt;a href="https://imtx.me/blog/2023-summary/">https://imtx.me/blog/2023-summary/&lt;/a>&lt;/p>
+&lt;p>2023 年终总结: 和自己对话 - Randy&amp;rsquo;s Blog&lt;br>
+&lt;a href="https://lutaonan.com/blog/2023-summary/">https://lutaonan.com/blog/2023-summary/&lt;/a>&lt;/p></description></item><item><title>复习大学数学中...</title><link>https://yindongliang.com/weekly/2024/2024-W02/</link><pubDate>Mon, 08 Jan 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W02/</guid><description>&lt;p>出于学习需要，最近高频使用 ChatGPT4.0，不得不感慨 4.0 进步真的很快。上半年 3.5 版本还有“一本正经胡说八道”的毛病，现在就好多了，几乎不会遇到。而且时效性问题也得以解决，更牛的是现在可以分析和生成图片了，还可以分析上传的其他类型文件，总之已经突破我上半年的想象力，如今已经变成一个非常靠谱的得力助手。&lt;/p></description></item><item><title>刺杀骑士团长</title><link>https://yindongliang.com/weekly/2024/2024-W01/</link><pubDate>Mon, 01 Jan 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W01/</guid><description>&lt;p>元旦看完了《刺杀骑士团长》，这本书已经是村上这几年最新的作品了，算上之前看过的三本，基本是按照作者写作的时间顺序看过来的，我认为《刺杀骑士团长》可以算是村上相当成熟的作品了，与之前相比脉络更加清晰，框架更加扎实，可是目前我还是倾向去看现实主义小说，但是村上春树的书又欲罢不能（虽然经常带点超现实）。我决定接下来主要还是继续去读村上的其他作品，去感受他的奇妙世界。&lt;/p></description></item><item><title>看完了风骚律师</title><link>https://yindongliang.com/weekly/2023/2023-W51/</link><pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W51/</guid><description>&lt;p>断断续续看完了整部《风骚律师》（Better Call Saul），因为也不是一直在电视前认认真真看，有一些没看懂，以至于又回头看了一些，发现还是比较模糊，很多场景和铺垫不能完全理解，不过问题不大，我已经知道了故事的大致脉络，以及每个人的结局。比较兴奋的彩蛋就是最后“小粉”、“老白”都出场了，我已知足，毕竟《绝命毒师》（Breaking Bad）是我心目中四两拨千斤的神作。&lt;/p></description></item><item><title>Python 潮流周刊</title><link>https://yindongliang.com/weekly/2023/2023-W49/</link><pubDate>Mon, 04 Dec 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W49/</guid><description>&lt;p>小家装修进入最后收尾阶段，业余时间非常忙，好像这半年来都一直很忙。还有，付费了 ChatGPT 4.0，有点小贵，但是实在是太强大了。&lt;/p>
+&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>A Modern Redis GUI Client，社区反响很好&lt;br>
+&lt;a href="https://github.com/tiny-craft/tiny-rdm">https://github.com/tiny-craft/tiny-rdm&lt;/a>&lt;/p></description></item><item><title>读完《明朝那些事儿》</title><link>https://yindongliang.com/weekly/2023/2023-W43/</link><pubDate>Mon, 23 Oct 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W43/</guid><description>&lt;p>《明朝那些事儿》算是读完了，对明朝有了一个整体的认识，故事很精彩，看到了无数人出场，无数个走向，无数个结局，故事里有权力、希望、痛苦、愤怒、犹豫、冷漠、热情、刚强、软弱、气节、度量、孤独、残暴、宽恕、忍耐、邪恶、正义、真理、坚持、妥协、善良、忠诚。&lt;/p></description></item><item><title>名家写作经验</title><link>https://yindongliang.com/weekly/2023/2023-W41/</link><pubDate>Mon, 09 Oct 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W41/</guid><description>&lt;p>读到《明朝那些事儿（第六部）》，开始强烈意识到，明代主宰历史进程的好像并不是那些皇帝，而是那些官员。读历史应该重点关注这些官员们，他们是可以学习和参考的对象，不同的官员在不同的历史大环境、个人小环境中有不同的选择，他们的结局也就各不相同。&lt;/p></description></item><item><title>历史年轮</title><link>https://yindongliang.com/weekly/2023/2023-W38/</link><pubDate>Mon, 18 Sep 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W38/</guid><description>&lt;p>看完了《明朝那些事儿》的（一）和（二），正在看（三），虽然之前上学时断断续续看了一些，但这次是相对成熟时期重新阅读，当年明月的表达方式，很有意思，就像一个北京的知识青年（未来的北京大爷）坐在胡同口认真跟你聊那些事，重点是遇到关键的情节有提示、有分析、有总结。&lt;/p></description></item><item><title>海边的卡夫卡</title><link>https://yindongliang.com/weekly/2023/2023-W34/</link><pubDate>Mon, 21 Aug 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W34/</guid><description>&lt;p>看完了《海边的卡夫卡》（2002），感觉这类小说没必要写什么读后感了，作者也说了，只是想写一个开局是一个立志成为“世界上最顽强的十五岁少年”，剩下的就全靠编的故事。不过接下来要看的书更多了。。比如：&lt;/p></description></item><item><title>最近读村上春树</title><link>https://yindongliang.com/weekly/2023/2023-W29/</link><pubDate>Mon, 17 Jul 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W29/</guid><description>&lt;p>近期读村上春树。还是比较喜欢村上的作品，有几点原因：一是几乎都是青年主题，谁的内心还不是个孩子呢；二是第一人称叙事非常有代入感，好像这个人就是我自己；三是文风能和我心理状态对上号，看事情的视角、思考方式、人物做法都非常好理解。当然林少华的翻译也很走心（不过貌似有人说林少华喜欢自己发挥意境😂）。&lt;/p></description></item><item><title>关于装修和风水</title><link>https://yindongliang.com/weekly/2023/2023-W25/</link><pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W25/</guid><description>&lt;p>最近看了好几本室内装修和风水学的书，关于风水，从科学角度目前能认识到的是，很多时候风水是通过尽量避免遇到自然灾害中的要冲位、以及减小发生家人间尴尬（进而导致冲突）的概率等方式，在长期的心理稳定中去形成的个人和家庭成员的日常心态，灌输一些潜意识，让你时刻内心舒适，从而达成事业上的“运势”目标。一个稳定乐观积极的心态和情绪永远比经常担惊受怕好得多，心态、情绪不光对运势重要，对身体也很重要。所以风水很有用，而且它的知识结构很成体系，只是看待事物的角度要从易经等这样的传统文化出发，而这些东西几千年下来已经总结成教条、规则，所以给人以神秘、刻板、没有逻辑的印象，让一些人嗤之以鼻。&lt;/p></description></item><item><title>R.I.P. 纪念左耳朵耗子</title><link>https://yindongliang.com/weekly/2023/2023-W20/</link><pubDate>Mon, 15 May 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W20/</guid><description>&lt;p>周一惊闻左耳朵耗子去世，感慨万千，摸鱼时经常去翻酷壳，耗子叔一直都保持了非常高的更新频率，内容质量更是没的说，如今算是留下了大量的互联网资产。但人固有一死，逝者已矣，在我看来此时所有的身外之物可能都没有这个站点珍贵，这也就是写博客的意义吧。&lt;/p></description></item><item><title>读长安的荔枝</title><link>https://yindongliang.com/weekly/2023/2023-W19/</link><pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W19/</guid><description>&lt;p>五一回老家，爷爷奶奶第一句话竟然是我瘦了，不知是工作忙还是拔牙的原因，总之让快八十的老人心疼实属不该。&lt;/p>
+&lt;p>花了 999 买了一个海信 Hi Reader 阅读器，6.7 寸墨水屏，爱不释手，这台机器去年官方卖到了 1799 性价比太低，现在可以入手了。同时横向对比了 墨案 Plus 等几台迷你阅读器，最终还是决定这款，也算解决了我之前的 7.8 寸阅读器放不进口袋的便携问题。与之前的阅读器相比，这一款屏幕明显好多了，而且可以自动调节亮度，用上就回不去了。&lt;/p></description></item><item><title>读纳瓦尔宝典</title><link>https://yindongliang.com/weekly/2023/2023-W15/</link><pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W15/</guid><description>&lt;p>最近发烧，按时吃药中 💊。三月底刚送走甲流，四月拔了一颗横向阻生智齿，发炎又烧了一周，还好不至于去输液，拔完第二天又开始张口受限，吃不了好东西，这两个月过得着实有点遭罪，下个月计划还要再拔另一侧的同款智齿。。&lt;/p></description></item><item><title>对 ChatGPT 的思考</title><link>https://yindongliang.com/weekly/2023/2023-W12/</link><pubDate>Mon, 20 Mar 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W12/</guid><description>&lt;p>自从把 ChatGPT 接入飞书之后，使用起来就方便很多，也引发了更多的思考，一直到现在，最主要的反应还是恐慌和兴奋。而且随着 ChatGPT 4.0 公布的强大能力，加上微软已经宣布要集成到 Office 等等一系列动作，AI 参与到人们日常工作中的进展正在以意料之外的速度攻城略地，我相信现在能使用到 ChatGPT 的各种圈子应该都很兴奋和恐慌，显然它的能力到底有多大目前是未知的。&lt;/p></description></item><item><title>把玩 AirCode</title><link>https://yindongliang.com/weekly/2023/2023-W11/</link><pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W11/</guid><description>&lt;h2 id="chatgpt">
+ ChatGPT
+ &lt;a class="anchor" href="#chatgpt">#&lt;/a>
+&lt;/h2>
+&lt;p>这一波真的有点慌。周六使用这个&lt;a href="https://github.com/bestony/ChatGPT-Feishu">项目&lt;/a> 搭建了一个飞书连接 ChatGPT 的机器人，这样使用起来就不担心网络原因了，项目使用了&lt;a href="https://aircode.io/">AirCode&lt;/a> 转发请求到 ChatGPT API，又发现了一个新的好玩的东西。&lt;/p></description></item><item><title>苹果为了安全让 M2 吃灰</title><link>https://yindongliang.com/weekly/2023/2023-W10/</link><pubDate>Mon, 06 Mar 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W10/</guid><description>&lt;p>拖延症犯了，本周才看完《献给阿尔吉侬的花束》这本书，今年第二本。上一本是《1984》，还是在回山东过年的火车上看完的。想了一下，阅读效率变低的原因一方面通勤从地铁改成了开车，每天的固定阅读时间没了；另一方面就是最近工作比较多。&lt;/p></description></item><item><title>周末试玩 Notion AI</title><link>https://yindongliang.com/weekly/2023/2023-W08/</link><pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W08/</guid><description>&lt;p>&lt;img src="https://raw.githubusercontent.com/tcitry/static/master/2023/notionai-demo.gif" alt="Notion AI demo" />&lt;/p>
+&lt;p>AI 能够带给我们的想象太多了，兴许以后的写作都可以借助 AI 提供一些“帮助”了。&lt;/p></description></item><item><title>本站支持了 Mermaid</title><link>https://yindongliang.com/weekly/2023/2023-W07/</link><pubDate>Mon, 13 Feb 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W07/</guid><description>&lt;p>恭喜 Time 代表中国拿到星际 2 世界级冠军，这也是中国电竞选手在《星际争霸2》电竞项目上夺得的首个世界冠军。当年高中的时候星际 2 简直是我做梦时都在玩的游戏，从十二年前在大陆发行当天开始，一直断断续续玩到今天，今年年初又遭遇了暴雪和网易解除合作，星际 2 命途多舛，时过境迁，物是人非，自己的国家服务器都没了，但是作为老玩家的我们看到 Time 此时还能够战胜多名韩国顶尖选手拿到世界冠军应该都会不禁猛男落泪。&lt;/p></description></item><item><title>Python 的四舍五入</title><link>https://yindongliang.com/weekly/2022/2022-W50/</link><pubDate>Sat, 17 Dec 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2022/2022-W50/</guid><description>&lt;p>近一个多月，从北京搬家到大连、入职新公司、收拾自己的小家、双十一采购家用电器、还有一些软装需求、逛宜家等等折腾的事比较多，空余时间实在没有太多，周报出师未捷，刚开始就鸽了一个多月。。&lt;/p></description></item><item><title>大连你好</title><link>https://yindongliang.com/weekly/2022/2022-W43/</link><pubDate>Thu, 27 Oct 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2022/2022-W43/</guid><description>&lt;p>执行“三天三检四不”实在无聊，翻了翻去年豆瓣的&lt;a href="https://book.douban.com/annual/2021">年度书单&lt;/a>，很多书没看过，可以加入待看列表了，另外也很期待今年都有哪些上榜。&lt;/p>
+&lt;p>在看一个&lt;a href="https://www.bilibili.com/video/BV1EW411u7th/?share_source=copy_web&amp;amp;vd_source=fe111319444213c0651c9b0de9740974">【计算机科学速成课】[40集全/精校] - Crash Course Computer Science&lt;/a>，这个课可以用来练练听力，顺便了解一些陌生又熟悉的概念，课程是在 &lt;a href="https://csdiy.wiki/">CS自学指南上&lt;/a> 发现的。&lt;/p></description></item><item><title>结束北漂</title><link>https://yindongliang.com/weekly/2022/2022-W42/</link><pubDate>Sun, 23 Oct 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2022/2022-W42/</guid><description>&lt;p>本周全是生活琐事，收到 offer、体检、与北京的朋友们告别、与媳妇拍了结婚三周年纪念照。&lt;/p>
+&lt;p>看完了&lt;a href="https://movie.douban.com/subject/26594369/">德雷尔一家第一季&lt;/a>，开始看&lt;a href="https://movie.douban.com/subject/25726259/">风骚律师&lt;/a>，很多人拿这部剧和绝命毒师对比，这样的话就更想继续往下看了。&lt;/p>
+&lt;p>另外，在周日前往大连的火车上读完了&lt;a href="https://yindongliang.com/posts/status-anxiety">身份的焦虑&lt;/a>。&lt;/p></description></item><item><title>做了个周刊</title><link>https://yindongliang.com/weekly/2022/2022-W41/</link><pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2022/2022-W41/</guid><description>&lt;p>花了周六一天时间，在 Hugo 模版基础上新加了一个 &lt;a href="https://yindongliang.com/weekly">Weekly&lt;/a> 功能，受 &lt;a href="https://weekly.tw93.fun/">潮流周刊&lt;/a> 启发，并学到了一些新东西：&lt;/p>
+&lt;ul>
+&lt;li>现在前端好像已经不流行写 CSS 了，有一个解决方案：&lt;a href="https://tailwindcss.com/">Tailwind CSS - Rapidly build modern websites without ever leaving your HTML&lt;/a>，非常香，基本可以直接在 HTML 中使用 class 属性来替代在 CSS 文件里各种起名+声明，问题就是会覆盖一些本地原有的配置，所以它适合项目创建之初就开始使用。&lt;/li>
+&lt;li>更激进的，前端好像也不流行自己写布局、框架了，又一个解决方案：&lt;a href="https://shuffle.dev/">Shuffle — An online editor for busy developers&lt;/a>，貌似是收费的，但是非常适合 startup。&lt;/li>
+&lt;/ul>
+&lt;p>与其叫周刊，其实定位在周报。看大佬们的周刊一般是第 99 期、256 期之类的，但是我不想每次去计算周刊到第几期了，对我来说意义不大，存在的问题可能就是没有唯一索引了，其实自己起的名也基本可以避开重复，总之够用。&lt;/p></description></item></channel></rss>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Python on LYon's Blog</title><link>https://yindongliang.com/tags/Python/</link><description>Recent content in Python on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Fri, 21 Mar 2025 23:09:33 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Python/index.xml" rel="self" type="application/rss+xml"/><item><title>语言基础</title><link>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/</link><pubDate>Fri, 10 Apr 2015 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/</guid><description>&lt;h2 id="数据结构">
+ 数据结构
+ &lt;a class="anchor" href="#%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="int">
+ int
+ &lt;a class="anchor" href="#int">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="str">
+ str
+ &lt;a class="anchor" href="#str">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="list">
+ list
+ &lt;a class="anchor" href="#list">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="tuple">
+ tuple
+ &lt;a class="anchor" href="#tuple">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="dict">
+ dict
+ &lt;a class="anchor" href="#dict">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="set">
+ set
+ &lt;a class="anchor" href="#set">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;strong>&lt;code>list(set([1, 2, 2, 3]))&lt;/code> 转化时是不能保证顺序的，慎用。&lt;/strong>&lt;/p>
+&lt;p>可以使用 &lt;code>dict.fromkeys()&lt;/code> 因为 Python 的 &lt;code>dict&lt;/code> 在 3.6 及以后就支持顺序了。&lt;/p></description></item><item><title>标准库</title><link>https://yindongliang.com/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/</link><pubDate>Sat, 11 Apr 2015 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E6%A0%87%E5%87%86%E5%BA%93/</guid><description>&lt;h2 id="email">
+ email
+ &lt;a class="anchor" href="#email">#&lt;/a>
+&lt;/h2>
+&lt;h2 id="multiprocessing">
+ multiprocessing
+ &lt;a class="anchor" href="#multiprocessing">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="pool">
+ Pool
+ &lt;a class="anchor" href="#pool">#&lt;/a>
+&lt;/h3>
+&lt;h2 id="unittest">
+ unittest
+ &lt;a class="anchor" href="#unittest">#&lt;/a>
+&lt;/h2>
+&lt;h2 id="unittestmock">
+ unittest.mock
+ &lt;a class="anchor" href="#unittestmock">#&lt;/a>
+&lt;/h2></description></item><item><title>如何写出垃圾代码</title><link>https://yindongliang.com/weekly/2024/2024-W45/</link><pubDate>Tue, 05 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W45/</guid><description>&lt;p>看完了《太白金星有点烦》，这个视角的西游题材真是头一次看到，但是逻辑上好像还真没什么毛病，就是后面结尾部分明显作者不想继续编了，但也还好，要展现的视角已经足够读者理解，原来我之前看的西游都是「揭帖」。&lt;/p></description></item><item><title>将 pytest 速度提高 10 倍</title><link>https://yindongliang.com/weekly/2024/2024-W15/</link><pubDate>Mon, 08 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W15/</guid><description>&lt;p>最近每个月好像都能听说暴雪要回归，与网易和好，但是一直没有证实，本周终于官宣了。附上星际争霸&lt;a href="https://zh.moegirl.org.cn/zh-hans/%E6%98%9F%E9%99%85%E4%BA%89%E9%9C%B8/%E6%88%98%E6%9C%AF">战术列表&lt;/a>，开始热身。&lt;/p>
+&lt;p>本周仍在使用 &lt;a href="https://github.com/eosphoros-ai/DB-GPT">DB-GPT&lt;/a>来探索相关功能，发现更多使用技巧，比如结合 Knowledge 和 Database 一起使用，可以更精准地让 AI 了解数据库结构，尤其是带中文注释描述的时候，从而使 SQL 结果或图表展示也就会更加正确。&lt;/p></description></item><item><title>对 Python 的刻板印象</title><link>https://yindongliang.com/weekly/2024/2024-W13/</link><pubDate>Mon, 25 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W13/</guid><description>&lt;p>Python 黑魔法手册&lt;br>
+&lt;a href="https://github.com/iswbm/magic-python">https://github.com/iswbm/magic-python&lt;/a>&lt;br>
+之前也看过另外一版别人写的 Python 黑魔法的指南，不是这一篇，好像是国外翻译过来的，但没找到链接，等我再找找。。&lt;/p>
+&lt;p>虽然 Python 用了很多年，但一直还是觉得 Python 是个“底层比较黑暗”的语言，很多东西看不透，只能在上层 API 来回调用。这里的原因有很多，最主要的原因我觉得应该还是 Python 是一个解释型语言，无法实现自举。一方面这意味着很多 bug 可能是在运行时才能被发现，缺少编译期和类型系统带来的安全感。另一方面，相比 Go 语言，可以说 Go 的底层非常清晰因为它实现了自举，当我们在讨论 Go 底层的时候实际上还是在讨论 Go 语言，上层和底层完全可以快速找到对应关系，但是 Python 就不行了，一旦我们想要讨论 Python 的底层，我们就瞬间切换到了 C 语言的世界，而且是那种到处用地址和指针操作、经过奇技淫巧高度性能优化后的 C 源码，想找到上层和底层的通道本身就比较困难了，可能只能靠想象力，所以 Python 看着简单，但我一直对 Python 还是保持着 Panic。也许这也是为什么网上有很多 Go 源码分析的文章，但是却鲜有讲 Python 源码的原因吧。&lt;/p></description></item><item><title>为什么你的多进程池卡住了</title><link>https://yindongliang.com/weekly/2024/2024-W12/</link><pubDate>Mon, 18 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W12/</guid><description>&lt;p>之前遇到的一个问题，在多进程池中并行运行的任务，有一定几率会全部卡住，问题的原因是 Python 的 logging 模块在单进程下虽然是线程安全的，但是在多进程并行模型下，多个任务同时写同一 log 文件处理不好就可能会有死锁问题，而这又是因为在 &lt;code>fork()&lt;/code> 时，子进程复制了父进程的所有（除了父进程本身）内容，这其中就可能包含了一个正在未被释放的锁。这个问题目前解决起来最简单靠谱的方案就是创建子进程时不使用默认的 &lt;code>fork&lt;/code> 方式，而是使用 &lt;code>spawn&lt;/code> 方式，后续 Python 3.14 也会将 &lt;code>spawn&lt;/code> 改为默认的创建进程的方式。下面是两条可参考的资料：&lt;/p></description></item><item><title>Spark</title><link>https://yindongliang.com/docs/Linux/Spark/</link><pubDate>Mon, 16 Oct 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/Spark/</guid><description>&lt;p>Spark 是内存密集型的分布式大数据计算引擎。Apache Spark™ is a multi-language &lt;strong>engine&lt;/strong> for executing data engineering, data science, and machine learning on single-node machines or clusters&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>.&lt;/p>
+&lt;p>Spark 生态圈以 Spark Core 为核心，支持从 HDFS、Amazon S3、HBase、ElasticSearch、MongoDB、MySQL、Kafka 等多种数据源读取数据。同时，Spark 支持以 Standalone、Hadoop YARN、Apache Mesos、Kubernetes 为资源管理器调度任务，从而完成 Spark 应用程序的计算任务。&lt;/p></description></item><item><title>可视化工具</title><link>https://yindongliang.com/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/</link><pubDate>Mon, 10 Apr 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/</guid><description>&lt;h2 id="matplotlib">
+ Matplotlib
+ &lt;a class="anchor" href="#matplotlib">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://matplotlib.org/">https://matplotlib.org/&lt;/a>&lt;/p>
+&lt;h3 id="基本概念">
+ 基本概念
+ &lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">import&lt;/span> &lt;span style="color:#ca72ff">matplotlib.pyplot&lt;/span> &lt;span style="color:#76a9f9">as&lt;/span> &lt;span style="color:#ca72ff">plt&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">fig&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">ax&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">plt&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">subplots&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># Create a figure containing a single axes.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">ax&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">plot&lt;/span>&lt;span style="color:#abb2bf">([&lt;/span>&lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">3&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">],&lt;/span> &lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">3&lt;/span>&lt;span style="color:#abb2bf">]);&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># Plot some data on the axes.&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>plt.plot(x, y)&lt;/code> 用绘制图形，&lt;code>plt.show()&lt;/code> 用于显示图形，但是在 &lt;code>Jupyter&lt;/code> 中，即使没有 &lt;code>show()&lt;/code> 也会显示出来。&lt;/p>
+&lt;h3 id="二维数据">
+ 二维数据
+ &lt;a class="anchor" href="#%e4%ba%8c%e7%bb%b4%e6%95%b0%e6%8d%ae">#&lt;/a>
+&lt;/h3>
+&lt;p>pcolor&lt;/p></description></item><item><title>Python 的 dict.fromkeys 的坑</title><link>https://yindongliang.com/posts/python-dict-fromkeys/</link><pubDate>Fri, 10 Mar 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/python-dict-fromkeys/</guid><description>&lt;p>目前使用到 &lt;code>dict.fromkeys&lt;/code> 方法主要有两个场景：一个是按照数组的原有顺序去重，另一个就是正常的根据 &lt;code>keys&lt;/code> 构建一个 &lt;code>dict&lt;/code>，这里讨论的是第二种情况。&lt;/p>
+&lt;p>下面这个例子：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">l&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#63c381">&amp;#34;foo&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#63c381">&amp;#34;bar&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">v&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>&lt;span style="color:#63c381">&amp;#34;age&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">d&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#e5c07b">dict&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">fromkeys&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">l&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">v&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">d&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#63c381">&amp;#34;foo&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">][&lt;/span>&lt;span style="color:#63c381">&amp;#34;age&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#54b1c7">+=&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">d&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#63c381">&amp;#34;bar&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">][&lt;/span>&lt;span style="color:#63c381">&amp;#34;age&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#54b1c7">+=&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">d&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#63c381">&amp;#34;foo&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">][&lt;/span>&lt;span style="color:#63c381">&amp;#34;age&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>由于 Python 在 &lt;code>v&lt;/code> 处存储的是引用而不是值的原因，故 &lt;code>d[&amp;quot;foo&amp;quot;][&amp;quot;age&amp;quot;]&lt;/code> 最终的值为 2，如果用 &lt;code>id()&lt;/code> 方法打印两个对象的地址，可以发现是同一个值。&lt;/p></description></item><item><title>Python 的四舍五入</title><link>https://yindongliang.com/weekly/2022/2022-W50/</link><pubDate>Sat, 17 Dec 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2022/2022-W50/</guid><description>&lt;p>近一个多月，从北京搬家到大连、入职新公司、收拾自己的小家、双十一采购家用电器、还有一些软装需求、逛宜家等等折腾的事比较多，空余时间实在没有太多，周报出师未捷，刚开始就鸽了一个多月。。&lt;/p></description></item><item><title>Numpy</title><link>https://yindongliang.com/docs/Python/Numpy/</link><pubDate>Sat, 12 Nov 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/Numpy/</guid><description>&lt;h2 id="一些例子">
+ 一些例子
+ &lt;a class="anchor" href="#%e4%b8%80%e4%ba%9b%e4%be%8b%e5%ad%90">#&lt;/a>
+&lt;/h2>
+&lt;p>可以创建一维/多维数组&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">import&lt;/span> &lt;span style="color:#ca72ff">numpy&lt;/span> &lt;span style="color:#76a9f9">as&lt;/span> &lt;span style="color:#ca72ff">np&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">array&lt;/span>&lt;span style="color:#abb2bf">([&lt;/span>&lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>&lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>&lt;span style="color:#d19a66">3&lt;/span>&lt;span style="color:#abb2bf">])&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">arange&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">zeros&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">ones&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">random&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">rand&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">2&lt;/span>， &lt;span style="color:#d19a66">5&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>还可以改变矩阵的维度&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">x&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">arange&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># [1, 2, 3...., 8, 9, 10]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">a&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">reshape&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">5&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># [[1, 2, ..., 5],[6, 7, ..., 10]]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>支持矩阵间的四则运算等&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">x&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">array&lt;/span>&lt;span style="color:#abb2bf">([[&lt;/span>&lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">],&lt;/span> &lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#d19a66">8&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">8&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">8&lt;/span>&lt;span style="color:#abb2bf">]])&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">y&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">array&lt;/span>&lt;span style="color:#abb2bf">([[&lt;/span>&lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">],&lt;/span> &lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">]])&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e5c07b">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">x&lt;/span> &lt;span style="color:#54b1c7">+&lt;/span> &lt;span style="color:#aa89ea">y&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>支持切片&lt;/p>
+&lt;p>支持筛选&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">x&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">np&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">arange&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#54b1c7">&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#aa89ea">array&lt;/span>&lt;span style="color:#abb2bf">([&lt;/span>&lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">3&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">5&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">6&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">7&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">8&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#d19a66">9&lt;/span>&lt;span style="color:#abb2bf">])&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">a&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#54b1c7">&amp;gt;&lt;/span>&lt;span style="color:#d19a66">8&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#54b1c7">&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#aa89ea">array&lt;/span>&lt;span style="color:#abb2bf">([&lt;/span>&lt;span style="color:#d19a66">9&lt;/span>&lt;span style="color:#abb2bf">])&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>支持读取文件为对象或将对象保存成文件&lt;/p></description></item><item><title>Pandas</title><link>https://yindongliang.com/docs/Python/Pandas/</link><pubDate>Sat, 12 Nov 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/Pandas/</guid><description>&lt;p>官方文档 &lt;a href="https://pandas.pydata.org/docs/index.html">https://pandas.pydata.org/docs/index.html&lt;/a>&lt;/p>
+&lt;h2 id="数据集">
+ 数据集
+ &lt;a class="anchor" href="#%e6%95%b0%e6%8d%ae%e9%9b%86">#&lt;/a>
+&lt;/h2>
+&lt;p>列几个数据集用于测试：&lt;/p>
+&lt;ol>
+&lt;li>&lt;a href="https://learn.microsoft.com/en-us/power-bi/create-reports/sample-financial-download">https://learn.microsoft.com/en-us/power-bi/create-reports/sample-financial-download&lt;/a> (Financial.xlsx)&lt;/li>
+&lt;li>&lt;a href="https://www.gairuo.com/file/data/dataset/team.xlsx">https://www.gairuo.com/file/data/dataset/team.xlsx&lt;/a> （team.xlsx）&lt;/li>
+&lt;/ol>
+&lt;h2 id="查看数据">
+ 查看数据
+ &lt;a class="anchor" href="#%e6%9f%a5%e7%9c%8b%e6%95%b0%e6%8d%ae">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">head&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 头部 5 条&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">tail&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 尾部 5 条&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">sample&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 随机查看 5 条&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">shape&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># (100, 6) 查看行数和列数&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">info&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 查看索引、数据类型和内存信息&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">describe&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 查看数值型列的汇总统计&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">dtypes&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 查看各字段类型&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">axes&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 显示数据行和列名&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">columns&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 列名&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="选取数据">
+ 选取数据
+ &lt;a class="anchor" href="#%e9%80%89%e5%8f%96%e6%95%b0%e6%8d%ae">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="选择列">
+ 选择列
+ &lt;a class="anchor" href="#%e9%80%89%e6%8b%a9%e5%88%97">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#63c381">&amp;#34;Q1&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 指定列&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">Q1&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 同上一行&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[[&lt;/span>&lt;span style="color:#98c379">&amp;#39;team&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q1&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 只看这两列&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">loc&lt;/span>&lt;span style="color:#abb2bf">[:,&lt;/span> &lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#98c379">&amp;#39;team&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q1&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 同上一行&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="选择行">
+ 选择行
+ &lt;a class="anchor" href="#%e9%80%89%e6%8b%a9%e8%a1%8c">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">index&lt;/span> &lt;span style="color:#54b1c7">==&lt;/span> &lt;span style="color:#98c379">&amp;#39;Liver&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 根据索引名称&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic"># 根据自然索引&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span>&lt;span style="color:#d19a66">3&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 取前三个&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span>&lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 前 10 个每隔两个取一个&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">iloc&lt;/span>&lt;span style="color:#abb2bf">[:&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#abb2bf">:]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 前 10 个&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="指定行和列">
+ 指定行和列
+ &lt;a class="anchor" href="#%e6%8c%87%e5%ae%9a%e8%a1%8c%e5%92%8c%e5%88%97">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">loc&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#98c379">&amp;#39;Ben&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q1&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span>&lt;span style="color:#98c379">&amp;#39;Q4&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">loc&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#98c379">&amp;#39;A&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#39;D&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q1&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q4&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="条件选择">
+ 条件选择
+ &lt;a class="anchor" href="#%e6%9d%a1%e4%bb%b6%e9%80%89%e6%8b%a9">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">Q1&lt;/span> &lt;span style="color:#54b1c7">&amp;gt;&lt;/span> &lt;span style="color:#d19a66">90&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># Q1 大于 90 的&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">team&lt;/span> &lt;span style="color:#54b1c7">==&lt;/span> &lt;span style="color:#98c379">&amp;#39;C&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># team 列为 &amp;#39;C&amp;#39; 的&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">index&lt;/span> &lt;span style="color:#54b1c7">==&lt;/span> &lt;span style="color:#98c379">&amp;#39;Oscar&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 指定 index 名称&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="运算数据">
+ 运算数据
+ &lt;a class="anchor" href="#%e8%bf%90%e7%ae%97%e6%95%b0%e6%8d%ae">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="排序">
+ 排序
+ &lt;a class="anchor" href="#%e6%8e%92%e5%ba%8f">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">sort_values&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">by&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#63c381">&amp;#34;Q1&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">ascending&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#e5c07b">False&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 按 Q1 降序排列, default is True&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="分组聚合">
+ 分组聚合
+ &lt;a class="anchor" href="#%e5%88%86%e7%bb%84%e8%81%9a%e5%90%88">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">groupby&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#39;team&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">sum&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 求和&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">groupby&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#39;team&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">mean&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># 求平均&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">df&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">groupby&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#39;team&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>&lt;span style="color:#54b1c7">.&lt;/span>&lt;span style="color:#aa89ea">agg&lt;/span>&lt;span style="color:#abb2bf">({&lt;/span>&lt;span style="color:#98c379">&amp;#39;Q1&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">sum&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q2&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">count&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q3&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#39;mean&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#98c379">&amp;#39;Q4&amp;#39;&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">max&lt;/span>&lt;span style="color:#abb2bf">})&lt;/span> &lt;span style="color:#8a93a5;font-style:italic"># agg 很强大&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="数据反转">
+ 数据反转
+ &lt;a class="anchor" href="#%e6%95%b0%e6%8d%ae%e5%8f%8d%e8%bd%ac">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;code>df.T&lt;/code> 应该能玩出花。&lt;/p></description></item><item><title>使用 Django 查询数据库的分表</title><link>https://yindongliang.com/posts/django-query-splited-table/</link><pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/django-query-splited-table/</guid><description>&lt;h2 id="业务背景">
+ 业务背景
+ &lt;a class="anchor" href="#%e4%b8%9a%e5%8a%a1%e8%83%8c%e6%99%af">#&lt;/a>
+&lt;/h2>
+&lt;p>最近已经转到 Go 下面进行日常工作的开发，我的一个后台项目有一些内部轻量的数据查询需要，考虑需求的复杂度不高，就平常自己和同事几个人使用，没必要专门开发一个前端项目来进行数据查询，于是我想到了老本行 Django，由于 Django 出色的后台管理功能，我几乎不用做多少开发，只需要配置下 Model 层结构就可以了，唯一的问题就是这个 Go 项目的数据在数据库中是分表管理的。&lt;/p></description></item><item><title>Django 中 N+1 查询问题优化</title><link>https://yindongliang.com/posts/django-n1-query/</link><pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/django-n1-query/</guid><description>&lt;p>Django ORM 框架虽然很好用，但是如果不注意，在查询时很容易引发 N + 1 的查询问题。&lt;/p>
+&lt;h2 id="n--1-问题">
+ N + 1 问题
+ &lt;a class="anchor" href="#n--1-%e9%97%ae%e9%a2%98">#&lt;/a>
+&lt;/h2>
+&lt;p>考虑 &lt;code>文章+作者&lt;/code> 这样的 Model 层设计，在这个模型中，Author 和 Article 是一对多的关系。&lt;/p></description></item><item><title>Django 的中间件执行顺序</title><link>https://yindongliang.com/posts/django-middleware/</link><pubDate>Sun, 12 Nov 2017 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/django-middleware/</guid><description>&lt;p>中间件是 Django 用来处理请求和响应的钩子框架。它是一个轻量级的、底层级的“插件”系统，用于全局性地控制 Django 的输入或输出。&lt;/p>
+&lt;h2 id="middleware">
+ MIDDLEWARE
+ &lt;a class="anchor" href="#middleware">#&lt;/a>
+&lt;/h2>
+&lt;p>Django 自带了一些已经内置的中间件，你可以直接使用，它们被记录在 &lt;a href="https://docs.djangoproject.com/zh-hans/4.0/ref/middleware/">built-in middleware reference&lt;/a> 中。&lt;/p></description></item><item><title>Django 的软删除设计</title><link>https://yindongliang.com/posts/django-soft-delete/</link><pubDate>Thu, 23 Feb 2017 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/django-soft-delete/</guid><description>&lt;p>设计一个 Django 的软删除方案，要求数据库在删除的时候不能物理删除数据，同时尽量不要太侵入代码业务。&lt;/p>
+&lt;p>这里用到了 Django 的 Manager，它赋予了 Django Model 操作数据库的能力，每个 Model 都包含一个 Manager，比如我们常用的 &lt;code>objects&lt;/code> 就是默认的 Manger。&lt;/p></description></item><item><title>浅谈 Django-REST-Framework 的设计与源码</title><link>https://yindongliang.com/posts/talk-about-django-rest-framework/</link><pubDate>Thu, 20 Oct 2016 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/talk-about-django-rest-framework/</guid><description>&lt;p>最近又重新接触 DRF，翻看文档发现，当时很难理解的东西，如今一看就懂了，顺带看了源码，也比较容易理解，至少比 Django 的源码简单不少。下面开始从 DRF 的设计和源码两个方面，结合自己的看法，谈谈DRF。&lt;/p></description></item><item><title>Ubuntu 下部署 Django 应用</title><link>https://yindongliang.com/posts/ubuntu-deploy-django/</link><pubDate>Sat, 11 Jul 2015 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/ubuntu-deploy-django/</guid><description>&lt;p>做了一个Django小应用，主要内容是一个论坛，经过好几天的研究，也可以在服务器端运行了，以下所有代码中的操作都需要在命令行运行。&lt;/p>
+&lt;h2 id="安装mysql">
+ 安装MySQL
+ &lt;a class="anchor" href="#%e5%ae%89%e8%a3%85mysql">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>apt-get update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>apt-get install mysql-server mysql-client
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>根据提示设置 MySQL root用户密码&lt;/p></description></item></channel></rss>
