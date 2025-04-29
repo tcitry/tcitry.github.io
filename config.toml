@@ -1,6 +1,6 @@
 baseURL = "https://yindongliang.com"
 theme = "hugo-book"
-title = "LYon"
+title = "LYon's Blog"
 
 hasCJKLanguage = true
 languageCode = "zh-cn"

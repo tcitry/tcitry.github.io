@@ -1,1 +1,3 @@
 glob: "{docs/**,posts/**,weekly/**}"
+# 设置主体选择器，用于处理没有外层<html>元素的页面
+root_selector: "main"

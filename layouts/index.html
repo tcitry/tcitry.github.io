@@ -10,9 +10,7 @@
   </h2>
   {{ partial "docs/post-meta" . }}
   <p>
-    {{- .Plain | truncate 200 -}} {{ if .Truncated }}
-    <a href="{{ .RelPermalink }}">...</a>
-    {{ end }}
+    {{- .Plain | truncate 200 -}}
   </p>
 </article>
 {{ end }} {{ template "_internal/pagination.html" . }}
