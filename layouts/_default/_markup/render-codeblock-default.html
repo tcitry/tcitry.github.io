@@ -1,0 +1,21 @@
+<!-- 
+这个模板处理默认代码块，确保它们不会被误认为是mermaid图表
+只有明确标记为mermaid的代码块才会通过render-codeblock-mermaid.html处理
+-->
+{{ $lang := .Type }}
+{{ $content := .Inner }}
+{{ $highlight := true }}
+
+{{ if not $lang }}
+  {{ $lang = "plaintext" }}
+{{ end }}
+
+<!-- 使用标准的Chroma高亮处理 -->
+{{ if $highlight }}
+  {{ with $content }}
+    {{ $opts := dict "style" "monokai" "lineNos" false "lineNumbersInTable" true }}
+    {{ highlight . $lang $opts }}
+  {{ end }}
+{{ else }}
+  <pre><code>{{ $content }}</code></pre>
+{{ end }}

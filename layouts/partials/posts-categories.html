@@ -1,14 +1,13 @@
 <nav>
-  {{ $scratch := newScratch }}
-  {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
-
-  {{ range $pages }}
-    {{ $scratch.Add "wordcount" .WordCount }}
-  {{ end }}
-  <p style="color: dimgray;">共 {{ len $pages }} 篇，{{ $scratch.Get "wordcount" }} 字</p>
+  {{ $scratch := newScratch }} {{ $pages := intersect (where .Site.RegularPages
+  "Type" "in" (slice "posts" "weekly")) (where .Site.Pages "Params.date" "!="
+  nil)}} {{ range $pages }} {{ $scratch.Add "wordcount" .WordCount }} {{ end }}
+  <p style="color: dimgray">
+    共 {{ len $pages }} 篇，{{ $scratch.Get "wordcount" }} 字
+  </p>
   <ul>
-    {{ range $term := (slice "categories") }}
-    {{ with $.Site.GetPage (printf "/%s" $term | urlize) }}
+    {{ range $term := (slice "categories") }} {{ with $.Site.GetPage (printf
+    "/%s" $term | urlize) }}
     <li class="book-section-flat">
       <ul>
         {{ range .Pages }}
@@ -19,7 +18,6 @@
         {{ end }}
       </ul>
     </li>
-    {{ end }}
-    {{ end }}
+    {{ end }} {{ end }}
   </ul>
 </nav>

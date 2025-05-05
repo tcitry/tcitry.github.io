@@ -260,7 +260,7 @@ main a[target="_blank"]::after {
 /* 日期样式 */
 .timeline-date {
   width: 140px;
-  padding-right: 0px;
+  padding: 8px 0;
   font-weight: bold;
   font-size: 1.1em;
   color: #0da99c; /* 默认浅色模式日期颜色 */
@@ -447,7 +447,7 @@ main a[target="_blank"]::after {
     }
 
     &:hover::after {
-      background-color: #8250df; // 深色模式下悬停效果
+      background-color: #f5f4f4; // 深色模式下悬停效果
     }
   }
 
@@ -456,7 +456,7 @@ main a[target="_blank"]::after {
   }
 
   .timeline-content {
-    background: #1a1a1a; // 深色模式下内容背景，更深的颜色
+    background: #292929; // 深色模式下内容背景，更深的颜色
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 
     .timeline-title {
