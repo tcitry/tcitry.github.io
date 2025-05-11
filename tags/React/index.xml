@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>React on LYon's Blog</title><link>https://yindongliang.com/tags/React/</link><description>Recent content in React on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Sun, 09 Feb 2025 22:44:11 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/React/index.xml" rel="self" type="application/rss+xml"/><item><title>React</title><link>https://yindongliang.com/docs/Frontend/react/</link><pubDate>Tue, 01 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/react/</guid><description>&lt;h2 id="jsx">
+ JSX
+ &lt;a class="anchor" href="#jsx">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="classname">
+ className
+ &lt;a class="anchor" href="#classname">#&lt;/a>
+&lt;/h3>
+&lt;h2 id="props">
+ props
+ &lt;a class="anchor" href="#props">#&lt;/a>
+&lt;/h2>
+&lt;p>组件无论是使用函数声明还是通过 class 声明，都决不能修改自身的 props。所有 React 组件都必须像纯函数一样保护它们的 props 不被更改。&lt;/p>
+&lt;p>建议从组件本身的角度来命名 props 而不是它被使用的上下文环境。&lt;/p></description></item><item><title>理解 useMemo、useCallback 和 memo</title><link>https://yindongliang.com/posts/useMemo-useCallback-and-memo/</link><pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/useMemo-useCallback-and-memo/</guid><description>&lt;p>虽然 React 的官方文档已经写的很清楚了，但我还是想总结下。形而上地讲前两个是 Hook，而 &lt;code>memo&lt;/code> 是 API。形而下地说，&lt;code>useMemo&lt;/code>、&lt;code>useCallback&lt;/code> 和 &lt;code>React.memo&lt;/code> 是 React 中用于优化性能的工具，它们帮助你避免不必要的重新渲染。&lt;/p></description></item><item><title>了解下 MobX 概念</title><link>https://yindongliang.com/posts/mobx-primer/</link><pubDate>Mon, 19 Jul 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/mobx-primer/</guid><description>&lt;h2 id="基本概念">
+ 基本概念
+ &lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>
+&lt;/h2>
+&lt;ul>
+&lt;li>observable 函数
+&lt;ul>
+&lt;li>定义状态值&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>action 函数
+&lt;ul>
+&lt;li>用于修改状态值&lt;/li>
+&lt;li>接受一个函数，返回一个签名相同的函数，提供触发时调用。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>derivations 派生，有两种：&lt;code>autorun&lt;/code> 和 &lt;code>computed&lt;/code>
+&lt;ul>
+&lt;li>reactions - autorun()
+&lt;ul>
+&lt;li>接受一个函数&lt;/li>
+&lt;li>状态值发生改变后要执行的响应操作。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>computed value - computed()
+&lt;ul>
+&lt;li>接受一个函数，返回计算值对象。&lt;/li>
+&lt;li>状态值发生改变时，计算值对象的值会自动更新。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="observable">
+ observable
+ &lt;a class="anchor" href="#observable">#&lt;/a>
+&lt;/h2>
+&lt;p>MobX 中通过 &lt;code>observable&lt;/code> 来定义可观察状态。&lt;/p></description></item><item><title>了解下 Redux 概念</title><link>https://yindongliang.com/posts/redux-primer/</link><pubDate>Thu, 24 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/redux-primer/</guid><description>&lt;p>Redux 用来进行复杂的状态管理，Redux 的思想继承自 Flux，并进行了更加简洁的抽象。&lt;/p>
+&lt;ul>
+&lt;li>store
+&lt;ul>
+&lt;li>&lt;code>store.dispatch(action)&lt;/code> 是 View 发出 Action 的唯一方法，接受一个 Action 对象作为参数，将它发送出去。&lt;/li>
+&lt;li>store 允许使用 &lt;code>store.subscribe()&lt;/code> 方法设置监听函数，一旦 State 发生变化，就自动执行这个函数。subscribe 也返回一个函数，调用这个函数就可以解除监听。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>action
+&lt;ul>
+&lt;li>改变 state 的唯一办法，就是使用 action，它会运送数据到 Store。&lt;/li>
+&lt;li>action creator：view 要发送多少种消息，就会有多少种 action，action 有固定的格式。如果都手写，会很麻烦。可以定义一个函数来生成 action，这个函数就叫 action creator。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>state
+&lt;ul>
+&lt;li>&lt;code>Store&lt;/code> 对象包含所有数据。如果想得到某个时点的数据，就要对 Store 生成快照。这种时点的数据集合，就叫做 State，可以通过 &lt;code>store.getState()&lt;/code> 拿到。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>reducer
+&lt;ul>
+&lt;li>store 收到 action 以后，必须给出一个新的 state，这样 View 才会发生变化。这种 state 的计算过程就叫做 reducer。&lt;/li>
+&lt;li>reducer 是一个纯函数&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>，它接受 action 和当前 state 作为参数，返回一个新的 state。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="reducer">
+ reducer
+ &lt;a class="anchor" href="#reducer">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">const&lt;/span> &lt;span style="color:#aa89ea">reducer&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">state&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">action&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">=&amp;gt;&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">switch&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">action&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">type&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">case&lt;/span> &lt;span style="color:#98c379">&amp;#39;INCREMENT&amp;#39;&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#76a9f9">return&lt;/span> &lt;span style="color:#aa89ea">state&lt;/span> &lt;span style="color:#54b1c7">+&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">case&lt;/span> &lt;span style="color:#98c379">&amp;#39;DECREMENT&amp;#39;&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#76a9f9">return&lt;/span> &lt;span style="color:#aa89ea">state&lt;/span> &lt;span style="color:#54b1c7">-&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">default&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#76a9f9">return&lt;/span> &lt;span style="color:#aa89ea">state&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>reducer 是一个纯函数，你可以把所有子 Reducer 放在一个文件里面，然后统一引入。&lt;/p></description></item></channel></rss>

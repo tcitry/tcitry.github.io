@@ -1,0 +1,876 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tools on LYon's Blog</title><link>https://yindongliang.com/tags/Tools/</link><description>Recent content in Tools on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Sun, 11 May 2025 22:25:57 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Tools/index.xml" rel="self" type="application/rss+xml"/><item><title>正则表达式</title><link>https://yindongliang.com/docs/Linux/regular-expression/</link><pubDate>Tue, 13 Mar 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/regular-expression/</guid><description>&lt;h2 id="举例子">
+ 举例子
+ &lt;a class="anchor" href="#%e4%b8%be%e4%be%8b%e5%ad%90">#&lt;/a>
+&lt;/h2>
+&lt;p>base64正则匹配&lt;/p>
+&lt;pre tabindex="0">&lt;code>^[A-Za-z0-9+/]*={0,2}$
+&lt;/code>&lt;/pre>&lt;h2 id="特殊字符">
+ 特殊字符
+ &lt;a class="anchor" href="#%e7%89%b9%e6%ae%8a%e5%ad%97%e7%ac%a6">#&lt;/a>
+&lt;/h2>
+&lt;p>点 &lt;code>.&lt;/code> 表示匹配换行符 &lt;code>\n&lt;/code> 以外的任何字符。&lt;/p>
+&lt;h2 id="限定符">
+ 限定符
+ &lt;a class="anchor" href="#%e9%99%90%e5%ae%9a%e7%ac%a6">#&lt;/a>
+&lt;/h2>
+&lt;p>星号 &lt;code>*&lt;/code> 表示匹配前面的子表达式零次或多次。&lt;/p>
+&lt;p>加号 &lt;code>+&lt;/code> 表示一次或多次，至少一次。&lt;/p></description></item><item><title>买了 Apple 开发者账号</title><link>https://yindongliang.com/weekly/2024/2024-W51/</link><pubDate>Mon, 16 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W51/</guid><description>&lt;p>前两天买了 Apple 开发者账号，然后通过 Cloudkit 跑通了设备间数据的同步，虽然功能很简单，但是也很有收获感，先从一个 Todo App 开始吧 🐶，跑通流程。&lt;/p>
+&lt;p>本周看完村上的《小城与不确定性的墙》，看村上的书有个问题，不好做条理性总结，他自己强调小说家只是起到润滑剂的作用，我也没期望有什么太多收获，无非是制造无聊然后再打发无聊。也许未来生活的某一刻我会想起书中的内容，就是很好的体验了。&lt;/p></description></item><item><title> 好用的前端工具</title><link>https://yindongliang.com/docs/Awesome/awesome-frontend/</link><pubDate>Mon, 04 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-frontend/</guid><description>&lt;h2 id="生产力工具">
+ 生产力工具
+ &lt;a class="anchor" href="#%e7%94%9f%e4%ba%a7%e5%8a%9b%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>描述&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Storybook&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://storybook.js.org/">https://storybook.js.org/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="静态生成器">
+ 静态生成器
+ &lt;a class="anchor" href="#%e9%9d%99%e6%80%81%e7%94%9f%e6%88%90%e5%99%a8">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>描述&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Docusaurus&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://docusaurus.io/">https://docusaurus.io/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>docsify&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/docsifyjs/docsify">https://github.com/docsifyjs/docsify&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>VitePress&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>好看的产品设计</title><link>https://yindongliang.com/docs/Awesome/awesome-product-design/</link><pubDate>Sat, 12 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-product-design/</guid><description>&lt;h2 id="好看的产品页面">
+ 好看的产品页面
+ &lt;a class="anchor" href="#%e5%a5%bd%e7%9c%8b%e7%9a%84%e4%ba%a7%e5%93%81%e9%a1%b5%e9%9d%a2">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>新词&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://newword.app/">https://newword.app/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="设计指南">
+ 设计指南
+ &lt;a class="anchor" href="#%e8%ae%be%e8%ae%a1%e6%8c%87%e5%8d%97">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>苹果设计规范&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/cn/design/">https://developer.apple.com/cn/design/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SF Symbols 6&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/cn/sf-symbols/">https://developer.apple.com/cn/sf-symbols/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>中国色&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://www.zhongguose.com">https://www.zhongguose.com&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>UXBAIKE&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://www.uxbaike.com/">https://www.uxbaike.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="设计工具">
+ 设计工具
+ &lt;a class="anchor" href="#%e8%ae%be%e8%ae%a1%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Play 2.0&lt;/td>
+ &lt;td>插画设计&lt;/td>
+ &lt;td>&lt;a href="https://createwithplay.com/">https://createwithplay.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Mockupworld&lt;/td>
+ &lt;td>原型设计&lt;/td>
+ &lt;td>&lt;a href="https://www.mockupworld.co/">https://www.mockupworld.co/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="主题配色">
+ 主题配色
+ &lt;a class="anchor" href="#%e4%b8%bb%e9%a2%98%e9%85%8d%e8%89%b2">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Nord&lt;/td>
+ &lt;td>&lt;a href="https://www.nordtheme.com/">https://www.nordtheme.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Rose Pine&lt;/td>
+ &lt;td>&lt;a href="https://rosepinetheme.com/">https://rosepinetheme.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Dracula&lt;/td>
+ &lt;td>&lt;a href="https://draculatheme.com/">https://draculatheme.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Monokai&lt;/td>
+ &lt;td>&lt;a href="https://monokai.pro/">https://monokai.pro/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Minimal&lt;/td>
+ &lt;td>&lt;a href="https://minimal.guide/">https://minimal.guide/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>好玩的 Apps 集合</title><link>https://yindongliang.com/docs/Awesome/awesome-mac-apps/</link><pubDate>Sat, 12 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-mac-apps/</guid><description>&lt;p>大众的就不写了，都是比较小众且有启发的。&lt;/p>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Rogue Amoeba&lt;/td>
+ &lt;td>一个关于音频的 App 开发商&lt;/td>
+ &lt;td>&lt;a href="https://rogueamoeba.com/">https://rogueamoeba.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Bezel&lt;/td>
+ &lt;td>Mirror any iPhone on your Mac&lt;/td>
+ &lt;td>&lt;a href="https://nonstrict.eu/bezel/">https://nonstrict.eu/bezel/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SnippetsLab&lt;/td>
+ &lt;td>笔记软件&lt;/td>
+ &lt;td>&lt;a href="https://www.renfei.org/snippets-lab/">https://www.renfei.org/snippets-lab/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Quiver&lt;/td>
+ &lt;td>笔记软件&lt;/td>
+ &lt;td>&lt;a href="https://yliansoft.com/">https://yliansoft.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Mactracker&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://mactracker.ca/">https://mactracker.ca/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://indiegoodies.com/">https://indiegoodies.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>好用的 AI 工具</title><link>https://yindongliang.com/docs/Awesome/awesome-ai-tools/</link><pubDate>Sat, 12 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-ai-tools/</guid><description>&lt;h2 id="门户网站">
+ 门户网站
+ &lt;a class="anchor" href="#%e9%97%a8%e6%88%b7%e7%bd%91%e7%ab%99">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>AIHub&lt;/td>
+ &lt;td>门户网站&lt;/td>
+ &lt;td>&lt;a href="https://www.aihub.cn/">https://www.aihub.cn/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>302.AI&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://302.ai/">https://302.ai/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="chat-工具">
+ Chat 工具
+ &lt;a class="anchor" href="#chat-%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Liner&lt;/td>
+ &lt;td>AI 搜索 / Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://getliner.com/zh">https://getliner.com/zh&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Devv&lt;/td>
+ &lt;td>“最懂程序员的新一代 AI 搜索引擎”&lt;/td>
+ &lt;td>&lt;a href="https://devv.ai/zh">https://devv.ai/zh&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Gamma&lt;/td>
+ &lt;td>PPT 生成&lt;/td>
+ &lt;td>&lt;a href="https://gamma.app/">https://gamma.app/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Poe&lt;/td>
+ &lt;td>来自 Quora 的 Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://poe.com/">https://poe.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Sider&lt;/td>
+ &lt;td>Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://sider.ai/">https://sider.ai/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Monica&lt;/td>
+ &lt;td>Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://monica.im">https://monica.im&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>ChatHub&lt;/td>
+ &lt;td>Get insights from ChatGPT, Claude, Gemini, and more - all at once!&lt;/td>
+ &lt;td>&lt;a href="https://chathub.gg/">https://chathub.gg/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>v0.dev&lt;/td>
+ &lt;td>来自 Vercel 的 Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://v0.dev/">https://v0.dev/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>ChatPlayground&lt;/td>
+ &lt;td>类似 ChatHub，可以同时与多个模型聊天。&lt;/td>
+ &lt;td>&lt;a href="https://www.chatplayground.ai/">https://www.chatplayground.ai/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Deepseek&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://chat.deepseek.com/">https://chat.deepseek.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="软件工具">
+ 软件工具
+ &lt;a class="anchor" href="#%e8%bd%af%e4%bb%b6%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Cursor&lt;/td>
+ &lt;td>代码编辑器&lt;/td>
+ &lt;td>&lt;a href="https://www.cursor.com/">https://www.cursor.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Codeium&lt;/td>
+ &lt;td>Free AI Code Completion &amp;amp; Chat&lt;/td>
+ &lt;td>&lt;a href="https://codeium.com/">https://codeium.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Cody&lt;/td>
+ &lt;td>Cody uses the latest LLMs and all your development context to help you understand, write, and fix code faster&lt;/td>
+ &lt;td>&lt;a href="https://sourcegraph.com/cody">https://sourcegraph.com/cody&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="图像工具">
+ 图像工具
+ &lt;a class="anchor" href="#%e5%9b%be%e5%83%8f%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Vector Magic&lt;/td>
+ &lt;td>Easily Convert JPG, PNG, GIF Files to PDF, SVG, EPS Vectors&lt;/td>
+ &lt;td>&lt;a href="https://vectormagic.com/">https://vectormagic.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="设计工具">
+ 设计工具
+ &lt;a class="anchor" href="#%e8%ae%be%e8%ae%a1%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Jitter&lt;/td>
+ &lt;td>Motion design make simple.&lt;/td>
+ &lt;td>&lt;a href="https://jitter.video/">https://jitter.video/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="github">
+ Github
+ &lt;a class="anchor" href="#github">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Awesome-Chatgpt&lt;/td>
+ &lt;td>Awesome list for ChatGPT — an artificial intelligence chatbot developed by OpenAI&lt;/td>
+ &lt;td>&lt;a href="https://github.com/sindresorhus/awesome-chatgpt">https://github.com/sindresorhus/awesome-chatgpt&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="其他参考">
+ 其他参考
+ &lt;a class="anchor" href="#%e5%85%b6%e4%bb%96%e5%8f%82%e8%80%83">#&lt;/a>
+&lt;/h2>
+&lt;p>2024最强 AI 集合！12个领域，47款AI工具，每一个都变态又好用！&lt;br>
+&lt;a href="https://www.bilibili.com/video/BV1Ls421M7qq/">https://www.bilibili.com/video/BV1Ls421M7qq/&lt;/a>&lt;/p></description></item><item><title>关注的博客</title><link>https://yindongliang.com/docs/Awesome/Awesome-Blog/</link><pubDate>Fri, 11 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/Awesome-Blog/</guid><description>&lt;p>一些经常看的博客和周报，不定期更新中。&lt;/p>
+&lt;h2 id="独立博客">
+ 独立博客
+ &lt;a class="anchor" href="#%e7%8b%ac%e7%ab%8b%e5%8d%9a%e5%ae%a2">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>博客名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>网站地址&lt;/th>
+ &lt;th>Github 地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>CatCoding&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://catcoding.me/">https://catcoding.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>东坡肘子的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://fatbobman.com/">https://fatbobman.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/fatbobman">https://github.com/fatbobman&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>云风的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://blog.codingnow.com/">https://blog.codingnow.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Ke Fang&amp;rsquo;s Blog:&lt;/td>
+ &lt;td>曾经是算法工程师，从 2022 年底开始，选择离职并开始个人开发之旅。&lt;/td>
+ &lt;td>&lt;a href="https://mazzzystar.github.io/index.html">https://mazzzystar.github.io/index.html&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Shall We Code?&lt;/td>
+ &lt;td>一位后端程序员&lt;/td>
+ &lt;td>&lt;a href="https://waynerv.com/">https://waynerv.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>林夕水共&lt;/td>
+ &lt;td>一位云计算、区块链的后端程序员&lt;/td>
+ &lt;td>&lt;a href="https://rebootcat.com/">https://rebootcat.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>tw93&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://tw93.fun">https://tw93.fun&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/tw93">https://github.com/tw93&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Elizen&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://elizen.me">https://elizen.me&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>图拉鼎&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://imtx.me/">https://imtx.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Randy&amp;rsquo;s Blog&lt;/td>
+ &lt;td>前微软程序员&lt;/td>
+ &lt;td>&lt;a href="https://lutaonan.com/">https://lutaonan.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/djyde">https://github.com/djyde&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>虞双齐的博客&lt;/td>
+ &lt;td>一位区块链大佬&lt;/td>
+ &lt;td>&lt;a href="https://yushuangqi.com">https://yushuangqi.com&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/ysqi">https://github.com/ysqi&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Justine Tunney&amp;rsquo;s Web Page&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://justine.lol/">https://justine.lol/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>翁天信的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://blog.dandyweng.com">https://blog.dandyweng.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Yunfeng&amp;rsquo;s Simple Blog&lt;br>&lt;/td>
+ &lt;td>一位阿里程序员的博客&lt;/td>
+ &lt;td>&lt;a href="https://vra.github.io/">https://vra.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>antfu 的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://antfu.me/">https://antfu.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>曹大 Xargin 的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://www.xargin.com/">https://www.xargin.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>戴铭的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://ming1016.github.io/">https://ming1016.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Cali&lt;/td>
+ &lt;td>一位同时是 &amp;lt;开发者/&amp;gt;，设计师，细节控，创始人的博客&lt;/td>
+ &lt;td>&lt;a href="https://cali.so/">https://cali.so/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>MetalBlueberry&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://metalblueberry.github.io/">https://metalblueberry.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>IceBeer&lt;/td>
+ &lt;td>在写“独立开发的 100 个思考”&lt;/td>
+ &lt;td>&lt;a href="https://www.icebeer.top/">https://www.icebeer.top/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>张鑫旭的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://www.zhangxinxu.com/">https://www.zhangxinxu.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Joe&amp;rsquo;s Blog&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://hijiangtao.github.io/">https://hijiangtao.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>YEOLAR&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://yeolar.com/">https://yeolar.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>jeremy 的技术点滴&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://jeremyxu2010.github.io/">https://jeremyxu2010.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Eric Fu 的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://ericfu.me/">https://ericfu.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Kishikawa Katsumi&lt;/td>
+ &lt;td>an iOS developer from Janpan&lt;/td>
+ &lt;td>&lt;a href="https://kishikawakatsumi.com">https://kishikawakatsumi.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Sukka&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://blog.skk.moe/">https://blog.skk.moe/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>王登科的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://greatdk.com/">https://greatdk.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Xiang He&lt;/td>
+ &lt;td>国内一位 macOS 平台程序员&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/hsiangho">https://github.com/hsiangho&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>面相信仰编程&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://draveness.me/">https://draveness.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>冰霜之地&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://halfrost.com/">https://halfrost.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>冴羽写博客的地方&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/mqyqingfeng/Blog">https://github.com/mqyqingfeng/Blog&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Changkun Ou（欧长坤）&lt;/td>
+ &lt;td>不只是《Go 语言原本》作者，后来作者变得更强了。&lt;/td>
+ &lt;td>&lt;a href="https://changkun.de/blog/">https://changkun.de/blog/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/changkun">https://github.com/changkun&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>指月小筑&lt;/td>
+ &lt;td>探索云原生&lt;/td>
+ &lt;td>&lt;a href="https://www.lixueduan.com/">https://www.lixueduan.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Random Thoughts&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://blog.joway.io/">https://blog.joway.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="优质周报">
+ 优质周报
+ &lt;a class="anchor" href="#%e4%bc%98%e8%b4%a8%e5%91%a8%e6%8a%a5">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Weekly 名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;th>作者主页&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>潮流周刊&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://weekly.tw93.fun/">https://weekly.tw93.fun/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://tw93.fun/">https://tw93.fun/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>东坡肘子的周报&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://fatbobman.com/zh/weekly/">https://fatbobman.com/zh/weekly/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://fatbobman.com/zh/">https://fatbobman.com/zh/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="热门列表">
+ 热门列表
+ &lt;a class="anchor" href="#%e7%83%ad%e9%97%a8%e5%88%97%e8%a1%a8">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>集合名称&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>博主们二〇二三年的年终总结&lt;/td>
+ &lt;td>&lt;a href="https://github.com/saveweb/review-2023">https://github.com/saveweb/review-2023&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>博主们二〇二二年的年终总结&lt;/td>
+ &lt;td>&lt;a href="https://github.com/saveweb/review-2022">https://github.com/saveweb/review-2022&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>博主们二〇二一年的年终总结&lt;/td>
+ &lt;td>&lt;a href="https://github.com/saveweb/review-2021">https://github.com/saveweb/review-2021&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="大厂博客">
+ 大厂博客
+ &lt;a class="anchor" href="#%e5%a4%a7%e5%8e%82%e5%8d%9a%e5%ae%a2">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>厂名&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;th>Github&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Netflix 技术博客&lt;/td>
+ &lt;td>&lt;a href="https://netflixtechblog.com">https://netflixtechblog.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Discord 博客&lt;/td>
+ &lt;td>&lt;a href="https://discord.com/blog/">https://discord.com/blog/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="独立站点">
+ 独立站点
+ &lt;a class="anchor" href="#%e7%8b%ac%e7%ab%8b%e7%ab%99%e7%82%b9">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>站名&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>ACCU&lt;/td>
+ &lt;td>关注图像/视频处理、独立游戏开发领域&lt;/td>
+ &lt;td>&lt;a href="http://accu.cc/">http://accu.cc/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>2024 年我的工具列表</title><link>https://yindongliang.com/posts/my-toolkit-2024/</link><pubDate>Thu, 30 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/my-toolkit-2024/</guid><description>&lt;p>从桌面端的应用软件这个角度来看，当下也是一个动荡的年代，不管是之前已经有的形态，还是还未出现的形态，也不管是开源的还是收费的，好用的新工具层出不穷，AI 的入场更是要把所有软件重新设计的节奏。我希望整理下最近几年一直在用的软件，记录当前的状态，这是相关主题的第一篇，争取后面每年都能关注下一下这个话题。&lt;/p></description></item><item><title>VSCode 使用技巧</title><link>https://yindongliang.com/docs/Awesome/VSCode/</link><pubDate>Sat, 18 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/VSCode/</guid><description>&lt;h2 id="排除文件夹">
+ 排除文件夹
+ &lt;a class="anchor" href="#%e6%8e%92%e9%99%a4%e6%96%87%e4%bb%b6%e5%a4%b9">#&lt;/a>
+&lt;/h2>
+&lt;p>使用 &lt;code>search.exclude&lt;/code> 在&lt;strong>搜索结果&lt;/strong>中排除特定的文件或文件夹。&lt;/p>
+&lt;p>使用 &lt;code>files.exclude&lt;/code> 在&lt;strong>文件资源管理器&lt;/strong>中隐藏特定的文件或文件夹。&lt;/p>
+&lt;p>使用 &lt;code>files.watcherExclude&lt;/code> 在&lt;strong>文件监视器&lt;/strong>排除某些文件或文件夹，以提高性能。&lt;/p></description></item><item><title>了解 glob 模式匹配</title><link>https://yindongliang.com/posts/%E4%BA%86%E8%A7%A3-glob-%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D/</link><pubDate>Sat, 18 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E4%BA%86%E8%A7%A3-glob-%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D/</guid><description>&lt;p>在 Visual Studio Code（VSCode）以及许多其他工具和库中，文件路径匹配通常使用 &lt;a href="https://en.wikipedia.org/wiki/Glob_%28programming%29">glob 模式&lt;/a>。&lt;/p>
+&lt;h2 id="glob-模式中的通配符">
+ Glob 模式中的通配符
+ &lt;a class="anchor" href="#glob-%e6%a8%a1%e5%bc%8f%e4%b8%ad%e7%9a%84%e9%80%9a%e9%85%8d%e7%ac%a6">#&lt;/a>
+&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>*&lt;/code>：匹配任意数量的字符（不包括路径分隔符 &lt;code>/&lt;/code>）。&lt;/li>
+&lt;li>&lt;code>**&lt;/code>：匹配任意数量的目录层级，包括子目录。&lt;/li>
+&lt;li>&lt;code>?&lt;/code>：匹配单个字符。&lt;/li>
+&lt;li>&lt;code>[abc]&lt;/code>：匹配方括号内的任意一个字符。&lt;/li>
+&lt;li>&lt;code>{a,b}&lt;/code>：匹配花括号内的任意一个模式。&lt;/li>
+&lt;/ul>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Wildcard&lt;/th>
+ &lt;th>Description&lt;/th>
+ &lt;th>Example&lt;/th>
+ &lt;th>Matches&lt;/th>
+ &lt;th>Does not match&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>*&lt;/code>&lt;/td>
+ &lt;td>matches any number of any characters including none&lt;/td>
+ &lt;td>&lt;code>Law*&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Law&lt;/code>, &lt;code>Laws&lt;/code>, or &lt;code>Lawyer&lt;/code>&lt;/td>
+ &lt;td>&lt;code>GrokLaw&lt;/code>, &lt;code>La&lt;/code>, or &lt;code>aw&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>*Law*&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Law&lt;/code>, &lt;code>GrokLaw&lt;/code>, or &lt;code>Lawyer&lt;/code>.&lt;/td>
+ &lt;td>&lt;code>La&lt;/code>, or &lt;code>aw&lt;/code>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>?&lt;/code>&lt;/td>
+ &lt;td>matches any single character&lt;/td>
+ &lt;td>&lt;code>?at&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Cat&lt;/code>, &lt;code>cat&lt;/code>, &lt;code>Bat&lt;/code> or &lt;code>bat&lt;/code>&lt;/td>
+ &lt;td>&lt;code>at&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>[abc]&lt;/code>&lt;/td>
+ &lt;td>matches one character given in the bracket&lt;/td>
+ &lt;td>&lt;code>[CB]at&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Cat&lt;/code> or &lt;code>Bat&lt;/code>&lt;/td>
+ &lt;td>&lt;code>cat&lt;/code>, &lt;code>bat&lt;/code> or &lt;code>CBat&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>[a-z]&lt;/code>&lt;/td>
+ &lt;td>matches one character from the (locale-dependent) range given in the bracket&lt;/td>
+ &lt;td>&lt;code>Letter[0-9]&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Letter0&lt;/code>, &lt;code>Letter1&lt;/code>, &lt;code>Letter2&lt;/code> up to &lt;code>Letter9&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Letters&lt;/code>, &lt;code>Letter&lt;/code> or &lt;code>Letter10&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="示例解释">
+ 示例解释
+ &lt;a class="anchor" href="#%e7%a4%ba%e4%be%8b%e8%a7%a3%e9%87%8a">#&lt;/a>
+&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;code>**/*.log&lt;/code>：&lt;/p></description></item><item><title>使用 EditorConfig 和 Prettier 来规范代码风格</title><link>https://yindongliang.com/posts/%E4%BD%BF%E7%94%A8-EditorConfig-%E5%92%8C-Prettier-%E6%9D%A5%E8%A7%84%E8%8C%83%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/</link><pubDate>Thu, 16 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E4%BD%BF%E7%94%A8-EditorConfig-%E5%92%8C-Prettier-%E6%9D%A5%E8%A7%84%E8%8C%83%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/</guid><description>&lt;p>写前端代码实践下来一段时间，如果是我自己的前端项目，缩进类型一定是空格，长度必须是 2，因为 4 还是太长了，对 &lt;code>HTML&lt;/code> 类的模板以及 js 代码不友好。但是如何约束队友呢，不论是有意还是无意的差异，为了让大家保持风格统一，我发现下面工具可以解决问题。&lt;/p></description></item><item><title>Mac 技巧</title><link>https://yindongliang.com/docs/Awesome/mac-tips/</link><pubDate>Thu, 18 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/mac-tips/</guid><description>&lt;h2 id="允许打开任何来源的-app">
+ 允许打开任何来源的 APP
+ &lt;a class="anchor" href="#%e5%85%81%e8%ae%b8%e6%89%93%e5%bc%80%e4%bb%bb%e4%bd%95%e6%9d%a5%e6%ba%90%e7%9a%84-app">#&lt;/a>
+&lt;/h2>
+&lt;p>适用于 14.0&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo spctl --master-disable
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>上面不奏效就使用下面的命令。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo xattr -r -d com.apple.quarantine + APP路径
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="美区礼品卡官方购买链接">
+ 美区礼品卡官方购买链接
+ &lt;a class="anchor" href="#%e7%be%8e%e5%8c%ba%e7%a4%bc%e5%93%81%e5%8d%a1%e5%ae%98%e6%96%b9%e8%b4%ad%e4%b9%b0%e9%93%be%e6%8e%a5">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://www.apple.com/shop/gift-cards">Apple Gift Card&lt;/a>&lt;/p>
+&lt;p>可用于在美区 App Store 消费，比如 ChatGPT 4.0&lt;/p></description></item><item><title>历史年轮</title><link>https://yindongliang.com/weekly/2023/2023-W38/</link><pubDate>Mon, 18 Sep 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W38/</guid><description>&lt;p>看完了《明朝那些事儿》的（一）和（二），正在看（三），虽然之前上学时断断续续看了一些，但这次是相对成熟时期重新阅读，当年明月的表达方式，很有意思，就像一个北京的知识青年（未来的北京大爷）坐在胡同口认真跟你聊那些事，重点是遇到关键的情节有提示、有分析、有总结。&lt;/p></description></item><item><title>把玩 AirCode</title><link>https://yindongliang.com/weekly/2023/2023-W11/</link><pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W11/</guid><description>&lt;h2 id="chatgpt">
+ ChatGPT
+ &lt;a class="anchor" href="#chatgpt">#&lt;/a>
+&lt;/h2>
+&lt;p>这一波真的有点慌。周六使用这个&lt;a href="https://github.com/bestony/ChatGPT-Feishu">项目&lt;/a> 搭建了一个飞书连接 ChatGPT 的机器人，这样使用起来就不担心网络原因了，项目使用了&lt;a href="https://aircode.io/">AirCode&lt;/a> 转发请求到 ChatGPT API，又发现了一个新的好玩的东西。&lt;/p></description></item><item><title>本站支持了 Mermaid</title><link>https://yindongliang.com/weekly/2023/2023-W07/</link><pubDate>Mon, 13 Feb 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W07/</guid><description>&lt;p>恭喜 Time 代表中国拿到星际 2 世界级冠军，这也是中国电竞选手在《星际争霸2》电竞项目上夺得的首个世界冠军。当年高中的时候星际 2 简直是我做梦时都在玩的游戏，从十二年前在大陆发行当天开始，一直断断续续玩到今天，今年年初又遭遇了暴雪和网易解除合作，星际 2 命途多舛，时过境迁，物是人非，自己的国家服务器都没了，但是作为老玩家的我们看到 Time 此时还能够战胜多名韩国顶尖选手拿到世界冠军应该都会不禁猛男落泪。&lt;/p></description></item><item><title>做了个周刊</title><link>https://yindongliang.com/weekly/2022/2022-W41/</link><pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2022/2022-W41/</guid><description>&lt;p>花了周六一天时间，在 Hugo 模版基础上新加了一个 &lt;a href="https://yindongliang.com/weekly">Weekly&lt;/a> 功能，受 &lt;a href="https://weekly.tw93.fun/">潮流周刊&lt;/a> 启发，并学到了一些新东西：&lt;/p>
+&lt;ul>
+&lt;li>现在前端好像已经不流行写 CSS 了，有一个解决方案：&lt;a href="https://tailwindcss.com/">Tailwind CSS - Rapidly build modern websites without ever leaving your HTML&lt;/a>，非常香，基本可以直接在 HTML 中使用 class 属性来替代在 CSS 文件里各种起名+声明，问题就是会覆盖一些本地原有的配置，所以它适合项目创建之初就开始使用。&lt;/li>
+&lt;li>更激进的，前端好像也不流行自己写布局、框架了，又一个解决方案：&lt;a href="https://shuffle.dev/">Shuffle — An online editor for busy developers&lt;/a>，貌似是收费的，但是非常适合 startup。&lt;/li>
+&lt;/ul>
+&lt;p>与其叫周刊，其实定位在周报。看大佬们的周刊一般是第 99 期、256 期之类的，但是我不想每次去计算周刊到第几期了，对我来说意义不大，存在的问题可能就是没有唯一索引了，其实自己起的名也基本可以避开重复，总之够用。&lt;/p></description></item><item><title>用 Charles 进行手机抓包</title><link>https://yindongliang.com/posts/use-charles-capture-package-on-mobile/</link><pubDate>Fri, 21 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/use-charles-capture-package-on-mobile/</guid><description>&lt;p>如果使用 Wireshark 解决手机抓包，需要把电脑设为热点，这样一般笔记本电脑不太方便，Charles 提供了系统代理的功能，可以使用 Charles 更方便地进行手机抓包。另外 Charles 除了可以解析未加密的 HTTP，通过证书的配置也可以解析加密过的 HTTPS 和 HTTP/2，下面记录下配置方式。&lt;/p></description></item><item><title>Wireshark 食用指南</title><link>https://yindongliang.com/posts/wireshark-usage/</link><pubDate>Thu, 13 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/wireshark-usage/</guid><description>&lt;p>最近看 HTTPS、TCP 的时候发现很多地方都会用 Wireshark 抓包来实际操作，于是系统地看了下。&lt;/p>
+&lt;h2 id="wireshark-历史">
+ Wireshark 历史
+ &lt;a class="anchor" href="#wireshark-%e5%8e%86%e5%8f%b2">#&lt;/a>
+&lt;/h2>
+&lt;p>Wireshark（导线鲨鱼，前称 Ethereal，空灵）是一个免费开源的网络数据包分析软件。网络数据包分析软件的功能是截取网络数据包，并尽可能显示出最为详细的网络数据包资料。在&lt;a href="https://zh.wikipedia.org/wiki/GNU%e9%80%9a%e7%94%a8%e5%85%ac%e5%85%b1%e8%ae%b8%e5%8f%af%e8%af%81">GNU通用公共许可证&lt;/a>的保障范围底下，用户可以以免费的代价获取软件与其代码，并拥有针对其源代码修改及定制的权利。&lt;/p></description></item><item><title>推荐下双拼输入法</title><link>https://yindongliang.com/posts/try-double-pinyin-input/</link><pubDate>Thu, 30 Sep 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/try-double-pinyin-input/</guid><description>&lt;h2 id="问题">
+ 问题
+ &lt;a class="anchor" href="#%e9%97%ae%e9%a2%98">#&lt;/a>
+&lt;/h2>
+&lt;p>最近打字聊天的工作比较多，发现我在拼类似【能不能】这种词语的时候经常打错成类似 &lt;code>negnbuneng&lt;/code> 或者 &lt;code>nengnbuneng&lt;/code>（见下图）这种有需要在两个字母之间来回切换的，还有就是 &lt;code>ang&lt;/code>、&lt;code>eng&lt;/code>、&lt;code>ong&lt;/code>、&lt;code>iong&lt;/code> 、&lt;code>uang&lt;/code>这种拼音，非常不值得敲那么多遍。&lt;/p></description></item><item><title>构建工具</title><link>https://yindongliang.com/docs/Frontend/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</link><pubDate>Fri, 28 May 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</guid><description>&lt;h2 id="参考">
+ 参考
+ &lt;a class="anchor" href="#%e5%8f%82%e8%80%83">#&lt;/a>
+&lt;/h2>
+&lt;p>文档 &lt;a href="https://webpack.docschina.org">https://webpack.docschina.org&lt;/a>&lt;/p>
+&lt;p>demo &lt;a href="https://github.com/ruanyf/webpack-demos">https://github.com/ruanyf/webpack-demos&lt;/a>&lt;/p>
+&lt;h2 id="构建一般做哪些事情">
+ 构建一般做哪些事情？
+ &lt;a class="anchor" href="#%e6%9e%84%e5%bb%ba%e4%b8%80%e8%88%ac%e5%81%9a%e5%93%aa%e4%ba%9b%e4%ba%8b%e6%83%85">#&lt;/a>
+&lt;/h2>
+&lt;p>代码转换：将 TypeScript 编译成 JavaScript、将 SCSS 编译成 CSS 等。&lt;/p>
+&lt;p>文件优化：压缩 JavaScript、CSS、HTML 代码，压缩合并图片等。&lt;/p></description></item><item><title>使用 DOSBox 和 Debug 命令调试汇编程序</title><link>https://yindongliang.com/posts/dosbox-and-debug-usage/</link><pubDate>Sun, 24 Jan 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/dosbox-and-debug-usage/</guid><description>&lt;p>正在看王爽的《汇编语言》，因为我在 Mac M1 环境，按书上做汇编实验的话，搜索了一圈发现 DOSBox 应该可以满足我的需要，它是一个跨平台的可以运行 MS-DOS 的模拟器。&lt;/p>
+&lt;h2 id="dosbox">
+ DOSBox
+ &lt;a class="anchor" href="#dosbox">#&lt;/a>
+&lt;/h2>
+&lt;p>下载地址 &lt;a href="https://www.dosbox.com/">https://www.dosbox.com/&lt;/a>&lt;/p></description></item><item><title>使用 Typora 来编辑你的 Hugo 博客</title><link>https://yindongliang.com/posts/use-typora-write-hugo-blog/</link><pubDate>Wed, 01 Apr 2020 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/use-typora-write-hugo-blog/</guid><description>&lt;p>最近 typroa 用的比较多，然后又想着继续维护在 github pages 的博客，觉得把 typora 编辑完的东西再复制到博客项目里很麻烦，于是开始了一番折腾。&lt;/p>
+&lt;h2 id="目标是啥">
+ 目标是啥
+ &lt;a class="anchor" href="#%e7%9b%ae%e6%a0%87%e6%98%af%e5%95%a5">#&lt;/a>
+&lt;/h2>
+&lt;p>在 typora 写的笔记放在了 iCloud，然后可以一键同步到我的线上博客&lt;/p></description></item><item><title>Github Actions 实践总结</title><link>https://yindongliang.com/posts/use-github-action/</link><pubDate>Sun, 01 Dec 2019 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/use-github-action/</guid><description>&lt;p>Github Actions 发布有一段时间了，自己用的也挺嗨，过来总结一下。我主要在两个地方用到了，一个是博客，另一个是打包、发布前端项目。整体功能上 Actions 和 &lt;a href="https://docs.gitlab.com/ee/ci/">GitLab CI/CD&lt;/a> 差不多，同样实现了项目的自动化测试、打包、部署，不过 Actions 利用了 GitHub 开源项目平台的特点，提供了 &lt;a href="https://github.com/marketplace">Marketplace&lt;/a>，可以直接复用其他作者的 Action。&lt;/p></description></item><item><title>说说实际工作中 GraphQL 的使用体验</title><link>https://yindongliang.com/posts/talk-about-graphql/</link><pubDate>Fri, 11 Oct 2019 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/talk-about-graphql/</guid><description>&lt;h2 id="背景">
+ 背景
+ &lt;a class="anchor" href="#%e8%83%8c%e6%99%af">#&lt;/a>
+&lt;/h2>
+&lt;p>接触 GraphQL 是工作中需要有一个项目，用来聚合内部很多其他微服务的接口然后统一暴露给外部使用，在这样的场景下，对项目有几点需求：&lt;/p>
+&lt;ul>
+&lt;li>能够让外部业务方对接方便，当然最好有接口文档。&lt;/li>
+&lt;li>各个业务方可以根据他们自己的需要自己选择字段集合。&lt;/li>
+&lt;li>项目提供的接口可以被不同的语言框架通过 HTTP 调用，比如前端、Python、Go 等。&lt;/li>
+&lt;/ul>
+&lt;p>基于以上的需求，在组内一位大神的提议下，顺理成章的使用了 GraphQL 作为解决方案，经过半年多的迭代维护，今天特来从后端角度说下使用体验。&lt;/p></description></item><item><title>Gitlab CI/CD 实践总结</title><link>https://yindongliang.com/posts/gitlab-ci-101/</link><pubDate>Thu, 15 Nov 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/gitlab-ci-101/</guid><description>&lt;p>Gitlab 的 CI/CD 功能可能是区别于 GitHub 的一个最有价值的功能之一。接触了 CI/CD 以来，很多以前需要手动测试、打包、部署的工作，现在都可以通过编写 &lt;code>.gitlab-ci.yml&lt;/code> 来实现了，一方面持久化、规范化了部署服务的操作流程，另一方面 CI/CD 功能与 Gitlab 深度结合，方便了开发测试流程，下面总结下最常用到的功能。&lt;/p></description></item><item><title>Git</title><link>https://yindongliang.com/docs/Linux/git/</link><pubDate>Sat, 24 Mar 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/git/</guid><description>&lt;h2 id="分支管理必读">
+ 分支管理必读
+ &lt;a class="anchor" href="#%e5%88%86%e6%94%af%e7%ae%a1%e7%90%86%e5%bf%85%e8%af%bb">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://nvie.com/posts/a-successful-git-branching-model/">A successful Git branching model&lt;/a>&lt;/p>
+&lt;h2 id="github-网络问题">
+ Github 网络问题
+ &lt;a class="anchor" href="#github-%e7%bd%91%e7%bb%9c%e9%97%ae%e9%a2%98">#&lt;/a>
+&lt;/h2>
+&lt;p>如果在本地 Terminal push 不上去代码，可以尝试在 &lt;code>/etc/hosts&lt;/code> 中加入下面代码，明确指定 github.com 的 IP 地址。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>140.82.112.4 github.com
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外也可以尝试修改 DNS，防止被污染。&lt;/p></description></item><item><title>使用 Github Pages 建立免费的静态网站</title><link>https://yindongliang.com/posts/use-github-page-build-static-website/</link><pubDate>Sun, 28 Jul 2013 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/use-github-page-build-static-website/</guid><description>&lt;p>github 想必都听说过，这个号称程序员的 Facebook 有着很多高质量的项目，github 就是为这些项目提供代码托管服务，你可以将自己做好的项目放到 github 上与大家共享，别人也可提出修改建议。&lt;/p></description></item></channel></rss>

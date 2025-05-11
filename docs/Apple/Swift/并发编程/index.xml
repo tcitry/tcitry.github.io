@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>并发编程 on LYon's Blog</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/</link><description>Recent content in 并发编程 on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/index.xml" rel="self" type="application/rss+xml"/><item><title>Actor 模型</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/Actor-%E6%A8%A1%E5%9E%8B/</link><pubDate>Sat, 22 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/Actor-%E6%A8%A1%E5%9E%8B/</guid><description>&lt;h2 id="actor-模型详解">
+ &lt;strong>Actor 模型详解&lt;/strong>
+ &lt;a class="anchor" href="#actor-%e6%a8%a1%e5%9e%8b%e8%af%a6%e8%a7%a3">#&lt;/a>
+&lt;/h2>
+&lt;p>Actor 模型是一种并发编程范式，其核心思想是通过&lt;strong>数据隔离&lt;/strong>和&lt;strong>异步消息传递&lt;/strong>解决多线程环境下的数据竞争问题。以下是其核心概念、设计背景及实现思想的详细解析：&lt;/p></description></item><item><title> 线程安全</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/</link><pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/</guid><description>&lt;h2 id="1-什么是线程安全">
+ &lt;strong>1. 什么是线程安全？&lt;/strong>
+ &lt;a class="anchor" href="#1-%e4%bb%80%e4%b9%88%e6%98%af%e7%ba%bf%e7%a8%8b%e5%ae%89%e5%85%a8">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;strong>线程安全（Thread Safety）&lt;/strong> 指的是在多线程环境中，代码或数据结构可以被多个线程&lt;strong>同时访问&lt;/strong>而不会产生 &lt;strong>数据竞争（Data Race）&lt;/strong> 或 &lt;strong>不可预期的行为&lt;/strong>。&lt;/p></description></item><item><title>async/await</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/async-await/</link><pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/async-await/</guid><description>&lt;h3 id="-swift-中">
+ 🚀 &lt;strong>Swift 中 &lt;code>async/await&lt;/code> 的完整指南&lt;/strong>
+ &lt;a class="anchor" href="#-swift-%e4%b8%ad">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;code>async/await&lt;/code> 是 Swift 5.5 引入的异步编程模型，基于 &lt;strong>Swift Concurrency&lt;/strong>，旨在替代传统的回调闭包（Closures）和 GCD（Grand Central Dispatch）写法。它可以让异步代码像同步代码一样简洁、可读，极大地简化了处理异步任务的复杂性。&lt;/p></description></item><item><title>Distributed</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/Distributed/</link><pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/Distributed/</guid><description>&lt;p>在 Swift 中，&lt;a href="https://developer.apple.com/documentation/distributed">&lt;code>Distributed&lt;/code>&lt;/a> 是一个与分布式系统相关的概念，通常用于描述跨多个节点或进程的计算和通信。Swift 5.7 引入了 &lt;code>Distributed Actors&lt;/code>，这是 Swift 并发模型的一部分，旨在简化分布式系统的开发。&lt;/p></description></item><item><title>MainActor</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/MainActor/</link><pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/MainActor/</guid><description>&lt;h3 id="-swift-并发中的">
+ 🚀 &lt;strong>Swift 并发中的 &lt;code>@MainActor&lt;/code> 全面解析&lt;/strong>
+ &lt;a class="anchor" href="#-swift-%e5%b9%b6%e5%8f%91%e4%b8%ad%e7%9a%84">#&lt;/a>
+&lt;/h3>
+&lt;p>在 Swift 并发编程中，&lt;strong>&lt;code>@MainActor&lt;/code>&lt;/strong> 是保证线程安全、确保代码在主线程（Main Thread）上执行的重要工具。它在处理 &lt;strong>UI 更新、线程同步&lt;/strong> 等场景时尤为关键，尤其适用于 &lt;strong>SwiftUI 和 UIKit&lt;/strong> 环境。&lt;/p></description></item><item><title>Sendable</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/Sendable/</link><pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/Sendable/</guid><description>&lt;h2 id="1-什么是">
+ &lt;strong>1. 什么是 &lt;code>Sendable&lt;/code>？&lt;/strong>
+ &lt;a class="anchor" href="#1-%e4%bb%80%e4%b9%88%e6%98%af">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;code>Sendable&lt;/code> 是 &lt;strong>Swift 并发模型&lt;/strong> 引入的一个协议，用于确保类型在多个线程或并发上下文中传递时是 &lt;strong>线程安全&lt;/strong> 的。它的核心作用是：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>标记数据是否可以安全地在任务、线程或 Actor 之间共享。&lt;/strong>&lt;/li>
+&lt;li>&lt;strong>防止数据竞争条件，提升代码的并发可靠性。&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">struct&lt;/span> &lt;span style="color:#ca72ff">User&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">Sendable&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">name&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">String&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">age&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">Int&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在这个例子中，&lt;code>User&lt;/code> 结构体是不可变的（&lt;code>let&lt;/code> 属性），因此它天然是线程安全的，符合 &lt;code>Sendable&lt;/code> 要求。&lt;/p></description></item><item><title>Synchronization</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/Synchronization/</link><pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/Synchronization/</guid><description>&lt;p>在 Swift 中，&lt;a href="https://developer.apple.com/documentation/synchronization">&lt;strong>Synchronization&lt;/strong>&lt;/a>（同步）是指确保多个线程或任务在访问共享资源时不会发生冲突或数据竞争。由于 Swift 是一种支持并发编程的语言，因此在多线程环境下，同步机制尤为重要。&lt;/p>
+&lt;p>以下是 Swift 中常s用的同步机制和工具：&lt;/p>
+&lt;hr>
+&lt;h3 id="1-dispatchqueue串行队列">
+ 1. &lt;strong>DispatchQueue（串行队列）&lt;/strong>
+ &lt;a class="anchor" href="#1-dispatchqueue%e4%b8%b2%e8%a1%8c%e9%98%9f%e5%88%97">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>使用串行队列可以确保任务按顺序执行，避免多个线程同时访问共享资源。&lt;/li>
+&lt;li>通过将任务放在同一个串行队列中，可以实现同步。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">serialQueue&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">DispatchQueue&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">label&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#34;com.example.serialQueue&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">serialQueue&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">async&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8a93a5;font-style:italic">// 访问共享资源&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h3 id="2-dispatchsemaphore信号量">
+ 2. &lt;strong>DispatchSemaphore（信号量）&lt;/strong>
+ &lt;a class="anchor" href="#2-dispatchsemaphore%e4%bf%a1%e5%8f%b7%e9%87%8f">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>信号量用于控制对共享资源的访问数量。&lt;/li>
+&lt;li>通过 &lt;code>wait()&lt;/code> 和 &lt;code>signal()&lt;/code> 方法实现资源的锁定和释放。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">semaphore&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">DispatchSemaphore&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">value&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">semaphore&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">wait&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 锁定资源&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 访问共享资源&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">semaphore&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">signal&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 释放资源&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h3 id="3-nslock锁">
+ 3. &lt;strong>NSLock（锁）&lt;/strong>
+ &lt;a class="anchor" href="#3-nslock%e9%94%81">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>NSLock&lt;/code> 是一个简单的互斥锁，用于保护共享资源。&lt;/li>
+&lt;li>通过 &lt;code>lock()&lt;/code> 和 &lt;code>unlock()&lt;/code> 方法实现资源的锁定和释放。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">lock&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">NSLock&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">lock&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">lock&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 访问共享资源&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">lock&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">unlock&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h3 id="4-nsrecursivelock递归锁">
+ 4. &lt;strong>NSRecursiveLock（递归锁）&lt;/strong>
+ &lt;a class="anchor" href="#4-nsrecursivelock%e9%80%92%e5%bd%92%e9%94%81">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>NSRecursiveLock&lt;/code> 是 &lt;code>NSLock&lt;/code> 的递归版本，允许同一线程多次锁定资源而不会导致死锁。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">recursiveLock&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">NSRecursiveLock&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">recursiveLock&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">lock&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 访问共享资源&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">recursiveLock&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">unlock&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h3 id="5-nscondition条件锁">
+ 5. &lt;strong>NSCondition（条件锁）&lt;/strong>
+ &lt;a class="anchor" href="#5-nscondition%e6%9d%a1%e4%bb%b6%e9%94%81">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>NSCondition&lt;/code> 结合了锁和条件变量，用于线程间的通信和同步。&lt;/li>
+&lt;li>通过 &lt;code>wait()&lt;/code>、&lt;code>signal()&lt;/code> 和 &lt;code>broadcast()&lt;/code> 方法实现线程等待和唤醒。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">condition&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">NSCondition&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">condition&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">lock&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">while&lt;/span> &lt;span style="color:#54b1c7">!&lt;/span>&lt;span style="color:#aa89ea">resourceAvailable&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">condition&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">wait&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 访问共享资源&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">condition&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">unlock&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h3 id="6-atomic属性包装器">
+ 6. &lt;strong>@Atomic（属性包装器）&lt;/strong>
+ &lt;a class="anchor" href="#6-atomic%e5%b1%9e%e6%80%a7%e5%8c%85%e8%a3%85%e5%99%a8">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>在 Swift 中，可以通过自定义属性包装器实现原子操作。&lt;/li>
+&lt;li>例如，使用 &lt;code>OSAtomic&lt;/code> 或 &lt;code>DispatchQueue&lt;/code> 实现原子性。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">@&lt;/span>&lt;span style="color:#aa89ea">propertyWrapper&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">struct&lt;/span> &lt;span style="color:#ca72ff">Atomic&lt;/span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#aa89ea">Value&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">private&lt;/span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">value&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">Value&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">private&lt;/span> &lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">queue&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">DispatchQueue&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">label&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#34;com.example.atomicQueue&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">init&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">wrappedValue&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">Value&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">self&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">value&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">wrappedValue&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">wrappedValue&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">Value&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">get&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span> &lt;span style="color:#aa89ea">queue&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">sync&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span> &lt;span style="color:#aa89ea">value&lt;/span> &lt;span style="color:#abb2bf">}&lt;/span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">set&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span> &lt;span style="color:#aa89ea">queue&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">sync&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span> &lt;span style="color:#aa89ea">value&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">newValue&lt;/span> &lt;span style="color:#abb2bf">}&lt;/span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">@&lt;/span>&lt;span style="color:#aa89ea">Atomic&lt;/span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">counter&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">Int&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#d19a66">0&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h3 id="7-actorswift-55-引入">
+ 7. &lt;strong>Actor（Swift 5.5 引入）&lt;/strong>
+ &lt;a class="anchor" href="#7-actorswift-55-%e5%bc%95%e5%85%a5">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>Actor&lt;/code> 是 Swift 5.5 引入的一种并发模型，用于解决数据竞争问题。&lt;/li>
+&lt;li>&lt;code>Actor&lt;/code> 内部会自动处理同步，确保在同一时间只有一个任务可以访问其状态。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">actor&lt;/span> &lt;span style="color:#aa89ea">Counter&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">private&lt;/span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">value&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#d19a66">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">func&lt;/span> &lt;span style="color:#00b1f7">increment&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">value&lt;/span> &lt;span style="color:#54b1c7">+=&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">func&lt;/span> &lt;span style="color:#00b1f7">getValue&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">-&amp;gt;&lt;/span> &lt;span style="color:#e5c07b">Int&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">return&lt;/span> &lt;span style="color:#aa89ea">value&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">counter&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">Counter&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Task&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">await&lt;/span> &lt;span style="color:#aa89ea">counter&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">increment&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">await&lt;/span> &lt;span style="color:#aa89ea">counter&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">getValue&lt;/span>&lt;span style="color:#abb2bf">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h3 id="8-os_">
+ 8. &lt;strong>os_unfair_lock（低级锁）&lt;/strong>
+ &lt;a class="anchor" href="#8-os_">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>os_unfair_lock&lt;/code> 是一种高效的锁，适用于性能敏感的场景。&lt;/li>
+&lt;li>它是不可递归的，使用时需要小心避免死锁。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">lock&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">os_unfair_lock&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">os_unfair_lock_lock&lt;/span>&lt;span style="color:#abb2bf">(&amp;amp;&lt;/span>&lt;span style="color:#aa89ea">lock&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 访问共享资源&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">os_unfair_lock_unlock&lt;/span>&lt;span style="color:#abb2bf">(&amp;amp;&lt;/span>&lt;span style="color:#aa89ea">lock&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h3 id="9-thread-sanitizer线程检查工具">
+ 9. &lt;strong>Thread Sanitizer（线程检查工具）&lt;/strong>
+ &lt;a class="anchor" href="#9-thread-sanitizer%e7%ba%bf%e7%a8%8b%e6%a3%80%e6%9f%a5%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>在开发过程中，可以使用 Xcode 的 Thread Sanitizer 工具检测数据竞争和线程安全问题。&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;h3 id="总结">
+ 总结
+ &lt;a class="anchor" href="#%e6%80%bb%e7%bb%93">#&lt;/a>
+&lt;/h3>
+&lt;p>Swift 提供了多种同步机制，开发者可以根据具体场景选择合适的工具：&lt;/p></description></item></channel></rss>

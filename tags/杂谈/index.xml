@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>杂谈 on LYon's Blog</title><link>https://yindongliang.com/tags/%E6%9D%82%E8%B0%88/</link><description>Recent content in 杂谈 on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Tue, 06 May 2025 09:47:38 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/%E6%9D%82%E8%B0%88/index.xml" rel="self" type="application/rss+xml"/><item><title>关于对 Cursor 类工具的认识</title><link>https://yindongliang.com/weekly/2025/2025-W01/</link><pubDate>Wed, 01 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2025/2025-W01/</guid><description>&lt;ul>
+&lt;li>题图的生成链接在&lt;a href="https://postspark.app/github-contributions">这里&lt;/a>&lt;/li>
+&lt;li>打个比方，在 AI 辅助编程的角度来说，如果说最初的 ChatGPT 是小学生级别，那么 Copilot 就是中学生级别，而 Cursor 和 Windsurf 就是大学生级别。&lt;/li>
+&lt;li>Cursor 产品形式的出现是真正帮助那些没有编程基础的人做出产品的分水岭，当然这里也有 Sonnet 的功劳。&lt;/li>
+&lt;li>未来做不做开发岗可能已经不重要，重要的是，还是要选择进入互联网行业，混迹几年之后可能就会有相关的概念和认知，然后就有机会自己做产品。&lt;/li>
+&lt;li>当我说 Cursor 角色时，同时指代 Windsurf / Alex Siderbar 等同类型工具。&lt;/li>
+&lt;li>于是最近甚至没有时间去整理周报和博客了，切身体会到 Cursor 确实在解放生产力，之前很多学习成本太高的问题现在都解决了，直接开始做就可以了。&lt;/li>
+&lt;/ul>
+&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>腾讯云手机&lt;br>
+&lt;a href="https://wetest.qq.com/products/cloud-phone">https://wetest.qq.com/products/cloud-phone&lt;/a>&lt;br>
+头一次知道云真机测试的概念，下面还有其他链接可以参考&lt;/p></description></item><item><title>周末苏州两日游</title><link>https://yindongliang.com/weekly/2024/2024-W46/</link><pubDate>Mon, 11 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W46/</guid><description>&lt;p>苏州两日游：&lt;/p>
+&lt;ul>
+&lt;li>第一天上午上海站到苏州站，也就是半小时高铁。&lt;/li>
+&lt;li>入住平江路「三千载民宿」，4 号线察院场地铁站，离火车站也是两站地铁。&lt;/li>
+&lt;li>中午吃了阳澄湖大闸蟹。&lt;/li>
+&lt;li>顺便观前街逛街，排队茶颜悦色。&lt;/li>
+&lt;li>下午从平江路走到拙政园，俩人额外花了 100 元跟导游免排队+讲解。&lt;/li>
+&lt;li>傍晚金鸡湖遛弯、吃饭。&lt;/li>
+&lt;li>晚上回观前街，到琵琶语评弹馆听吴亮莹老师演唱「声声慢」。&lt;/li>
+&lt;li>第二天上午先到沧浪亭，后到留园，中午在山塘街吃了蟹黄面。&lt;/li>
+&lt;li>下午游虎丘，这里景观和人文历史都非常值得游览。&lt;/li>
+&lt;li>傍晚火车到上海，不虚此行。&lt;/li>
+&lt;/ul>
+&lt;p>整体下来，最喜欢评弹「声声慢」和留园，沧浪亭也不错，拙政园虽然听了讲解，但要我自己评价的话也就那样，人太多了，另外还有一些园林比如网师园、狮子林、可园等等都没去，苏博更是预约不上，下次一定。总体感受，苏州的历史文化真是厚重，完全不是几首诗、几个名人就能概括的。还有苏州老城区的水路是真发达，不愧是真江南。&lt;/p></description></item><item><title>最近参加开球网积分赛🏓</title><link>https://yindongliang.com/weekly/2024/2024-W38/</link><pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W38/</guid><description>&lt;p>停了一个半月的周报，主要原因是业余时间确实没投入精力去关注技术，只是晚上回家偶尔看看文档。也许是受奥运会的影响，也许是前两个月好东西吃多了导致长了点肉，于是乎最近一段时间下班就跑球馆打球去了，周末还参加了几次积分赛，以至于经过一个多月的密集练习和比赛，最后还拿了俱乐部 U1600 分段的一次季军和一次亚军，也算小有收获，当然还会继续努力，争取早日进入下一分段。&lt;/p></description></item><item><title>对 Python 的刻板印象</title><link>https://yindongliang.com/weekly/2024/2024-W13/</link><pubDate>Mon, 25 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W13/</guid><description>&lt;p>Python 黑魔法手册&lt;br>
+&lt;a href="https://github.com/iswbm/magic-python">https://github.com/iswbm/magic-python&lt;/a>&lt;br>
+之前也看过另外一版别人写的 Python 黑魔法的指南，不是这一篇，好像是国外翻译过来的，但没找到链接，等我再找找。。&lt;/p>
+&lt;p>虽然 Python 用了很多年，但一直还是觉得 Python 是个“底层比较黑暗”的语言，很多东西看不透，只能在上层 API 来回调用。这里的原因有很多，最主要的原因我觉得应该还是 Python 是一个解释型语言，无法实现自举。一方面这意味着很多 bug 可能是在运行时才能被发现，缺少编译期和类型系统带来的安全感。另一方面，相比 Go 语言，可以说 Go 的底层非常清晰因为它实现了自举，当我们在讨论 Go 底层的时候实际上还是在讨论 Go 语言，上层和底层完全可以快速找到对应关系，但是 Python 就不行了，一旦我们想要讨论 Python 的底层，我们就瞬间切换到了 C 语言的世界，而且是那种到处用地址和指针操作、经过奇技淫巧高度性能优化后的 C 源码，想找到上层和底层的通道本身就比较困难了，可能只能靠想象力，所以 Python 看着简单，但我一直对 Python 还是保持着 Panic。也许这也是为什么网上有很多 Go 源码分析的文章，但是却鲜有讲 Python 源码的原因吧。&lt;/p></description></item><item><title>看完了风骚律师</title><link>https://yindongliang.com/weekly/2023/2023-W51/</link><pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W51/</guid><description>&lt;p>断断续续看完了整部《风骚律师》（Better Call Saul），因为也不是一直在电视前认认真真看，有一些没看懂，以至于又回头看了一些，发现还是比较模糊，很多场景和铺垫不能完全理解，不过问题不大，我已经知道了故事的大致脉络，以及每个人的结局。比较兴奋的彩蛋就是最后“小粉”、“老白”都出场了，我已知足，毕竟《绝命毒师》（Breaking Bad）是我心目中四两拨千斤的神作。&lt;/p></description></item><item><title>关于装修和风水</title><link>https://yindongliang.com/weekly/2023/2023-W25/</link><pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W25/</guid><description>&lt;p>最近看了好几本室内装修和风水学的书，关于风水，从科学角度目前能认识到的是，很多时候风水是通过尽量避免遇到自然灾害中的要冲位、以及减小发生家人间尴尬（进而导致冲突）的概率等方式，在长期的心理稳定中去形成的个人和家庭成员的日常心态，灌输一些潜意识，让你时刻内心舒适，从而达成事业上的“运势”目标。一个稳定乐观积极的心态和情绪永远比经常担惊受怕好得多，心态、情绪不光对运势重要，对身体也很重要。所以风水很有用，而且它的知识结构很成体系，只是看待事物的角度要从易经等这样的传统文化出发，而这些东西几千年下来已经总结成教条、规则，所以给人以神秘、刻板、没有逻辑的印象，让一些人嗤之以鼻。&lt;/p></description></item><item><title>R.I.P. 纪念左耳朵耗子</title><link>https://yindongliang.com/weekly/2023/2023-W20/</link><pubDate>Mon, 15 May 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W20/</guid><description>&lt;p>周一惊闻左耳朵耗子去世，感慨万千，摸鱼时经常去翻酷壳，耗子叔一直都保持了非常高的更新频率，内容质量更是没的说，如今算是留下了大量的互联网资产。但人固有一死，逝者已矣，在我看来此时所有的身外之物可能都没有这个站点珍贵，这也就是写博客的意义吧。&lt;/p></description></item><item><title>回家过了个年</title><link>https://yindongliang.com/posts/this-year-go-home/</link><pubDate>Sun, 06 Feb 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/this-year-go-home/</guid><description>&lt;p>今年过年回山东老家遇到了各路亲戚，由于 2020 年的疫情就没串门，2021 年又回媳妇家，实际上今年才是两年后的大范围重新相聚，亲戚还是那些人，距离上次见面的时间仿佛也没过几天。&lt;/p></description></item><item><title>回归写作</title><link>https://yindongliang.com/posts/back-to-writing/</link><pubDate>Thu, 20 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/back-to-writing/</guid><description>&lt;p>今年以来发现，我能写出来的东西越来越多了，是一直期待的状态，但不是说写作内容的质量有多高了，而是写作的意愿更强了。为什么意愿更强了，一方面我发现如果输入更多了，再不进行输出的话，脑子就会有一种装满东西的感觉，从而无法输入更多的东西，而且有的内容如果不输出，还要经常隔三差五的回去重新看，心理上会觉得这个问题还没有解决从而产生焦虑，可以说现在我的写作也是一种被动的输出行为。&lt;/p></description></item><item><title>学习钢琴半年的体会</title><link>https://yindongliang.com/posts/learn-piano/</link><pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/learn-piano/</guid><description>&lt;p>婚礼上为了给媳妇制造一个印象深刻的惊喜，我提前三个月去学了钢琴，现在回想起来也算是一件有意思的事情。6 月底报名后，经过和钢琴老师的讨论，对于我这种零基础短期想突击的，同时后期还想继续学下去的，最后老师推荐了我《月亮代表我的心》，尤其在老师弹了以后我自己也觉得这首曲子非常好。&lt;/p></description></item></channel></rss>
