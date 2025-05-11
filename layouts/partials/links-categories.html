@@ -1,0 +1,29 @@
+<nav>
+  {{ $scratch := newScratch }} 
+  {{ $pages := where .Site.RegularPages "Type" "in" "links" }}
+  {{ range $pages }} 
+    {{ $scratch.Add "wordcount" .WordCount }} 
+  {{ end }}
+  <p style="color: dimgray">
+    共 {{ len $pages }} 篇转载
+  </p>
+  <ul>
+    {{ range $term := (slice "categories") }} 
+      {{ with $.Site.GetPage (printf "/%s" $term | urlize) }}
+      <li class="book-section-flat">
+        <ul>
+          {{ range .Pages }}
+            {{ $count := len (intersect .Pages $pages) }}
+            {{ if gt $count 0 }}
+            <li class="flex justify-between">
+              <a href="#{{ .Title }}">{{ .Title }}</a>
+              <span>{{ $count }}</span>
+            </li>
+            {{ end }}
+          {{ end }}
+        </ul>
+      </li>
+      {{ end }} 
+    {{ end }}
+  </ul>
+</nav>

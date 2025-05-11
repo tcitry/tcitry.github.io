@@ -184,6 +184,13 @@ main a[target="_blank"]::after {
   font-weight: bold;
 }
 
+.links-title {
+  color: #fff;
+  background-color: #3498db;
+  font-size: small;
+  font-weight: bold;
+}
+
 .tags-title {
   color: #74aa9c;
   font-size: small;
@@ -516,6 +523,57 @@ main a[target="_blank"]::after {
   font-size: small;
   font-weight: bold;
 }
+
+// ===== Links 转载相关样式开始 =====
+
+// 转载列表样式
+.links-list {
+  margin-top: 2rem;
+
+  .links-item {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eaecef;
+
+    h3 {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+
+      .external-link {
+        font-size: 0.85rem;
+        margin-left: 0.5rem;
+        color: #555;
+      }
+    }
+
+    .links-meta {
+      font-size: 0.85rem;
+      color: #6a737d;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin-top: 0.5rem;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+// 转载来源提示样式
+.links-source {
+  margin-bottom: 2rem;
+  
+  blockquote {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+
+// ===== Links 转载相关样式结束 =====
 
 .post-after {
   color: dimgray;

@@ -6,7 +6,7 @@
 
 {{ if .Params.tags }}
   {{ $firstTag := index .Params.tags 0 }}
-  {{ $excludeTags := slice "Weekly" "Recommended" "ByAI" }}
+  {{ $excludeTags := slice "Weekly" "Recommended" "ByAI" "Links" }}
   {{ range $tag := .Params.tags }}
     {{ if not (in $excludeTags $tag) }}
       {{ $tagUrl := printf "/tags/%s" ($tag | urlize) }}

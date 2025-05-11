@@ -1,0 +1,33 @@
+{{ define "main" }}
+  {{/* 检查是否设置了自动重定向 */}}
+  {{ if and .Params.link .Params.redirect }}
+    <script>
+      // 自动重定向到外部链接
+      window.location.href = "{{ .Params.link }}";
+    </script>
+  {{ end }}
+
+  <article class="markdown book-post">
+    <h1>
+      <a href="{{ .RelPermalink }}">{{ partial "docs/title.html" . }}</a>
+    </h1>
+    {{ partial "docs/post-meta" . }}
+
+    {{ with .Params.link }}
+      <div class="links-source">
+        <blockquote class="book-hint info">
+          <p>
+            此内容为转载文章，原文链接：
+            <a href="{{ . }}" target="_blank" rel="noopener">{{ . }}</a>
+          </p>
+        </blockquote>
+      </div>
+    {{ end }}
+
+    {{- .Content -}}
+  </article>
+{{ end }}
+
+{{ define "toc" }}
+  {{ partial "docs/toc" . }}
+{{ end }}
