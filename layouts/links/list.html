@@ -3,7 +3,7 @@
 
 {{partial "tags-navbar" .}}
 
-{{ range $pages.GroupByDate "2006" }}
+{{ range $pages.GroupByDate "2006-01" }}
 <section>
   <h1 style="color: dimgray;" id="{{ .Key }}">{{ .Key }}</h1>
   <div class="posts">

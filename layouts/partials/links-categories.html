@@ -5,25 +5,21 @@
     {{ $scratch.Add "wordcount" .WordCount }} 
   {{ end }}
   <p style="color: dimgray">
-    共 {{ len $pages }} 篇转载
+    共 {{ len $pages }} 篇转载，通过 <a href="/links/index.xml">RSS</a> 订阅
   </p>
   <ul>
-    {{ range $term := (slice "categories") }} 
-      {{ with $.Site.GetPage (printf "/%s" $term | urlize) }}
-      <li class="book-section-flat">
-        <ul>
-          {{ range .Pages }}
-            {{ $count := len (intersect .Pages $pages) }}
-            {{ if gt $count 0 }}
-            <li class="flex justify-between">
-              <a href="#{{ .Title }}">{{ .Title }}</a>
-              <span>{{ $count }}</span>
-            </li>
-            {{ end }}
+    <li class="book-section-flat">
+      <ul>
+        {{ range $pages.GroupByDate "2006-01" }}
+          {{ $count := len .Pages }}
+          {{ if gt $count 0 }}
+          <li class="flex justify-between">
+            <a href="#{{ .Key }}">{{ .Key }}</a>
+            <span>{{ $count }}</span>
+          </li>
           {{ end }}
-        </ul>
-      </li>
-      {{ end }} 
-    {{ end }}
+        {{ end }}
+      </ul>
+    </li>
   </ul>
 </nav>

@@ -1,14 +1,14 @@
 {{ define "main" }}
 {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "docs" "posts" "weekly" "links")) (where .Site.Pages "Params.date" "!=" nil)}}
-{{ $pages := $pages.ByLastmod.Reverse }}
 {{partial "tags-navbar" .}}
+{{ range $pages.GroupByDate "2006" }}
 <section>
+  <h1 style="color: dimgray;" id="{{ .Key }}">{{ .Key }}</h1>
   <div class="posts">
-    {{ range $pages }}
+    {{ range .Pages }}
     <div class="post">
       <p>
-        <h3>
-          <time style="color: darkgrey;">{{.Lastmod.Format "2006-01-02"}}</time>&nbsp;»&nbsp;
+        <h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;
           {{ partial "docs-title-tree" . }}
           <a href="{{ .RelPermalink }}" {{ if eq .Type "links" }}target="_blank" rel="noopener"{{ end }}>
             {{ .Title }}
@@ -21,7 +21,8 @@
   </div>
 </section>
 {{ end }}
+{{ end }}
 
 {{ define "toc" }}
-  {{ partial "tags" . }}
+  {{ partial "categories" . }}
 {{ end }}
