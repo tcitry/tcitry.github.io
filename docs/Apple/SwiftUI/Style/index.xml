@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Style on LYon's Blog</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/</link><description>Recent content in Style on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Apple/SwiftUI/Style/index.xml" rel="self" type="application/rss+xml"/><item><title>truncationMode</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/truncationMode/</link><pubDate>Fri, 25 Apr 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/truncationMode/</guid><description>&lt;p>SwiftUI 中的 &lt;code>truncationMode&lt;/code> 用于控制文本在空间不足时的截断方式（即如何显示省略号 &lt;code>…&lt;/code>）。它通常与 &lt;code>lineLimit&lt;/code> 结合使用，当文本内容超出可用空间时，决定截断的位置（头部、中部或尾部）。&lt;/p></description></item><item><title>cornerRadius</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/cornerRadius/</link><pubDate>Sun, 13 Apr 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/cornerRadius/</guid><description>&lt;blockquote>
+&lt;p>&lt;a href="https://developer.apple.com/documentation/swiftui/view/cornerradius%28_:antialiased:%29">cornerRadius&lt;/a> is Deprecateds. Use &lt;a href="https://developer.apple.com/documentation/swiftui/view/clipshape%5c%28_:style:%5c%29">&lt;code>clipShape(_:style:)&lt;/code>&lt;/a> or &lt;a href="https://developer.apple.com/documentation/swiftui/shape/fill%5c%28style:%5c%29">&lt;code>fill(style:)&lt;/code>&lt;/a> instead.&lt;/p>&lt;/blockquote>
+&lt;p>在 SwiftUI 中，&lt;code>cornerRadius&lt;/code> 是一个常用的修饰符，用于为视图添加圆角效果，提升界面美观度。以下是它的使用场景、使用方法和代码示例：&lt;/p></description></item><item><title>fixedSize</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/fixedSize/</link><pubDate>Thu, 27 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/fixedSize/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>fixedSize()&lt;/code> 是一个关键但容易被误解的修饰符，它的核心作用是 &lt;strong>阻止父布局容器对视图的尺寸进行约束&lt;/strong>，让视图保持其“理想尺寸”（即内容本身的固有尺寸）。以下是它的详细用法、使用场景和注意事项：&lt;/p></description></item><item><title>aspectRatio</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/aspectRatio/</link><pubDate>Tue, 18 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/aspectRatio/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>aspectRatio&lt;/code> 是一个用于控制视图宽高比的核心修饰符，它能够根据内容或容器尺寸动态调整视图的比例。以下是其详细使用方法和典型场景：&lt;/p></description></item><item><title>resizable</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/resizable/</link><pubDate>Tue, 18 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/resizable/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>resizable()&lt;/code> 是一个专门用于 &lt;strong>控制图片缩放行为&lt;/strong> 的修饰符。它的核心作用是让图片（如 &lt;code>Image&lt;/code> 视图）能够根据布局需求 &lt;strong>动态调整尺寸&lt;/strong>，而不仅仅是固定显示原始像素大小。以下是它的关键使用场景和原因：&lt;/p></description></item><item><title>containerShape</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/containerShape/</link><pubDate>Mon, 17 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/containerShape/</guid><description>&lt;p>SwiftUI 的 &lt;code>containerShape&lt;/code> 是用于定义视图交互区域或容器边界的关键概念，它通过指定一个形状来确定视图的可点击区域、裁剪区域或动画作用范围。以下从核心功能、实现方式、应用场景和代码示例等方面详细介绍：&lt;/p></description></item><item><title>accentColor</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/accentColor/</link><pubDate>Sun, 16 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/accentColor/</guid><description>&lt;blockquote>
+&lt;p>This method is Deprecated.&lt;/p>&lt;/blockquote>
+&lt;p>在 SwiftUI 中，&lt;code>accentColor&lt;/code> 是一个用于控制&lt;strong>强调色&lt;/strong>（Accent Color）的核心修饰符，它定义了应用中交互元素的默认主色调。以下是它的详细使用场景和实际代码示例：&lt;/p></description></item><item><title>clipped</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/clipped/</link><pubDate>Mon, 10 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/clipped/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>clipped()&lt;/code> 修饰符是用于控制视图内容超出边界时的显示行为的核心工具。以下从 &lt;strong>功能原理&lt;/strong>、&lt;strong>使用场景&lt;/strong> 和 &lt;strong>实践技巧&lt;/strong> 三个维度详细解析其使用方式：&lt;/p></description></item><item><title>TextSelection</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/TextSelection/</link><pubDate>Tue, 04 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/TextSelection/</guid><description>&lt;p>TextSelection 是 SwiftUI 中用来控制文本选择行为的一个机制，它允许你指定视图中的文本是否可以被用户选中、复制或与其他系统功能交互。通过设置 TextSelection，你可以轻松启用或禁用文本的选择能力，从而满足不同平台和应用场景下对交互行为的要求。&lt;/p></description></item><item><title>allowsTightening</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/allowsTightening/</link><pubDate>Sat, 22 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/allowsTightening/</guid><description>&lt;p>SwiftUI 的 &lt;code>allowsTightening&lt;/code> 是用于控制文本在布局时是否允许压缩字符间距以适应空间的修饰符。当文本内容因空间不足可能被截断时，启用此属性可以让系统自动调整字符间距，尝试将文本完整显示在一行中。其作用类似于排版中的“字距微调”，但更强调动态适应布局约束。&lt;/p></description></item><item><title>fontDesign</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/fontDesign/</link><pubDate>Sat, 22 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/fontDesign/</guid><description>&lt;p>SwiftUI 提供了非常方便的方式来调整系统字体的设计风格，而这正是通过 &lt;strong>fontDesign&lt;/strong> 修饰符实现的。它允许你在使用系统字体时，改变字体的设计样式，从而获得不同的视觉效果。下面详细介绍其用法和注意点：&lt;/p></description></item><item><title>presentationBackground(sheet)</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/presentationBackground/</link><pubDate>Tue, 18 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/presentationBackground/</guid><description>&lt;p>在 SwiftUI 中，从 iOS 17 和 macOS 14 开始，Apple 引入了全新的 presentationBackground 修饰符，用于自定义模态呈现（例如 .sheet、.fullScreenCover、.popover 等）的背景效果，而不是使用系统默认的模糊或透明背景。下面将从多个角度详细介绍 presentationBackground 的作用、使用场景、代码示例及注意事项。&lt;/p></description></item><item><title>shadow</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/shadow/</link><pubDate>Sun, 16 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/shadow/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>shadow&lt;/code> 修饰符用于为视图添加阴影效果，使界面更具层次感和视觉立体感。它可以用于文本、按钮、卡片等 UI 元素。&lt;/p>
+&lt;hr>
+&lt;h2 id="基本用法">
+ &lt;strong>基本用法&lt;/strong>
+ &lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e7%94%a8%e6%b3%95">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;code>shadow&lt;/code> 的基本语法如下：&lt;/p></description></item><item><title>ButtonStyle</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/ButtonStyle/</link><pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/ButtonStyle/</guid><description>&lt;p>&lt;code>ButtonStyle&lt;/code> 是 SwiftUI 提供的一种自定义按钮外观和交互方式的机制，允许我们创建&lt;strong>可复用的按钮样式&lt;/strong>，并在多个 &lt;code>Button&lt;/code> 组件上应用。&lt;/p>
+&lt;hr>
+&lt;h2 id="-基本使用">
+ &lt;strong>🔹 基本使用&lt;/strong>
+ &lt;a class="anchor" href="#-%e5%9f%ba%e6%9c%ac%e4%bd%bf%e7%94%a8">#&lt;/a>
+&lt;/h2>
+&lt;p>我们可以创建一个自定义的 &lt;code>ButtonStyle&lt;/code>，然后在多个 &lt;code>Button&lt;/code> 组件上使用它。&lt;/p></description></item><item><title>blendMode</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/blendMode/</link><pubDate>Fri, 07 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/blendMode/</guid><description>&lt;h3 id="heading">
+ &lt;strong>🔹 &lt;code>BlendMode&lt;/code>：SwiftUI 的混合模式&lt;/strong>
+ &lt;a class="anchor" href="#heading">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;code>BlendMode&lt;/code> 用于控制 &lt;strong>两个视图如何混合&lt;/strong>，类似于 Photoshop 里的图层混合模式。&lt;br>
+它决定了&lt;strong>前景视图和背景视图的颜色如何相互作用&lt;/strong>，从而实现&lt;strong>透明度、遮罩、滤镜等特效&lt;/strong>。&lt;/p></description></item><item><title>redacted</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/redacted/</link><pubDate>Thu, 06 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/redacted/</guid><description>&lt;h3 id="redactedreason">
+ &lt;strong>&lt;code>redacted(reason:)&lt;/code> 是什么？&lt;/strong>
+ &lt;a class="anchor" href="#redactedreason">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;code>redacted(reason:)&lt;/code> 是 SwiftUI 提供的一个视图修饰符，用于&lt;strong>隐藏或模糊内容&lt;/strong>，通常用于：&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>Skeleton Loading（骨架屏）&lt;/strong>：在数据加载前显示灰色占位符。&lt;/li>
+&lt;li>&lt;strong>隐藏敏感信息&lt;/strong>（iOS 15+）：如银行卡号、地址、个人信息等，确保隐私安全。&lt;/li>
+&lt;/ol>
+&lt;hr>
+&lt;h3 id="redactedreason-1">
+ &lt;strong>&lt;code>redacted(reason:)&lt;/code> 的基本用法&lt;/strong>
+ &lt;a class="anchor" href="#redactedreason-1">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;code>redacted(reason:)&lt;/code> 需要传入 &lt;code>RedactionReasons&lt;/code>，指明隐藏方式。例如：&lt;/p></description></item><item><title>blur</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/blur/</link><pubDate>Mon, 03 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/blur/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>blur&lt;/code> 是用于给视图添加&lt;strong>模糊效果&lt;/strong>的修饰符，可轻松实现毛玻璃、背景虚化等视觉效果。以下是详细用法和场景示例：&lt;/p>
+&lt;hr>
+&lt;h3 id="基本语法">
+ 基本语法
+ &lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e8%af%ad%e6%b3%95">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">blur&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">radius&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">CGFloat&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">opaque&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">Bool&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#e5c07b">false&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;strong>&lt;code>radius&lt;/code>&lt;/strong>: 模糊半径（值越大越模糊，如 &lt;code>10&lt;/code>）&lt;/li>
+&lt;li>&lt;strong>&lt;code>opaque&lt;/code>&lt;/strong>: 是否优化渲染性能（默认 &lt;code>false&lt;/code>，设为 &lt;code>true&lt;/code> 时可能提升性能但要求模糊区域不透明）&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;h3 id="常见使用场景">
+ 常见使用场景
+ &lt;a class="anchor" href="#%e5%b8%b8%e8%a7%81%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af">#&lt;/a>
+&lt;/h3>
+&lt;h4 id="1-基础模糊效果">
+ 1. 基础模糊效果
+ &lt;a class="anchor" href="#1-%e5%9f%ba%e7%a1%80%e6%a8%a1%e7%b3%8a%e6%95%88%e6%9e%9c">#&lt;/a>
+&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Image&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;background&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">resizable&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">scaledToFill&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">blur&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">radius&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">8&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 图片模糊&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="2-模糊叠加文字">
+ 2. 模糊叠加文字
+ &lt;a class="anchor" href="#2-%e6%a8%a1%e7%b3%8a%e5%8f%a0%e5%8a%a0%e6%96%87%e5%ad%97">#&lt;/a>
+&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">ZStack&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Image&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;background&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">blur&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">radius&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">4&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;Hello World&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">font&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">largeTitle&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">bold&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="3-动态模糊结合-slider-控制">
+ 3. 动态模糊（结合 Slider 控制）
+ &lt;a class="anchor" href="#3-%e5%8a%a8%e6%80%81%e6%a8%a1%e7%b3%8a%e7%bb%93%e5%90%88-slider-%e6%8e%a7%e5%88%b6">#&lt;/a>
+&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">@&lt;/span>&lt;span style="color:#aa89ea">State&lt;/span> &lt;span style="color:#76a9f9">private&lt;/span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">blurRadius&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">CGFloat&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#d19a66">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">VStack&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Image&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;example&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">blur&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">radius&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">blurRadius&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 动态模糊&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Slider&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">value&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> $&lt;span style="color:#aa89ea">blurRadius&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#76a9f9">in&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">0.&lt;/span>&lt;span style="color:#abb2bf">..&lt;/span>&lt;span style="color:#d19a66">20&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 滑动调整模糊强度&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="4-局部模糊--透明度控制">
+ 4. 局部模糊 + 透明度控制
+ &lt;a class="anchor" href="#4-%e5%b1%80%e9%83%a8%e6%a8%a1%e7%b3%8a--%e9%80%8f%e6%98%8e%e5%ba%a6%e6%8e%a7%e5%88%b6">#&lt;/a>
+&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Rectangle&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">fill&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">blue&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">frame&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">width&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">200&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">height&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">200&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">blur&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">radius&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">opacity&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">0.8&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 模糊后调整透明度&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h3 id="进阶用法">
+ 进阶用法
+ &lt;a class="anchor" href="#%e8%bf%9b%e9%98%b6%e7%94%a8%e6%b3%95">#&lt;/a>
+&lt;/h3>
+&lt;h4 id="模糊形状遮罩">
+ 模糊形状遮罩
+ &lt;a class="anchor" href="#%e6%a8%a1%e7%b3%8a%e5%bd%a2%e7%8a%b6%e9%81%ae%e7%bd%a9">#&lt;/a>
+&lt;/h4>
+&lt;p>用 &lt;code>mask&lt;/code> 限定模糊区域：&lt;/p></description></item><item><title>contentShape</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/contentShape/</link><pubDate>Wed, 29 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/contentShape/</guid><description>&lt;p>&lt;code>contentShape&lt;/code> 是 SwiftUI 中一个非常有用的修饰符，主要用于定义视图的可点击或可交互区域。它允许你自定义视图的&amp;quot;点击形状&amp;quot;，这对于改善用户交互体验特别有用。让我详细解释一下 &lt;code>contentShape&lt;/code> 的用法和应用场景：&lt;/p></description></item><item><title>strikethrough</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/strikethrough/</link><pubDate>Mon, 27 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/strikethrough/</guid><description>&lt;p>&lt;code>strikethrough&lt;/code> 是 SwiftUI 中用于为文本添加删除线的修饰符。它通常用于表示文本已被删除、过时或不再有效。例如，在待办事项列表中，已完成的任务可以用删除线标记。&lt;/p>
+&lt;hr>
+&lt;h2 id="strikethrough">
+ &lt;strong>&lt;code>strikethrough&lt;/code> 的基本用法&lt;/strong>
+ &lt;a class="anchor" href="#strikethrough">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="1-添加删除线">
+ 1. &lt;strong>添加删除线&lt;/strong>
+ &lt;a class="anchor" href="#1-%e6%b7%bb%e5%8a%a0%e5%88%a0%e9%99%a4%e7%ba%bf">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">import&lt;/span> &lt;span style="color:#ca72ff">SwiftUI&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">struct&lt;/span> &lt;span style="color:#ca72ff">ContentView&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">View&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">body&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">some&lt;/span> &lt;span style="color:#aa89ea">View&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;This is a strikethrough text&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">strikethrough&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 添加删除线&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>运行结果：&lt;br>
+文本 &amp;ldquo;This is a strikethrough text&amp;rdquo; 会显示一条删除线。&lt;/p></description></item><item><title>foregroundColor</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/foregroundColor/</link><pubDate>Sun, 26 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/foregroundColor/</guid><description>&lt;p>当然，我很乐意为您介绍 SwiftUI 中的 &lt;code>foregroundColor&lt;/code> 修饰符。&lt;/p>
+&lt;p>&lt;code>foregroundColor&lt;/code> 是 SwiftUI 中一个非常常用的修饰符，用于设置视图的前景色。这里是关于 &lt;code>foregroundColor&lt;/code> 的详细介绍：&lt;/p>
+&lt;ol>
+&lt;li>基本用法：
+&lt;code>foregroundColor&lt;/code> 可以应用于大多数 SwiftUI 视图，用来设置文本、图标或其他内容的颜色。&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;你好，世界&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">foregroundColor&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">blue&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="2">
+&lt;li>颜色选择：
+您可以使用 SwiftUI 预定义的颜色，如 &lt;code>.red&lt;/code>, &lt;code>.blue&lt;/code>, &lt;code>.green&lt;/code> 等，也可以使用自定义的 &lt;code>Color&lt;/code> 对象。&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;自定义颜色&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">foregroundColor&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">Color&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">red&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">0.5&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">green&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">0.7&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">blue&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">0.9&lt;/span>&lt;span style="color:#abb2bf">))&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="3">
+&lt;li>继承性：
+&lt;code>foregroundColor&lt;/code> 会被子视图继承。如果您在父视图上设置了 &lt;code>foregroundColor&lt;/code>，所有的子视图都会继承这个颜色，除非子视图单独设置了不同的颜色。&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">VStack&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;这是蓝色&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;这也是蓝色&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;这是红色&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">foregroundColor&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">red&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">foregroundColor&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">blue&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="4">
+&lt;li>与系统颜色配合：
+SwiftUI 提供了一些语义化的颜色，如 &lt;code>.primary&lt;/code>, &lt;code>.secondary&lt;/code>, 这些颜色会根据系统的亮暗模式自动调整。&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;主要文本&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">foregroundColor&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">primary&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;次要文本&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">foregroundColor&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">secondary&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="5">
+&lt;li>动态颜色：
+您可以根据状态动态改变前景色。&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">@&lt;/span>&lt;span style="color:#aa89ea">State&lt;/span> &lt;span style="color:#76a9f9">private&lt;/span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">isHighlighted&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#e5c07b">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">body&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">some&lt;/span> &lt;span style="color:#aa89ea">View&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;点击我&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">foregroundColor&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">isHighlighted&lt;/span> &lt;span style="color:#abb2bf">?&lt;/span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">red&lt;/span> &lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">blue&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">onTapGesture&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">isHighlighted&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">toggle&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="6">
+&lt;li>应用于图像：
+&lt;code>foregroundColor&lt;/code> 也可以用于改变 SF Symbols 或模板图像的颜色。&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Image&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">systemName&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#34;star.fill&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">foregroundColor&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">yellow&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="7">
+&lt;li>与其他修饰符结合：
+&lt;code>foregroundColor&lt;/code> 经常与其他修饰符一起使用，以创建更丰富的视觉效果。&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;重要提示&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">font&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">headline&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">foregroundColor&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">red&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">padding&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">background&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">Color&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">yellow&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">opacity&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">0.3&lt;/span>&lt;span style="color:#abb2bf">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">cornerRadius&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">10&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="8">
+&lt;li>可访问性考虑：
+在选择前景色时，请确保与背景色有足够的对比度，以保证文本的可读性，特别是对于视力不佳的用户。&lt;/li>
+&lt;/ol>
+&lt;p>&lt;code>foregroundColor&lt;/code> 是 SwiftUI 中非常灵活和强大的工具，可以帮助您创建视觉上吸引人且富有表现力的用户界面。通过巧妙运用 &lt;code>foregroundColor&lt;/code>，您可以增强应用的视觉层次，突出重要信息，并为用户创造更好的使用体验。&lt;/p></description></item><item><title>stroke</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/stroke/</link><pubDate>Sat, 25 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/stroke/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>stroke()&lt;/code> 描述符是一个用于为形状添加边框（Stroke）的修饰符。它可以以多种方式配置边框的颜色、线宽和线条样式，例如虚线或其他自定义样式。&lt;/p></description></item><item><title>border</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/border/</link><pubDate>Tue, 21 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/border/</guid><description>&lt;p>在 &lt;strong>SwiftUI&lt;/strong> 中，&lt;code>border()&lt;/code> 是一个修饰符，用于为视图添加边框。它可以为视图添加简单的矩形边框，并允许你设置边框的颜色与宽度。&lt;code>border()&lt;/code> 提供了创建简单 UI 边框的便捷方式。&lt;/p></description></item><item><title>background</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/background/</link><pubDate>Sat, 18 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/background/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>background&lt;/code> 修饰符用于为视图添加背景。它能够为视图设置单一颜色、渐变、图像或任意自定义视图作为背景。如果需要结合布局或背景图层的实现，&lt;code>background&lt;/code> 是非常灵活和强大的工具。&lt;/p></description></item><item><title>font</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/font/</link><pubDate>Sun, 12 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/font/</guid><description>&lt;p>文档 &lt;a href="https://developer.apple.com/documentation/swiftui/font">https://developer.apple.com/documentation/swiftui/font&lt;/a>&lt;/p>
+&lt;p>在 &lt;strong>SwiftUI&lt;/strong> 中，设置字体可以通过 &lt;code>.font()&lt;/code> 修饰符，它提供了多种方式来自定义文本的外观，包括使用系统字体、自定义字体、动态类型支持等。下面是具体内容指导：&lt;/p>
+&lt;hr>
+&lt;h2 id="1-使用默认的系统字体">
+ &lt;strong>1. 使用默认的系统字体&lt;/strong>
+ &lt;a class="anchor" href="#1-%e4%bd%bf%e7%94%a8%e9%bb%98%e8%ae%a4%e7%9a%84%e7%b3%bb%e7%bb%9f%e5%ad%97%e4%bd%93">#&lt;/a>
+&lt;/h2>
+&lt;p>默认字体是 Apple 的系统优化字体 &lt;strong>San Francisco（SF Pro）&lt;/strong>，这是 SwiftUI 自动提供的样式。&lt;/p></description></item><item><title>secondarySystemBackground</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/secondarySystemBackground/</link><pubDate>Sun, 12 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/secondarySystemBackground/</guid><description>&lt;p>在 iOS/macOS 开发中，像 &lt;code>secondaryBackgroundColor&lt;/code> 这样的属性通常是设计用来表达应用程序界面的&lt;strong>辅助背景颜色&lt;/strong>，而 &lt;code>background&lt;/code> 则是表示主要的背景颜色。这些属性通常用于细化 UI 设计，使界面更具层次感，同时也遵循系统的设计规范。&lt;/p></description></item><item><title>colorScheme</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/colorScheme/</link><pubDate>Sat, 11 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/colorScheme/</guid><description>&lt;h3 id="colorscheme">
+ &lt;strong>&lt;code>colorScheme&lt;/code> 是什么？&lt;/strong>
+ &lt;a class="anchor" href="#colorscheme">#&lt;/a>
+&lt;/h3>
+&lt;p>在 &lt;strong>SwiftUI&lt;/strong> 中，&lt;code>colorScheme&lt;/code> 是一个环境值（&lt;code>Environment Value&lt;/code>），用于表示当前应用界面的 &lt;strong>配色方案&lt;/strong>（或主题模式）。&lt;code>colorScheme&lt;/code> 通常表示系统的颜色外观（如 &lt;strong>浅色模式&lt;/strong> 或 &lt;strong>深色模式&lt;/strong>），并允许开发者动态响应系统的设置或强制指定某个配色。&lt;/p></description></item><item><title>tint</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/tint/</link><pubDate>Sat, 11 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/tint/</guid><description>&lt;h3 id="tint">
+ &lt;strong>&lt;code>tint&lt;/code> 是什么？&lt;/strong>
+ &lt;a class="anchor" href="#tint">#&lt;/a>
+&lt;/h3>
+&lt;p>在 &lt;strong>SwiftUI&lt;/strong> 中，&lt;code>tint&lt;/code> 是一个全局化修饰符，用于更改视图的系统化默认按钮、控件和组件的颜色。在 SwiftUI 中，&lt;code>tint&lt;/code> 通常会被应用到以下视图的&lt;strong>交互状态颜色&lt;/strong>上：&lt;/p></description></item><item><title>clipShape</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/clipShape/</link><pubDate>Thu, 09 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/clipShape/</guid><description>&lt;h3 id="clipshape">
+ &lt;strong>&lt;code>clipShape&lt;/code> 的作用&lt;/strong>
+ &lt;a class="anchor" href="#clipshape">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;code>clipShape&lt;/code> 是 SwiftUI 中用于 &lt;strong>裁剪视图形状&lt;/strong> 的修饰符，它可以按照指定的形状（如圆形、矩形或自定义形状）裁剪视图的内容。&lt;/p>
+&lt;p>当一个视图被 &lt;code>clipShape&lt;/code> 修饰后，其内容会被限制在指定的形状范围内，超出范围的部分将不可见。这个功能在需要自定义视图外观时非常有用，比如将图片裁剪成圆形、圆角矩形等。&lt;/p></description></item><item><title> 系统主题</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/%E7%B3%BB%E7%BB%9F%E4%B8%BB%E9%A2%98/</link><pubDate>Wed, 08 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/%E7%B3%BB%E7%BB%9F%E4%B8%BB%E9%A2%98/</guid><description>&lt;p>下面我会为你提供关于 &lt;strong>系统主题（System Appearance）&lt;/strong> 的一篇成体系的内容，涵盖 iOS 和 macOS 中的 &lt;strong>深色模式（Dark Mode）&lt;/strong> 与 &lt;strong>浅色模式（Light Mode）&lt;/strong>，以及相关概念、开发注意事项、最佳实践等内容。&lt;/p></description></item><item><title>preferredColorScheme</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/preferredColorScheme/</link><pubDate>Wed, 08 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/preferredColorScheme/</guid><description>&lt;h3 id="preferredcolorscheme">
+ &lt;strong>&lt;code>preferredColorScheme&lt;/code> 是什么？&lt;/strong>
+ &lt;a class="anchor" href="#preferredcolorscheme">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;code>preferredColorScheme&lt;/code> 是 &lt;strong>SwiftUI&lt;/strong> 的一个视图修饰符，用来指定某个视图的&lt;strong>外观样式（Light 模式或 Dark 模式）&lt;/strong>。通过它，可以为某些视图强制应用特定的颜色模式（比如浅色模式或深色模式），而不跟随系统的全局设置。&lt;/p></description></item></channel></rss>

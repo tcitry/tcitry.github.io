@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>JavaScript on LYon's Blog</title><link>https://yindongliang.com/tags/JavaScript/</link><description>Recent content in JavaScript on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Sun, 09 Feb 2025 22:44:11 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/JavaScript/index.xml" rel="self" type="application/rss+xml"/><item><title>JavaScript</title><link>https://yindongliang.com/docs/Frontend/JavaScript/</link><pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/JavaScript/</guid><description>&lt;h2 id="dombomwindowdocument">
+ DOM、BOM、Window、Document
+ &lt;a class="anchor" href="#dombomwindowdocument">#&lt;/a>
+&lt;/h2>
+&lt;p>DOM 是操作文档的 API，Document 是其一个对象。&lt;/p>
+&lt;p>BOM 是操作浏览器的 API，Window 是其一个对象。&lt;/p></description></item><item><title>TypeScript</title><link>https://yindongliang.com/docs/Frontend/TypeScript/</link><pubDate>Thu, 16 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/</guid><description>&lt;h2 id="变量">
+ 变量
+ &lt;a class="anchor" href="#%e5%8f%98%e9%87%8f">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="声明符号-varletconst">
+ 声明符号 var、let、const
+ &lt;a class="anchor" href="#%e5%a3%b0%e6%98%8e%e7%ac%a6%e5%8f%b7-varletconst">#&lt;/a>
+&lt;/h3>
+&lt;p>ts 里面基本弃用了 var，使用场景基本只有 let 和 const，用法和 js 一样。&lt;/p>
+&lt;h3 id="问号的用法">
+ ❓问号的用法
+ &lt;a class="anchor" href="#%e9%97%ae%e5%8f%b7%e7%9a%84%e7%94%a8%e6%b3%95">#&lt;/a>
+&lt;/h3>
+&lt;h2 id="类型系统">
+ 类型系统
+ &lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e7%b3%bb%e7%bb%9f">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="类型别名-type">
+ 类型别名 &lt;code>type&lt;/code>
+ &lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e5%88%ab%e5%90%8d-type">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="类型交叉-">
+ 类型交叉 &lt;code>&amp;amp;&lt;/code>
+ &lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e4%ba%a4%e5%8f%89-">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ts" data-lang="ts">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">type&lt;/span> &lt;span style="color:#aa89ea">User&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">name&lt;/span>: &lt;span style="color:#e5c07b">string&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">age&lt;/span>: &lt;span style="color:#e5c07b">number&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">type&lt;/span> &lt;span style="color:#aa89ea">Employee&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">companyId&lt;/span>: &lt;span style="color:#e5c07b">string&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 定义一个交叉类型，包含 User 和 Employee 的所有属性
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">&lt;/span>&lt;span style="color:#76a9f9">type&lt;/span> &lt;span style="color:#aa89ea">UserEmployee&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">User&lt;/span> &lt;span style="color:#54b1c7">&amp;amp;&lt;/span> &lt;span style="color:#aa89ea">Employee&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 使用交叉类型
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">&lt;/span>&lt;span style="color:#76a9f9">const&lt;/span> &lt;span style="color:#aa89ea">ue&lt;/span>: &lt;span style="color:#e5c07b">UserEmployee&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">name&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#63c381">&amp;#34;Alice&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">age&lt;/span>: &lt;span style="color:#e5c07b">28&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">companyId&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#63c381">&amp;#34;1234XYZ&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="类型声明-declare">
+ 类型声明 &lt;code>declare&lt;/code>
+ &lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e5%a3%b0%e6%98%8e-declare">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html">https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html&lt;/a>&lt;/p></description></item><item><title>内置对象</title><link>https://yindongliang.com/docs/Frontend/Global_Objects/</link><pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Global_Objects/</guid><description>&lt;p>JavaScript 没有标准库，但是有一些&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects">内置对象&lt;/a>，可以不需要导入就使用一些类似其他语言的标准库的方法。&lt;/p>
+&lt;h2 id="object">
+ Object
+ &lt;a class="anchor" href="#object">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="assign">
+ assign
+ &lt;a class="anchor" href="#assign">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="keys">
+ keys
+ &lt;a class="anchor" href="#keys">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="hasownproperty">
+ hasOwnProperty
+ &lt;a class="anchor" href="#hasownproperty">#&lt;/a>
+&lt;/h3>
+&lt;p>判断 key 是否在对象中。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">function&lt;/span> &lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">a&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>&lt;span style="color:#aa89ea">hello&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#63c381">&amp;#34;world&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;hello&amp;#34;&lt;/span> &lt;span style="color:#76a9f9">in&lt;/span> &lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">console&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">log&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;has 1&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">hasOwnProperty&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;hello&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">))&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">console&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">log&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;has 2&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// output:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// has 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// has 2
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="undefined">
+ undefined
+ &lt;a class="anchor" href="#undefined">#&lt;/a>
+&lt;/h2>
+&lt;p>undefined 表示的是一个变量为初始化时没有被赋值，得到的就是 &lt;code>undefined&lt;/code>。&lt;/p></description></item><item><title>AJAX 是什么？</title><link>https://yindongliang.com/posts/what-is-AJAX/</link><pubDate>Mon, 02 May 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/what-is-AJAX/</guid><description>&lt;p>这个问题既熟悉又有点陌生，先看概念。AJAX 是 &lt;em>Asynchronous Javavascript XML&lt;/em> 的缩写，即异步 JavaScript 和 XML。使用 AJAX 技术可以在无需重新加载整个网页的情况下，能够更新部分网页，从而给带来更好的用户体验。另外 AJAX 不仅使用 XML，实际上由于 JSON 结构的易读和轻量反而更受欢迎。&lt;/p></description></item><item><title>浏览器的事件机制</title><link>https://yindongliang.com/posts/browser-event/</link><pubDate>Mon, 18 Apr 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/browser-event/</guid><description>&lt;p>事件是在编程时系统内发生的动作或者发生的事情，系统响应事件后，如果需要，我们可以用事件处理器（event handler）对事件做出回应。浏览器中常见的可以触发事件的时机比如有：&lt;/p></description></item><item><title>搞懂原型链</title><link>https://yindongliang.com/posts/prototype-chain/</link><pubDate>Mon, 11 Apr 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/prototype-chain/</guid><description>&lt;p>与一般基于类的面向对象语言（C++、Java）不同，JavaScript 是基于原型的语言。&lt;/p>
+&lt;h2 id="原型-prototype">
+ 原型 &lt;code>[[Prototype]]&lt;/code>
+ &lt;a class="anchor" href="#%e5%8e%9f%e5%9e%8b-prototype">#&lt;/a>
+&lt;/h2>
+&lt;p>打开浏览器的控制台，输入 &lt;code>let b = {&amp;quot;hello&amp;quot;: &amp;quot;world&amp;quot;}&lt;/code> ，然后查看 &lt;code>b&lt;/code> ，你会发现一个 &lt;code>[[Prototype]]&lt;/code> 属性。这是每个对象都有的&lt;strong>隐藏属性&lt;/strong>，它要么为 &lt;code>null&lt;/code>，要么是对另一个对象的引用，那个对象就被称为 &lt;code>b&lt;/code> 的 &lt;em>原型&lt;/em>（proto type）。&lt;/p></description></item><item><title>JS 加号运算符的运用</title><link>https://yindongliang.com/posts/js-plus-operator/</link><pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/js-plus-operator/</guid><description>&lt;h2 id="一元运算符">
+ 一元运算符
+ &lt;a class="anchor" href="#%e4%b8%80%e5%85%83%e8%bf%90%e7%ae%97%e7%ac%a6">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;strong>语法：&lt;/strong> + Expression&lt;/p>
+&lt;p>&lt;strong>说明：&lt;/strong> &lt;code>+&lt;/code> 号运算符作为一元运算符时，Expression将进行 &lt;a href="http://www.ecma-international.org/ecma-262/6.0/#sec-tonumber">ToNumber&lt;/a> 操作。&lt;/p>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>argument类型&lt;/th>
+ &lt;th>返回值&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Undefined&lt;/td>
+ &lt;td>return NaN&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Null&lt;/td>
+ &lt;td>return +0&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Boolean&lt;/td>
+ &lt;td>true return 1; false return 0;&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Number&lt;/td>
+ &lt;td>return value&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>String&lt;/td>
+ &lt;td>若字符串为纯数字时返回转换后的数字；非纯数字返回NaN&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Symbol&lt;/td>
+ &lt;td>抛出 TypeError 异常&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Object&lt;/td>
+ &lt;td>进行以下步骤：1.先进行ToPrimitive(argument, hint Number)得到rs； 2.然后返回 ToNumber(rs)的结果。&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>示例：&lt;/p></description></item><item><title>JS 非空判断</title><link>https://yindongliang.com/posts/js-if-not-empty/</link><pubDate>Sat, 11 Sep 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/js-if-not-empty/</guid><description>&lt;p>在 js 中，有一个富有哲学意味的问题：「什么是空」？先看下面代码：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">function&lt;/span> &lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#54b1c7">!&lt;/span>&lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">console&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">log&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;空&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span> &lt;span style="color:#76a9f9">else&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">console&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">log&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;非空&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#e5c07b">null&lt;/span>&lt;span style="color:#abb2bf">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#e5c07b">undefined&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#e5c07b">NaN&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 以上全是“空”
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>上面这些好像很好判断，那下面这些呢？&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">function&lt;/span> &lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#54b1c7">!&lt;/span>&lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">console&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">log&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;空&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span> &lt;span style="color:#76a9f9">else&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">console&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">log&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;非空&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#e5c07b">Infinity&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#54b1c7">-&lt;/span>&lt;span style="color:#e5c07b">Infinity&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">({})&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">([])&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#76a9f9">function&lt;/span>&lt;span style="color:#abb2bf">(){})&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>很可惜，以上 5 种情况全为“非空”。所以，如果一股脑认为 &lt;code>if(!a)&lt;/code> 就可以判断非空的话，未免有些草率了。。&lt;/p></description></item></channel></rss>
