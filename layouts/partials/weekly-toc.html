@@ -1,20 +1,14 @@
 {{ $curr := .Page.RelPermalink }}
 <nav>
-  <ul>
   {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "weekly")) (where .Site.Pages "Params.date" "!=" nil) }}
-    <li class="book-section-flat">
-      <ul>
-        {{ range $pages }}
-        <li class="flex">
-          {{ if eq .RelPermalink $curr }}
-            <time class="secondary-info">{{ .Date.Format "Jan 2006" }}</time>&nbsp;»&nbsp;<a href="{{ .RelPermalink }}" class="highlight-toc">{{ .Title }}</a>
-          {{ else }}
-            <time class="secondary-info">{{ .Date.Format "Jan 2006" }}</time>&nbsp;»&nbsp;<a href="{{ .RelPermalink }}">{{ .Title }}</a>
-          {{ end }}
-        </li>
-        {{ end }}
-      </ul>
-    </li>
-  </ul>
+    <div class="book-section-flat">
+      {{ range $pages }}
+      <div class="flex">
+        <span style="padding: 0.3rem 0">
+          <time class="secondary-info">{{ .Date.Format "Jan 2006" }}</time>&nbsp;»&nbsp;
+          <a href="{{ .RelPermalink }}" {{ if eq .RelPermalink $curr }}class="highlight-toc"{{ end }}>{{ .Title }}</a>
+        </span>
+      </div>
+      {{ end }}
+    </div>
 </nav>
-
