@@ -1,0 +1,1613 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>2024 on LYon's Blog</title><link>https://yindongliang.com/categories/2024/</link><description>Recent content in 2024 on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Sat, 07 Jun 2025 20:47:45 +0800</lastBuildDate><atom:link href="https://yindongliang.com/categories/2024/index.xml" rel="self" type="application/rss+xml"/><item><title>集体智慧编程</title><link>https://yindongliang.com/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/</link><pubDate>Mon, 18 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E9%9B%86%E4%BD%93%E6%99%BA%E6%85%A7%E7%BC%96%E7%A8%8B/</guid><description>&lt;h2 id="第一章提供推荐">
+ 第一章：提供推荐
+ &lt;a class="anchor" href="#%e7%ac%ac%e4%b8%80%e7%ab%a0%e6%8f%90%e4%be%9b%e6%8e%a8%e8%8d%90">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="欧几里得距离">
+ 欧几里得距离
+ &lt;a class="anchor" href="#%e6%ac%a7%e5%87%a0%e9%87%8c%e5%be%97%e8%b7%9d%e7%a6%bb">#&lt;/a>
+&lt;/h3>
+&lt;p>欧氏距离是平方和的开方，欧氏距离越小，则两个向量的相似度越大。&lt;/p>
+&lt;p>$$d = \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}$$&lt;/p>
+&lt;p>对于两个 n 维向量 $\mathbf{A} = (a_1, a_2, &amp;hellip;, a_n)$ 和 $\mathbf{B} = (b_1, b_2, &amp;hellip;, b_n)$，它们之间的欧氏距离 $d$ 可以表示为：&lt;/p></description></item><item><title>TypeScript</title><link>https://yindongliang.com/docs/Frontend/TypeScript/</link><pubDate>Thu, 16 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/</guid><description>&lt;h2 id="变量">
+ 变量
+ &lt;a class="anchor" href="#%e5%8f%98%e9%87%8f">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="声明符号-varletconst">
+ 声明符号 var、let、const
+ &lt;a class="anchor" href="#%e5%a3%b0%e6%98%8e%e7%ac%a6%e5%8f%b7-varletconst">#&lt;/a>
+&lt;/h3>
+&lt;p>ts 里面基本弃用了 var，使用场景基本只有 let 和 const，用法和 js 一样。&lt;/p>
+&lt;h3 id="问号的用法">
+ ❓问号的用法
+ &lt;a class="anchor" href="#%e9%97%ae%e5%8f%b7%e7%9a%84%e7%94%a8%e6%b3%95">#&lt;/a>
+&lt;/h3>
+&lt;h2 id="类型系统">
+ 类型系统
+ &lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e7%b3%bb%e7%bb%9f">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="类型别名-type">
+ 类型别名 &lt;code>type&lt;/code>
+ &lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e5%88%ab%e5%90%8d-type">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="类型交叉-">
+ 类型交叉 &lt;code>&amp;amp;&lt;/code>
+ &lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e4%ba%a4%e5%8f%89-">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ts" data-lang="ts">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">type&lt;/span> &lt;span style="color:#aa89ea">User&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">name&lt;/span>: &lt;span style="color:#e5c07b">string&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">age&lt;/span>: &lt;span style="color:#e5c07b">number&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">type&lt;/span> &lt;span style="color:#aa89ea">Employee&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">companyId&lt;/span>: &lt;span style="color:#e5c07b">string&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 定义一个交叉类型，包含 User 和 Employee 的所有属性
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">&lt;/span>&lt;span style="color:#76a9f9">type&lt;/span> &lt;span style="color:#aa89ea">UserEmployee&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">User&lt;/span> &lt;span style="color:#54b1c7">&amp;amp;&lt;/span> &lt;span style="color:#aa89ea">Employee&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 使用交叉类型
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">&lt;/span>&lt;span style="color:#76a9f9">const&lt;/span> &lt;span style="color:#aa89ea">ue&lt;/span>: &lt;span style="color:#e5c07b">UserEmployee&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">name&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#63c381">&amp;#34;Alice&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">age&lt;/span>: &lt;span style="color:#e5c07b">28&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">companyId&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#63c381">&amp;#34;1234XYZ&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="类型声明-declare">
+ 类型声明 &lt;code>declare&lt;/code>
+ &lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e5%a3%b0%e6%98%8e-declare">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html">https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html&lt;/a>&lt;/p></description></item><item><title>周志华西瓜书</title><link>https://yindongliang.com/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/</link><pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Algorithms/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E5%91%A8%E5%BF%97%E5%8D%8E%E8%A5%BF%E7%93%9C%E4%B9%A6/</guid><description>&lt;p>&lt;a href="https://www.bilibili.com/video/BV1gG411f7zX/?share_source=copy_web&amp;amp;vd_source=fe111319444213c0651c9b0de9740974">周志华老师亲讲-西瓜书《机器学习》&lt;/a>&lt;/p>
+&lt;p>手推笔记&lt;br>
+&lt;a href="https://github.com/Sophia-11/Machine-Learning-Notes">https://github.com/Sophia-11/Machine-Learning-Notes&lt;/a>&lt;/p>
+&lt;h2 id="基础概念">
+ 基础概念
+ &lt;a class="anchor" href="#%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;strong>真相（Ground Truth）&lt;/strong>：在机器学习和数据科学中，&amp;ldquo;真相&amp;quot;指的是实际情况或数据的真实状态。这通常是指标准答案或一个已知的事实，用于训练和验证机器学习模型。例如，在图像识别任务中，标记图像中对象的正确标签就是&amp;quot;真相&amp;rdquo;。&lt;/p></description></item><item><title>Shell 脚本</title><link>https://yindongliang.com/docs/Linux/Shell/</link><pubDate>Tue, 19 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/Shell/</guid><description>&lt;h2 id="bash-版本">
+ Bash 版本
+ &lt;a class="anchor" href="#bash-%e7%89%88%e6%9c%ac">#&lt;/a>
+&lt;/h2>
+&lt;p>Dash: Debian Almquist shell&lt;/p>
+&lt;p>现在 zsh 比较常用，配合 &lt;a href="https://ohmyz.sh/">oh-my-zsh&lt;/a> 使用更香，zsh 相比 bash 还支持更多脚本功能。&lt;/p>
+&lt;h2 id="shell-的父子关系">
+ Shell 的父子关系
+ &lt;a class="anchor" href="#shell-%e7%9a%84%e7%88%b6%e5%ad%90%e5%85%b3%e7%b3%bb">#&lt;/a>
+&lt;/h2>
+&lt;p>通过 &lt;code>ps -f&lt;/code> 可以查看 &lt;code>PID&lt;/code> 和 &lt;code>PPID&lt;/code> 号来判断父子关系，创建了子 Shell 就意味着创建了子进程。&lt;/p></description></item><item><title>HTML</title><link>https://yindongliang.com/docs/Frontend/HTML/</link><pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/HTML/</guid><description>&lt;h2 id="viewport">
+ Viewport
+ &lt;a class="anchor" href="#viewport">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Viewport_meta_tag">https://developer.mozilla.org/zh-CN/docs/Web/HTML/Viewport_meta_tag&lt;/a>&lt;/p>
+&lt;h2 id="aside">
+ aside
+ &lt;a class="anchor" href="#aside">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/aside">https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/aside&lt;/a>&lt;/p></description></item><item><title>微积分</title><link>https://yindongliang.com/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/</link><pubDate>Tue, 02 Jan 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E5%BE%AE%E7%A7%AF%E5%88%86/</guid><description>&lt;p>本节目的只是了解基本的微积分概念，太高级的还是回去看《高等数学》上下两册吧。&lt;/p>
+&lt;h2 id="参考">
+ 参考
+ &lt;a class="anchor" href="#%e5%8f%82%e8%80%83">#&lt;/a>
+&lt;/h2>
+&lt;p>基础概念也可以直接上&lt;a href="https://shuxuele.com/">数学乐&lt;/a>，非常易懂。&lt;/p>
+&lt;h2 id="极限">
+ 极限
+ &lt;a class="anchor" href="#%e6%9e%81%e9%99%90">#&lt;/a>
+&lt;/h2>
+&lt;p>以函数 $f(x) = \frac{1}{x}$ 为例，我们可以探讨当 $x$ 趋近于无穷大 $(x \to \infty)$ 或趋近于零 $(x \to 0)$ 时，$f(x)$ 的极限行为。&lt;/p></description></item><item><title>CSS</title><link>https://yindongliang.com/docs/Frontend/CSS/</link><pubDate>Thu, 30 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/CSS/</guid><description>&lt;h2 id="position">
+ position
+ &lt;a class="anchor" href="#position">#&lt;/a>
+&lt;/h2>
+&lt;p>CSS 的 &lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/position">&lt;code>position&lt;/code>&lt;/a> 属性及其几个选项，可以分为两大类：相对定位（&lt;code>relative&lt;/code> 和 &lt;code>sticky&lt;/code>）和绝对定位（&lt;code>absolute&lt;/code> 和 &lt;code>fixed&lt;/code>）。&lt;/p>
+&lt;h3 id="1-position-static">
+ 1. &lt;code>position: static&lt;/code>
+ &lt;a class="anchor" href="#1-position-static">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>默认值&lt;/strong>：所有元素的默认值。元素遵循正常的文档流，不受 &lt;code>top&lt;/code>, &lt;code>right&lt;/code>, &lt;code>bottom&lt;/code>, &lt;code>left&lt;/code> 等位置属性的影响。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：不需要显式定位时使用。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;static&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Static element (default)&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">static&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">static&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightgrey&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-position-relative">
+ 2. &lt;code>position: relative&lt;/code>
+ &lt;a class="anchor" href="#2-position-relative">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>相对定位&lt;/strong>：相对于其正常位置进行定位。&lt;code>top&lt;/code>, &lt;code>right&lt;/code>, &lt;code>bottom&lt;/code>, &lt;code>left&lt;/code> 会使元素相对于其在正常文档流中的位置进行偏移，而不会影响其他元素。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：当需要微调元素位置或作为绝对定位元素的容器时。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;relative-container&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;relative&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Relative element&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">relative-container&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightgreen&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">height&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">200&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">relative&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">relative&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">top&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">20&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">left&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">30&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightblue&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-position-absolute">
+ 3. &lt;code>position: absolute&lt;/code>
+ &lt;a class="anchor" href="#3-position-absolute">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>绝对定位&lt;/strong>：相对于最近的定位祖先（不是 &lt;code>static&lt;/code> 的祖先元素）或相对于整个文档进行定位。元素脱离文档流，不会影响其他元素的位置。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：将元素精确放置在容器内的特定位置。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;absolute-container&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;absolute&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Absolute element&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">absolute-container&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">relative&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightyellow&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">height&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">200&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">absolute&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">absolute&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">top&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">20&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">right&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">30&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightcoral&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="4-position-fixed">
+ 4. &lt;code>position: fixed&lt;/code>
+ &lt;a class="anchor" href="#4-position-fixed">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>固定定位&lt;/strong>：相对于浏览器窗口进行定位。元素始终保持在指定位置，不受页面滚动的影响。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：创建始终可见的导航栏或按钮等。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;fixed&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Fixed element&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">fixed&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">fixed&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">bottom&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">20&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">right&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">30&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightsalmon&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="5-position-sticky">
+ 5. &lt;code>position: sticky&lt;/code>
+ &lt;a class="anchor" href="#5-position-sticky">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>粘性定位&lt;/strong>：结合了相对定位和固定定位的特性。元素根据用户的滚动位置进行定位，在特定条件下固定在视口的某个位置。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：创建在某个滚动阈值内保持固定然后随其滚动的内容。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;sticky-container&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;sticky&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Sticky element&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">p&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Scroll down to see the sticky element in action.&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">p&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">p&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vel urna elit. Donec consequat massa vel leo volutpat, eget tincidunt velit ullamcorper...&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">p&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">sticky-container&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">height&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">200&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">overflow-y&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">scroll&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightgoldenrodyellow&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">sticky&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#76a9f9">-webkit-&lt;/span>&lt;span style="color:#e5c07b">sticky&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">/* For Safari */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">sticky&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">top&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightpink&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="总结">
+ 总结
+ &lt;a class="anchor" href="#%e6%80%bb%e7%bb%93">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>static&lt;/code>：默认值，不进行任何特殊定位。&lt;/li>
+&lt;li>&lt;code>relative&lt;/code>：相对自身的正常位置进行定位，仍保留其在文档流中的空间。&lt;/li>
+&lt;li>&lt;code>absolute&lt;/code>：相对于最近的定位祖先进行定位，脱离文档流。&lt;/li>
+&lt;li>&lt;code>fixed&lt;/code>：相对于浏览器窗口进行定位，脱离文档流，不随页面滚动。&lt;/li>
+&lt;li>&lt;code>sticky&lt;/code>：在特定条件下相对定位和固定定位之间切换。&lt;/li>
+&lt;/ul>
+&lt;h2 id="opacity">
+ opacity
+ &lt;a class="anchor" href="#opacity">#&lt;/a>
+&lt;/h2>
+&lt;p>透明度设置，这个属性兴许只是单词不认识，所以不好记。&lt;/p></description></item><item><title>概率统计</title><link>https://yindongliang.com/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/</link><pubDate>Sun, 03 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%A6%82%E7%8E%87%E7%BB%9F%E8%AE%A1/</guid><description>&lt;h2 id="参考资料">
+ 参考资料
+ &lt;a class="anchor" href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#&lt;/a>
+&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://book.douban.com/subject/26593822/">程序员的数学 2：概率统计&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://book.douban.com/subject/30250554/">从掷骰子到阿尔法狗：趣谈概率&lt;/a>&lt;/li>
+&lt;li>ChatGPT 4.0&lt;/li>
+&lt;/ul>
+&lt;h2 id="基础概念">
+ 基础概念
+ &lt;a class="anchor" href="#%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="符号大全">
+ 符号大全
+ &lt;a class="anchor" href="#%e7%ac%a6%e5%8f%b7%e5%a4%a7%e5%85%a8">#&lt;/a>
+&lt;/h3>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>符号&lt;/th>
+ &lt;th>含义&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Ω&lt;/td>
+ &lt;td>全集&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>⏀&lt;/td>
+ &lt;td>空集&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h3 id="平均数">
+ 平均数
+ &lt;a class="anchor" href="#%e5%b9%b3%e5%9d%87%e6%95%b0">#&lt;/a>
+&lt;/h3>
+&lt;p>平均数（Mean），也常被称为算术平均值，是最常用的集中趋势的度量。&lt;/p></description></item><item><title>线性代数</title><link>https://yindongliang.com/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/</link><pubDate>Tue, 02 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/</guid><description>&lt;h2 id="参考">
+ 参考
+ &lt;a class="anchor" href="#%e5%8f%82%e8%80%83">#&lt;/a>
+&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://book.douban.com/subject/26740548/">程序员的数学3：线性代数&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="基本概念">
+ 基本概念
+ &lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="向量vector">
+ 向量（vector）
+ &lt;a class="anchor" href="#%e5%90%91%e9%87%8fvector">#&lt;/a>
+&lt;/h3>
+&lt;p>向量是数学、物理学和工程学中的一个基本概念，它表示具有大小和方向的量。向量可以用来表示力、速度、加速度等物理量。在数学中，向量既可以在几何上表示，也可以通过坐标系以数值形式表示。标量（scalar）指没有方向的量，和向量相区别。&lt;/p></description></item><item><title>TimeInterval</title><link>https://yindongliang.com/docs/Apple/Foundation/TimeInterval/</link><pubDate>Tue, 31 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/TimeInterval/</guid><description>&lt;h3 id="timeinterval">
+ &lt;strong>&lt;code>TimeInterval&lt;/code> 是什么？&lt;/strong>
+ &lt;a class="anchor" href="#timeinterval">#&lt;/a>
+&lt;/h3>
+&lt;p>在 Swift 和 Foundation 框架中，&lt;code>TimeInterval&lt;/code> 是一个用于表示 &lt;strong>时间间隔&lt;/strong> 或 &lt;strong>持续时间&lt;/strong> 的类型。它实际上是 &lt;code>Double&lt;/code> 的一个别名，用于表示以 &lt;strong>秒（seconds）为单位的时间间隔&lt;/strong>。&lt;/p></description></item><item><title>Timer</title><link>https://yindongliang.com/docs/Apple/Foundation/Timer/</link><pubDate>Tue, 31 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/Timer/</guid><description>&lt;p>在 Swift 中，&lt;a href="https://developer.apple.com/documentation/foundation/timer">&lt;code>Timer&lt;/code>&lt;/a> 是一个非常常用的类，用于在指定的时间间隔内执行某些代码块。它可以用于实现定时任务、延迟执行、重复任务等功能。&lt;/p>
+&lt;p>以下是关于 &lt;code>Timer&lt;/code> 的详细介绍，包括其使用方式、常见场景以及注意事项。&lt;/p></description></item><item><title> 闭包（closure）（闭包捕获）</title><link>https://yindongliang.com/docs/Apple/Swift/closure-%E9%97%AD%E5%8C%85/</link><pubDate>Mon, 30 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/closure-%E9%97%AD%E5%8C%85/</guid><description>&lt;h2 id="在捕获列表中使用弱引用">
+ 在捕获列表中使用弱引用
+ &lt;a class="anchor" href="#%e5%9c%a8%e6%8d%95%e8%8e%b7%e5%88%97%e8%a1%a8%e4%b8%ad%e4%bd%bf%e7%94%a8%e5%bc%b1%e5%bc%95%e7%94%a8">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;code>[weak self]&lt;/code> 是 Swift 中闭包（closure）捕获列表的一部分，用于避免强引用循环（retain cycles）。在使用闭包时，特别是在异步操作或定时器中，闭包可能会捕获其上下文中的对象（如 &lt;code>self&lt;/code>），这可能导致内存泄漏。以下是对 &lt;code>[weak self]&lt;/code> 的详细解释：&lt;/p></description></item><item><title> 生命周期 onAppear 等</title><link>https://yindongliang.com/docs/Apple/SwiftUI/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/life-cycle-method/</link><pubDate>Mon, 30 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/life-cycle-method/</guid><description>&lt;p>在 SwiftUI 中，生命周期管理是一项重要功能，开发者需要在某个视图的特定阶段执行代码逻辑，例如当视图出现、消失、弹出回到页面时响应事件。除了 &lt;code>onAppear&lt;/code> 和 &lt;code>onDisappear&lt;/code> 之外，SwiftUI 提供了一些其他的生命周期管理相关修饰符和工具。&lt;/p></description></item><item><title>@Query</title><link>https://yindongliang.com/docs/Apple/SwiftData/Query/</link><pubDate>Mon, 30 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftData/Query/</guid><description>&lt;ul>
+&lt;li>&lt;a href="https://developer.apple.com/documentation/swiftdata/filtering-and-sorting-persistent-data">Filtering and sorting persistent data&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://developer.apple.com/documentation/swiftdata/query">https://developer.apple.com/documentation/swiftdata/query&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>在 &lt;strong>SwiftData&lt;/strong>（Apple 最新的数据持久化框架）中，可以通过 &lt;strong>Filtering&lt;/strong>（过滤）和 &lt;strong>Sorting&lt;/strong>（排序）对数据进行查询和组织。这些操作在 SwiftData 的 &lt;code>@Query&lt;/code> 属性包装器中得到了优雅且易用的处理。&lt;/p></description></item><item><title>AVFAudio 和 AVFoundation</title><link>https://yindongliang.com/docs/Apple/Frameworks/AVFoundation/AVFAudio-%E5%92%8C-AVFoundation/</link><pubDate>Mon, 30 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Frameworks/AVFoundation/AVFAudio-%E5%92%8C-AVFoundation/</guid><description>&lt;p>在 iOS 和 macOS 开发中，&lt;code>AVFoundation&lt;/code> 和 &lt;code>AVFAudio&lt;/code> 都是用于处理音频和视频的框架，它们有一定的联系但功能和范围不同。这里我们通过 &lt;strong>关系&lt;/strong>、&lt;strong>功能范围&lt;/strong> 和 &lt;strong>使用场景&lt;/strong> 来解释它们之间的联系与区别。&lt;/p></description></item><item><title>dismiss 使用</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Method/dismiss/</link><pubDate>Mon, 30 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Method/dismiss/</guid><description>&lt;p>&lt;code>dismiss&lt;/code> 通常作为 &lt;code>Environment&lt;/code> 的一部分被讨论，而不是作为单独的函数。你可以在以下位置找到相关信息：&lt;/p>
+&lt;ol>
+&lt;li>SwiftUI 文档中的 &lt;code>Environment&lt;/code> 部分：&lt;a href="https://developer.apple.com/documentation/swiftui/environment">https://developer.apple.com/documentation/swiftui/environment&lt;/a>&lt;/li>
+&lt;li>&lt;code>DismissAction&lt;/code> 的文档：&lt;a href="https://developer.apple.com/documentation/swiftui/dismissaction">https://developer.apple.com/documentation/swiftui/dismissaction&lt;/a>&lt;/li>
+&lt;/ol>
+&lt;p>&lt;code>@Environment(\.dismiss) private var dismiss&lt;/code> 和随后调用 &lt;code>dismiss()&lt;/code> 是 SwiftUI 中用于关闭或退出当前视图的一种机制。让我详细解释一下这个过程：&lt;/p></description></item><item><title>GeometryReader</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Layout/GeometryReader/</link><pubDate>Mon, 30 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Layout/GeometryReader/</guid><description>&lt;h3 id="什么是-geometryreader">
+ &lt;strong>什么是&lt;/strong> &lt;code>GeometryReader&lt;/code>&lt;strong>？&lt;/strong>
+ &lt;a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-geometryreader">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;a href="https://developer.apple.com/documentation/swiftui/geometryreader#">&lt;code>GeometryReader&lt;/code>&lt;/a> 是 &lt;strong>SwiftUI&lt;/strong> 中的一个布局容器，它用于提供子视图的几何信息（比如视图的宽度、高度、相对于父视图的位置等）。通过 &lt;code>GeometryReader&lt;/code>，你可以动态调整视图的布局和位置，以适应不同屏幕尺寸、方向或设备的需求。&lt;/p></description></item><item><title>开源示例</title><link>https://yindongliang.com/docs/Apple/Xcode/Github-Code/</link><pubDate>Mon, 30 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Xcode/Github-Code/</guid><description>&lt;h2 id="swiftui">
+ SwiftUI
+ &lt;a class="anchor" href="#swiftui">#&lt;/a>
+&lt;/h2>
+&lt;p>我很高兴为您推荐一些符合您要求的开源项目。以下是几个可能符合您条件的SwiftUI项目,它们都是iOS平台的,使用Swift语言开发,并且在最近一年内有更新:&lt;/p></description></item><item><title>类（Class）</title><link>https://yindongliang.com/docs/Apple/Swift/swift-class/</link><pubDate>Mon, 30 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/swift-class/</guid><description>&lt;p>Swift 是一种面向对象（OOP，&lt;strong>Object-Oriented Programming&lt;/strong>）语言，支持面向对象设计中的主要特性，比如 &lt;strong>类&lt;/strong>、&lt;strong>对象&lt;/strong>、&lt;strong>继承&lt;/strong>、&lt;strong>多态&lt;/strong> 和 &lt;strong>封装&lt;/strong>。同时，Swift 提供了许多其他现代化的功能，使面向对象编程更加强大和灵活。&lt;/p></description></item><item><title>泛型（Generics）</title><link>https://yindongliang.com/docs/Apple/Swift/swift-generics/</link><pubDate>Fri, 27 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/swift-generics/</guid><description>&lt;p>&lt;a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/generics/">泛型&lt;/a>（Generics）是 Swift 语言中的强大特性，它允许你编写灵活且可重用的代码。通过使用泛型，你可以让函数、方法、类、结构体和枚举适用于任何类型，而不需要重复编写相同的代码。泛型有助于编写更加抽象和通用的代码，从而提高代码的复用性和类型安全性。&lt;/p></description></item><item><title>枚举（Enumerations）</title><link>https://yindongliang.com/docs/Apple/Swift/swift-enum/</link><pubDate>Fri, 27 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/swift-enum/</guid><description>&lt;p>&lt;a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/enumerations/">枚举&lt;/a>（Enumeration）是 Swift 中的一种强大的数据类型，它允许你定义一组相关的值，并且每个值都被认为是同一类型的一部分。枚举可以帮助你组织代码，更好地表示和处理一组相关的值。&lt;/p></description></item><item><title>被 Windsurf 惊艳到了</title><link>https://yindongliang.com/weekly/2024/2024-W52/</link><pubDate>Mon, 23 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W52/</guid><description>&lt;ul>
+&lt;li>在上海远程办公了大半个月，工作日每天固定时间出来和媳妇吃午饭和晚饭，感觉上海的 12 月尤其是下旬，真不算冷。&lt;/li>
+&lt;li>在追剧，清明上河图密码和天下长河，前者属于快餐，后者有点好看。&lt;/li>
+&lt;li>之前收藏的几个 &lt;a href="https://yindongliang.com/docs/Awesome/awesome-ai-tools/">Awesome AI Chat 工具&lt;/a>，初步体验下来，目前觉得 &lt;a href="https://devv.ai">devv.ai&lt;/a> 做的相对较好，条理性比较强。&lt;a href="https://v0.dev">v0.dev&lt;/a> 也不错，但是优势尤其在 Vercel 相关生态和 web 前端技术栈，我还没应用到相关场景。&lt;/li>
+&lt;li>周末装上了 &lt;a href="https://codeium.com/">Windsurf&lt;/a>，试了下也很惊艳，也很好用，目前都没付费，先观望着。&lt;/li>
+&lt;li>估计是迫于 Cursor 和 Windsurf 的压力，Copilot for VS Code &lt;a href="https://code.visualstudio.com/blogs/2024/12/18/free-github-copilot">免费&lt;/a>了，有 GitHub 账户就行。
+&lt;ul>
+&lt;li>之前我的 VS Code 还在用免费的 Cody 和 Codeium，Copilot 只在公司能用，现在虽然免费了可能也已经晚了，估计 Copilot 也在开发类似 Cursor 的工作流吧，主要是模型不知道能用什么，我猜毕竟大厂不好意思用别人的 Sonnet 吧。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>关于最适合使用 Cursor 和 Windsurf 的场景，目前结论是：
+&lt;ul>
+&lt;li>搭建项目框架初期、缺乏技术实现能力还想快速验证 demo 时（这一点非常非常有用），这里是 AI 在技术广度上的优势。
+&lt;ul>
+&lt;li>技术是可以后续花时间学习掌握的，但是做决策需要先有 demo 展示。&lt;/li>
+&lt;li>这些场景在前端和小型的独立软件比较常见。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>随着项目复杂度增加，使用 Cursor 工具的场景可能会越少，尤其是很多需要微调细节、关联业务逻辑、代码文件之间相互交叉影响、优化性能之类的场景，尤其是线上千万级用户时，还是需要技术深度、业务理解能力、软件工程能力做支撑。
+&lt;ul>
+&lt;li>这些场景在大型系统级软件以及后端（简单说就是大厂）比较常见。&lt;/li>
+&lt;li>所以基于此，我猜大厂这次不会跟进太快，反而是个人独立开发领域会快速上手。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Cursor / Windsurf 都应该是目前写单测的最佳工具了吧。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>IndieGoodies&lt;br>
+&lt;a href="https://indiegoodies.com/">https://indiegoodies.com/&lt;/a>&lt;/p></description></item><item><title>SwiftUI VIPER 架构</title><link>https://yindongliang.com/docs/Apple/Xcode/SwiftUI-VIPER/</link><pubDate>Fri, 20 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Xcode/SwiftUI-VIPER/</guid><description>&lt;p>&lt;code>SwiftUI VIPER Architecture&lt;/code> 是一种将 VIPER 架构模式（&lt;strong>View-Interactor-Presenter-Entity-Router&lt;/strong>）应用于 &lt;strong>SwiftUI&lt;/strong> 的开发方式。VIPER 是一种模块化的架构设计模式，其目的是将项目逻辑分离，不同责任模块各司其职，从而提升代码的可维护性、可扩展性和测试能力。&lt;/p></description></item><item><title>通知机制 APNs</title><link>https://yindongliang.com/docs/Apple/Xcode/APNs/</link><pubDate>Fri, 20 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Xcode/APNs/</guid><description>&lt;h3 id="apple-push-notification-service-apns-全详解">
+ &lt;strong>Apple Push Notification Service (APNs) 全详解&lt;/strong>
+ &lt;a class="anchor" href="#apple-push-notification-service-apns-%e5%85%a8%e8%af%a6%e8%a7%a3">#&lt;/a>
+&lt;/h3>
+&lt;p>Apple Push Notification Service (&lt;strong>APNs&lt;/strong>, Apple 推送通知服务) 是一个通过 Apple 提供的云服务，向 iOS、iPadOS、macOS、watchOS 和 tvOS 设备发送远程通知的机制。它是 Apple 平台中各种推送通知（消息、提示）的核心技术。&lt;/p></description></item><item><title>iOS 数据持久化方案</title><link>https://yindongliang.com/docs/Apple/Xcode/iOS-%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E6%A1%88/</link><pubDate>Wed, 18 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Xcode/iOS-%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E6%A1%88/</guid><description>&lt;p>在 iOS 开发中，数据持久化是一项极其重要的功能，用于保存数据以便用户在重新启动应用时仍然可以使用或访问之前的数据内容。根据开发需求和数据复杂度，iOS 提供了多种持久化方案。以下是目前 iOS 开发中常用的持久化方法及其适用场景：&lt;/p></description></item><item><title>买了 Apple 开发者账号</title><link>https://yindongliang.com/weekly/2024/2024-W51/</link><pubDate>Mon, 16 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W51/</guid><description>&lt;p>前两天买了 Apple 开发者账号，然后通过 Cloudkit 跑通了设备间数据的同步，虽然功能很简单，但是也很有收获感，先从一个 Todo App 开始吧 🐶，跑通流程。&lt;/p>
+&lt;p>本周看完村上的《小城与不确定性的墙》，看村上的书有个问题，不好做条理性总结，他自己强调小说家只是起到润滑剂的作用，我也没期望有什么太多收获，无非是制造无聊然后再打发无聊。也许未来生活的某一刻我会想起书中的内容，就是很好的体验了。&lt;/p></description></item><item><title>如何执行一个 swift 文件</title><link>https://yindongliang.com/docs/Apple/Xcode/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E4%B8%80%E4%B8%AA-swift-%E6%96%87%E4%BB%B6/</link><pubDate>Mon, 16 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Xcode/%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E4%B8%80%E4%B8%AA-swift-%E6%96%87%E4%BB%B6/</guid><description>&lt;p>在 &lt;strong>Swift&lt;/strong> 中，是否需要编写 &lt;code>main&lt;/code> 方法取决于你如何执行 Swift 文件以及项目的具体需求。以下是详细的说明，帮助你了解在不同场景下如何运行 Swift 文件以及是否需要 &lt;code>main&lt;/code> 方法。&lt;/p></description></item><item><title>小红书正在聚集独立开发者</title><link>https://yindongliang.com/weekly/2024/2024-W50/</link><pubDate>Wed, 11 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W50/</guid><description>&lt;p>12 月以来，在小红书已经关注了将近 100 位已经在 iOS 平台上架 App 的独立开发者，他们在小红书通过视频和卡片形式推荐自己的 App，而且推荐算法还在不断给我推荐新博主。从体感来看，这其中有一半是本就有编程经验的程序员出身，剩下的则是一些大厂出身的产品经理和设计师比较多（特意强调大厂可能因为他们学习能力确实比较强），而他们又大多是通过 Cursor 来帮助自己实现代码功能并上架了 App，而我关注到的这至少 100 位独立开发者则清一色都是在 iOS 的 App Store 上架的苹果手机专属 App，这些现象都说明了很多事情。&lt;/p></description></item><item><title>官方示例</title><link>https://yindongliang.com/docs/Apple/Xcode/apple-sample-code/</link><pubDate>Sun, 08 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Xcode/apple-sample-code/</guid><description>&lt;h2 id="官方教程">
+ 官方教程
+ &lt;a class="anchor" href="#%e5%ae%98%e6%96%b9%e6%95%99%e7%a8%8b">#&lt;/a>
+&lt;/h2>
+&lt;ul>
+&lt;li>SwiftUI Tutorials
+&lt;ul>
+&lt;li>&lt;a href="https://developer.apple.com/tutorials/swiftui/">https://developer.apple.com/tutorials/swiftui/&lt;/a>&lt;/li>
+&lt;li>&lt;strong>Landmarks&lt;/strong>&lt;/li>
+&lt;li>SwiftUI essentials
+&lt;ul>
+&lt;li>Views&lt;/li>
+&lt;li>Lists and navigation&lt;/li>
+&lt;li>Handling user input&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Drawing and animation&lt;/li>
+&lt;li>App design and layout&lt;/li>
+&lt;li>Framework intergration
+&lt;ul>
+&lt;li>UIKit&lt;/li>
+&lt;li>watchOS&lt;/li>
+&lt;li>macOS&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>SwiftUI Concepts Tutorial
+&lt;ul>
+&lt;li>&lt;a href="https://developer.apple.com/tutorials/swiftui-concepts">https://developer.apple.com/tutorials/swiftui-concepts&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Simple Apps Tutorials
+&lt;ul>
+&lt;li>&lt;a href="https://developer.apple.com/tutorials/sample-apps">https://developer.apple.com/tutorials/sample-apps&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Develop apps for Apple platforms
+&lt;ul>
+&lt;li>&lt;a href="https://developer.apple.com/tutorials/app-dev-training">https://developer.apple.com/tutorials/app-dev-training&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Develop in Swift Tutorials
+&lt;ul>
+&lt;li>&lt;a href="https://developer.apple.com/tutorials/develop-in-swift">https://developer.apple.com/tutorials/develop-in-swift&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="sample-code">
+ Sample Code
+ &lt;a class="anchor" href="#sample-code">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>模块&lt;/th>
+ &lt;th>项目名称&lt;/th>
+ &lt;th>关联文档&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>SwiftUI&lt;/td>
+ &lt;td>WritingApp&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/swiftui/building-a-document-based-app-with-swiftui">Building a document-based app with SwiftUI&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SwiftData&lt;/td>
+ &lt;td>SwiftDataFlashCardSample&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/swiftui/building-a-document-based-app-using-swiftdata">Building a document-based app using SwiftData&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>CoreData / SwiftData&lt;/td>
+ &lt;td>SampleTrips&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/coredata/adopting_swiftdata_for_a_core_data_app/">Adopting SwiftData for a Core Data app&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>CoreData&lt;/td>
+ &lt;td>CoreDataCloudKitShare&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/coredata/sharing_core_data_objects_between_icloud_users">Sharing Core Data objects between iCloud users&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>CloudKit&lt;/td>
+ &lt;td>&lt;a href="https://github.com/apple?q=cloudkit-sample&amp;amp;type=repository">https://github.com/apple?q=cloudkit-sample&amp;type=repository&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/icloud/cloudkit/">https://developer.apple.com/icloud/cloudkit/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SwiftUI / visionOS&lt;/td>
+ &lt;td>Destination Video&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/visionos/destination-video">https://developer.apple.com/documentation/visionos/destination-video&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>UIKit&lt;/td>
+ &lt;td>Supporting multiple windows on iPad&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/uikit/supporting-multiple-windows-on-ipad">https://developer.apple.com/documentation/uikit/supporting-multiple-windows-on-ipad&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SwiftUI&lt;/td>
+ &lt;td>Creating custom container views&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/swiftui/creating-custom-container-views">https://developer.apple.com/documentation/swiftui/creating-custom-container-views&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SwiftUI - Navigation&lt;/td>
+ &lt;td>Bringing robust navigation structure to your SwiftUI app&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/swiftui/bringing-robust-navigation-structure-to-your-swiftui-app">https://developer.apple.com/documentation/swiftui/bringing-robust-navigation-structure-to-your-swiftui-app&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SwiftData&lt;/td>
+ &lt;td>Filtering and sorting persistent data&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/swiftdata/filtering-and-sorting-persistent-data">https://developer.apple.com/documentation/swiftdata/filtering-and-sorting-persistent-data&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>AVFAudio&lt;/td>
+ &lt;td>Capturing stereo audio from built-In microphones&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/avfaudio/capturing-stereo-audio-from-built-in-microphones">https://developer.apple.com/documentation/avfaudio/capturing-stereo-audio-from-built-in-microphones&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SwiftUI - Layouts&lt;/td>
+ &lt;td>Composing custom layouts with SwiftUI&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/swiftui/composing_custom_layouts_with_swiftui">https://developer.apple.com/documentation/swiftui/composing_custom_layouts_with_swiftui&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>UserDefaults</title><link>https://yindongliang.com/docs/Apple/Foundation/Foundation-Preference-UserDefaults/</link><pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/Foundation-Preference-UserDefaults/</guid><description>&lt;p>&lt;a href="https://developer.apple.com/documentation/foundation/userdefaults">&lt;code>UserDefaults&lt;/code>&lt;/a> 是 Swift 和 Objective-C 编程中一种轻量级的持久存储方式，适用于存储用户设置、偏好、简单应用配置等。以下是一些在 Swift 中使用 &lt;code>UserDefaults&lt;/code> 的基本方法和示例。&lt;/p>
+&lt;h2 id="基本用法">
+ 基本用法
+ &lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e7%94%a8%e6%b3%95">#&lt;/a>
+&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>存储数据&lt;/strong>&lt;/p></description></item><item><title>零宽度空格与 CSS 换行行为</title><link>https://yindongliang.com/posts/zero-width-space-and-css-word-wrap/</link><pubDate>Fri, 22 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/zero-width-space-and-css-word-wrap/</guid><description>&lt;p>在解决 &lt;a href="https://yindongliang.com/tags">Tags&lt;/a> 页面行尾词语被迫换行的问题时，发现 &lt;code>&amp;amp;nbsp;&lt;/code> 并不能强制连接字符，于是调查发现，还有零宽度空格这一概念。在 HTML 中，如果你需要一个既不会占用额外空间，又能用作连接的字符，可以使用零宽度符号，它们也是一种 &lt;a href="https://developer.mozilla.org/zh-CN/docs/Glossary/Entity">HTML 实体&lt;/a>（HTML Entities）。&lt;/p></description></item><item><title>周末苏州两日游</title><link>https://yindongliang.com/weekly/2024/2024-W46/</link><pubDate>Mon, 11 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W46/</guid><description>&lt;p>苏州两日游：&lt;/p>
+&lt;ul>
+&lt;li>第一天上午上海站到苏州站，也就是半小时高铁。&lt;/li>
+&lt;li>入住平江路「三千载民宿」，4 号线察院场地铁站，离火车站也是两站地铁。&lt;/li>
+&lt;li>中午吃了阳澄湖大闸蟹。&lt;/li>
+&lt;li>顺便观前街逛街，排队茶颜悦色。&lt;/li>
+&lt;li>下午从平江路走到拙政园，俩人额外花了 100 元跟导游免排队+讲解。&lt;/li>
+&lt;li>傍晚金鸡湖遛弯、吃饭。&lt;/li>
+&lt;li>晚上回观前街，到琵琶语评弹馆听吴亮莹老师演唱「声声慢」。&lt;/li>
+&lt;li>第二天上午先到沧浪亭，后到留园，中午在山塘街吃了蟹黄面。&lt;/li>
+&lt;li>下午游虎丘，这里景观和人文历史都非常值得游览。&lt;/li>
+&lt;li>傍晚火车到上海，不虚此行。&lt;/li>
+&lt;/ul>
+&lt;p>整体下来，最喜欢评弹「声声慢」和留园，沧浪亭也不错，拙政园虽然听了讲解，但要我自己评价的话也就那样，人太多了，另外还有一些园林比如网师园、狮子林、可园等等都没去，苏博更是预约不上，下次一定。总体感受，苏州的历史文化真是厚重，完全不是几首诗、几个名人就能概括的。还有苏州老城区的水路是真发达，不愧是真江南。&lt;/p></description></item><item><title>函数（Functions）</title><link>https://yindongliang.com/docs/Apple/Swift/swift-functions/</link><pubDate>Sat, 09 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/swift-functions/</guid><description>&lt;p>在 Swift 中，函数是一等公民。这意味着函数不仅可以用来执行一系列指令，还可以作为参数传递给其他函数，作为返回值从其他函数中返回，甚至可以嵌套和捕获周围作用域中的变量。下面是 Swift 中函数的详细介绍和使用示例。&lt;/p></description></item><item><title>结构体（Struct）</title><link>https://yindongliang.com/docs/Apple/Swift/swift-struct/</link><pubDate>Thu, 07 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/swift-struct/</guid><description>&lt;h2 id="概念">
+ 概念
+ &lt;a class="anchor" href="#%e6%a6%82%e5%bf%b5">#&lt;/a>
+&lt;/h2>
+&lt;p>在 Swift 中，结构体 &lt;code>struct&lt;/code> 是一种非常有用的数据类型。它允许你将一组相关的值组合在一起，并定义它们的行为。结构体在 Swift 中是值类型，与类 &lt;code>class&lt;/code> 的引用类型有显著的区别。&lt;/p></description></item><item><title>协议（Protocol）</title><link>https://yindongliang.com/docs/Apple/Swift/swift-protocol/</link><pubDate>Thu, 07 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/swift-protocol/</guid><description>&lt;p>在 Swift 中，协议（Protocol）是一种为方法、属性和其他需求定义蓝图的方式。协议本身并不实现这些需求，它只是向遵循协议的类型（类、结构体、枚举等）规定这些需求应该存在并实现。&lt;/p></description></item><item><title>如何写出垃圾代码</title><link>https://yindongliang.com/weekly/2024/2024-W45/</link><pubDate>Tue, 05 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W45/</guid><description>&lt;p>看完了《太白金星有点烦》，这个视角的西游题材真是头一次看到，但是逻辑上好像还真没什么毛病，就是后面结尾部分明显作者不想继续编了，但也还好，要展现的视角已经足够读者理解，原来我之前看的西游都是「揭帖」。&lt;/p></description></item><item><title> 好用的前端工具</title><link>https://yindongliang.com/docs/Awesome/awesome-frontend/</link><pubDate>Mon, 04 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-frontend/</guid><description>&lt;h2 id="生产力工具">
+ 生产力工具
+ &lt;a class="anchor" href="#%e7%94%9f%e4%ba%a7%e5%8a%9b%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>描述&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Storybook&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://storybook.js.org/">https://storybook.js.org/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="静态生成器">
+ 静态生成器
+ &lt;a class="anchor" href="#%e9%9d%99%e6%80%81%e7%94%9f%e6%88%90%e5%99%a8">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>描述&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Docusaurus&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://docusaurus.io/">https://docusaurus.io/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>docsify&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/docsifyjs/docsify">https://github.com/docsifyjs/docsify&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>VitePress&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>@ 符号之属性</title><link>https://yindongliang.com/docs/Apple/Swift/swift-at-sign-attributes/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/swift-at-sign-attributes/</guid><description>&lt;p>&lt;a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/attributes">Attributes&lt;/a>&lt;/p>
+&lt;blockquote>
+&lt;p>There are two kinds of attributes in Swift — those that apply to declarations and those that apply to types. An attribute provides additional information about the declaration or type.&lt;/p>&lt;/blockquote>
+&lt;p>简单来说，在 Swift 中，只有两种类型的属性：一种用于声明，另一种用于类型。属性提供关于声明或类型的附加信息。&lt;/p></description></item><item><title>$ 美元符号</title><link>https://yindongliang.com/docs/Apple/Swift/swift-dollar-sign/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/swift-dollar-sign/</guid><description>&lt;p>在 Swift 中，&lt;code>$&lt;/code> 符号有几个不同的用途，主要包括适配 SwiftUI 和 Combine 框架中的绑定和发布者，以及 Swift 闭包的简写，它们在不同场景中有不同的含义。&lt;/p>
+&lt;h2 id="1-swiftui-中的绑定">
+ 1. SwiftUI 中的绑定
+ &lt;a class="anchor" href="#1-swiftui-%e4%b8%ad%e7%9a%84%e7%bb%91%e5%ae%9a">#&lt;/a>
+&lt;/h2>
+&lt;p>在 SwiftUI 中，&lt;code>$&lt;/code> 符号通常用于绑定到某个 &lt;code>@State&lt;/code> 或 &lt;code>@ObservedObject&lt;/code> 属性。在 SwiftUI 中，绑定（&lt;code>Binding&lt;/code>）允许你在视图和数据源之间建立双向数据绑定，从而保持数据的一致性。&lt;/p></description></item><item><title>as</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-as/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-as/</guid><description>&lt;p>在 Swift 中，&lt;code>as&lt;/code> 关键字用于类型转换，它有几种不同的用法，根据具体情况可以转换值的类型或检查类型的兼容性。以下是 &lt;code>as&lt;/code> 关键字的几种常见用法：&lt;/p>
+&lt;h2 id="1-向下类型转换downcasting">
+ 1. 向下类型转换（Downcasting）
+ &lt;a class="anchor" href="#1-%e5%90%91%e4%b8%8b%e7%b1%bb%e5%9e%8b%e8%bd%ac%e6%8d%a2downcasting">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;strong>&lt;code>as?&lt;/code> 和 &lt;code>as!&lt;/code>&lt;/strong>&lt;/p></description></item><item><title>associatedtype</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-associatedtype/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-associatedtype/</guid><description>&lt;p>在 Swift 中，&lt;code>associatedtype&lt;/code> 关键字用于定义协议中的关联类型。关联类型为协议声明了一个占位符类型，该具体类型在实现协议时由具体类型来确定。这使得协议更加通用和灵活，因为它们能够处理未指定的类型。&lt;/p></description></item><item><title>extension</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-extension/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-extension/</guid><description>&lt;p>在 Swift 中，&lt;code>extension&lt;/code> 关键词用于为已有的类、结构体、枚举和协议类型添加新功能。这使得你可以在不访问原始源码的情况下扩展类型的行为。Extensions 非常强大和灵活，它们可以：&lt;/p></description></item><item><title>key-path 表达式</title><link>https://yindongliang.com/docs/Apple/Swift/swift-key-path-expression/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/swift-key-path-expression/</guid><description>&lt;p>键路径（Key Path）是 Swift 语言中的一种强大特性，它提供了一种类型安全的方式来引用类型（如结构体或类）中的属性。键路径使得我们能够以一种间接的、动态的、且类型安全的方式访问和修改属性。&lt;/p></description></item><item><title>mutating</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-mutating/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-mutating/</guid><description>&lt;p>在 Swift 中，&lt;code>mutating&lt;/code> 关键字用于标记能改变结构体 &lt;code>struct&lt;/code> 或枚举 &lt;code>enum&lt;/code> 实例中属性的方法。Swift 中的结构体和枚举是值类型，而类 &lt;code>class&lt;/code> 是引用类型。值类型的实例方法默认情况下不能修改实例的属性，因为它们是被拷贝的。为了允许修改，需要在方法前添加 &lt;code>mutating&lt;/code> 关键字。&lt;/p></description></item><item><title>required</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-required/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-required/</guid><description>&lt;p>在 Swift 中，&lt;code>required&lt;/code> 关键字用于&lt;strong>修饰类的构造器（initializer）&lt;/strong>，表示这个构造器在子类中必须被实现。&lt;/p>
+&lt;h3 id="关键点">
+ &lt;strong>关键点&lt;/strong>
+ &lt;a class="anchor" href="#%e5%85%b3%e9%94%ae%e7%82%b9">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>required&lt;/code> 修饰的构造器必须在所有继承该类的子类中被实现。&lt;/li>
+&lt;li>如果子类不自定义实现这个构造器，Swift 会自动继承并提供默认实现。&lt;/li>
+&lt;li>这个关键字通常与支持继承的类（非 &lt;code>final&lt;/code> 修饰的类）相关，以确保子类拥有某些特定的初始化逻辑。&lt;/li>
+&lt;/ul>
+&lt;h3 id="语法">
+ &lt;strong>语法&lt;/strong>
+ &lt;a class="anchor" href="#%e8%af%ad%e6%b3%95">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">class&lt;/span> &lt;span style="color:#ca72ff">Parent&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">required&lt;/span> &lt;span style="color:#76a9f9">init&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8a93a5;font-style:italic">// 实现构造逻辑&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">class&lt;/span> &lt;span style="color:#ca72ff">Child&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">Parent&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">required&lt;/span> &lt;span style="color:#76a9f9">init&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8a93a5;font-style:italic">// 子类实现&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">super&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#76a9f9">init&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h3 id="required">
+ &lt;strong>&lt;code>required&lt;/code> 的主要特点和用途&lt;/strong>
+ &lt;a class="anchor" href="#required">#&lt;/a>
+&lt;/h3>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>确保子类具有特定的初始化行为&lt;/strong>&lt;/p></description></item><item><title>self 和 Self</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-self-and-Self/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-self-and-Self/</guid><description>&lt;h3 id="关键字-self">
+ 关键字 &lt;code>self&lt;/code>
+ &lt;a class="anchor" href="#%e5%85%b3%e9%94%ae%e5%ad%97-self">#&lt;/a>
+&lt;/h3>
+&lt;p>在 Swift 中，关键字 &lt;code>self&lt;/code> 有多种用途，主要用于引用当前实例、属性或方法。下面是 &lt;code>self&lt;/code> 的几种常见用途：&lt;/p>
+&lt;h4 id="1-引用当前实例">
+ 1. 引用当前实例
+ &lt;a class="anchor" href="#1-%e5%bc%95%e7%94%a8%e5%bd%93%e5%89%8d%e5%ae%9e%e4%be%8b">#&lt;/a>
+&lt;/h4>
+&lt;ul>
+&lt;li>在类或结构体的方法中，可以使用 &lt;code>self&lt;/code> 来引用当前实例。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">class&lt;/span> &lt;span style="color:#ca72ff">Person&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">name&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">String&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">init&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">name&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">String&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">self&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">name&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">name&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">func&lt;/span> &lt;span style="color:#00b1f7">greet&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;Hello, my name is &lt;/span>&lt;span style="color:#98c379">\(&lt;/span>&lt;span style="color:#e5c07b">self&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">name&lt;/span>&lt;span style="color:#98c379">)&lt;/span>&lt;span style="color:#98c379">&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="2-区分属性和参数">
+ 2. 区分属性和参数
+ &lt;a class="anchor" href="#2-%e5%8c%ba%e5%88%86%e5%b1%9e%e6%80%a7%e5%92%8c%e5%8f%82%e6%95%b0">#&lt;/a>
+&lt;/h4>
+&lt;ul>
+&lt;li>当实例的属性名与参数名相同时，可以使用 &lt;code>self&lt;/code> 来区分它们。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">class&lt;/span> &lt;span style="color:#ca72ff">Point&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">x&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">Int&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">y&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">Int&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">init&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">x&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">Int&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">y&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">Int&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">self&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">x&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">x&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">self&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">y&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">y&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">func&lt;/span> &lt;span style="color:#00b1f7">setCoordinates&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">x&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">Int&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">y&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">Int&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">self&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">x&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">x&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">self&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">y&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">y&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="3-避免闭包循环引用">
+ 3. 避免闭包循环引用
+ &lt;a class="anchor" href="#3-%e9%81%bf%e5%85%8d%e9%97%ad%e5%8c%85%e5%be%aa%e7%8e%af%e5%bc%95%e7%94%a8">#&lt;/a>
+&lt;/h4>
+&lt;ul>
+&lt;li>在闭包内部引用当前实例时，可以使用 &lt;code>self&lt;/code> 来避免循环引用。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">class&lt;/span> &lt;span style="color:#ca72ff">MyClass&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">closure&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">(()&lt;/span> &lt;span style="color:#abb2bf">-&amp;gt;&lt;/span> &lt;span style="color:#e5c07b">Void&lt;/span>&lt;span style="color:#abb2bf">)?&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">func&lt;/span> &lt;span style="color:#00b1f7">setupClosure&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">self&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">closure&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">self&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">doSomething&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">func&lt;/span> &lt;span style="color:#00b1f7">doSomething&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;Doing something&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="4-在闭包中弱化引用">
+ 4. 在闭包中弱化引用
+ &lt;a class="anchor" href="#4-%e5%9c%a8%e9%97%ad%e5%8c%85%e4%b8%ad%e5%bc%b1%e5%8c%96%e5%bc%95%e7%94%a8">#&lt;/a>
+&lt;/h4>
+&lt;ul>
+&lt;li>在闭包中捕获 &lt;code>self&lt;/code> 并使用弱引用来避免循环引用。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">class&lt;/span> &lt;span style="color:#ca72ff">SomeClass&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">closure&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">(()&lt;/span> &lt;span style="color:#abb2bf">-&amp;gt;&lt;/span> &lt;span style="color:#e5c07b">Void&lt;/span>&lt;span style="color:#abb2bf">)?&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">func&lt;/span> &lt;span style="color:#00b1f7">setupClosure&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">self&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">closure&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span> &lt;span style="color:#abb2bf">[&lt;/span>&lt;span style="color:#76a9f9">weak&lt;/span> &lt;span style="color:#e5c07b">self&lt;/span>&lt;span style="color:#abb2bf">]&lt;/span> &lt;span style="color:#76a9f9">in&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e5c07b">self&lt;/span>&lt;span style="color:#abb2bf">?.&lt;/span>&lt;span style="color:#aa89ea">doSomething&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">func&lt;/span> &lt;span style="color:#00b1f7">doSomething&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;Doing something&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="总结">
+ 总结
+ &lt;a class="anchor" href="#%e6%80%bb%e7%bb%93">#&lt;/a>
+&lt;/h4>
+&lt;ul>
+&lt;li>&lt;code>self&lt;/code> 是一个特殊的关键字，用于引用当前实例、区分属性和参数、避免循环引用以及在闭包内部使用。&lt;/li>
+&lt;li>在大多数情况下，Swift 会自动推断 &lt;code>self&lt;/code> 的引用，因此在许多情况下，可以省略 &lt;code>self&lt;/code> 关键字。&lt;/li>
+&lt;/ul>
+&lt;h3 id="关键字-self-1">
+ 关键字 &lt;code>Self&lt;/code>
+ &lt;a class="anchor" href="#%e5%85%b3%e9%94%ae%e5%ad%97-self-1">#&lt;/a>
+&lt;/h3>
+&lt;p>在 Swift 中，&lt;code>Self&lt;/code> 是一个类型别名，用于引用当前类型。它主要用于泛型和协议中，能够使代码更具灵活性和复用性。&lt;/p></description></item><item><title>some</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-some/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-some/</guid><description>&lt;p>在 Swift 中，&lt;code>some&lt;/code> 关键字用于声明一个“存在类型”（existential type），这是一种抽象类型，可以封装任意类型的值，并保证它符合某个特定的协议。具体来说，&lt;code>some&lt;/code> 关键字通常与协议类型一起使用，用于定义一种限制，表示返回的类型实现了某个协议，但具体是什么类型不重要。最常见的场景是在 SwiftUI 中声明视图的返回类型。在 Swift 5.1 引入的功能中，它被称为“Opaque Return Types”（不透明返回类型）。&lt;/p></description></item><item><title>typealias</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-typealias/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-typealias/</guid><description>&lt;p>&lt;code>typealias&lt;/code> 是 Swift 语言中的一个关键字，用于为已有类型提供一个新的名字。它可以使代码更简洁、更具可读性，并有助于重用复杂类型定义。使用 &lt;code>typealias&lt;/code> 你可以为任何类型（包括基本数据类型、集合类型、函数类型、泛型类型等）创建自定义名称。&lt;/p></description></item><item><title>where</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-where/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%85%B3%E9%94%AE%E5%AD%97/swift-keyword-where/</guid><description>&lt;p>在Swift中，&lt;code>where&lt;/code> 关键词主要用于添加约束条件或过滤条件。它可以在多种情况下使用，以下是一些常见的用法：&lt;/p>
+&lt;h2 id="1-在泛型约束中">
+ 1. 在泛型约束中：
+ &lt;a class="anchor" href="#1-%e5%9c%a8%e6%b3%9b%e5%9e%8b%e7%ba%a6%e6%9d%9f%e4%b8%ad">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">func&lt;/span> &lt;span style="color:#00b1f7">someFunction&lt;/span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#aa89ea">T&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;(&lt;/span>&lt;span style="color:#aa89ea">param&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">T&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#76a9f9">where&lt;/span> &lt;span style="color:#aa89ea">T&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">Comparable&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8a93a5;font-style:italic">// 只有当 T 遵循 Comparable 协议时，这个函数才能被调用&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-在协议扩展中">
+ 2. 在协议扩展中：
+ &lt;a class="anchor" href="#2-%e5%9c%a8%e5%8d%8f%e8%ae%ae%e6%89%a9%e5%b1%95%e4%b8%ad">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">extension&lt;/span> &lt;span style="color:#ca72ff">Collection&lt;/span> &lt;span style="color:#76a9f9">where&lt;/span> &lt;span style="color:#aa89ea">Element&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">Equatable&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8a93a5;font-style:italic">// 这个扩展只适用于元素类型遵循 Equatable 协议的集合&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-在-switch-语句的-case-中">
+ 3. 在 switch 语句的 case 中：
+ &lt;a class="anchor" href="#3-%e5%9c%a8-switch-%e8%af%ad%e5%8f%a5%e7%9a%84-case-%e4%b8%ad">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">switch&lt;/span> &lt;span style="color:#aa89ea">someValue&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">case&lt;/span> &lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">x&lt;/span> &lt;span style="color:#76a9f9">where&lt;/span> &lt;span style="color:#aa89ea">x&lt;/span> &lt;span style="color:#54b1c7">&amp;gt;&lt;/span> &lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;Positive&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">case&lt;/span> &lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">x&lt;/span> &lt;span style="color:#76a9f9">where&lt;/span> &lt;span style="color:#aa89ea">x&lt;/span> &lt;span style="color:#54b1c7">&amp;lt;&lt;/span> &lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;Negative&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">default&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;Zero&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-在-for-in-循环中">
+ 4. 在 for-in 循环中：
+ &lt;a class="anchor" href="#4-%e5%9c%a8-for-in-%e5%be%aa%e7%8e%af%e4%b8%ad">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">for&lt;/span> &lt;span style="color:#aa89ea">i&lt;/span> &lt;span style="color:#76a9f9">in&lt;/span> &lt;span style="color:#d19a66">1.&lt;/span>&lt;span style="color:#abb2bf">..&lt;/span>&lt;span style="color:#d19a66">100&lt;/span> &lt;span style="color:#76a9f9">where&lt;/span> &lt;span style="color:#aa89ea">i&lt;/span> &lt;span style="color:#54b1c7">%&lt;/span> &lt;span style="color:#d19a66">2&lt;/span> &lt;span style="color:#abb2bf">==&lt;/span> &lt;span style="color:#d19a66">0&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">i&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 只打印偶数&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-在可选绑定中">
+ 5. 在可选绑定中：
+ &lt;a class="anchor" href="#5-%e5%9c%a8%e5%8f%af%e9%80%89%e7%bb%91%e5%ae%9a%e4%b8%ad">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">value&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">optionalValue&lt;/span> &lt;span style="color:#76a9f9">where&lt;/span> &lt;span style="color:#aa89ea">value&lt;/span> &lt;span style="color:#54b1c7">&amp;gt;&lt;/span> &lt;span style="color:#d19a66">10&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8a93a5;font-style:italic">// 只有当 optionalValue 不为 nil 且大于 10 时执行&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-在关联类型声明中">
+ 6. 在关联类型声明中：
+ &lt;a class="anchor" href="#6-%e5%9c%a8%e5%85%b3%e8%81%94%e7%b1%bb%e5%9e%8b%e5%a3%b0%e6%98%8e%e4%b8%ad">#&lt;/a>
+&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">protocol&lt;/span> &lt;span style="color:#ca72ff">Container&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">associatedtype&lt;/span> &lt;span style="color:#aa89ea">Item&lt;/span> &lt;span style="color:#76a9f9">where&lt;/span> &lt;span style="color:#aa89ea">Item&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">Equatable&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="小结">
+ 小结
+ &lt;a class="anchor" href="#%e5%b0%8f%e7%bb%93">#&lt;/a>
+&lt;/h2>
+&lt;p>总的来说，&lt;code>where&lt;/code> 关键词允许你在各种上下文中添加额外的条件或约束，使得代码更加灵活和精确。它帮助你更好地控制类型、值的范围，以及在何种条件下执行特定的代码。&lt;/p></description></item><item><title>可选类型</title><link>https://yindongliang.com/docs/Apple/Swift/swift-optional-type/</link><pubDate>Tue, 29 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/swift-optional-type/</guid><description>&lt;p>Swift 的可选类型（Optional）是一种非常强大的特性，用于表示变量可能有值，也可能为 &lt;code>nil&lt;/code>，即没有值。可选类型确保在处理未初始化或缺失值时代码更加安全和清晰，减少了运行时错误。&lt;/p></description></item><item><title>ObservedObject</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Modal-Data/SwiftUI-Model-Data/</link><pubDate>Sun, 27 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Modal-Data/SwiftUI-Model-Data/</guid><description>&lt;h2 id="1-state-和-binding">
+ 1. &lt;code>@State&lt;/code> 和 &lt;code>@Binding&lt;/code>
+ &lt;a class="anchor" href="#1-state-%e5%92%8c-binding">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://developer.apple.com/documentation/swiftui/state">https://developer.apple.com/documentation/swiftui/state&lt;/a>&lt;/p>
+&lt;p>&lt;code>@State&lt;/code> 是 SwiftUI 中用于声明本地状态变量的属性包装器。任何使用到 &lt;code>@State&lt;/code> 变量的视图，当该变量变化时，都会重新渲染。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">import&lt;/span> &lt;span style="color:#ca72ff">SwiftUI&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">struct&lt;/span> &lt;span style="color:#ca72ff">ContentView&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">View&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">@&lt;/span>&lt;span style="color:#aa89ea">State&lt;/span> &lt;span style="color:#76a9f9">private&lt;/span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">counter&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#d19a66">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">body&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">some&lt;/span> &lt;span style="color:#aa89ea">View&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">VStack&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;Counter: &lt;/span>&lt;span style="color:#98c379">\(&lt;/span>&lt;span style="color:#aa89ea">counter&lt;/span>&lt;span style="color:#98c379">)&lt;/span>&lt;span style="color:#98c379">&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Button&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">action&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">counter&lt;/span> &lt;span style="color:#54b1c7">+=&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">})&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;Increment Counter&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>@Binding&lt;/code> 用于在不同视图之间传递和共享 &lt;code>@State&lt;/code> 数据，使得一个视图可以绑定到另一个视图的状态。&lt;/p></description></item><item><title>好看的产品设计</title><link>https://yindongliang.com/docs/Awesome/awesome-product-design/</link><pubDate>Sat, 12 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-product-design/</guid><description>&lt;h2 id="好看的产品页面">
+ 好看的产品页面
+ &lt;a class="anchor" href="#%e5%a5%bd%e7%9c%8b%e7%9a%84%e4%ba%a7%e5%93%81%e9%a1%b5%e9%9d%a2">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>新词&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://newword.app/">https://newword.app/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="设计指南">
+ 设计指南
+ &lt;a class="anchor" href="#%e8%ae%be%e8%ae%a1%e6%8c%87%e5%8d%97">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>苹果设计规范&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/cn/design/">https://developer.apple.com/cn/design/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SF Symbols 6&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/cn/sf-symbols/">https://developer.apple.com/cn/sf-symbols/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>中国色&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://www.zhongguose.com">https://www.zhongguose.com&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>UXBAIKE&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://www.uxbaike.com/">https://www.uxbaike.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="设计工具">
+ 设计工具
+ &lt;a class="anchor" href="#%e8%ae%be%e8%ae%a1%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Play 2.0&lt;/td>
+ &lt;td>插画设计&lt;/td>
+ &lt;td>&lt;a href="https://createwithplay.com/">https://createwithplay.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Mockupworld&lt;/td>
+ &lt;td>原型设计&lt;/td>
+ &lt;td>&lt;a href="https://www.mockupworld.co/">https://www.mockupworld.co/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="主题配色">
+ 主题配色
+ &lt;a class="anchor" href="#%e4%b8%bb%e9%a2%98%e9%85%8d%e8%89%b2">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Nord&lt;/td>
+ &lt;td>&lt;a href="https://www.nordtheme.com/">https://www.nordtheme.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Rose Pine&lt;/td>
+ &lt;td>&lt;a href="https://rosepinetheme.com/">https://rosepinetheme.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Dracula&lt;/td>
+ &lt;td>&lt;a href="https://draculatheme.com/">https://draculatheme.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Monokai&lt;/td>
+ &lt;td>&lt;a href="https://monokai.pro/">https://monokai.pro/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Minimal&lt;/td>
+ &lt;td>&lt;a href="https://minimal.guide/">https://minimal.guide/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>好玩的 Apps 集合</title><link>https://yindongliang.com/docs/Awesome/awesome-mac-apps/</link><pubDate>Sat, 12 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-mac-apps/</guid><description>&lt;p>大众的就不写了，都是比较小众且有启发的。&lt;/p>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Rogue Amoeba&lt;/td>
+ &lt;td>一个关于音频的 App 开发商&lt;/td>
+ &lt;td>&lt;a href="https://rogueamoeba.com/">https://rogueamoeba.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Bezel&lt;/td>
+ &lt;td>Mirror any iPhone on your Mac&lt;/td>
+ &lt;td>&lt;a href="https://nonstrict.eu/bezel/">https://nonstrict.eu/bezel/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SnippetsLab&lt;/td>
+ &lt;td>笔记软件&lt;/td>
+ &lt;td>&lt;a href="https://www.renfei.org/snippets-lab/">https://www.renfei.org/snippets-lab/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Quiver&lt;/td>
+ &lt;td>笔记软件&lt;/td>
+ &lt;td>&lt;a href="https://yliansoft.com/">https://yliansoft.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Mactracker&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://mactracker.ca/">https://mactracker.ca/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://indiegoodies.com/">https://indiegoodies.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>好用的 AI 工具</title><link>https://yindongliang.com/docs/Awesome/awesome-ai-tools/</link><pubDate>Sat, 12 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-ai-tools/</guid><description>&lt;h2 id="门户网站">
+ 门户网站
+ &lt;a class="anchor" href="#%e9%97%a8%e6%88%b7%e7%bd%91%e7%ab%99">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>AIHub&lt;/td>
+ &lt;td>门户网站&lt;/td>
+ &lt;td>&lt;a href="https://www.aihub.cn/">https://www.aihub.cn/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>302.AI&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://302.ai/">https://302.ai/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="chat-工具">
+ Chat 工具
+ &lt;a class="anchor" href="#chat-%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Liner&lt;/td>
+ &lt;td>AI 搜索 / Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://getliner.com/zh">https://getliner.com/zh&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Devv&lt;/td>
+ &lt;td>“最懂程序员的新一代 AI 搜索引擎”&lt;/td>
+ &lt;td>&lt;a href="https://devv.ai/zh">https://devv.ai/zh&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Gamma&lt;/td>
+ &lt;td>PPT 生成&lt;/td>
+ &lt;td>&lt;a href="https://gamma.app/">https://gamma.app/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Poe&lt;/td>
+ &lt;td>来自 Quora 的 Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://poe.com/">https://poe.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Sider&lt;/td>
+ &lt;td>Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://sider.ai/">https://sider.ai/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Monica&lt;/td>
+ &lt;td>Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://monica.im">https://monica.im&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>ChatHub&lt;/td>
+ &lt;td>Get insights from ChatGPT, Claude, Gemini, and more - all at once!&lt;/td>
+ &lt;td>&lt;a href="https://chathub.gg/">https://chathub.gg/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>v0.dev&lt;/td>
+ &lt;td>来自 Vercel 的 Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://v0.dev/">https://v0.dev/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>ChatPlayground&lt;/td>
+ &lt;td>类似 ChatHub，可以同时与多个模型聊天。&lt;/td>
+ &lt;td>&lt;a href="https://www.chatplayground.ai/">https://www.chatplayground.ai/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Deepseek&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://chat.deepseek.com/">https://chat.deepseek.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="软件工具">
+ 软件工具
+ &lt;a class="anchor" href="#%e8%bd%af%e4%bb%b6%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Cursor&lt;/td>
+ &lt;td>代码编辑器&lt;/td>
+ &lt;td>&lt;a href="https://www.cursor.com/">https://www.cursor.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Codeium&lt;/td>
+ &lt;td>Free AI Code Completion &amp;amp; Chat&lt;/td>
+ &lt;td>&lt;a href="https://codeium.com/">https://codeium.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Cody&lt;/td>
+ &lt;td>Cody uses the latest LLMs and all your development context to help you understand, write, and fix code faster&lt;/td>
+ &lt;td>&lt;a href="https://sourcegraph.com/cody">https://sourcegraph.com/cody&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="图像工具">
+ 图像工具
+ &lt;a class="anchor" href="#%e5%9b%be%e5%83%8f%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Vector Magic&lt;/td>
+ &lt;td>Easily Convert JPG, PNG, GIF Files to PDF, SVG, EPS Vectors&lt;/td>
+ &lt;td>&lt;a href="https://vectormagic.com/">https://vectormagic.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="设计工具">
+ 设计工具
+ &lt;a class="anchor" href="#%e8%ae%be%e8%ae%a1%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Jitter&lt;/td>
+ &lt;td>Motion design make simple.&lt;/td>
+ &lt;td>&lt;a href="https://jitter.video/">https://jitter.video/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="github">
+ Github
+ &lt;a class="anchor" href="#github">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Awesome-Chatgpt&lt;/td>
+ &lt;td>Awesome list for ChatGPT — an artificial intelligence chatbot developed by OpenAI&lt;/td>
+ &lt;td>&lt;a href="https://github.com/sindresorhus/awesome-chatgpt">https://github.com/sindresorhus/awesome-chatgpt&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="其他参考">
+ 其他参考
+ &lt;a class="anchor" href="#%e5%85%b6%e4%bb%96%e5%8f%82%e8%80%83">#&lt;/a>
+&lt;/h2>
+&lt;p>2024最强 AI 集合！12个领域，47款AI工具，每一个都变态又好用！&lt;br>
+&lt;a href="https://www.bilibili.com/video/BV1Ls421M7qq/">https://www.bilibili.com/video/BV1Ls421M7qq/&lt;/a>&lt;/p></description></item><item><title>关注的博客</title><link>https://yindongliang.com/docs/Awesome/Awesome-Blog/</link><pubDate>Fri, 11 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/Awesome-Blog/</guid><description>&lt;p>一些经常看的博客和周报，不定期更新中。&lt;/p>
+&lt;h2 id="独立博客">
+ 独立博客
+ &lt;a class="anchor" href="#%e7%8b%ac%e7%ab%8b%e5%8d%9a%e5%ae%a2">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>博客名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>网站地址&lt;/th>
+ &lt;th>Github 地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>CatCoding&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://catcoding.me/">https://catcoding.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>东坡肘子的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://fatbobman.com/">https://fatbobman.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/fatbobman">https://github.com/fatbobman&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>云风的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://blog.codingnow.com/">https://blog.codingnow.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Ke Fang&amp;rsquo;s Blog:&lt;/td>
+ &lt;td>曾经是算法工程师，从 2022 年底开始，选择离职并开始个人开发之旅。&lt;/td>
+ &lt;td>&lt;a href="https://mazzzystar.github.io/index.html">https://mazzzystar.github.io/index.html&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Shall We Code?&lt;/td>
+ &lt;td>一位后端程序员&lt;/td>
+ &lt;td>&lt;a href="https://waynerv.com/">https://waynerv.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>林夕水共&lt;/td>
+ &lt;td>一位云计算、区块链的后端程序员&lt;/td>
+ &lt;td>&lt;a href="https://rebootcat.com/">https://rebootcat.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>tw93&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://tw93.fun">https://tw93.fun&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/tw93">https://github.com/tw93&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Elizen&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://elizen.me">https://elizen.me&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>图拉鼎&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://imtx.me/">https://imtx.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Randy&amp;rsquo;s Blog&lt;/td>
+ &lt;td>前微软程序员&lt;/td>
+ &lt;td>&lt;a href="https://lutaonan.com/">https://lutaonan.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/djyde">https://github.com/djyde&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>虞双齐的博客&lt;/td>
+ &lt;td>一位区块链大佬&lt;/td>
+ &lt;td>&lt;a href="https://yushuangqi.com">https://yushuangqi.com&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/ysqi">https://github.com/ysqi&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Justine Tunney&amp;rsquo;s Web Page&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://justine.lol/">https://justine.lol/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>翁天信的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://blog.dandyweng.com">https://blog.dandyweng.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Yunfeng&amp;rsquo;s Simple Blog&lt;br>&lt;/td>
+ &lt;td>一位阿里程序员的博客&lt;/td>
+ &lt;td>&lt;a href="https://vra.github.io/">https://vra.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>antfu 的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://antfu.me/">https://antfu.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>曹大 Xargin 的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://www.xargin.com/">https://www.xargin.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>戴铭的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://ming1016.github.io/">https://ming1016.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Cali&lt;/td>
+ &lt;td>一位同时是 &amp;lt;开发者/&amp;gt;，设计师，细节控，创始人的博客&lt;/td>
+ &lt;td>&lt;a href="https://cali.so/">https://cali.so/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>MetalBlueberry&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://metalblueberry.github.io/">https://metalblueberry.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>IceBeer&lt;/td>
+ &lt;td>在写“独立开发的 100 个思考”&lt;/td>
+ &lt;td>&lt;a href="https://www.icebeer.top/">https://www.icebeer.top/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>张鑫旭的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://www.zhangxinxu.com/">https://www.zhangxinxu.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Joe&amp;rsquo;s Blog&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://hijiangtao.github.io/">https://hijiangtao.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>YEOLAR&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://yeolar.com/">https://yeolar.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>jeremy 的技术点滴&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://jeremyxu2010.github.io/">https://jeremyxu2010.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Eric Fu 的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://ericfu.me/">https://ericfu.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Kishikawa Katsumi&lt;/td>
+ &lt;td>an iOS developer from Janpan&lt;/td>
+ &lt;td>&lt;a href="https://kishikawakatsumi.com">https://kishikawakatsumi.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Sukka&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://blog.skk.moe/">https://blog.skk.moe/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>王登科的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://greatdk.com/">https://greatdk.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Xiang He&lt;/td>
+ &lt;td>国内一位 macOS 平台程序员&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/hsiangho">https://github.com/hsiangho&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>面相信仰编程&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://draveness.me/">https://draveness.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>冰霜之地&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://halfrost.com/">https://halfrost.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>冴羽写博客的地方&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/mqyqingfeng/Blog">https://github.com/mqyqingfeng/Blog&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Changkun Ou（欧长坤）&lt;/td>
+ &lt;td>不只是《Go 语言原本》作者，后来作者变得更强了。&lt;/td>
+ &lt;td>&lt;a href="https://changkun.de/blog/">https://changkun.de/blog/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/changkun">https://github.com/changkun&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>指月小筑&lt;/td>
+ &lt;td>探索云原生&lt;/td>
+ &lt;td>&lt;a href="https://www.lixueduan.com/">https://www.lixueduan.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Random Thoughts&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://blog.joway.io/">https://blog.joway.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="优质周报">
+ 优质周报
+ &lt;a class="anchor" href="#%e4%bc%98%e8%b4%a8%e5%91%a8%e6%8a%a5">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Weekly 名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;th>作者主页&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>潮流周刊&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://weekly.tw93.fun/">https://weekly.tw93.fun/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://tw93.fun/">https://tw93.fun/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>东坡肘子的周报&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://fatbobman.com/zh/weekly/">https://fatbobman.com/zh/weekly/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://fatbobman.com/zh/">https://fatbobman.com/zh/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="热门列表">
+ 热门列表
+ &lt;a class="anchor" href="#%e7%83%ad%e9%97%a8%e5%88%97%e8%a1%a8">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>集合名称&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>博主们二〇二三年的年终总结&lt;/td>
+ &lt;td>&lt;a href="https://github.com/saveweb/review-2023">https://github.com/saveweb/review-2023&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>博主们二〇二二年的年终总结&lt;/td>
+ &lt;td>&lt;a href="https://github.com/saveweb/review-2022">https://github.com/saveweb/review-2022&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>博主们二〇二一年的年终总结&lt;/td>
+ &lt;td>&lt;a href="https://github.com/saveweb/review-2021">https://github.com/saveweb/review-2021&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="大厂博客">
+ 大厂博客
+ &lt;a class="anchor" href="#%e5%a4%a7%e5%8e%82%e5%8d%9a%e5%ae%a2">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>厂名&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;th>Github&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Netflix 技术博客&lt;/td>
+ &lt;td>&lt;a href="https://netflixtechblog.com">https://netflixtechblog.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Discord 博客&lt;/td>
+ &lt;td>&lt;a href="https://discord.com/blog/">https://discord.com/blog/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="独立站点">
+ 独立站点
+ &lt;a class="anchor" href="#%e7%8b%ac%e7%ab%8b%e7%ab%99%e7%82%b9">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>站名&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>ACCU&lt;/td>
+ &lt;td>关注图像/视频处理、独立游戏开发领域&lt;/td>
+ &lt;td>&lt;a href="http://accu.cc/">http://accu.cc/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>奇鸟行状录</title><link>https://yindongliang.com/weekly/2024/2024-W41/</link><pubDate>Mon, 07 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W41/</guid><description>&lt;p>最近一个月加上十一假期看完了村上春树的《奇鸟行状录》，这本书情节和人物关系还算正常，能够拿出来公开讨论，就以下几点想说的。&lt;/p>
+&lt;p>仅仅从不吸引人的书名来看，比读之前预想得要好，并不亚于已经相当知名的其他作品，推荐。&lt;/p></description></item><item><title>最近参加开球网积分赛🏓</title><link>https://yindongliang.com/weekly/2024/2024-W38/</link><pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W38/</guid><description>&lt;p>停了一个半月的周报，主要原因是业余时间确实没投入精力去关注技术，只是晚上回家偶尔看看文档。也许是受奥运会的影响，也许是前两个月好东西吃多了导致长了点肉，于是乎最近一段时间下班就跑球馆打球去了，周末还参加了几次积分赛，以至于经过一个多月的密集练习和比赛，最后还拿了俱乐部 U1600 分段的一次季军和一次亚军，也算小有收获，当然还会继续努力，争取早日进入下一分段。&lt;/p></description></item><item><title>本周奥运周</title><link>https://yindongliang.com/weekly/2024/2024-W31/</link><pubDate>Thu, 01 Aug 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W31/</guid><description>&lt;p>本周是精彩的一周！关注的奥运会乒乓球赛事有惊无险，周六还去看了许嵩的演唱会，周天终于看到樊振东拿下男单金牌，自从四分之一决赛樊振东赢下张本智和，生死一线时不负众望，可以说樊振东真是经历了一次奥运级蜕变，从今以后他就是当之无愧的大将、主帅。可能很多人无法想象这一场比赛的压力有多大，这么说吧，这场球如果输了，就是国乒 30 年来最差成绩：奥运会男子单打没有奖牌，这就不只是八一献礼这么简单了，我想说樊振东在这场比赛中真是经历了非人类的压力。&lt;/p></description></item><item><title>又看了下 SwiftUI</title><link>https://yindongliang.com/weekly/2024/2024-W29/</link><pubDate>Wed, 17 Jul 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W29/</guid><description>&lt;p>夏天消化慢，最近跑了几趟医院，做了 CT 和无痛胃镜，好在问题不大，又需要养一养了。身体一旦出问题，其他事情的优先级瞬间都要往后排。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Button&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">isSet&lt;/span> &lt;span style="color:#abb2bf">?&lt;/span> &lt;span style="color:#98c379">&amp;#34;Pause&amp;#34;&lt;/span> &lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#34;Play&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">isSet&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">toggle&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Button&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">action&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>&lt;span style="color:#aa89ea">isSet&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">toggle&lt;/span>&lt;span style="color:#abb2bf">()})&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">isSet&lt;/span> &lt;span style="color:#abb2bf">?&lt;/span> &lt;span style="color:#98c379">&amp;#34;Pause&amp;#34;&lt;/span> &lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#34;Play&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Button&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">isSet&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">toggle&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span> &lt;span style="color:#aa89ea">label&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">isSet&lt;/span> &lt;span style="color:#abb2bf">?&lt;/span> &lt;span style="color:#98c379">&amp;#34;Pause&amp;#34;&lt;/span> &lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#34;Play&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>同样的功能，就有不止三种写法，苹果搞这么复杂有点蛋疼啊，涉及的点：&lt;/p></description></item><item><title>技术大牛也会焦虑</title><link>https://yindongliang.com/weekly/2024/2024-W28/</link><pubDate>Mon, 08 Jul 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W28/</guid><description>&lt;p>下面这段话是本周摸鱼时在图拉鼎的博客中重新读到的，之前没有注意到，但是最近同时在读《当下的力量》这本书，突然就产生了共鸣，这也是我一直想解决的问题不是么，看到大佬们都有这个问题，我也感觉轻松多了。&lt;/p></description></item><item><title>体验 Vision Pro</title><link>https://yindongliang.com/weekly/2024/2024-W27/</link><pubDate>Mon, 01 Jul 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W27/</guid><description>&lt;p>本周见闻：&lt;/p>
+&lt;ul>
+&lt;li>上周 Vision Pro 开放购买了，周围竟然一点动静没有，是环境变了还是时代变了，所以我周末来线下店体验了一下，总的来说，很沉也很贵，但是戴上后空间真实感非常到位，屏幕分辨率刷新率都不会影响到视觉体验，期待后续的轻量版本，什么时候如果能戴头上两个小时无不适感我就真的会下单了，毕竟可以顶好几个 Studio Display 了吧。&lt;/li>
+&lt;li>这两天在 Reddit 论坛上看一些显示器的评测，发现 Reddit 社区氛围真的非常棒，友善且专业，细看的话，Reddit 话题区分布非常之广，网友也真正遍布世界各地。&lt;/li>
+&lt;li>新版本 Sider.AI 在 Mac 端的公式显示终于正常了。&lt;/li>
+&lt;/ul>
+&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>Create beautiful applications using Go&lt;br>
+&lt;a href="https://github.com/wailsapp/wails">https://github.com/wailsapp/wails&lt;/a>&lt;/p></description></item><item><title>理解和使用 CSS 自定义属性（CSS 变量）</title><link>https://yindongliang.com/posts/%E7%90%86%E8%A7%A3%E5%92%8C%E4%BD%BF%E7%94%A8-CSS-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B1%9E%E6%80%A7CSS-%E5%8F%98%E9%87%8F/</link><pubDate>Sun, 30 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E7%90%86%E8%A7%A3%E5%92%8C%E4%BD%BF%E7%94%A8-CSS-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B1%9E%E6%80%A7CSS-%E5%8F%98%E9%87%8F/</guid><description>&lt;p>在现代 Web 开发中，&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/Using_CSS_custom_properties">CSS 自定义属性&lt;/a>（也称为 CSS 变量）提供了一种强大的方式来创建易于维护和灵活的样式表。本文将探讨如何定义和使用这些变量，以及如何通过它们来实现更高效的设计。&lt;/p></description></item><item><title>为什么面相对象很糟糕</title><link>https://yindongliang.com/weekly/2024/2024-W26/</link><pubDate>Mon, 24 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W26/</guid><description>&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>为什么面向对象很糟糕&lt;br>
+&lt;a href="https://harmful.cat-v.org/software/OO_programming/why_oo_sucks">https://harmful.cat-v.org/software/OO_programming/why_oo_sucks&lt;/a>&lt;/p>
+&lt;p>鸢(yuān)尾花书：从加减乘除到机器学习; 全套7册。&lt;br>
+&lt;a href="https://github.com/Visualize-ML">https://github.com/Visualize-ML&lt;/a>&lt;/p>
+&lt;p>一系列基于 CloudFlare 的开源工具 &amp;amp; 技术栈，旨在帮助独立开发者快速构建和发布 SaaS 产品&lt;br>
+&lt;a href="https://cloudflare.chuhai.tools/">https://cloudflare.chuhai.tools/&lt;/a>&lt;/p></description></item><item><title>开顺风车的一周</title><link>https://yindongliang.com/weekly/2024/2024-W25/</link><pubDate>Mon, 17 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W25/</guid><description>&lt;p>这周工作不忙，六点准时下班，加上媳妇出差，于是下班后开顺风车体验下生活，发现如果每天两单的话，基本可以覆盖每天的饭钱了，代价就是可能会至少多花半小时到一小时的通勤时间，我周末也出去转了一下午，这样算下来本周有差不多 500 的顺风车收入（电车每公里 1 毛钱，成本可以忽略不计），但这已经是业余时间的满负荷工作了，长久下来估计身体会吃不消。&lt;/p></description></item><item><title>本周上海回大连</title><link>https://yindongliang.com/weekly/2024/2024-W24/</link><pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W24/</guid><description>&lt;p>从上周末到现在的 8 天走了大连 -&amp;gt; 上海 -&amp;gt; 济南 -&amp;gt; 聊城 -&amp;gt; 济南 -&amp;gt; 大连这几座城市，得出一个结论：这个时间点必然是大连最宜居，依然凉风拂面，而济南、聊城已经热成蒸笼，上海早晚还是很凉快（就是有点潮），出乎意料，上海六月的气候比我预想的好很多。另外感觉这 9 天过得好长，果然旅行可以让时间变慢，关于工作的事好像已经忘干净了。&lt;/p></description></item><item><title>字体的绘制原理？</title><link>https://yindongliang.com/weekly/2024/2024-W23/</link><pubDate>Mon, 03 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W23/</guid><description>&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>Linear.app 是一款现代化的软件开发工具，提供直观的用户界面和高效的工作流程，帮助团队进行问题跟踪、任务管理、冲刺规划和产品路线图等，使软件开发流程更加优化和简化。&lt;br>
+&lt;a href="https://linear.app/">https://linear.app/&lt;/a>&lt;/p></description></item><item><title>2024 年我的工具列表</title><link>https://yindongliang.com/posts/my-toolkit-2024/</link><pubDate>Thu, 30 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/my-toolkit-2024/</guid><description>&lt;p>从桌面端的应用软件这个角度来看，当下也是一个动荡的年代，不管是之前已经有的形态，还是还未出现的形态，也不管是开源的还是收费的，好用的新工具层出不穷，AI 的入场更是要把所有软件重新设计的节奏。我希望整理下最近几年一直在用的软件，记录当前的状态，这是相关主题的第一篇，争取后面每年都能关注下一下这个话题。&lt;/p></description></item><item><title>了解下自定义数据属性 data-*</title><link>https://yindongliang.com/posts/HTMLElement-dataset/</link><pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/HTMLElement-dataset/</guid><description>&lt;p>测试主题切换功能时，遇到了 &lt;code>data-theme&lt;/code> 这个属性，问了下 gpt， 发现 &lt;code>data-theme&lt;/code> 不是 CSS 标准中的预定义属性，而是一个自定义的属性。更准确地说，它是 HTML5 中的 &amp;ldquo;data-&amp;rdquo; &lt;a href="https://developer.mozilla.org/zh-CN/docs/Learn/HTML/Howto/Use_data_attributes">数据属性&lt;/a>的一种。&lt;/p>
+&lt;h2 id="html5-中的-data--属性">
+ HTML5 中的 &amp;ldquo;data-&amp;rdquo; 属性
+ &lt;a class="anchor" href="#html5-%e4%b8%ad%e7%9a%84-data--%e5%b1%9e%e6%80%a7">#&lt;/a>
+&lt;/h2>
+&lt;p>HTML5 引入了 &lt;code>data-&lt;/code> 属性，允许你为元素添加自定义的非标准属性。这些自定义属性必须以 &lt;code>data-&lt;/code> 开头，后面跟一个名称。例如，&lt;code>data-theme&lt;/code>、&lt;code>data-user-id&lt;/code>、&lt;code>data-state&lt;/code> 等等。这些属性的主要目的是为元素存储与页面或应用程序相关的私有数据，而这些数据不会影响元素的展示或行为。&lt;/p></description></item><item><title>你有过高考梦魇吗？</title><link>https://yindongliang.com/weekly/2024/2024-W22/</link><pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W22/</guid><description>&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>原来很多人和我一样有过这样的高考梦魇。。&lt;br>
+&lt;a href="https://www.v2ex.com/t/1044208">https://www.v2ex.com/t/1044208&lt;/a>&lt;/p>
+&lt;h2 id="工具">
+ 工具
+ &lt;a class="anchor" href="#%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;p>一个非常直观好用的文本对比工具：Mergely&lt;br>
+&lt;a href="https://www.mergely.com/">https://www.mergely.com/&lt;/a>&lt;/p>
+&lt;p>Wappalyzer：这个工具很好用，可以分析出网站的技术架构，虽然不是 100% 准确，但很有参考性，而且提供了 Chrome 插件。&lt;br>
+&lt;a href="https://www.wappalyzer.com/">https://www.wappalyzer.com/&lt;/a>&lt;/p></description></item><item><title>使 HTML 元素居中有哪些方案？</title><link>https://yindongliang.com/posts/how-to-make-html-element-center/</link><pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/how-to-make-html-element-center/</guid><description>&lt;p>有多种方式可以实现HTML标签的居中，具体的方式会根据需要居中的元素类型（块级元素还是行内元素）以及具体应用的上下文来决定。下面将介绍几种常见的方法，涉及到的知识包括 CSS 盒模型、Flexbox 布局和 Grid 布局等。&lt;/p></description></item><item><title>CSS Modules 是什么</title><link>https://yindongliang.com/posts/CSS-Modules-%E6%98%AF%E4%BB%80%E4%B9%88/</link><pubDate>Mon, 20 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/CSS-Modules-%E6%98%AF%E4%BB%80%E4%B9%88/</guid><description>&lt;p>CSS Modules 是一种 CSS 文件的模块化和组件化的解决方案。它允许你将 CSS 样式局部化到组件中，从而避免全局命名冲突问题。每个 CSS 类名和动画名称默认都被视为局部作用域的，只有在特定模块中才会生效。这种方式非常适合在现代前端开发中使用，特别是与组件化框架（如 React、Vue 等）结合使用时。&lt;/p></description></item><item><title>尝试在周报里管理 ToDo</title><link>https://yindongliang.com/weekly/2024/2024-W21/</link><pubDate>Mon, 20 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W21/</guid><description>&lt;p>本周业余时间改造了下 &lt;a href="portfolio/_index.md">Projects 页面&lt;/a>，从之前的 Card 模式切换到了 Timeline 模式。&lt;/p>
+&lt;p>Discourse：一个广泛使用的社区论坛框架，应用非常广泛，从 &lt;a href="https://community.bear.app/">Bear Community&lt;/a> 再次发现了它。&lt;br>
+&lt;a href="https://www.discourse.org/">https://www.discourse.org/&lt;/a>&lt;/p>
+&lt;p>浏览 Bear 社区是因为发现最近 Bear for macOS 的渲染好像有点问题，内容经常会突然消失，需要回车强制刷新一下才可以，是因为我的笔记太多了吗，一般这个时候又要考虑替代品了。。于是我觉得不如就合并到 Obsidian 上面，然后就尝试了下 Obsidian for iOS，现在可以通过 iCloud 把笔记在手机和电脑同步起来了。&lt;/p></description></item><item><title>VSCode 使用技巧</title><link>https://yindongliang.com/docs/Awesome/VSCode/</link><pubDate>Sat, 18 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/VSCode/</guid><description>&lt;h2 id="排除文件夹">
+ 排除文件夹
+ &lt;a class="anchor" href="#%e6%8e%92%e9%99%a4%e6%96%87%e4%bb%b6%e5%a4%b9">#&lt;/a>
+&lt;/h2>
+&lt;p>使用 &lt;code>search.exclude&lt;/code> 在&lt;strong>搜索结果&lt;/strong>中排除特定的文件或文件夹。&lt;/p>
+&lt;p>使用 &lt;code>files.exclude&lt;/code> 在&lt;strong>文件资源管理器&lt;/strong>中隐藏特定的文件或文件夹。&lt;/p>
+&lt;p>使用 &lt;code>files.watcherExclude&lt;/code> 在&lt;strong>文件监视器&lt;/strong>排除某些文件或文件夹，以提高性能。&lt;/p></description></item><item><title>了解 glob 模式匹配</title><link>https://yindongliang.com/posts/%E4%BA%86%E8%A7%A3-glob-%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D/</link><pubDate>Sat, 18 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E4%BA%86%E8%A7%A3-glob-%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D/</guid><description>&lt;p>在 Visual Studio Code（VSCode）以及许多其他工具和库中，文件路径匹配通常使用 &lt;a href="https://en.wikipedia.org/wiki/Glob_%28programming%29">glob 模式&lt;/a>。&lt;/p>
+&lt;h2 id="glob-模式中的通配符">
+ Glob 模式中的通配符
+ &lt;a class="anchor" href="#glob-%e6%a8%a1%e5%bc%8f%e4%b8%ad%e7%9a%84%e9%80%9a%e9%85%8d%e7%ac%a6">#&lt;/a>
+&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>*&lt;/code>：匹配任意数量的字符（不包括路径分隔符 &lt;code>/&lt;/code>）。&lt;/li>
+&lt;li>&lt;code>**&lt;/code>：匹配任意数量的目录层级，包括子目录。&lt;/li>
+&lt;li>&lt;code>?&lt;/code>：匹配单个字符。&lt;/li>
+&lt;li>&lt;code>[abc]&lt;/code>：匹配方括号内的任意一个字符。&lt;/li>
+&lt;li>&lt;code>{a,b}&lt;/code>：匹配花括号内的任意一个模式。&lt;/li>
+&lt;/ul>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Wildcard&lt;/th>
+ &lt;th>Description&lt;/th>
+ &lt;th>Example&lt;/th>
+ &lt;th>Matches&lt;/th>
+ &lt;th>Does not match&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>*&lt;/code>&lt;/td>
+ &lt;td>matches any number of any characters including none&lt;/td>
+ &lt;td>&lt;code>Law*&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Law&lt;/code>, &lt;code>Laws&lt;/code>, or &lt;code>Lawyer&lt;/code>&lt;/td>
+ &lt;td>&lt;code>GrokLaw&lt;/code>, &lt;code>La&lt;/code>, or &lt;code>aw&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>*Law*&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Law&lt;/code>, &lt;code>GrokLaw&lt;/code>, or &lt;code>Lawyer&lt;/code>.&lt;/td>
+ &lt;td>&lt;code>La&lt;/code>, or &lt;code>aw&lt;/code>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>?&lt;/code>&lt;/td>
+ &lt;td>matches any single character&lt;/td>
+ &lt;td>&lt;code>?at&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Cat&lt;/code>, &lt;code>cat&lt;/code>, &lt;code>Bat&lt;/code> or &lt;code>bat&lt;/code>&lt;/td>
+ &lt;td>&lt;code>at&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>[abc]&lt;/code>&lt;/td>
+ &lt;td>matches one character given in the bracket&lt;/td>
+ &lt;td>&lt;code>[CB]at&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Cat&lt;/code> or &lt;code>Bat&lt;/code>&lt;/td>
+ &lt;td>&lt;code>cat&lt;/code>, &lt;code>bat&lt;/code> or &lt;code>CBat&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>[a-z]&lt;/code>&lt;/td>
+ &lt;td>matches one character from the (locale-dependent) range given in the bracket&lt;/td>
+ &lt;td>&lt;code>Letter[0-9]&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Letter0&lt;/code>, &lt;code>Letter1&lt;/code>, &lt;code>Letter2&lt;/code> up to &lt;code>Letter9&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Letters&lt;/code>, &lt;code>Letter&lt;/code> or &lt;code>Letter10&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="示例解释">
+ 示例解释
+ &lt;a class="anchor" href="#%e7%a4%ba%e4%be%8b%e8%a7%a3%e9%87%8a">#&lt;/a>
+&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;code>**/*.log&lt;/code>：&lt;/p></description></item><item><title>使用 EditorConfig 和 Prettier 来规范代码风格</title><link>https://yindongliang.com/posts/%E4%BD%BF%E7%94%A8-EditorConfig-%E5%92%8C-Prettier-%E6%9D%A5%E8%A7%84%E8%8C%83%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/</link><pubDate>Thu, 16 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E4%BD%BF%E7%94%A8-EditorConfig-%E5%92%8C-Prettier-%E6%9D%A5%E8%A7%84%E8%8C%83%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/</guid><description>&lt;p>写前端代码实践下来一段时间，如果是我自己的前端项目，缩进类型一定是空格，长度必须是 2，因为 4 还是太长了，对 &lt;code>HTML&lt;/code> 类的模板以及 js 代码不友好。但是如何约束队友呢，不论是有意还是无意的差异，为了让大家保持风格统一，我发现下面工具可以解决问题。&lt;/p></description></item><item><title>包管理</title><link>https://yindongliang.com/docs/Frontend/%E5%8C%85%E7%AE%A1%E7%90%86/</link><pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E5%8C%85%E7%AE%A1%E7%90%86/</guid><description>&lt;h2 id="版本管理">
+ 版本管理
+ &lt;a class="anchor" href="#%e7%89%88%e6%9c%ac%e7%ae%a1%e7%90%86">#&lt;/a>
+&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>~&lt;/code>: 当安装依赖时获取到有新版本时，安装到 &lt;code>x.y.z&lt;/code> 中 &lt;code>z&lt;/code> 的最新的版本。即保持主版本号、次版本号不变的情况下，保持修订号的最新版本。&lt;/li>
+&lt;li>&lt;code>^&lt;/code>: 当安装依赖时获取到有新版本时，安装到 &lt;code>x.y.z&lt;/code> 中 &lt;code>y&lt;/code> 和 &lt;code>z&lt;/code> 都为最新版本。 即保持主版本号不变的情况下，保持次版本号、修订版本号为最新版本。&lt;/li>
+&lt;/ul>
+&lt;p>参考文档：&lt;/p></description></item><item><title>理解 useMemo、useCallback 和 memo</title><link>https://yindongliang.com/posts/useMemo-useCallback-and-memo/</link><pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/useMemo-useCallback-and-memo/</guid><description>&lt;p>虽然 React 的官方文档已经写的很清楚了，但我还是想总结下。形而上地讲前两个是 Hook，而 &lt;code>memo&lt;/code> 是 API。形而下地说，&lt;code>useMemo&lt;/code>、&lt;code>useCallback&lt;/code> 和 &lt;code>React.memo&lt;/code> 是 React 中用于优化性能的工具，它们帮助你避免不必要的重新渲染。&lt;/p></description></item><item><title>CSS 中的 inherit 选项</title><link>https://yindongliang.com/posts/understand-css-inherit/</link><pubDate>Tue, 14 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/understand-css-inherit/</guid><description>&lt;p>在 CSS 中，&lt;code>inherit&lt;/code> 关键字用于明确指定一个属性应从其父元素继承其值。几乎所有的 CSS 属性都可以使用 &lt;code>inherit&lt;/code> 值，但并非所有属性默认继承自其父元素。使用 &lt;code>inherit&lt;/code> 可以确保某个特定元素的属性值与其父元素相同，即使这个属性默认是不继承的。&lt;/p></description></item><item><title>Next.js 好用！</title><link>https://yindongliang.com/weekly/2024/2024-W20/</link><pubDate>Mon, 13 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W20/</guid><description>&lt;p>本周 GPT 4o 发布，最大的感觉就是更快了，这个时候再看文字一个个蹦出来已经有些眼花缭乱了。。。&lt;/p>
+&lt;h2 id="关于-nextjs">
+ 关于 Next.js
+ &lt;a class="anchor" href="#%e5%85%b3%e4%ba%8e-nextjs">#&lt;/a>
+&lt;/h2>
+&lt;p>是否可以说，Next.js 已经是目前全栈开发领域的最佳解决方案（之一），尤其是 AI 板块，随便列几个项目。&lt;/p></description></item><item><title>Mac 技巧</title><link>https://yindongliang.com/docs/Awesome/mac-tips/</link><pubDate>Thu, 18 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/mac-tips/</guid><description>&lt;h2 id="允许打开任何来源的-app">
+ 允许打开任何来源的 APP
+ &lt;a class="anchor" href="#%e5%85%81%e8%ae%b8%e6%89%93%e5%bc%80%e4%bb%bb%e4%bd%95%e6%9d%a5%e6%ba%90%e7%9a%84-app">#&lt;/a>
+&lt;/h2>
+&lt;p>适用于 14.0&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo spctl --master-disable
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>上面不奏效就使用下面的命令。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo xattr -r -d com.apple.quarantine + APP路径
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="美区礼品卡官方购买链接">
+ 美区礼品卡官方购买链接
+ &lt;a class="anchor" href="#%e7%be%8e%e5%8c%ba%e7%a4%bc%e5%93%81%e5%8d%a1%e5%ae%98%e6%96%b9%e8%b4%ad%e4%b9%b0%e9%93%be%e6%8e%a5">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://www.apple.com/shop/gift-cards">Apple Gift Card&lt;/a>&lt;/p>
+&lt;p>可用于在美区 App Store 消费，比如 ChatGPT 4.0&lt;/p></description></item><item><title>使用 Gin 代理静态文件</title><link>https://yindongliang.com/weekly/2024/2024-W16/</link><pubDate>Mon, 15 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W16/</guid><description>&lt;p>使用 Gin 自带的路由功能就可以直接代理静态文件，之前写过 Gin + Vue 的前后端组合，将代码放在同一个项目中，根目录直接转发到前端文件，时过境迁竟然忘了，可直接参考&lt;a href="https://gin-gonic.com/docs/examples/serving-static-files/">文档&lt;/a>。&lt;/p></description></item><item><title>将 pytest 速度提高 10 倍</title><link>https://yindongliang.com/weekly/2024/2024-W15/</link><pubDate>Mon, 08 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W15/</guid><description>&lt;p>最近每个月好像都能听说暴雪要回归，与网易和好，但是一直没有证实，本周终于官宣了。附上星际争霸&lt;a href="https://zh.moegirl.org.cn/zh-hans/%E6%98%9F%E9%99%85%E4%BA%89%E9%9C%B8/%E6%88%98%E6%9C%AF">战术列表&lt;/a>，开始热身。&lt;/p>
+&lt;p>本周仍在使用 &lt;a href="https://github.com/eosphoros-ai/DB-GPT">DB-GPT&lt;/a>来探索相关功能，发现更多使用技巧，比如结合 Knowledge 和 Database 一起使用，可以更精准地让 AI 了解数据库结构，尤其是带中文注释描述的时候，从而使 SQL 结果或图表展示也就会更加正确。&lt;/p></description></item><item><title>试玩 DB-GPT</title><link>https://yindongliang.com/weekly/2024/2024-W14/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W14/</guid><description>&lt;iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/7cv28LXcjAC3GsXbUvXKbX?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy">&lt;/iframe>
+&lt;p>清明假期在 Steam 上入坑了游戏《图灵完备》，以后如果没有网络的情况下可以继续玩一下子，主要还是太硬核了。&lt;/p>
+&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>冴羽写博客的地方，好像一直没有专门提过这个系列，但是我在 Github 上 Watch 了更新提醒所以经常会看。作者本职是一名 Taobao FED 的前端工程师，经常会写一些前端技术文章，同时还会分享很多人生思考，内容非常减压治愈诚恳。&lt;br>
+&lt;a href="https://github.com/mqyqingfeng/Blog">https://github.com/mqyqingfeng/Blog&lt;/a>&lt;/p></description></item><item><title>对 Python 的刻板印象</title><link>https://yindongliang.com/weekly/2024/2024-W13/</link><pubDate>Mon, 25 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W13/</guid><description>&lt;p>Python 黑魔法手册&lt;br>
+&lt;a href="https://github.com/iswbm/magic-python">https://github.com/iswbm/magic-python&lt;/a>&lt;br>
+之前也看过另外一版别人写的 Python 黑魔法的指南，不是这一篇，好像是国外翻译过来的，但没找到链接，等我再找找。。&lt;/p>
+&lt;p>虽然 Python 用了很多年，但一直还是觉得 Python 是个“底层比较黑暗”的语言，很多东西看不透，只能在上层 API 来回调用。这里的原因有很多，最主要的原因我觉得应该还是 Python 是一个解释型语言，无法实现自举。一方面这意味着很多 bug 可能是在运行时才能被发现，缺少编译期和类型系统带来的安全感。另一方面，相比 Go 语言，可以说 Go 的底层非常清晰因为它实现了自举，当我们在讨论 Go 底层的时候实际上还是在讨论 Go 语言，上层和底层完全可以快速找到对应关系，但是 Python 就不行了，一旦我们想要讨论 Python 的底层，我们就瞬间切换到了 C 语言的世界，而且是那种到处用地址和指针操作、经过奇技淫巧高度性能优化后的 C 源码，想找到上层和底层的通道本身就比较困难了，可能只能靠想象力，所以 Python 看着简单，但我一直对 Python 还是保持着 Panic。也许这也是为什么网上有很多 Go 源码分析的文章，但是却鲜有讲 Python 源码的原因吧。&lt;/p></description></item><item><title>为什么你的多进程池卡住了</title><link>https://yindongliang.com/weekly/2024/2024-W12/</link><pubDate>Mon, 18 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W12/</guid><description>&lt;p>之前遇到的一个问题，在多进程池中并行运行的任务，有一定几率会全部卡住，问题的原因是 Python 的 logging 模块在单进程下虽然是线程安全的，但是在多进程并行模型下，多个任务同时写同一 log 文件处理不好就可能会有死锁问题，而这又是因为在 &lt;code>fork()&lt;/code> 时，子进程复制了父进程的所有（除了父进程本身）内容，这其中就可能包含了一个正在未被释放的锁。这个问题目前解决起来最简单靠谱的方案就是创建子进程时不使用默认的 &lt;code>fork&lt;/code> 方式，而是使用 &lt;code>spawn&lt;/code> 方式，后续 Python 3.14 也会将 &lt;code>spawn&lt;/code> 改为默认的创建进程的方式。下面是两条可参考的资料：&lt;/p></description></item><item><title>咖啡，以及三体</title><link>https://yindongliang.com/weekly/2024/2024-W11/</link><pubDate>Mon, 11 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W11/</guid><description>&lt;p>自从有了咖啡机，媳妇几乎每天早晨都热衷于练习拉花，而我目前已经连续喝了小半个月的咖啡，逐渐觉得身体有点吃不消了。一方面晚上睡不着，经常 12 点也不困，然后早上还起不来，尤其最近几天身体还有迷迷糊的无力感，下班到家就感觉睁不开眼可还是不想睡觉，心慌的感觉。&lt;/p></description></item><item><title>排列组合</title><link>https://yindongliang.com/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%8E%92%E5%88%97%E7%BB%84%E5%90%88/</link><pubDate>Fri, 08 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Algorithms/%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/%E6%8E%92%E5%88%97%E7%BB%84%E5%90%88/</guid><description>&lt;h2 id="参考">
+ 参考
+ &lt;a class="anchor" href="#%e5%8f%82%e8%80%83">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://oi-wiki.org/math/combinatorics/combination/">https://oi-wiki.org/math/combinatorics/combination/&lt;/a>&lt;/p>
+&lt;h2 id="加法--乘法原理">
+ 加法 &amp;amp; 乘法原理
+ &lt;a class="anchor" href="#%e5%8a%a0%e6%b3%95--%e4%b9%98%e6%b3%95%e5%8e%9f%e7%90%86">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="加法原理">
+ 加法原理
+ &lt;a class="anchor" href="#%e5%8a%a0%e6%b3%95%e5%8e%9f%e7%90%86">#&lt;/a>
+&lt;/h3>
+&lt;p>完成一个工程可以有 $n$ 类办法，$a_i(1 \le i \le n)$ 代表第 $i$ 类方法的数目。那么完成这件事共有 $S=a_1+a_2+\cdots +a_n$ 种不同的方法。&lt;/p></description></item><item><title>使用 Selenium 自动化测试</title><link>https://yindongliang.com/weekly/2024/2024-W10/</link><pubDate>Mon, 04 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W10/</guid><description>&lt;p>本周在车位上安装了家用充电桩，幸福感亦有显著提升。之前习惯去商场附近的充电桩充电，顺便在商场吃饭，去一次经常是充电 20 块钱，逛街吃饭 200 块钱，在家充电的话目测能省下一笔。话说回来，想要在自己家的车位安装充电桩，有可能并不是一件顺利的事情，其中最大的阻碍可能是需要物业开“允许施工充电桩的证明”，有了这个证明，后面就会非常顺利了。&lt;/p></description></item><item><title>把玩 SD-WebUI</title><link>https://yindongliang.com/weekly/2024/2024-W09/</link><pubDate>Mon, 26 Feb 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W09/</guid><description>&lt;p>本周继续玩 SD-WebUI，发现了网站 &lt;a href="https://civitai.com/">civitai&lt;/a>，找到了更多 Checkpoint 和 LoRA 等目前还说不太清楚的模型、参数集。至于上周提到的自己生成的图片不太能看，到本周问题基本就解决了，核心改变就是：各种调参，比如面部修复等等。这一次，我的 M1 Max 的 MacBook Pro 的风扇终于开始转了，本地生成的图片和一些 AI 图片网站上的 Demo 也能相提并论了。&lt;/p></description></item><item><title>还是阳了，以及在读动物农场</title><link>https://yindongliang.com/weekly/2024/2024-W08/</link><pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W08/</guid><description>&lt;p>大年初二就开始测出阳性了，这回是第一次明确测出来，敢情之前的发烧还真不是新冠呗，这回的症状也确实和新冠症状基本符合，嗓子不舒服，一直干咳，发烧一次吃了退烧药就下来了，即使现在已经转阴了，身上还是说不出来的哪里不对，偶尔莫名酸痛，偶尔有气无力，偶尔拉肚子，偶尔心跳加速，有点意思。&lt;/p></description></item><item><title>LLM 技术原理入门</title><link>https://yindongliang.com/weekly/2024/2024-W06/</link><pubDate>Mon, 05 Feb 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W06/</guid><description>&lt;p>今年和爸妈在大连新家过年。&lt;/p>
+&lt;h2 id="发现">
+ 发现
+ &lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>布朗大学的一个小组出品的关于概率统计的入门级文档，图文结合非常通俗易懂&lt;br>
+&lt;a href="https://seeing-theory.brown.edu/">https://seeing-theory.brown.edu/&lt;/a>&lt;/p>
+&lt;p>一份飞书文档：一站式 LLM 底层技术原理入门指南&lt;br>
+&lt;a href="https://s3tlxskbq3.feishu.cn/docx/NyPqdCKraoXz9gxNVCfcIFdnnAc">https://s3tlxskbq3.feishu.cn/docx/NyPqdCKraoXz9gxNVCfcIFdnnAc&lt;/a>&lt;/p></description></item><item><title>入住新家了</title><link>https://yindongliang.com/weekly/2024/2024-W04/</link><pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W04/</guid><description>&lt;p>上周五开始入住新家，这一周来隔三差五还是回去收拾一下剩下的东西，到这周五终于完全搬完了，这也宣告着我的装修之旅终于结束，正式开始新生活了。&lt;/p>
+&lt;p>周末又去了趟宜家，买了些收纳盒之类的，我觉得新家剩下的可以慢慢放手交给媳妇打理了，我不需要再操心更多事情。经过这次装修，我攒齐了相当一套工具，包括电钻、胶枪、网线钳、电线钳等等专业设备，工人师傅留下的细碎活、换智能开关、换下水三通等等都可以自己解决。&lt;/p></description></item><item><title>赏读大佬们的 2023</title><link>https://yindongliang.com/weekly/2024/2024-W03/</link><pubDate>Mon, 15 Jan 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W03/</guid><description>&lt;p>这周看到了几个高质量 2023 年终总结，依然是之前已经关注的几位大佬，优秀还是有原因的。&lt;/p>
+&lt;p>2023 列表&lt;br>
+&lt;a href="https://github.com/saveweb/review-2023">https://github.com/saveweb/review-2023&lt;/a>&lt;/p>
+&lt;p>2023 年总结：向外连接与恢复成长的一年 - 图拉鼎&lt;br>
+&lt;a href="https://imtx.me/blog/2023-summary/">https://imtx.me/blog/2023-summary/&lt;/a>&lt;/p>
+&lt;p>2023 年终总结: 和自己对话 - Randy&amp;rsquo;s Blog&lt;br>
+&lt;a href="https://lutaonan.com/blog/2023-summary/">https://lutaonan.com/blog/2023-summary/&lt;/a>&lt;/p></description></item><item><title>复习大学数学中...</title><link>https://yindongliang.com/weekly/2024/2024-W02/</link><pubDate>Mon, 08 Jan 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W02/</guid><description>&lt;p>出于学习需要，最近高频使用 ChatGPT4.0，不得不感慨 4.0 进步真的很快。上半年 3.5 版本还有“一本正经胡说八道”的毛病，现在就好多了，几乎不会遇到。而且时效性问题也得以解决，更牛的是现在可以分析和生成图片了，还可以分析上传的其他类型文件，总之已经突破我上半年的想象力，如今已经变成一个非常靠谱的得力助手。&lt;/p></description></item><item><title>刺杀骑士团长</title><link>https://yindongliang.com/weekly/2024/2024-W01/</link><pubDate>Mon, 01 Jan 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W01/</guid><description>&lt;p>元旦看完了《刺杀骑士团长》，这本书已经是村上这几年最新的作品了，算上之前看过的三本，基本是按照作者写作的时间顺序看过来的，我认为《刺杀骑士团长》可以算是村上相当成熟的作品了，与之前相比脉络更加清晰，框架更加扎实，可是目前我还是倾向去看现实主义小说，但是村上春树的书又欲罢不能（虽然经常带点超现实）。我决定接下来主要还是继续去读村上的其他作品，去感受他的奇妙世界。&lt;/p></description></item></channel></rss>

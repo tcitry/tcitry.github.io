@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>View on LYon's Blog</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/</link><description>Recent content in View on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Apple/SwiftUI/View/index.xml" rel="self" type="application/rss+xml"/><item><title>TextEditor</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/TextEditor/</link><pubDate>Thu, 10 Apr 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/TextEditor/</guid><description>&lt;p>TextEditor 是 SwiftUI 中用于处理&lt;strong>多行文本输入&lt;/strong>的组件，适用于需要用户输入较长文本的场景。以下是其使用方式、适用场景及案例详解：&lt;/p>
+&lt;hr>
+&lt;h3 id="一基本使用方式">
+ &lt;strong>一、基本使用方式&lt;/strong>
+ &lt;a class="anchor" href="#%e4%b8%80%e5%9f%ba%e6%9c%ac%e4%bd%bf%e7%94%a8%e6%96%b9%e5%bc%8f">#&lt;/a>
+&lt;/h3>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>基础语法&lt;/strong>：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">struct&lt;/span> &lt;span style="color:#ca72ff">ContentView&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">View&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">@&lt;/span>&lt;span style="color:#aa89ea">State&lt;/span> &lt;span style="color:#76a9f9">private&lt;/span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">text&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">String&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#98c379">&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">body&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">some&lt;/span> &lt;span style="color:#aa89ea">View&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">TextEditor&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">text&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> $&lt;span style="color:#aa89ea">text&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">font&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">body&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">padding&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>• 使用 &lt;code>@State&lt;/code> 绑定文本内容，实时响应用户输入。
+• 支持常见修饰符（如字体、边距）。&lt;/p></description></item><item><title>popover</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/popover/</link><pubDate>Sat, 29 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/popover/</guid><description>&lt;h2 id="什么是-popover">
+ 什么是 Popover
+ &lt;a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-popover">#&lt;/a>
+&lt;/h2>
+&lt;p>Popover 是 SwiftUI 提供的一种视图展示方式，它以浮动窗口的形式在当前视图上方显示临时内容。在 iOS 上，popover 通常表现为一个气泡状的浮动窗口，而在 macOS 和 iPadOS 上则表现为一个独立的浮动面板。&lt;/p></description></item><item><title>DatePicker</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/DatePicker/</link><pubDate>Sat, 22 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/DatePicker/</guid><description>&lt;p>以下是 SwiftUI 中 &lt;code>DatePicker&lt;/code> 组件的详细介绍，涵盖核心功能、样式、定制选项及常见用法：&lt;/p>
+&lt;hr>
+&lt;h3 id="一datepicker-基础">
+ 一、&lt;code>DatePicker&lt;/code> 基础
+ &lt;a class="anchor" href="#%e4%b8%80datepicker-%e5%9f%ba%e7%a1%80">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;code>DatePicker&lt;/code> 是 SwiftUI 中用于选择日期和时间的交互式组件，支持绑定到 &lt;code>Date&lt;/code> 类型变量，自动处理用户输入更新。&lt;/p></description></item><item><title>EmptyView</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/EmptyView/</link><pubDate>Tue, 11 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/EmptyView/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>EmptyView&lt;/code> 是一个不渲染任何可见内容的视图。尽管看似“无用”，但它在以下场景中非常实用，能帮助开发者更灵活地管理视图逻辑和布局。&lt;/p></description></item><item><title>refreshble</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/refreshble/</link><pubDate>Tue, 04 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/refreshble/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>refreshable&lt;/code> 修饰符是用于实现下拉刷新（Pull-to-Refresh）功能的核心 API，自 iOS 15 及以上版本引入。它通过结合 Swift 的 &lt;code>async/await&lt;/code> 异步编程模型，简化了数据刷新逻辑的实现。以下是其核心特性和使用方法的详细介绍：&lt;/p></description></item><item><title>Scene</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Scene/</link><pubDate>Sun, 23 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Scene/</guid><description>&lt;p>以下是关于 &lt;strong>SwiftUI Scene&lt;/strong> 体系结构的详细介绍，并按照清晰的分类和表格形式整理。&lt;/p>
+&lt;hr>
+&lt;h3 id="swiftui-scene-体系结构概述">
+ &lt;strong>SwiftUI Scene 体系结构概述&lt;/strong>
+ &lt;a class="anchor" href="#swiftui-scene-%e4%bd%93%e7%b3%bb%e7%bb%93%e6%9e%84%e6%a6%82%e8%bf%b0">#&lt;/a>
+&lt;/h3>
+&lt;p>在 SwiftUI 中，&lt;code>Scene&lt;/code> 是应用的核心组成部分之一，用于定义应用的不同界面或功能模块。每个 &lt;code>Scene&lt;/code> 都是一个独立的视图层级，可以被系统管理和展示。通过 &lt;code>Scene&lt;/code>，开发者可以灵活地管理应用的窗口、生命周期以及多窗口支持（如 macOS 和 iPadOS 的多窗口特性）。&lt;/p></description></item><item><title>AsyncImage</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/AsyncImage/</link><pubDate>Sat, 22 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/AsyncImage/</guid><description>&lt;p>AsyncImage 是 SwiftUI 提供的一个视图，用于异步加载并显示远程或本地 URL 指定的图像。它极大地简化了从网络或其他数据源加载图像的过程，并内置了占位图和错误处理逻辑，帮助你在图像加载过程中提供更好的用户体验。下面按几个方面介绍它的主要特点和用法：&lt;/p></description></item><item><title>ProgressView</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/ProgressView/</link><pubDate>Sat, 22 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/ProgressView/</guid><description>&lt;p>SwiftUI 中的 &lt;strong>ProgressView&lt;/strong> 是一个用于显示进度或状态的视图组件，它能够以非常简单的方式告知用户当前任务的进度。它支持两种常见的模式：&lt;/p>
+&lt;hr>
+&lt;h3 id="1-不确定进度indeterminate-progress">
+ 1. 不确定进度（Indeterminate Progress）
+ &lt;a class="anchor" href="#1-%e4%b8%8d%e7%a1%ae%e5%ae%9a%e8%bf%9b%e5%ba%a6indeterminate-progress">#&lt;/a>
+&lt;/h3>
+&lt;p>如果你的任务进度无法准确量化，只需显示一个旋转的活动指示器，这时只需要创建一个空的 ProgressView：&lt;/p></description></item><item><title>Image</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Image/</link><pubDate>Thu, 13 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Image/</guid><description>&lt;h3 id="-swiftui">
+ &lt;strong>🔹 SwiftUI &lt;code>Image&lt;/code> 组件的使用方法&lt;/strong>
+ &lt;a class="anchor" href="#-swiftui">#&lt;/a>
+&lt;/h3>
+&lt;p>SwiftUI 的 &lt;code>Image&lt;/code> 组件用于显示图片，支持本地图片、SF Symbols、远程加载等多种方式。&lt;/p>
+&lt;hr>
+&lt;h2 id="1">
+ &lt;strong>1️⃣ &lt;code>Image&lt;/code> 的基本使用&lt;/strong>
+ &lt;a class="anchor" href="#1">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="-1-加载">
+ &lt;strong>✅ 1. 加载 &lt;code>Assets.xcassets&lt;/code> 里的图片&lt;/strong>
+ &lt;a class="anchor" href="#-1-%e5%8a%a0%e8%bd%bd">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Image&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;example_image&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 直接从 asset 里加载&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h3 id="-2-加载-sf-symbols系统图标">
+ &lt;strong>✅ 2. 加载 SF Symbols（系统图标）&lt;/strong>
+ &lt;a class="anchor" href="#-2-%e5%8a%a0%e8%bd%bd-sf-symbols%e7%b3%bb%e7%bb%9f%e5%9b%be%e6%a0%87">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Image&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">systemName&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#34;star.fill&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 使用 SF Symbols&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">resizable&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">scaledToFit&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">frame&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">width&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">50&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">height&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">50&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">foregroundColor&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">yellow&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>📌 &lt;strong>SF Symbols 仅支持 &lt;code>iOS 13+&lt;/code>，可以调整大小和颜色。&lt;/strong>&lt;/p></description></item><item><title>Link</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Link/</link><pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Link/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>Link&lt;/code> 是一个用于打开网页链接的视图组件。它允许用户点击一个按钮或文本，直接跳转到指定的 URL。&lt;code>Link&lt;/code> 是 SwiftUI 提供的一种简单且强大的方式，用于处理外部链接和网页导航。&lt;/p></description></item><item><title>Grid</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Grid/</link><pubDate>Tue, 04 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Grid/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>Grid&lt;/code> 是一种用于创建灵活布局的容器，允许你以行和列的形式排列视图。&lt;code>Grid&lt;/code> 提供了强大的布局能力，特别适合需要复杂排列的场景。&lt;/p>
+&lt;h3 id="基本概念">
+ 基本概念
+ &lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>Grid&lt;/strong>：一个容器，用于定义行和列的布局。&lt;/li>
+&lt;li>&lt;strong>GridRow&lt;/strong>：用于定义一行中的视图。&lt;/li>
+&lt;li>&lt;strong>GridCell&lt;/strong>：每个视图在 &lt;code>Grid&lt;/code> 中占据的单元格。&lt;/li>
+&lt;/ul>
+&lt;h3 id="基本用法">
+ 基本用法
+ &lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e7%94%a8%e6%b3%95">#&lt;/a>
+&lt;/h3>
+&lt;ol>
+&lt;li>&lt;strong>创建 Grid&lt;/strong>：使用 &lt;code>Grid&lt;/code> 容器包裹你的内容。&lt;/li>
+&lt;li>&lt;strong>定义 GridRow&lt;/strong>：在 &lt;code>Grid&lt;/code> 中使用 &lt;code>GridRow&lt;/code> 来定义每一行的内容。&lt;/li>
+&lt;li>&lt;strong>添加视图&lt;/strong>：在 &lt;code>GridRow&lt;/code> 中添加视图，每个视图会自动占据一个单元格。&lt;/li>
+&lt;/ol>
+&lt;h3 id="示例代码">
+ 示例代码
+ &lt;a class="anchor" href="#%e7%a4%ba%e4%be%8b%e4%bb%a3%e7%a0%81">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">import&lt;/span> &lt;span style="color:#ca72ff">SwiftUI&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">struct&lt;/span> &lt;span style="color:#ca72ff">ContentView&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">View&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">body&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">some&lt;/span> &lt;span style="color:#aa89ea">View&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Grid&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">GridRow&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;A&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;B&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;C&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">GridRow&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;D&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;E&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;F&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">GridRow&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;G&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;H&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;I&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">padding&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="自定义列宽和行高">
+ 自定义列宽和行高
+ &lt;a class="anchor" href="#%e8%87%aa%e5%ae%9a%e4%b9%89%e5%88%97%e5%ae%bd%e5%92%8c%e8%a1%8c%e9%ab%98">#&lt;/a>
+&lt;/h3>
+&lt;p>你可以通过 &lt;code>GridColumn&lt;/code> 和 &lt;code>GridRow&lt;/code> 的初始化参数来自定义列宽和行高。&lt;/p></description></item><item><title>Preview</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Preview/</link><pubDate>Tue, 04 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Preview/</guid><description>&lt;p>在 SwiftUI 中，使用 &lt;code>#Preview{}&lt;/code> 来添加预览非常方便，它能够让你实时看到视图在不同设备和情境下的表现。不过，在使用 &lt;code>#Preview{}&lt;/code> 时，有几个需要注意的点：&lt;/p>
+&lt;h3 id="1-确保正确的环境配置">
+ 1. &lt;strong>确保正确的环境配置&lt;/strong>
+ &lt;a class="anchor" href="#1-%e7%a1%ae%e4%bf%9d%e6%ad%a3%e7%a1%ae%e7%9a%84%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>SwiftUI 预览默认会使用当前设备的大小和环境，但你可以通过 &lt;code>.previewDevice()&lt;/code> 来指定不同的设备。&lt;/li>
+&lt;li>例如：
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">#&lt;/span>&lt;span style="color:#aa89ea">Preview&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">ContentView&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">previewDevice&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;iPhone 14&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;h3 id="2-使用">
+ 2. &lt;strong>使用 &lt;code>.previewLayout()&lt;/code> 设置布局&lt;/strong>
+ &lt;a class="anchor" href="#2-%e4%bd%bf%e7%94%a8">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>你可以通过 &lt;code>.previewLayout()&lt;/code> 来控制预览的布局方式，尤其是当你希望预览特定的布局时，像是 &lt;code>.sizeThatFits&lt;/code>（根据内容自适应大小）或 &lt;code>.fixed(width: height:)&lt;/code>（指定固定宽高）。&lt;/li>
+&lt;li>例如：
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">#&lt;/span>&lt;span style="color:#aa89ea">Preview&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">ContentView&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">previewLayout&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">sizeThatFits&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;h3 id="3-设置多个预览">
+ 3. &lt;strong>设置多个预览&lt;/strong>
+ &lt;a class="anchor" href="#3-%e8%ae%be%e7%bd%ae%e5%a4%9a%e4%b8%aa%e9%a2%84%e8%a7%88">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>如果你想要查看多个视图的预览，可以使用 &lt;code>.previewGroup()&lt;/code> 来在同一个预览中展示不同的配置。&lt;/li>
+&lt;li>例如：
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">#&lt;/span>&lt;span style="color:#aa89ea">Preview&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">ContentView&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">previewLayout&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">fixed&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">width&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">300&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">height&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">200&lt;/span>&lt;span style="color:#abb2bf">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">previewDisplayName&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;Fixed Layout&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">#&lt;/span>&lt;span style="color:#aa89ea">Preview&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">ContentView&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">previewLayout&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">sizeThatFits&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">previewDisplayName&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;Size That Fits&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;h3 id="4-自定义预览环境">
+ 4. &lt;strong>自定义预览环境&lt;/strong>
+ &lt;a class="anchor" href="#4-%e8%87%aa%e5%ae%9a%e4%b9%89%e9%a2%84%e8%a7%88%e7%8e%af%e5%a2%83">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>你可以通过 &lt;code>.environment()&lt;/code> 来模拟不同的环境变量，例如颜色模式（浅色或深色）或本地化。&lt;/li>
+&lt;li>例如：
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">#&lt;/span>&lt;span style="color:#aa89ea">Preview&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">ContentView&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">environment&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>\&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">colorScheme&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">dark&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 模拟暗黑模式&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;h3 id="5-适配不同的设备和环境">
+ 5. &lt;strong>适配不同的设备和环境&lt;/strong>
+ &lt;a class="anchor" href="#5-%e9%80%82%e9%85%8d%e4%b8%8d%e5%90%8c%e7%9a%84%e8%ae%be%e5%a4%87%e5%92%8c%e7%8e%af%e5%a2%83">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>你可以同时创建不同设备、不同环境的多个预览。例如：
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">#&lt;/span>&lt;span style="color:#aa89ea">Preview&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">ContentView&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">previewDevice&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;iPhone 12&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">environment&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>\&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">colorScheme&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">light&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">#&lt;/span>&lt;span style="color:#aa89ea">Preview&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">ContentView&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">previewDevice&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;iPad Pro (11-inch) (3rd generation)&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">environment&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>\&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">colorScheme&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">dark&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;h3 id="6-简化复杂视图的预览">
+ 6. &lt;strong>简化复杂视图的预览&lt;/strong>
+ &lt;a class="anchor" href="#6-%e7%ae%80%e5%8c%96%e5%a4%8d%e6%9d%82%e8%a7%86%e5%9b%be%e7%9a%84%e9%a2%84%e8%a7%88">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>对于一些较为复杂的视图组件，可以创建一个简化版的 &lt;code>PreviewProvider&lt;/code> 来帮助你轻松展示不同场景或数据，避免在每次预览时都需要调整大量参数。&lt;/li>
+&lt;li>例如：
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">struct&lt;/span> &lt;span style="color:#ca72ff">ContentView_Previews&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">PreviewProvider&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">static&lt;/span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">previews&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">some&lt;/span> &lt;span style="color:#aa89ea">View&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">ContentView&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">previewLayout&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">sizeThatFits&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">environment&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>\&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">colorScheme&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">dark&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;h3 id="7-预览数据的变化">
+ 7. &lt;strong>预览数据的变化&lt;/strong>
+ &lt;a class="anchor" href="#7-%e9%a2%84%e8%a7%88%e6%95%b0%e6%8d%ae%e7%9a%84%e5%8f%98%e5%8c%96">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>在 &lt;code>#Preview{}&lt;/code> 中使用不同的数据源进行预览（比如使用虚拟数据），这可以帮助你查看视图如何应对不同的数据输入情况。&lt;/li>
+&lt;li>例如：
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">#&lt;/span>&lt;span style="color:#aa89ea">Preview&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">List&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">items&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span> &lt;span style="color:#aa89ea">item&lt;/span> &lt;span style="color:#76a9f9">in&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">Text&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">item&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">name&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">previewLayout&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">fixed&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">width&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">300&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">height&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">400&lt;/span>&lt;span style="color:#abb2bf">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;h3 id="总结">
+ 总结：
+ &lt;a class="anchor" href="#%e6%80%bb%e7%bb%93">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>使用 &lt;code>#Preview{}&lt;/code> 时，可以通过调整设备类型、环境配置、布局方式等来灵活控制预览的效果。&lt;/li>
+&lt;li>它使得你能够实时查看视图的表现，帮助快速迭代和调试。&lt;/li>
+&lt;/ul>
+&lt;h2 id="previewprovider">
+ PreviewProvider
+ &lt;a class="anchor" href="#previewprovider">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;code>#Preview&lt;/code> 和 &lt;code>PreviewProvider&lt;/code> 都是用于在 SwiftUI 中进行预览的方式，但它们有一些关键的区别和适用场景：&lt;/p></description></item><item><title>OutlineGroup</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/OutlineGroup/</link><pubDate>Mon, 03 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/OutlineGroup/</guid><description>&lt;p>OutlineGroup 是 SwiftUI 中用于展示树状结构数据的视图，它能够递归地渲染层级数据，非常适合展示文件目录、组织结构图等。它与 &lt;code>List&lt;/code> 视图类似，但更专注于处理具有父子关系的数据。&lt;/p></description></item><item><title>Table</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Table/</link><pubDate>Mon, 03 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Table/</guid><description>&lt;p>&lt;code>Table&lt;/code> 是 SwiftUI 中用于展示&lt;strong>多列数据&lt;/strong>的视图容器，特别适合 macOS 和 iPadOS 上的表格布局（类似于 &lt;code>UITableView&lt;/code> 或 &lt;code>NSTableView&lt;/code>）。以下是 &lt;code>Table&lt;/code> 的体系结构和使用方法的详细介绍：&lt;/p>
+&lt;hr>
+&lt;h3 id="1-table-的体系结构">
+ &lt;strong>1. Table 的体系结构&lt;/strong>
+ &lt;a class="anchor" href="#1-table-%e7%9a%84%e4%bd%93%e7%b3%bb%e7%bb%93%e6%9e%84">#&lt;/a>
+&lt;/h3>
+&lt;h4 id="核心组件">
+ &lt;strong>核心组件&lt;/strong>
+ &lt;a class="anchor" href="#%e6%a0%b8%e5%bf%83%e7%bb%84%e4%bb%b6">#&lt;/a>
+&lt;/h4>
+&lt;ul>
+&lt;li>&lt;strong>&lt;code>Table&lt;/code> 容器&lt;/strong>：用于定义表格的整体结构和列布局。&lt;/li>
+&lt;li>&lt;strong>&lt;code>TableColumn&lt;/code>&lt;/strong>：定义表格的列，包括标题、数据绑定和内容渲染。&lt;/li>
+&lt;li>&lt;strong>数据源&lt;/strong>：通过集合（如数组）提供表格的行数据，通常结合 &lt;code>Identifiable&lt;/code> 协议确保每行有唯一标识。&lt;/li>
+&lt;/ul>
+&lt;h4 id="关键特性">
+ &lt;strong>关键特性&lt;/strong>
+ &lt;a class="anchor" href="#%e5%85%b3%e9%94%ae%e7%89%b9%e6%80%a7">#&lt;/a>
+&lt;/h4>
+&lt;ul>
+&lt;li>&lt;strong>多列支持&lt;/strong>：支持动态列数和列排序。&lt;/li>
+&lt;li>&lt;strong>行选择&lt;/strong>：支持单行或多行选择（通过 &lt;code>selection&lt;/code> 绑定）。&lt;/li>
+&lt;li>&lt;strong>排序&lt;/strong>：通过 &lt;code>sortComparator&lt;/code> 实现列排序。&lt;/li>
+&lt;li>&lt;strong>样式&lt;/strong>：支持自定义行高、列宽和单元格内容。&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;h3 id="2-基本使用方法">
+ &lt;strong>2. 基本使用方法&lt;/strong>
+ &lt;a class="anchor" href="#2-%e5%9f%ba%e6%9c%ac%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95">#&lt;/a>
+&lt;/h3>
+&lt;h4 id="步骤-1定义数据模型">
+ &lt;strong>步骤 1：定义数据模型&lt;/strong>
+ &lt;a class="anchor" href="#%e6%ad%a5%e9%aa%a4-1%e5%ae%9a%e4%b9%89%e6%95%b0%e6%8d%ae%e6%a8%a1%e5%9e%8b">#&lt;/a>
+&lt;/h4>
+&lt;p>确保数据模型遵循 &lt;code>Identifiable&lt;/code> 协议，以便每行有唯一标识。&lt;/p></description></item><item><title>ActionSheet</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/ActionSheet/</link><pubDate>Wed, 29 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/ActionSheet/</guid><description>&lt;blockquote>
+&lt;p>Deprecated, use confirmationDialog instead.&lt;/p>&lt;/blockquote>
+&lt;p>ActionSheet 是 iOS 中常用的 UI 组件，用于向用户呈现一组选项，通常从屏幕底部弹出。在 SwiftUI 中，ActionSheet 的使用相对简单，但有几个关键点需要理解。以下是 ActionSheet 的详细使用方法：&lt;/p></description></item><item><title>RoundedRectangle</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/RoundedRectangle/</link><pubDate>Mon, 27 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/RoundedRectangle/</guid><description>&lt;p>&lt;code>RoundedRectangle&lt;/code> 是 SwiftUI 中的一个内置形状（Shape），用于绘制带有圆角的矩形。它非常适合用来创建带有圆角的 UI 元素，比如按钮、卡片、背景框等。&lt;/p>
+&lt;hr>
+&lt;h2 id="roundedrectangle">
+ &lt;strong>&lt;code>RoundedRectangle&lt;/code> 的基本用法&lt;/strong>
+ &lt;a class="anchor" href="#roundedrectangle">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="1-创建一个简单的圆角矩形">
+ 1. &lt;strong>创建一个简单的圆角矩形&lt;/strong>
+ &lt;a class="anchor" href="#1-%e5%88%9b%e5%bb%ba%e4%b8%80%e4%b8%aa%e7%ae%80%e5%8d%95%e7%9a%84%e5%9c%86%e8%a7%92%e7%9f%a9%e5%bd%a2">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">import&lt;/span> &lt;span style="color:#ca72ff">SwiftUI&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">struct&lt;/span> &lt;span style="color:#ca72ff">ContentView&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">View&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">body&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">some&lt;/span> &lt;span style="color:#aa89ea">View&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">RoundedRectangle&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">cornerRadius&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">20&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">fill&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">Color&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">blue&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 填充颜色&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">frame&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">width&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">200&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">height&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">100&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 设置尺寸&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;strong>&lt;code>cornerRadius: 20&lt;/code>&lt;/strong>: 设置圆角的半径为 20。&lt;/li>
+&lt;li>&lt;strong>&lt;code>.fill(Color.blue)&lt;/code>&lt;/strong>: 填充蓝色。&lt;/li>
+&lt;li>&lt;strong>&lt;code>.frame(width: 200, height: 100)&lt;/code>&lt;/strong>: 设置矩形的宽度和高度。&lt;/li>
+&lt;/ul>
+&lt;p>运行结果：&lt;br>
+一个宽度为 200，高度为 100，圆角半径为 20 的蓝色矩形。&lt;/p></description></item><item><title>Rectangle</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Rectangle/</link><pubDate>Sun, 26 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Rectangle/</guid><description>&lt;p>Rectangle 是 SwiftUI 提供的一个基本形状视图，用于绘制一个矩形。它非常简单但又极其有用，常用于创建各种 UI 元素，如背景、分隔线、占位符等。以下是 Rectangle 的一些关键特点和用法：&lt;/p></description></item><item><title>TextField</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/TextField/</link><pubDate>Sun, 26 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/TextField/</guid><description>&lt;h2 id="deepseek">
+ Deepseek
+ &lt;a class="anchor" href="#deepseek">#&lt;/a>
+&lt;/h2>
+&lt;p>在 SwiftUI 中，&lt;code>TextField&lt;/code> 是用于处理文本输入的核心组件。它允许用户输入和编辑单行文本。虽然 SwiftUI 中没有直接叫做 &lt;code>InputField&lt;/code> 的组件，但 &lt;code>TextField&lt;/code> 就是用来实现类似功能的。&lt;/p></description></item><item><title>Stepper</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Stepper/</link><pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Stepper/</guid><description>&lt;p>在 &lt;strong>SwiftUI&lt;/strong> 中，&lt;code>Stepper&lt;/code> 是一个内置的用户界面组件，通常用于实现加减计数器功能。它带有两个加减按钮，并在用户点击按钮时触发值的变化。该组件在许多场景中非常有用，比如数量选择、参数调整以及简单的用户输入场景。&lt;/p></description></item><item><title>Button</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Button/</link><pubDate>Thu, 23 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Button/</guid><description>&lt;p>在 SwiftUI 中，可以通过自定义 &lt;strong>ButtonStyle&lt;/strong> 或 &lt;strong>Modifier&lt;/strong> 来实现对按钮样式的批量设置。这使得你可以复用样式规则，避免重复代码，并提供更灵活的样式管理方式。&lt;/p>
+&lt;p>下面是一些常见的方法，详细说明如何为 &lt;strong>Button&lt;/strong> 批量设置样式。&lt;/p></description></item><item><title>Form</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Form/</link><pubDate>Thu, 23 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Form/</guid><description>&lt;p>在 SwiftUI 中，&lt;strong>&lt;code>Form&lt;/code>&lt;/strong> 是一个强大的容器组件，专门用于创建分组、结构化的表单界面。它是 SwiftUI 提供的标准表单控件，可以帮助快速构建包含输入字段、选择器、开关等常见控件的用户界面，特别适用于设置页面、用户信息编辑等场景。&lt;/p></description></item><item><title>Menu</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Menu/</link><pubDate>Wed, 22 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Menu/</guid><description>&lt;p>在 &lt;strong>SwiftUI&lt;/strong> 中，&lt;code>Menu&lt;/code> 是一个用于创建下拉式菜单（Dropdown Menu）的控件。它可以在按钮被点击时动态显示多个操作选项，提供了一种简洁、直观的用户交互方式。在用户选择某个选项后，可以触发具体操作。&lt;/p></description></item><item><title>indicator</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/indicator/</link><pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/indicator/</guid><description>&lt;p>在 &lt;strong>SwiftUI&lt;/strong> 中，&amp;ldquo;Indicator&amp;rdquo; 是一个常见的概念，用于表示加载状态、进度、导航位置或调节操作的视觉反馈等。不同类型的 &lt;code>Indicator&lt;/code> 用于提升用户体验，以下是 SwiftUI 中常见的 &lt;strong>Indicator&lt;/strong> 概念及核心用法。&lt;/p></description></item><item><title>Picker</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Picker/</link><pubDate>Sun, 19 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Picker/</guid><description>&lt;p>在 &lt;strong>SwiftUI&lt;/strong> 中，&lt;code>Picker&lt;/code> 是一个强大且灵活的选择器组件，用于提供选项选择功能。&lt;code>Picker&lt;/code> 可以和数据进行绑定，UI 会随着数据的变化动态更新。它通常用于单列选择器或分段控件。&lt;/p></description></item><item><title>confirmationDialog</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/confirmationDialog/</link><pubDate>Sat, 18 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/confirmationDialog/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>confirmationDialog&lt;/code> 是一个非常方便的视图修饰符，用于展示确认对话框（Confirmation Dialog），也就是我们熟知的 Action Sheet。&lt;code>confirmationDialog&lt;/code> 允许你展示一种或多种选项，让用户进行选择，通常用于确认某些操作或提供多种操作选项。&lt;/p></description></item><item><title>Section</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Section/</link><pubDate>Sat, 18 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Section/</guid><description>&lt;p>在 SwiftUI 中，&lt;code>Section&lt;/code> 是一种非常重要的视图，用于在列表视图（&lt;code>List&lt;/code>）中进行内容分组。它可以带来更清晰的结构和更好的用户体验，特别是在带有大量数据的应用中。以下是对 &lt;code>Section&lt;/code> 使用的详细介绍，包括各种配置和实现悬停头部（sticky headers）的效果。
+§&lt;/p></description></item><item><title>DisclosureGroup</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/DisclosureGroup/</link><pubDate>Sun, 12 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/DisclosureGroup/</guid><description>&lt;p>在 &lt;strong>SwiftUI&lt;/strong> 中，&lt;code>DisclosureGroup&lt;/code> 是一个轻量级的折叠组件，允许用户显示或隐藏一组内容（通常用于折叠和展开的 UI 需求）。它可以通过一个标题和内容区域的组合来创建动态的 UI 视图。&lt;code>DisclosureGroup&lt;/code> 特别适合用于导航控件、过滤器、分类设置等场景。&lt;/p></description></item><item><title>Label</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Label/</link><pubDate>Sun, 12 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Label/</guid><description>&lt;p>在 &lt;strong>SwiftUI&lt;/strong> 中，&lt;code>Label&lt;/code> 是一个常用的组件，用于显示&lt;strong>图标（图片）和文本&lt;/strong>的组合。在设置 &lt;code>Label&lt;/code> 的字体（&lt;code>font&lt;/code>）和图片大小（&lt;code>image size&lt;/code>）时，我们可以通过对具体的 &lt;code>Text&lt;/code> 和 &lt;code>Image&lt;/code> 部分分别应用修饰符来处理。&lt;/p></description></item><item><title>Alert</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Alert/</link><pubDate>Sat, 11 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Alert/</guid><description>&lt;p>在 Swift 开发中，&lt;code>Alert&lt;/code> 通常与用户界面（UI）交互相关，主要用于显示 &lt;strong>提示框、警告框或通知框&lt;/strong> 等弹出信息给用户。这种机制在 iOS 和 macOS 应用开发中被广泛使用。根据开发平台的不同以及具体使用场景，&lt;code>Alert&lt;/code> 的实现方式和功能有所不同。&lt;/p></description></item><item><title>contextMenu</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/contextMenu/</link><pubDate>Sat, 11 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/contextMenu/</guid><description>&lt;h3 id="contextmenu">
+ &lt;strong>&lt;code>contextMenu&lt;/code> 是什么？&lt;/strong>
+ &lt;a class="anchor" href="#contextmenu">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;strong>SwiftUI&lt;/strong> 的 &lt;code>contextMenu&lt;/code> 修饰符用于在用户长按视图时，弹出一个 &lt;strong>上下文菜单&lt;/strong>（&lt;code>Context Menu&lt;/code>），提供一组相关的操作选项。这种效果类似于 UIKit 中的上下文菜单功能，特别适用于弹性快捷菜单，比如文件操作、链接操作等场景。&lt;/p></description></item><item><title>sheet</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/sheet/</link><pubDate>Fri, 10 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/sheet/</guid><description>&lt;h2 id="sheet-介绍">
+ sheet 介绍
+ &lt;a class="anchor" href="#sheet-%e4%bb%8b%e7%bb%8d">#&lt;/a>
+&lt;/h2>
+&lt;p>在 &lt;strong>SwiftUI&lt;/strong> 中，&lt;code>.sheet&lt;/code> 是一个视图修饰符，用于展示一个模态弹窗（&lt;code>Modal Presentation&lt;/code>）。它的特点是与某个视图绑定，用于呈现一个子视图。以下是关于 &lt;strong>&lt;code>.sheet&lt;/code>&lt;/strong> 的使用规范和它可以添加在哪些视图下面的详细解答。&lt;/p></description></item><item><title>Ellipse</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Ellipse/</link><pubDate>Wed, 08 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Ellipse/</guid><description>&lt;h3 id="什么是">
+ &lt;strong>什么是 &lt;code>Ellipse&lt;/code>？&lt;/strong>
+ &lt;a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af">#&lt;/a>
+&lt;/h3>
+&lt;p>在 &lt;strong>SwiftUI&lt;/strong> 中，&lt;code>Ellipse&lt;/code> 是一种几何形状，呈现为&lt;strong>椭圆形&lt;/strong>（包括正圆）。它与其它形状视图（如 &lt;code>Capsule&lt;/code>、&lt;code>Circle&lt;/code> 和 &lt;code>Rectangle&lt;/code>）一样，可以用于创建一些典型的几何图形。然而，与 &lt;code>Circle&lt;/code> 不同的是，&lt;code>Ellipse&lt;/code> 可以根据设置的宽高比自动调整为椭圆（或完全压扁），而不要求宽和高相等。&lt;/p></description></item><item><title>Shapes</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Shapes/</link><pubDate>Wed, 08 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Shapes/</guid><description>&lt;p>在 SwiftUI 中，&lt;strong>Shapes&lt;/strong> 是定义用户界面中几何形状的核心工具之一。通过使用 Shape 协议或已有的 Shape 类型，可以轻松创建、组合、裁剪和装饰各种形状。SwiftUI 提供了一系列内置形状工具，如 &lt;code>Rectangle&lt;/code>、&lt;code>Ellipse&lt;/code>、&lt;code>Capsule&lt;/code> 等，并允许开发者通过实现 Shape 协议来自定义形状。Shape 的灵活性使其在创建按钮背景、图像裁剪、容器框架和装饰性 UI 元素中非常重要。&lt;/p></description></item><item><title>Capsule</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Capsule/</link><pubDate>Sat, 04 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Capsule/</guid><description>&lt;p>&lt;a href="https://developer.apple.com/documentation/swiftui/capsule">https://developer.apple.com/documentation/swiftui/capsule&lt;/a>&lt;/p>
+&lt;h3 id="什么是-capsule">
+ &lt;strong>什么是 Capsule？&lt;/strong>
+ &lt;a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-capsule">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;code>Capsule&lt;/code> 是 SwiftUI 中的一种&lt;strong>形状视图（Shape View）&lt;/strong>，它呈现为一个圆角矩形，并在宽高相等时显示为一个完整的椭圆。&lt;code>Capsule&lt;/code> 的本质是一个几何形状，它可以用来创建按钮、标签、背景装饰等视图。&lt;/p></description></item><item><title>Group 和 Section</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/Group-%E5%92%8C-Section/</link><pubDate>Sat, 04 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/Group-%E5%92%8C-Section/</guid><description>&lt;p>在 SwiftUI 的 &lt;code>List&lt;/code> 中，&lt;code>Group&lt;/code> 和 &lt;code>Section&lt;/code> 都可以用来分组内容，但它们在功能、表现以及应用场景上存在根本的区别。&lt;/p>
+&lt;hr>
+&lt;h2 id="1-group-的特点">
+ &lt;strong>1.&lt;/strong> &lt;code>Group&lt;/code> &lt;strong>的特点&lt;/strong>
+ &lt;a class="anchor" href="#1-group-%e7%9a%84%e7%89%b9%e7%82%b9">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;code>Group&lt;/code> 是一个容器视图，用于将多个视图包装在一起，但它本身没有显示样式（例如头部、尾部或分组外观）。它只是将多个视图按逻辑组织在同一个部分中以便于代码管理。&lt;/p></description></item><item><title>SubmitLabel</title><link>https://yindongliang.com/docs/Apple/SwiftUI/View/SubmitLabel/</link><pubDate>Sat, 04 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/View/SubmitLabel/</guid><description>&lt;p>&lt;code>SubmitLabel&lt;/code> 是 SwiftUI 提供的一个枚举类型，用于自定义和改变 &lt;code>TextField&lt;/code> 的 &lt;strong>Return 键&lt;/strong> 或 &lt;strong>提交按钮的样式&lt;/strong>。通过设置 &lt;code>submitLabel&lt;/code>，你可以控制键盘上的提交按钮显示的标签文字（如 &amp;ldquo;Done&amp;rdquo;、&amp;ldquo;Go&amp;rdquo;、&amp;ldquo;Search&amp;rdquo; 等）以及它的行为。&lt;/p></description></item></channel></rss>

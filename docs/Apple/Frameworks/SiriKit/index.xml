@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>SiriKit on LYon's Blog</title><link>https://yindongliang.com/docs/Apple/Frameworks/SiriKit/</link><description>Recent content in SiriKit on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Apple/Frameworks/SiriKit/index.xml" rel="self" type="application/rss+xml"/><item><title> 介绍</title><link>https://yindongliang.com/docs/Apple/Frameworks/SiriKit/%E4%BB%8B%E7%BB%8D/</link><pubDate>Thu, 22 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Frameworks/SiriKit/%E4%BB%8B%E7%BB%8D/</guid><description>&lt;h2 id="-什么是-sirikit">
+ 🧠 什么是 SiriKit？
+ &lt;a class="anchor" href="#-%e4%bb%80%e4%b9%88%e6%98%af-sirikit">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;strong>SiriKit&lt;/strong> 是 Apple 在 iOS 10 引入的一套系统框架，允许你的 App 被 Siri 调用执行特定任务。它提供一组 &lt;strong>“意图（Intent）”类别&lt;/strong>，比如：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>发送消息（Messages）&lt;/p></description></item><item><title>完整示例</title><link>https://yindongliang.com/docs/Apple/Frameworks/SiriKit/%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B/</link><pubDate>Thu, 22 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Frameworks/SiriKit/%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B/</guid><description>&lt;p>以下是一个完整的 Xcode 项目模板，展示了如何使用 SwiftUI、AppIntent 和 Live Activity 来实现一个计时器应用。用户可以通过 Siri 命令“开始长休息”来启动计时器，并在锁屏、动态岛等界面实时查看倒计时。&lt;/p></description></item></channel></rss>
