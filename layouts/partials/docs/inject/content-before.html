@@ -2,6 +2,12 @@
   <p><a href="obsidian://open?vault=Blog&file={{ .File.Path }}" class="open-obsidian-btn" target="_blank">在 Obsidian 打开笔记</a></p>
 {{ end }}
 
+{{ if eq .Type "docs" }}
+<h1>
+    {{ partial "docs/title.html" . }}
+</h1>
+{{ end }}
+
 {{ if and (eq .Type "docs") (in .Params.tags "ByAI") }}
   <div class="ai-content-warning">
     <span>This article is extracted from the chat log with AI. Please identify it with caution.</span>

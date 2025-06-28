@@ -1,22 +1,29 @@
-{{ define "main" }} {{ $pages := intersect (where .Site.RegularPages "Type" "in"
-(slice "posts")) (where .Site.Pages "Params.date" "!=" nil)}} {{ range sort
-(.Paginate $pages.ByDate.Reverse).Pages }}
-<article class="markdown book-post">
-  <h2>
-    <a href="{{ .RelPermalink }}"
-      >{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{
-      .Title }}</a
-    >{{ partial "title-label" . }}
-  </h2>
-  {{ partial "docs/post-meta" . }}
-  <p>
-    {{- .Plain | truncate 200 -}}
-  </p>
-</article>
-{{ end }} {{ template "_internal/pagination.html" . }}
-<br />
-{{if .Site.Params.CopyrightHTML}}
-<footer>
-  <div class="text-center">{{.Site.Params.CopyrightHTML}}</div>
-</footer>
-{{end}} {{ end }} {{ define "toc" }} {{ partial "tags" . }} {{ end }}
+{{ define "main" }}
+{{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
+  <article class="markdown book-post">
+  {{ range sort (.Paginate $pages.ByDate.Reverse).Pages }}
+    <h2>
+      <a href="{{ .RelPermalink }}"
+        >{{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{
+        .Title }}</a
+      >{{ partial "title-label" . }}
+    </h2>
+    {{ partial "docs/post-meta" . }}
+    <p>
+      {{- .Plain | truncate 200 -}}
+    </p>
+  {{ end }}
+  </article>
+
+  {{ template "_internal/pagination.html" . }}
+  <br />
+  {{if .Site.Params.CopyrightHTML}}
+  <footer>
+    <div class="text-center">{{.Site.Params.CopyrightHTML}}</div>
+  </footer>
+  {{ end }}
+{{ end }}
+
+{{ define "toc" }}
+  {{ partial "tags" . }}
+{{ end }}
