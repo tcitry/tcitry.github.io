@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>常见协议 on LYon's Blog</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B8%B8%E8%A7%81%E5%8D%8F%E8%AE%AE/</link><description>Recent content in 常见协议 on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Apple/Swift/%E5%B8%B8%E8%A7%81%E5%8D%8F%E8%AE%AE/index.xml" rel="self" type="application/rss+xml"/><item><title>CodingKey</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B8%B8%E8%A7%81%E5%8D%8F%E8%AE%AE/CodingKey/</link><pubDate>Mon, 30 Jun 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%B8%B8%E8%A7%81%E5%8D%8F%E8%AE%AE/CodingKey/</guid><description>&lt;p>CodingKey 是 Swift 编程语言中用于数据编解码（Codable 协议）的核心协议，它定义了数据模型属性与外部表示（如 JSON 键）之间的映射规则。以下是详细说明：&lt;/p>
+&lt;hr>
+&lt;h3 id="-一codingkey-的本质">
+ 🔑 一、&lt;strong>CodingKey 的本质&lt;/strong>​
+ &lt;a class="anchor" href="#-%e4%b8%80codingkey-%e7%9a%84%e6%9c%ac%e8%b4%a8">#&lt;/a>
+&lt;/h3>
+&lt;ol>
+&lt;li>
+&lt;p>​&lt;strong>协议定义&lt;/strong>​&lt;br>
+&lt;code>CodingKey&lt;/code> 是一个协议，用于声明自定义类型（通常是枚举）来映射模型属性与外部数据键。例如：&lt;/p></description></item><item><title>Codable</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B8%B8%E8%A7%81%E5%8D%8F%E8%AE%AE/Codable/</link><pubDate>Sun, 30 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%B8%B8%E8%A7%81%E5%8D%8F%E8%AE%AE/Codable/</guid><description>&lt;h1 id="swift-codable-协议详解">
+ Swift Codable 协议详解
+ &lt;a class="anchor" href="#swift-codable-%e5%8d%8f%e8%ae%ae%e8%af%a6%e8%a7%a3">#&lt;/a>
+&lt;/h1>
+&lt;h2 id="概述">
+ 概述
+ &lt;a class="anchor" href="#%e6%a6%82%e8%bf%b0">#&lt;/a>
+&lt;/h2>
+&lt;p>Codable 是 Swift 4 引入的一个强大协议，它实际上是 &lt;code>Decodable&lt;/code> 和 &lt;code>Encodable&lt;/code> 两个协议的组合。通过实现 Codable，Swift 对象可以与外部表示（如 JSON、Property List 等）相互转换。&lt;/p></description></item><item><title>Hashable</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B8%B8%E8%A7%81%E5%8D%8F%E8%AE%AE/Hashable/</link><pubDate>Thu, 27 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%B8%B8%E8%A7%81%E5%8D%8F%E8%AE%AE/Hashable/</guid><description>&lt;p>Swift 中的 &lt;code>Hashable&lt;/code> 协议是一个用于生成&lt;strong>哈希值&lt;/strong>的核心协议，它使得遵循该协议的类型可以将实例转换为唯一的整数值（哈希值）。这个协议在集合类型（如 &lt;code>Set&lt;/code> 和 &lt;code>Dictionary&lt;/code>）的高效存储和查找中至关重要。&lt;/p></description></item><item><title>Error</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B8%B8%E8%A7%81%E5%8D%8F%E8%AE%AE/Error/</link><pubDate>Sat, 08 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%B8%B8%E8%A7%81%E5%8D%8F%E8%AE%AE/Error/</guid><description>&lt;p>在 Swift 中，错误处理通过 &lt;code>Error&lt;/code> 协议实现，允许开发者定义、抛出和捕获自定义错误类型。&lt;code>localizedDescription&lt;/code> 是 &lt;code>NSError&lt;/code> 的属性，用于获取错误的本地化描述。以下是详细说明及示例：&lt;/p></description></item></channel></rss>

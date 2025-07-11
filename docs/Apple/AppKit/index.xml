@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>AppKit on LYon's Blog</title><link>https://yindongliang.com/docs/Apple/AppKit/</link><description>Recent content in AppKit on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Apple/AppKit/index.xml" rel="self" type="application/rss+xml"/><item><title> AppKit 和 SwiftUI 结合使用</title><link>https://yindongliang.com/docs/Apple/AppKit/AppKit-%E5%92%8C-SwiftUI-%E7%BB%93%E5%90%88%E4%BD%BF%E7%94%A8/</link><pubDate>Fri, 27 Jun 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/AppKit/AppKit-%E5%92%8C-SwiftUI-%E7%BB%93%E5%90%88%E4%BD%BF%E7%94%A8/</guid><description>&lt;p>下面我将全面解答两个问题：​&lt;strong>1) 如何单独使用 AppKit 构建 macOS 应用视图&lt;/strong>​ 和 ​&lt;strong>2) SwiftUI 与 AppKit 的混合使用方案&lt;/strong>。&lt;/p>
+&lt;hr>
+&lt;h2 id="-第一部分纯-appkit-实现-macos-视图-100-原生方案">
+ 🧩 第一部分：纯 AppKit 实现 macOS 视图 (100% 原生方案)
+ &lt;a class="anchor" href="#-%e7%ac%ac%e4%b8%80%e9%83%a8%e5%88%86%e7%ba%af-appkit-%e5%ae%9e%e7%8e%b0-macos-%e8%a7%86%e5%9b%be-100-%e5%8e%9f%e7%94%9f%e6%96%b9%e6%a1%88">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="核心概念">
+ 核心概念
+ &lt;a class="anchor" href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5">#&lt;/a>
+&lt;/h3>
+&lt;p>AppKit 是 macOS 的原生 UI 框架，直接与系统 API 交互：&lt;/p></description></item></channel></rss>
