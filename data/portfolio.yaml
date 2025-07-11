@@ -1,4 +1,11 @@
 items:
+  - title: "July 2025"
+    cardTitle: "OnceOne"
+    url: "https://apps.apple.com/us/app/onceone-grouping-to-do-tasks/id6744550176"
+    tagList: ["iOS", "App", "To-Do"]
+    cardDetailedText:
+      - "一个基于 Apple 生态的 To-Do App，支持任务分组、过滤、番茄计时等功能。"
+
   - title: "March 2023"
     cardTitle: "博客源码"
     url: "https://github.com/tcitry/tcitry.github.io"
