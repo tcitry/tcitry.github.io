@@ -5,6 +5,7 @@ items:
     tagList: ["iOS", "App", "To-Do"]
     cardDetailedText:
       - "一个基于 Apple 生态的 To-Do App，支持任务分组、过滤、番茄计时等功能。"
+      - "参考：<a href='https://yindongliang.com/posts/my-first-app-onceone/'>学习半年 SwiftUI，我上架了第一款 App：OnceOne</a>"
 
   - title: "March 2023"
     cardTitle: "博客源码"
