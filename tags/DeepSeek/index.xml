@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>DeepSeek on LYon's Blog</title><link>https://yindongliang.com/tags/DeepSeek/</link><description>Recent content in DeepSeek on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Mon, 21 Jul 2025 17:31:17 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/DeepSeek/index.xml" rel="self" type="application/rss+xml"/><item><title>App Groups</title><link>https://yindongliang.com/docs/Apple/Xcode/App-Groups/</link><pubDate>Sun, 25 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Xcode/App-Groups/</guid><description>&lt;p>App Group 是苹果提供的一种跨应用数据共享机制，允许同一开发者账号下的多个应用或扩展（如 Widget、Broadcast Extension）通过共享容器实现数据互通。以下是其核心要点：&lt;/p></description></item><item><title>iOS 进程间通信方式</title><link>https://yindongliang.com/docs/Apple/Xcode/iOS-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/</link><pubDate>Sat, 24 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Xcode/iOS-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/</guid><description>&lt;p>在 iOS 开发中，进程间通信（IPC）是实现应用间协作和数据共享的关键技术。以下是 iOS 支持的 ​&lt;strong>主要进程间通信机制&lt;/strong>​ 及其详细说明：&lt;/p>
+&lt;hr>
+&lt;h3 id="1-app-groups--userdefaultsfile-sharing">
+ 1. ​&lt;strong>App Groups + UserDefaults/File Sharing&lt;/strong>​
+ &lt;a class="anchor" href="#1-app-groups--userdefaultsfile-sharing">#&lt;/a>
+&lt;/h3>
+&lt;h4 id="概述">
+ 概述
+ &lt;a class="anchor" href="#%e6%a6%82%e8%bf%b0">#&lt;/a>
+&lt;/h4>
+&lt;ul>
+&lt;li>​&lt;strong>核心思想&lt;/strong>​：通过共享容器（Shared Container）或 UserDefaults，在同一开发者账号下的多个应用或扩展（Widget、Watch App 等）之间共享数据。&lt;/li>
+&lt;li>​&lt;strong>适用场景&lt;/strong>​：主应用与扩展（如 Today Widget）之间的数据同步。&lt;/li>
+&lt;/ul>
+&lt;h4 id="实现步骤">
+ 实现步骤
+ &lt;a class="anchor" href="#%e5%ae%9e%e7%8e%b0%e6%ad%a5%e9%aa%a4">#&lt;/a>
+&lt;/h4>
+&lt;ol>
+&lt;li>
+&lt;p>​&lt;strong>启用 App Groups&lt;/strong>​：&lt;/p></description></item><item><title>monospacedDigit</title><link>https://yindongliang.com/docs/Apple/SwiftUI/Style/monospacedDigit/</link><pubDate>Sat, 24 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/Style/monospacedDigit/</guid><description>&lt;p>在 Apple 的开发框架（如 ​&lt;strong>SwiftUI&lt;/strong>​ 或 ​&lt;strong>UIKit&lt;/strong>）中，&lt;code>monospacedDigit&lt;/code> 是一个用于&lt;strong>字体样式控制&lt;/strong>的功能，主要目的是&lt;strong>让数字字符等宽显示&lt;/strong>，确保数字在排版中对齐整齐。以下是其核心功能和应用场景：&lt;/p></description></item><item><title>URL Scheme</title><link>https://yindongliang.com/docs/Apple/Xcode/URL-Scheme/</link><pubDate>Sat, 24 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Xcode/URL-Scheme/</guid><description>&lt;p>在 iOS 开发中，​&lt;strong>URL Scheme&lt;/strong>​ 和 ​&lt;strong>UIOpenURLContext&lt;/strong>​ 是处理应用间通信和深度链接（Deep Linking）的核心技术。以下是它们的详细解释和对比：&lt;/p></description></item><item><title>AppShortcut</title><link>https://yindongliang.com/docs/Apple/Frameworks/App-Intents/AppShortcut/</link><pubDate>Thu, 22 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Frameworks/App-Intents/AppShortcut/</guid><description>&lt;p>&lt;code>AppShortcut&lt;/code> 是你主动向系统提供的一种方式，用于展示和推广你的应用可以执行的特定操作（这些操作由 &lt;code>AppIntent&lt;/code> 定义）。通过 &lt;code>AppShortcut&lt;/code>，你的应用功能可以更容易地被用户通过 Siri、聚焦搜索 (Spotlight) 的建议以及快捷指令 App 发现和使用。&lt;/p></description></item><item><title>如何开发一款卡牌类游戏引擎</title><link>https://yindongliang.com/links/202505/%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E4%B8%80%E6%AC%BE%E5%8D%A1%E7%89%8C%E7%B1%BB%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/</link><pubDate>Sun, 11 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202505/%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E4%B8%80%E6%AC%BE%E5%8D%A1%E7%89%8C%E7%B1%BB%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E/</guid><description>&lt;p>这是一篇与腾讯元宝的对话：如何开发一款卡牌类游戏引擎，元宝使用 DeepSeek 给出了它的答案与开发计划。&lt;/p></description></item><item><title>使用 .storekit 文件进行本地沙盒测试</title><link>https://yindongliang.com/links/202505/%E4%BD%BF%E7%94%A8-storekit-%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8C%E6%9C%AC%E5%9C%B0%E6%B2%99%E7%9B%92%E6%B5%8B%E8%AF%95/</link><pubDate>Sun, 11 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202505/%E4%BD%BF%E7%94%A8-storekit-%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8C%E6%9C%AC%E5%9C%B0%E6%B2%99%E7%9B%92%E6%B5%8B%E8%AF%95/</guid><description>&lt;p>在 Xcode 中同步下来的 &lt;code>.storekit&lt;/code> 文件是 ​&lt;strong>StoreKit 配置文件&lt;/strong>，主要用于 ​&lt;strong>本地测试应用内购买（In-App Purchases）和订阅功能&lt;/strong>。这是 Apple 在 Xcode 12 及更高版本中引入的 StoreKit Testing 功能的一部分，允许你完全在本地沙盒环境中模拟应用内购买流程，无需连接 App Store 服务器。&lt;/p></description></item><item><title> 构建版本号</title><link>https://yindongliang.com/docs/Apple/Xcode/%E6%9E%84%E5%BB%BA%E7%89%88%E6%9C%AC%E5%8F%B7/</link><pubDate>Tue, 06 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Xcode/%E6%9E%84%E5%BB%BA%E7%89%88%E6%9C%AC%E5%8F%B7/</guid><description>&lt;h2 id="deepseek">
+ DeepSeek
+ &lt;a class="anchor" href="#deepseek">#&lt;/a>
+&lt;/h2>
+&lt;p>在 Xcode Cloud 中获取构建版本号并集成到你的 App 中，可以通过以下步骤实现：&lt;/p>
+&lt;hr>
+&lt;h3 id="方法-1通过-xcode-cloud-环境变量直接获取">
+ 方法 1：通过 Xcode Cloud 环境变量直接获取
+ &lt;a class="anchor" href="#%e6%96%b9%e6%b3%95-1%e9%80%9a%e8%bf%87-xcode-cloud-%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f%e7%9b%b4%e6%8e%a5%e8%8e%b7%e5%8f%96">#&lt;/a>
+&lt;/h3>
+&lt;p>Xcode Cloud 提供了一系列预定义的环境变量，其中 &lt;code>CI_BUILD_NUMBER&lt;/code> 是每次构建的递增编号。你需要通过以下步骤将它注入到你的 App 中：&lt;/p></description></item></channel></rss>
