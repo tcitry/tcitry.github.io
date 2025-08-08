@@ -1,6 +1,6 @@
 <nav>
   {{ $scratch := newScratch }} {{ $pages := intersect (where .Site.RegularPages
-  "Type" "in" (slice "posts" "weekly")) (where .Site.Pages "Params.date" "!="
+  "Type" "in" (slice "posts")) (where .Site.Pages "Params.date" "!="
   nil)}} {{ range $pages }} {{ $scratch.Add "wordcount" .WordCount }} {{ end }}
   <p style="color: dimgray">
     共 {{ len $pages }} 篇，{{ $scratch.Get "wordcount" }} 字
