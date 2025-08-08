@@ -7,9 +7,9 @@
 
   {{ $lastMod := .Lastmod }}
   {{ $yearsSinceLastMod := div (sub now.Unix $lastMod.Unix) (31536000) }}
-  {{ if ge $yearsSinceLastMod 3 }}
+  {{ if ge $yearsSinceLastMod 1 }}
     <blockquote class="book-hint danger">
-      注意：此文章已超过 3 年未更新，部分信息可能已经过时。
+      注意：此文章已超过 1 年未更新，部分信息可能已经过时。
     </blockquote>
   {{ end }}
 
