@@ -71,6 +71,21 @@
       </div>
     {{ end }}
 
+    {{ if and (in (slice "docs" "posts" "weekly") .Type) .IsPage }}
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1305150098246428"
+        crossorigin="anonymous"></script>
+    <!-- 横向广告单元 -->
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-1305150098246428"
+        data-ad-slot="1470129141"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    {{ end }}
+
     {{ if and (in (slice "docs" "posts" "about" "weekly") .Type) .IsPage }}
         <script src="https://giscus.app/client.js"
             data-repo="tcitry/tcitry.github.io"
