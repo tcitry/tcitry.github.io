@@ -71,17 +71,6 @@
       </div>
     {{ end }}
 
-    {{ if and (in (slice "docs" "posts" "weekly") .Type) .IsPage }}
-    <amp-ad width="100vw" height="320"
-        type="adsense"
-        data-ad-client="ca-pub-1305150098246428"
-        data-ad-slot="1470129141"
-        data-auto-format="rspv"
-        data-full-width="">
-    <div overflow=""></div>
-    </amp-ad>
-    {{ end }}
-
     {{ if and (in (slice "docs" "posts" "about" "weekly") .Type) .IsPage }}
         <script src="https://giscus.app/client.js"
             data-repo="tcitry/tcitry.github.io"
