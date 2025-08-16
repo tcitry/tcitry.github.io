@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>AI on LYon's Blog</title><link>https://yindongliang.com/tags/AI/</link><description>Recent content in AI on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Sun, 10 Aug 2025 00:19:38 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/AI/index.xml" rel="self" type="application/rss+xml"/><item><title>WaveSpeedAI - Ultimate AI MediaGeneration Platform</title><link>https://yindongliang.com/links/202508/wavespeed/</link><pubDate>Sat, 09 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/wavespeed/</guid><description>&lt;p>WaveSpeedAI accelerates AI Image and Video generation for you to build, create, and scale faster.&lt;/p></description></item><item><title>Model Context Protocol</title><link>https://yindongliang.com/links/202505/Model-Context-Protocol/</link><pubDate>Sat, 10 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202505/Model-Context-Protocol/</guid><description>&lt;p>MCP 官方文档&lt;/p></description></item><item><title>好用的 AI 工具</title><link>https://yindongliang.com/docs/Awesome/awesome-ai-tools/</link><pubDate>Sat, 12 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-ai-tools/</guid><description>&lt;h2 id="门户网站">
+ 门户网站
+ &lt;a class="anchor" href="#%e9%97%a8%e6%88%b7%e7%bd%91%e7%ab%99">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>AIHub&lt;/td>
+ &lt;td>门户网站&lt;/td>
+ &lt;td>&lt;a href="https://www.aihub.cn/">https://www.aihub.cn/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>302.AI&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://302.ai/">https://302.ai/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="chat-工具">
+ Chat 工具
+ &lt;a class="anchor" href="#chat-%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Liner&lt;/td>
+ &lt;td>AI 搜索 / Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://getliner.com/zh">https://getliner.com/zh&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Devv&lt;/td>
+ &lt;td>“最懂程序员的新一代 AI 搜索引擎”&lt;/td>
+ &lt;td>&lt;a href="https://devv.ai/zh">https://devv.ai/zh&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Gamma&lt;/td>
+ &lt;td>PPT 生成&lt;/td>
+ &lt;td>&lt;a href="https://gamma.app/">https://gamma.app/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Poe&lt;/td>
+ &lt;td>来自 Quora 的 Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://poe.com/">https://poe.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Sider&lt;/td>
+ &lt;td>Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://sider.ai/">https://sider.ai/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Monica&lt;/td>
+ &lt;td>Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://monica.im">https://monica.im&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>ChatHub&lt;/td>
+ &lt;td>Get insights from ChatGPT, Claude, Gemini, and more - all at once!&lt;/td>
+ &lt;td>&lt;a href="https://chathub.gg/">https://chathub.gg/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>v0.dev&lt;/td>
+ &lt;td>来自 Vercel 的 Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://v0.dev/">https://v0.dev/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>ChatPlayground&lt;/td>
+ &lt;td>类似 ChatHub，可以同时与多个模型聊天。&lt;/td>
+ &lt;td>&lt;a href="https://www.chatplayground.ai/">https://www.chatplayground.ai/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Deepseek&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://chat.deepseek.com/">https://chat.deepseek.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="软件工具">
+ 软件工具
+ &lt;a class="anchor" href="#%e8%bd%af%e4%bb%b6%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Cursor&lt;/td>
+ &lt;td>代码编辑器&lt;/td>
+ &lt;td>&lt;a href="https://www.cursor.com/">https://www.cursor.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Codeium&lt;/td>
+ &lt;td>Free AI Code Completion &amp;amp; Chat&lt;/td>
+ &lt;td>&lt;a href="https://codeium.com/">https://codeium.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Cody&lt;/td>
+ &lt;td>Cody uses the latest LLMs and all your development context to help you understand, write, and fix code faster&lt;/td>
+ &lt;td>&lt;a href="https://sourcegraph.com/cody">https://sourcegraph.com/cody&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="图像工具">
+ 图像工具
+ &lt;a class="anchor" href="#%e5%9b%be%e5%83%8f%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Vector Magic&lt;/td>
+ &lt;td>Easily Convert JPG, PNG, GIF Files to PDF, SVG, EPS Vectors&lt;/td>
+ &lt;td>&lt;a href="https://vectormagic.com/">https://vectormagic.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="设计工具">
+ 设计工具
+ &lt;a class="anchor" href="#%e8%ae%be%e8%ae%a1%e5%b7%a5%e5%85%b7">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Jitter&lt;/td>
+ &lt;td>Motion design make simple.&lt;/td>
+ &lt;td>&lt;a href="https://jitter.video/">https://jitter.video/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="github">
+ Github
+ &lt;a class="anchor" href="#github">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Awesome-Chatgpt&lt;/td>
+ &lt;td>Awesome list for ChatGPT — an artificial intelligence chatbot developed by OpenAI&lt;/td>
+ &lt;td>&lt;a href="https://github.com/sindresorhus/awesome-chatgpt">https://github.com/sindresorhus/awesome-chatgpt&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="其他参考">
+ 其他参考
+ &lt;a class="anchor" href="#%e5%85%b6%e4%bb%96%e5%8f%82%e8%80%83">#&lt;/a>
+&lt;/h2>
+&lt;p>2024最强 AI 集合！12个领域，47款AI工具，每一个都变态又好用！&lt;br>
+&lt;a href="https://www.bilibili.com/video/BV1Ls421M7qq/">https://www.bilibili.com/video/BV1Ls421M7qq/&lt;/a>&lt;/p></description></item><item><title>2024 年我的工具列表</title><link>https://yindongliang.com/posts/my-toolkit-2024/</link><pubDate>Thu, 30 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/my-toolkit-2024/</guid><description>&lt;p>从桌面端的应用软件这个角度来看，当下也是一个动荡的年代，不管是之前已经有的形态，还是还未出现的形态，也不管是开源的还是收费的，好用的新工具层出不穷，AI 的入场更是要把所有软件重新设计的节奏。我希望整理下最近几年一直在用的软件，记录当前的状态，这是相关主题的第一篇，争取后面每年都能关注下一下这个话题。&lt;/p></description></item><item><title>还是阳了，以及在读动物农场</title><link>https://yindongliang.com/weekly/2024/2024-W08/</link><pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W08/</guid><description>&lt;p>大年初二就开始测出阳性了，这回是第一次明确测出来，敢情之前的发烧还真不是新冠呗，这回的症状也确实和新冠症状基本符合，嗓子不舒服，一直干咳，发烧一次吃了退烧药就下来了，即使现在已经转阴了，身上还是说不出来的哪里不对，偶尔莫名酸痛，偶尔有气无力，偶尔拉肚子，偶尔心跳加速，有点意思。&lt;/p></description></item><item><title>看完了风骚律师</title><link>https://yindongliang.com/weekly/2023/2023-W51/</link><pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W51/</guid><description>&lt;p>断断续续看完了整部《风骚律师》（Better Call Saul），因为也不是一直在电视前认认真真看，有一些没看懂，以至于又回头看了一些，发现还是比较模糊，很多场景和铺垫不能完全理解，不过问题不大，我已经知道了故事的大致脉络，以及每个人的结局。比较兴奋的彩蛋就是最后“小粉”、“老白”都出场了，我已知足，毕竟《绝命毒师》（Breaking Bad）是我心目中四两拨千斤的神作。&lt;/p></description></item><item><title>对 ChatGPT 的思考</title><link>https://yindongliang.com/weekly/2023/2023-W12/</link><pubDate>Mon, 20 Mar 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W12/</guid><description>&lt;p>自从把 ChatGPT 接入飞书之后，使用起来就方便很多，也引发了更多的思考，一直到现在，最主要的反应还是恐慌和兴奋。而且随着 ChatGPT 4.0 公布的强大能力，加上微软已经宣布要集成到 Office 等等一系列动作，AI 参与到人们日常工作中的进展正在以意料之外的速度攻城略地，我相信现在能使用到 ChatGPT 的各种圈子应该都很兴奋和恐慌，显然它的能力到底有多大目前是未知的。&lt;/p></description></item><item><title>把玩 AirCode</title><link>https://yindongliang.com/weekly/2023/2023-W11/</link><pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W11/</guid><description>&lt;h2 id="chatgpt">
+ ChatGPT
+ &lt;a class="anchor" href="#chatgpt">#&lt;/a>
+&lt;/h2>
+&lt;p>这一波真的有点慌。周六使用这个&lt;a href="https://github.com/bestony/ChatGPT-Feishu">项目&lt;/a> 搭建了一个飞书连接 ChatGPT 的机器人，这样使用起来就不担心网络原因了，项目使用了&lt;a href="https://aircode.io/">AirCode&lt;/a> 转发请求到 ChatGPT API，又发现了一个新的好玩的东西。&lt;/p></description></item></channel></rss>

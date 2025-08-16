@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Mac on LYon's Blog</title><link>https://yindongliang.com/tags/Mac/</link><description>Recent content in Mac on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 23 Jul 2025 16:59:01 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Mac/index.xml" rel="self" type="application/rss+xml"/><item><title>买了 Apple 开发者账号</title><link>https://yindongliang.com/weekly/2024/2024-W51/</link><pubDate>Mon, 16 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W51/</guid><description>&lt;p>前两天买了 Apple 开发者账号，然后通过 Cloudkit 跑通了设备间数据的同步，虽然功能很简单，但是也很有收获感，先从一个 Todo App 开始吧 🐶，跑通流程。&lt;/p>
+&lt;p>本周看完村上的《小城与不确定性的墙》，看村上的书有个问题，不好做条理性总结，他自己强调小说家只是起到润滑剂的作用，我也没期望有什么太多收获，无非是制造无聊然后再打发无聊。也许未来生活的某一刻我会想起书中的内容，就是很好的体验了。&lt;/p></description></item><item><title>好玩的 Apps 集合</title><link>https://yindongliang.com/docs/Awesome/awesome-mac-apps/</link><pubDate>Sat, 12 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-mac-apps/</guid><description>&lt;p>大众的就不写了，都是比较小众且有启发的。&lt;/p>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Rogue Amoeba&lt;/td>
+ &lt;td>一个关于音频的 App 开发商&lt;/td>
+ &lt;td>&lt;a href="https://rogueamoeba.com/">https://rogueamoeba.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Bezel&lt;/td>
+ &lt;td>Mirror any iPhone on your Mac&lt;/td>
+ &lt;td>&lt;a href="https://nonstrict.eu/bezel/">https://nonstrict.eu/bezel/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SnippetsLab&lt;/td>
+ &lt;td>笔记软件&lt;/td>
+ &lt;td>&lt;a href="https://www.renfei.org/snippets-lab/">https://www.renfei.org/snippets-lab/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Quiver&lt;/td>
+ &lt;td>笔记软件&lt;/td>
+ &lt;td>&lt;a href="https://yliansoft.com/">https://yliansoft.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Mactracker&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://mactracker.ca/">https://mactracker.ca/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>一个小而美的 team&lt;/td>
+ &lt;td>We are a small, passionate indie team dedicated to crafting exceptional iOS and macOS apps that enrich lives and boost productivity.&lt;/td>
+ &lt;td>&lt;a href="https://indiegoodies.com/">https://indiegoodies.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>关注的博客</title><link>https://yindongliang.com/docs/Awesome/Awesome-Blog/</link><pubDate>Fri, 11 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/Awesome-Blog/</guid><description>&lt;p>一些经常看的博客和周报，不定期更新中。&lt;/p>
+&lt;h2 id="独立博客">
+ 独立博客
+ &lt;a class="anchor" href="#%e7%8b%ac%e7%ab%8b%e5%8d%9a%e5%ae%a2">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>博客名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>网站地址&lt;/th>
+ &lt;th>Github 地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>CatCoding&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://catcoding.me/">https://catcoding.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>东坡肘子的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://fatbobman.com/">https://fatbobman.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/fatbobman">https://github.com/fatbobman&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>云风的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://blog.codingnow.com/">https://blog.codingnow.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Ke Fang&amp;rsquo;s Blog:&lt;/td>
+ &lt;td>曾经是算法工程师，从 2022 年底开始，选择离职并开始个人开发之旅。&lt;/td>
+ &lt;td>&lt;a href="https://mazzzystar.github.io/index.html">https://mazzzystar.github.io/index.html&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Shall We Code?&lt;/td>
+ &lt;td>一位后端程序员&lt;/td>
+ &lt;td>&lt;a href="https://waynerv.com/">https://waynerv.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>林夕水共&lt;/td>
+ &lt;td>一位云计算、区块链的后端程序员&lt;/td>
+ &lt;td>&lt;a href="https://rebootcat.com/">https://rebootcat.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>tw93&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://tw93.fun">https://tw93.fun&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/tw93">https://github.com/tw93&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Elizen&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://elizen.me">https://elizen.me&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>图拉鼎&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://imtx.me/">https://imtx.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Randy&amp;rsquo;s Blog&lt;/td>
+ &lt;td>前微软程序员&lt;/td>
+ &lt;td>&lt;a href="https://lutaonan.com/">https://lutaonan.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/djyde">https://github.com/djyde&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>虞双齐的博客&lt;/td>
+ &lt;td>一位区块链大佬&lt;/td>
+ &lt;td>&lt;a href="https://yushuangqi.com">https://yushuangqi.com&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/ysqi">https://github.com/ysqi&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Justine Tunney&amp;rsquo;s Web Page&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://justine.lol/">https://justine.lol/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>翁天信的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://blog.dandyweng.com">https://blog.dandyweng.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Yunfeng&amp;rsquo;s Simple Blog&lt;br>&lt;/td>
+ &lt;td>一位阿里程序员的博客&lt;/td>
+ &lt;td>&lt;a href="https://vra.github.io/">https://vra.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>antfu 的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://antfu.me/">https://antfu.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>曹大 Xargin 的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://www.xargin.com/">https://www.xargin.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>戴铭的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://ming1016.github.io/">https://ming1016.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Cali&lt;/td>
+ &lt;td>一位同时是 &amp;lt;开发者/&amp;gt;，设计师，细节控，创始人的博客&lt;/td>
+ &lt;td>&lt;a href="https://cali.so/">https://cali.so/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>MetalBlueberry&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://metalblueberry.github.io/">https://metalblueberry.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>IceBeer&lt;/td>
+ &lt;td>在写“独立开发的 100 个思考”&lt;/td>
+ &lt;td>&lt;a href="https://www.icebeer.top/">https://www.icebeer.top/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>张鑫旭的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://www.zhangxinxu.com/">https://www.zhangxinxu.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Joe&amp;rsquo;s Blog&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://hijiangtao.github.io/">https://hijiangtao.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>YEOLAR&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://yeolar.com/">https://yeolar.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>jeremy 的技术点滴&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://jeremyxu2010.github.io/">https://jeremyxu2010.github.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Eric Fu 的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://ericfu.me/">https://ericfu.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Kishikawa Katsumi&lt;/td>
+ &lt;td>an iOS developer from Janpan&lt;/td>
+ &lt;td>&lt;a href="https://kishikawakatsumi.com">https://kishikawakatsumi.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Sukka&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://blog.skk.moe/">https://blog.skk.moe/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>王登科的博客&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://greatdk.com/">https://greatdk.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Xiang He&lt;/td>
+ &lt;td>国内一位 macOS 平台程序员&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/hsiangho">https://github.com/hsiangho&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>面相信仰编程&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://draveness.me/">https://draveness.me/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>冰霜之地&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://halfrost.com/">https://halfrost.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>冴羽写博客的地方&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/mqyqingfeng/Blog">https://github.com/mqyqingfeng/Blog&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Changkun Ou（欧长坤）&lt;/td>
+ &lt;td>不只是《Go 语言原本》作者，后来作者变得更强了。&lt;/td>
+ &lt;td>&lt;a href="https://changkun.de/blog/">https://changkun.de/blog/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://github.com/changkun">https://github.com/changkun&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>指月小筑&lt;/td>
+ &lt;td>探索云原生&lt;/td>
+ &lt;td>&lt;a href="https://www.lixueduan.com/">https://www.lixueduan.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Random Thoughts&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://blog.joway.io/">https://blog.joway.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="优质周报">
+ 优质周报
+ &lt;a class="anchor" href="#%e4%bc%98%e8%b4%a8%e5%91%a8%e6%8a%a5">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Weekly 名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;th>作者主页&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>潮流周刊&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://weekly.tw93.fun/">https://weekly.tw93.fun/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://tw93.fun/">https://tw93.fun/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>东坡肘子的周报&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://fatbobman.com/zh/weekly/">https://fatbobman.com/zh/weekly/&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://fatbobman.com/zh/">https://fatbobman.com/zh/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="热门列表">
+ 热门列表
+ &lt;a class="anchor" href="#%e7%83%ad%e9%97%a8%e5%88%97%e8%a1%a8">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>集合名称&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>博主们二〇二三年的年终总结&lt;/td>
+ &lt;td>&lt;a href="https://github.com/saveweb/review-2023">https://github.com/saveweb/review-2023&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>博主们二〇二二年的年终总结&lt;/td>
+ &lt;td>&lt;a href="https://github.com/saveweb/review-2022">https://github.com/saveweb/review-2022&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>博主们二〇二一年的年终总结&lt;/td>
+ &lt;td>&lt;a href="https://github.com/saveweb/review-2021">https://github.com/saveweb/review-2021&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="大厂博客">
+ 大厂博客
+ &lt;a class="anchor" href="#%e5%a4%a7%e5%8e%82%e5%8d%9a%e5%ae%a2">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>厂名&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;th>Github&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Netflix 技术博客&lt;/td>
+ &lt;td>&lt;a href="https://netflixtechblog.com">https://netflixtechblog.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Discord 博客&lt;/td>
+ &lt;td>&lt;a href="https://discord.com/blog/">https://discord.com/blog/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="独立站点">
+ 独立站点
+ &lt;a class="anchor" href="#%e7%8b%ac%e7%ab%8b%e7%ab%99%e7%82%b9">#&lt;/a>
+&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>站名&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>ACCU&lt;/td>
+ &lt;td>关注图像/视频处理、独立游戏开发领域&lt;/td>
+ &lt;td>&lt;a href="http://accu.cc/">http://accu.cc/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>2024 年我的工具列表</title><link>https://yindongliang.com/posts/my-toolkit-2024/</link><pubDate>Thu, 30 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/my-toolkit-2024/</guid><description>&lt;p>从桌面端的应用软件这个角度来看，当下也是一个动荡的年代，不管是之前已经有的形态，还是还未出现的形态，也不管是开源的还是收费的，好用的新工具层出不穷，AI 的入场更是要把所有软件重新设计的节奏。我希望整理下最近几年一直在用的软件，记录当前的状态，这是相关主题的第一篇，争取后面每年都能关注下一下这个话题。&lt;/p></description></item><item><title>VSCode 使用技巧</title><link>https://yindongliang.com/docs/Awesome/VSCode/</link><pubDate>Sat, 18 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/VSCode/</guid><description>&lt;h2 id="排除文件夹">
+ 排除文件夹
+ &lt;a class="anchor" href="#%e6%8e%92%e9%99%a4%e6%96%87%e4%bb%b6%e5%a4%b9">#&lt;/a>
+&lt;/h2>
+&lt;p>使用 &lt;code>search.exclude&lt;/code> 在&lt;strong>搜索结果&lt;/strong>中排除特定的文件或文件夹。&lt;/p>
+&lt;p>使用 &lt;code>files.exclude&lt;/code> 在&lt;strong>文件资源管理器&lt;/strong>中隐藏特定的文件或文件夹。&lt;/p>
+&lt;p>使用 &lt;code>files.watcherExclude&lt;/code> 在&lt;strong>文件监视器&lt;/strong>排除某些文件或文件夹，以提高性能。&lt;/p></description></item><item><title>Mac 技巧</title><link>https://yindongliang.com/docs/Awesome/mac-tips/</link><pubDate>Thu, 18 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/mac-tips/</guid><description>&lt;h2 id="允许打开任何来源的-app">
+ 允许打开任何来源的 APP
+ &lt;a class="anchor" href="#%e5%85%81%e8%ae%b8%e6%89%93%e5%bc%80%e4%bb%bb%e4%bd%95%e6%9d%a5%e6%ba%90%e7%9a%84-app">#&lt;/a>
+&lt;/h2>
+&lt;p>适用于 14.0&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo spctl --master-disable
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>上面不奏效就使用下面的命令。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo xattr -r -d com.apple.quarantine + APP路径
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="美区礼品卡官方购买链接">
+ 美区礼品卡官方购买链接
+ &lt;a class="anchor" href="#%e7%be%8e%e5%8c%ba%e7%a4%bc%e5%93%81%e5%8d%a1%e5%ae%98%e6%96%b9%e8%b4%ad%e4%b9%b0%e9%93%be%e6%8e%a5">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://www.apple.com/shop/gift-cards">Apple Gift Card&lt;/a>&lt;/p>
+&lt;p>可用于在美区 App Store 消费，比如 ChatGPT 4.0&lt;/p></description></item></channel></rss>

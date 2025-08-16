@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Frontend on LYon's Blog</title><link>https://yindongliang.com/docs/Frontend/</link><description>Recent content in Frontend on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Frontend/index.xml" rel="self" type="application/rss+xml"/><item><title>JavaScript</title><link>https://yindongliang.com/docs/Frontend/JavaScript/</link><pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/JavaScript/</guid><description>&lt;h2 id="dombomwindowdocument">
+ DOM、BOM、Window、Document
+ &lt;a class="anchor" href="#dombomwindowdocument">#&lt;/a>
+&lt;/h2>
+&lt;p>DOM 是操作文档的 API，Document 是其一个对象。&lt;/p>
+&lt;p>BOM 是操作浏览器的 API，Window 是其一个对象。&lt;/p></description></item><item><title>TypeScript</title><link>https://yindongliang.com/docs/Frontend/TypeScript/</link><pubDate>Thu, 16 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/</guid><description>&lt;h2 id="变量">
+ 变量
+ &lt;a class="anchor" href="#%e5%8f%98%e9%87%8f">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="声明符号-varletconst">
+ 声明符号 var、let、const
+ &lt;a class="anchor" href="#%e5%a3%b0%e6%98%8e%e7%ac%a6%e5%8f%b7-varletconst">#&lt;/a>
+&lt;/h3>
+&lt;p>ts 里面基本弃用了 var，使用场景基本只有 let 和 const，用法和 js 一样。&lt;/p>
+&lt;h3 id="问号的用法">
+ ❓问号的用法
+ &lt;a class="anchor" href="#%e9%97%ae%e5%8f%b7%e7%9a%84%e7%94%a8%e6%b3%95">#&lt;/a>
+&lt;/h3>
+&lt;h2 id="类型系统">
+ 类型系统
+ &lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e7%b3%bb%e7%bb%9f">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="类型别名-type">
+ 类型别名 &lt;code>type&lt;/code>
+ &lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e5%88%ab%e5%90%8d-type">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="类型交叉-">
+ 类型交叉 &lt;code>&amp;amp;&lt;/code>
+ &lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e4%ba%a4%e5%8f%89-">#&lt;/a>
+&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ts" data-lang="ts">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">type&lt;/span> &lt;span style="color:#aa89ea">User&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">name&lt;/span>: &lt;span style="color:#e5c07b">string&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">age&lt;/span>: &lt;span style="color:#e5c07b">number&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">type&lt;/span> &lt;span style="color:#aa89ea">Employee&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">companyId&lt;/span>: &lt;span style="color:#e5c07b">string&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 定义一个交叉类型，包含 User 和 Employee 的所有属性
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">&lt;/span>&lt;span style="color:#76a9f9">type&lt;/span> &lt;span style="color:#aa89ea">UserEmployee&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">User&lt;/span> &lt;span style="color:#54b1c7">&amp;amp;&lt;/span> &lt;span style="color:#aa89ea">Employee&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 使用交叉类型
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">&lt;/span>&lt;span style="color:#76a9f9">const&lt;/span> &lt;span style="color:#aa89ea">ue&lt;/span>: &lt;span style="color:#e5c07b">UserEmployee&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">name&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#63c381">&amp;#34;Alice&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">age&lt;/span>: &lt;span style="color:#e5c07b">28&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">companyId&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#63c381">&amp;#34;1234XYZ&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="类型声明-declare">
+ 类型声明 &lt;code>declare&lt;/code>
+ &lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e5%a3%b0%e6%98%8e-declare">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html">https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html&lt;/a>&lt;/p></description></item><item><title>内置对象</title><link>https://yindongliang.com/docs/Frontend/Global_Objects/</link><pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Global_Objects/</guid><description>&lt;p>JavaScript 没有标准库，但是有一些&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects">内置对象&lt;/a>，可以不需要导入就使用一些类似其他语言的标准库的方法。&lt;/p>
+&lt;h2 id="object">
+ Object
+ &lt;a class="anchor" href="#object">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="assign">
+ assign
+ &lt;a class="anchor" href="#assign">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="keys">
+ keys
+ &lt;a class="anchor" href="#keys">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="hasownproperty">
+ hasOwnProperty
+ &lt;a class="anchor" href="#hasownproperty">#&lt;/a>
+&lt;/h3>
+&lt;p>判断 key 是否在对象中。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">function&lt;/span> &lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">a&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>&lt;span style="color:#aa89ea">hello&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#63c381">&amp;#34;world&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;hello&amp;#34;&lt;/span> &lt;span style="color:#76a9f9">in&lt;/span> &lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">console&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">log&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;has 1&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">hasOwnProperty&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;hello&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">))&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">console&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">log&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;has 2&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// output:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// has 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// has 2
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="undefined">
+ undefined
+ &lt;a class="anchor" href="#undefined">#&lt;/a>
+&lt;/h2>
+&lt;p>undefined 表示的是一个变量为初始化时没有被赋值，得到的就是 &lt;code>undefined&lt;/code>。&lt;/p></description></item><item><title>BOM</title><link>https://yindongliang.com/docs/Frontend/BOM/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/BOM/</guid><description>&lt;p>dataset&lt;/p>
+&lt;h3 id="windowmatchmedia">
+ window.matchMedia
+ &lt;a class="anchor" href="#windowmatchmedia">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/matchMedia">https://developer.mozilla.org/zh-CN/docs/Web/API/Window/matchMedia&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-tsx" data-lang="tsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">const&lt;/span> &lt;span style="color:#aa89ea">userPrefersDark&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#e5c07b">window&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">matchMedia&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;(prefers-color-scheme: dark)&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">).&lt;/span>&lt;span style="color:#aa89ea">matches&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>DOM</title><link>https://yindongliang.com/docs/Frontend/DOM/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/DOM/</guid><description>&lt;p>document.body.appendChild()&lt;/p>
+&lt;p>document.querySelectorAll&lt;/p>
+&lt;p>querySelector 和 getElementBy 的区别&lt;/p>
+&lt;h2 id="参考">
+ 参考
+ &lt;a class="anchor" href="#%e5%8f%82%e8%80%83">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://book.douban.com/subject/6038371/">JavaScript DOM编程艺术&lt;/a>&lt;/p></description></item><item><title>jQuery</title><link>https://yindongliang.com/docs/Frontend/jQuery/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/jQuery/</guid><description/></item><item><title>HTML</title><link>https://yindongliang.com/docs/Frontend/HTML/</link><pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/HTML/</guid><description>&lt;h2 id="viewport">
+ Viewport
+ &lt;a class="anchor" href="#viewport">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Viewport_meta_tag">https://developer.mozilla.org/zh-CN/docs/Web/HTML/Viewport_meta_tag&lt;/a>&lt;/p>
+&lt;h2 id="aside">
+ aside
+ &lt;a class="anchor" href="#aside">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/aside">https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/aside&lt;/a>&lt;/p></description></item><item><title>CSS</title><link>https://yindongliang.com/docs/Frontend/CSS/</link><pubDate>Thu, 30 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/CSS/</guid><description>&lt;h2 id="position">
+ position
+ &lt;a class="anchor" href="#position">#&lt;/a>
+&lt;/h2>
+&lt;p>CSS 的 &lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/position">&lt;code>position&lt;/code>&lt;/a> 属性及其几个选项，可以分为两大类：相对定位（&lt;code>relative&lt;/code> 和 &lt;code>sticky&lt;/code>）和绝对定位（&lt;code>absolute&lt;/code> 和 &lt;code>fixed&lt;/code>）。&lt;/p>
+&lt;h3 id="1-position-static">
+ 1. &lt;code>position: static&lt;/code>
+ &lt;a class="anchor" href="#1-position-static">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>默认值&lt;/strong>：所有元素的默认值。元素遵循正常的文档流，不受 &lt;code>top&lt;/code>, &lt;code>right&lt;/code>, &lt;code>bottom&lt;/code>, &lt;code>left&lt;/code> 等位置属性的影响。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：不需要显式定位时使用。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;static&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Static element (default)&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">static&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">static&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightgrey&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-position-relative">
+ 2. &lt;code>position: relative&lt;/code>
+ &lt;a class="anchor" href="#2-position-relative">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>相对定位&lt;/strong>：相对于其正常位置进行定位。&lt;code>top&lt;/code>, &lt;code>right&lt;/code>, &lt;code>bottom&lt;/code>, &lt;code>left&lt;/code> 会使元素相对于其在正常文档流中的位置进行偏移，而不会影响其他元素。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：当需要微调元素位置或作为绝对定位元素的容器时。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;relative-container&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;relative&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Relative element&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">relative-container&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightgreen&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">height&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">200&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">relative&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">relative&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">top&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">20&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">left&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">30&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightblue&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-position-absolute">
+ 3. &lt;code>position: absolute&lt;/code>
+ &lt;a class="anchor" href="#3-position-absolute">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>绝对定位&lt;/strong>：相对于最近的定位祖先（不是 &lt;code>static&lt;/code> 的祖先元素）或相对于整个文档进行定位。元素脱离文档流，不会影响其他元素的位置。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：将元素精确放置在容器内的特定位置。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;absolute-container&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;absolute&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Absolute element&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">absolute-container&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">relative&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightyellow&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">height&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">200&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">absolute&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">absolute&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">top&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">20&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">right&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">30&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightcoral&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="4-position-fixed">
+ 4. &lt;code>position: fixed&lt;/code>
+ &lt;a class="anchor" href="#4-position-fixed">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>固定定位&lt;/strong>：相对于浏览器窗口进行定位。元素始终保持在指定位置，不受页面滚动的影响。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：创建始终可见的导航栏或按钮等。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;fixed&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Fixed element&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">fixed&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">fixed&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">bottom&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">20&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">right&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">30&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightsalmon&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="5-position-sticky">
+ 5. &lt;code>position: sticky&lt;/code>
+ &lt;a class="anchor" href="#5-position-sticky">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>粘性定位&lt;/strong>：结合了相对定位和固定定位的特性。元素根据用户的滚动位置进行定位，在特定条件下固定在视口的某个位置。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：创建在某个滚动阈值内保持固定然后随其滚动的内容。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;sticky-container&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span> &lt;span style="color:#cebc3a">class&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#98c379">&amp;#34;sticky&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Sticky element&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">p&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Scroll down to see the sticky element in action.&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">p&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">p&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vel urna elit. Donec consequat massa vel leo volutpat, eget tincidunt velit ullamcorper...&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">p&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">div&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">sticky-container&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">height&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">200&lt;/span>&lt;span style="color:#e5c07b">px&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">overflow-y&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">scroll&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightgoldenrodyellow&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#ca72ff">sticky&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#76a9f9">-webkit-&lt;/span>&lt;span style="color:#e5c07b">sticky&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">/* For Safari */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">position&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">sticky&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">top&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">background-color&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">lightpink&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">&amp;lt;/&lt;/span>&lt;span style="color:#76a9f9">style&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="总结">
+ 总结
+ &lt;a class="anchor" href="#%e6%80%bb%e7%bb%93">#&lt;/a>
+&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>static&lt;/code>：默认值，不进行任何特殊定位。&lt;/li>
+&lt;li>&lt;code>relative&lt;/code>：相对自身的正常位置进行定位，仍保留其在文档流中的空间。&lt;/li>
+&lt;li>&lt;code>absolute&lt;/code>：相对于最近的定位祖先进行定位，脱离文档流。&lt;/li>
+&lt;li>&lt;code>fixed&lt;/code>：相对于浏览器窗口进行定位，脱离文档流，不随页面滚动。&lt;/li>
+&lt;li>&lt;code>sticky&lt;/code>：在特定条件下相对定位和固定定位之间切换。&lt;/li>
+&lt;/ul>
+&lt;h2 id="opacity">
+ opacity
+ &lt;a class="anchor" href="#opacity">#&lt;/a>
+&lt;/h2>
+&lt;p>透明度设置，这个属性兴许只是单词不认识，所以不好记。&lt;/p></description></item><item><title>React</title><link>https://yindongliang.com/docs/Frontend/react/</link><pubDate>Tue, 01 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/react/</guid><description>&lt;h2 id="jsx">
+ JSX
+ &lt;a class="anchor" href="#jsx">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="classname">
+ className
+ &lt;a class="anchor" href="#classname">#&lt;/a>
+&lt;/h3>
+&lt;h2 id="props">
+ props
+ &lt;a class="anchor" href="#props">#&lt;/a>
+&lt;/h2>
+&lt;p>组件无论是使用函数声明还是通过 class 声明，都决不能修改自身的 props。所有 React 组件都必须像纯函数一样保护它们的 props 不被更改。&lt;/p>
+&lt;p>建议从组件本身的角度来命名 props 而不是它被使用的上下文环境。&lt;/p></description></item><item><title>Vue</title><link>https://yindongliang.com/docs/Frontend/vue/</link><pubDate>Fri, 21 May 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/vue/</guid><description>&lt;h2 id="模板语法">
+ 模板语法
+ &lt;a class="anchor" href="#%e6%a8%a1%e6%9d%bf%e8%af%ad%e6%b3%95">#&lt;/a>
+&lt;/h2>
+&lt;p>Mustache 语法不能作用在 HTML attribute 上，遇到这种情况应该使用 &lt;a href="https://cn.vuejs.org/v2/api/#v-bind">&lt;code>v-bind&lt;/code> 指令&lt;/a>来给 attribute 赋值一个变量。&lt;/p>
+&lt;p>v-model&lt;/p>
+&lt;p>v-bind:key&lt;/p>
+&lt;h2 id="data">
+ data
+ &lt;a class="anchor" href="#data">#&lt;/a>
+&lt;/h2>
+&lt;p>以 &lt;code>$data&lt;/code> 的形式存储在组件实例中。为方便起见，该对象的任何顶级 property 也会直接通过组件实例暴露出来&lt;/p></description></item><item><title>Node</title><link>https://yindongliang.com/docs/Frontend/node/</link><pubDate>Mon, 03 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/node/</guid><description>&lt;h2 id="nodejs-是什么">
+ Node.js 是什么
+ &lt;a class="anchor" href="#nodejs-%e6%98%af%e4%bb%80%e4%b9%88">#&lt;/a>
+&lt;/h2>
+&lt;p>&lt;a href="http://nodejs.cn/">http://nodejs.cn/&lt;/a>&lt;/p>
+&lt;p>基于事件驱动，非阻塞I/O，&lt;/p>
+&lt;h2 id="工具箱">
+ 工具箱
+ &lt;a class="anchor" href="#%e5%b7%a5%e5%85%b7%e7%ae%b1">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="nodemon">
+ nodemon
+ &lt;a class="anchor" href="#nodemon">#&lt;/a>
+&lt;/h3>
+&lt;p>&lt;a href="https://github.com/remy/nodemon">https://github.com/remy/nodemon&lt;/a>&lt;/p>
+&lt;p>nodemon is a tool that helps develop node.js based applications by automatically restarting the node application when file changes in the directory are detected.&lt;/p>
+&lt;p>监控文件热加载。&lt;/p>
+&lt;h2 id="标准库">
+ 标准库
+ &lt;a class="anchor" href="#%e6%a0%87%e5%87%86%e5%ba%93">#&lt;/a>
+&lt;/h2>
+&lt;p>文档 &lt;a href="http://nodejs.cn/api/">http://nodejs.cn/api/&lt;/a>&lt;/p>
+&lt;h3 id="http">
+ http
+ &lt;a class="anchor" href="#http">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="net">
+ net
+ &lt;a class="anchor" href="#net">#&lt;/a>
+&lt;/h3></description></item><item><title>Deno</title><link>https://yindongliang.com/docs/Frontend/Deno/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Deno/</guid><description>&lt;p>&lt;a href="https://manual.deno.js.cn/">Deno中文手册&lt;/a>&lt;/p>
+&lt;p>&lt;a href="http://llever.com/deno-website-zh/manual.html">Deno手册&lt;/a>&lt;/p>
+&lt;h2 id="命令行">
+ 命令行
+ &lt;a class="anchor" href="#%e5%91%bd%e4%bb%a4%e8%a1%8c">#&lt;/a>
+&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>--allow-read&lt;/code>：打开读权限，可以指定可读的目录，比如&lt;code>--allow-read=/temp&lt;/code>。&lt;/li>
+&lt;li>&lt;code>--allow-write&lt;/code>：打开写权限。&lt;/li>
+&lt;li>&lt;code>--allow-net=google.com&lt;/code>：允许网络通信，可以指定可请求的域，比如&lt;code>--allow-net=google.com&lt;/code>。&lt;/li>
+&lt;li>&lt;code>--allow-env&lt;/code>：允许读取环境变量。&lt;/li>
+&lt;/ul></description></item><item><title>包管理</title><link>https://yindongliang.com/docs/Frontend/%E5%8C%85%E7%AE%A1%E7%90%86/</link><pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E5%8C%85%E7%AE%A1%E7%90%86/</guid><description>&lt;h2 id="版本管理">
+ 版本管理
+ &lt;a class="anchor" href="#%e7%89%88%e6%9c%ac%e7%ae%a1%e7%90%86">#&lt;/a>
+&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>~&lt;/code>: 当安装依赖时获取到有新版本时，安装到 &lt;code>x.y.z&lt;/code> 中 &lt;code>z&lt;/code> 的最新的版本。即保持主版本号、次版本号不变的情况下，保持修订号的最新版本。&lt;/li>
+&lt;li>&lt;code>^&lt;/code>: 当安装依赖时获取到有新版本时，安装到 &lt;code>x.y.z&lt;/code> 中 &lt;code>y&lt;/code> 和 &lt;code>z&lt;/code> 都为最新版本。 即保持主版本号不变的情况下，保持次版本号、修订版本号为最新版本。&lt;/li>
+&lt;/ul>
+&lt;p>参考文档：&lt;/p></description></item><item><title>构建工具</title><link>https://yindongliang.com/docs/Frontend/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</link><pubDate>Fri, 28 May 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</guid><description>&lt;h2 id="参考">
+ 参考
+ &lt;a class="anchor" href="#%e5%8f%82%e8%80%83">#&lt;/a>
+&lt;/h2>
+&lt;p>文档 &lt;a href="https://webpack.docschina.org">https://webpack.docschina.org&lt;/a>&lt;/p>
+&lt;p>demo &lt;a href="https://github.com/ruanyf/webpack-demos">https://github.com/ruanyf/webpack-demos&lt;/a>&lt;/p>
+&lt;h2 id="构建一般做哪些事情">
+ 构建一般做哪些事情？
+ &lt;a class="anchor" href="#%e6%9e%84%e5%bb%ba%e4%b8%80%e8%88%ac%e5%81%9a%e5%93%aa%e4%ba%9b%e4%ba%8b%e6%83%85">#&lt;/a>
+&lt;/h2>
+&lt;p>代码转换：将 TypeScript 编译成 JavaScript、将 SCSS 编译成 CSS 等。&lt;/p>
+&lt;p>文件优化：压缩 JavaScript、CSS、HTML 代码，压缩合并图片等。&lt;/p></description></item><item><title/><link>https://yindongliang.com/docs/Frontend/Angular/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Angular/</guid><description/></item><item><title/><link>https://yindongliang.com/docs/Frontend/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/</guid><description>&lt;h2 id="d3js">
+ D3.js
+ &lt;a class="anchor" href="#d3js">#&lt;/a>
+&lt;/h2>
+&lt;h2 id="chartjs">
+ Chart.js
+ &lt;a class="anchor" href="#chartjs">#&lt;/a>
+&lt;/h2>
+&lt;h2 id="threejs">
+ Three.js
+ &lt;a class="anchor" href="#threejs">#&lt;/a>
+&lt;/h2></description></item><item><title/><link>https://yindongliang.com/docs/Frontend/%E6%8F%92%E4%BB%B6/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E6%8F%92%E4%BB%B6/</guid><description>&lt;h2 id="prettier">
+ Prettier
+ &lt;a class="anchor" href="#prettier">#&lt;/a>
+&lt;/h2>
+&lt;h2 id="eslint">
+ ESLint
+ &lt;a class="anchor" href="#eslint">#&lt;/a>
+&lt;/h2></description></item><item><title>Next.js</title><link>https://yindongliang.com/docs/Frontend/Next/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Next/</guid><description>&lt;h2 id="meta-tag">
+ &lt;code>&amp;lt;meta&amp;gt;&lt;/code> tag
+ &lt;a class="anchor" href="#meta-tag">#&lt;/a>
+&lt;/h2>
+&lt;h3 id="metadata">
+ Metadata
+ &lt;a class="anchor" href="#metadata">#&lt;/a>
+&lt;/h3>
+&lt;h3 id="viewport">
+ Viewport
+ &lt;a class="anchor" href="#viewport">#&lt;/a>
+&lt;/h3>
+&lt;p>在 Next.js 中，&lt;code>viewport&lt;/code> 是一个 HTML &lt;code>&amp;lt;meta&amp;gt;&lt;/code> 标签的属性，用于控制网页在移动设备上的显示方式。它是响应式网页设计的一个关键组成部分，确保网页可以在不同尺寸的屏幕上正确显示。&lt;/p></description></item></channel></rss>
