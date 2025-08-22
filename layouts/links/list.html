@@ -10,7 +10,7 @@
     {{ range .Pages }}
     <div class="post">
       <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time>&nbsp;»&nbsp;
-        <a href="{{ .RelPermalink }}" target="_blank" rel="noopener">{{ .Title }}</a>{{ partial "tags-label" . }}
+        <a href="{{ .RelPermalink }}" {{ if eq .Params.redirect true }}target="_blank" rel="noopener"{{ end }}>{{ .Title }}</a>{{ partial "tags-label" . }}
       </h3>
       {{ if .Plain }}
         <p style="margin-top: 0.1em; margin-left: 8em; color: #6a737d; font-size: 0.9em;">{{- .Plain | truncate 200 -}}</p>

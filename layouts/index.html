@@ -1,17 +1,6 @@
 {{ define "main" }}
 {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "posts")) (where .Site.Pages "Params.date" "!=" nil)}}
   <article class="markdown book-post">
-  <!-- 横向广告单元 -->
-  <ins class="adsbygoogle"
-      style="display:block"
-      data-ad-client="ca-pub-1305150098246428"
-      data-ad-slot="1470129141"
-      data-ad-format="auto"
-      data-full-width-responsive="true"></ins>
-  <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
-
   {{ range sort (.Paginate $pages.ByDate.Reverse).Pages }}
     <h2>
       <a href="{{ .RelPermalink }}"
