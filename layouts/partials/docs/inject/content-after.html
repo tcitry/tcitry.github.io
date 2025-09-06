@@ -34,10 +34,12 @@
     {{ if and (in (slice "docs") .Type) .IsPage }}
         <h5 class="post-after">本文共 {{ .WordCount }} 字{{ if isset .Params "date" }}，创建于 {{ $date }}{{end}}</h5>
         {{ with $terms := $.GetTerms "tags" }}
-            <div>相关标签：
-            {{ range $n, $term := $terms }}{{ if $n }}, {{ end }}
-                <a href="{{ $term.RelPermalink }}">{{ $term.Title }}</a>
-            {{- end }}
+            <div style="margin-bottom: 20px;">
+                <p>相关标签：
+                    {{ range $n, $term := $terms }}{{ if $n }}, {{ end }}
+                        <a href="{{ $term.RelPermalink }}">{{ $term.Title }}</a>
+                    {{- end }}
+                </p>
             </div>
         {{ end }}
         <div id="navigation">
@@ -71,7 +73,7 @@
       </div>
     {{ end }}
 
-    {{ if and (in (slice "docs" "posts" "about" "weekly") .Type) .IsPage }}
+    {{ if and (in (slice "docs" "posts" "about" "weekly" "links") .Type) .IsPage }}
         <script src="https://giscus.app/client.js"
             data-repo="tcitry/tcitry.github.io"
             data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk="
