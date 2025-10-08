@@ -151,9 +151,13 @@ main a[target="_blank"]::after {
   color: inherit;
 }
 
-.title-label a:visited {
-  text-decoration: none;
-  color: inherit;
+.title-label a[href]:hover {
+    text-decoration: none
+}
+
+.title-label a[href]:visited {
+    text-decoration: none;
+    color: inherit
 }
 
 .docs-title {
