@@ -5,7 +5,7 @@
     {{ $totalPages := len (intersect (where .Site.RegularPages "Type" "in" (slice "docs" "posts" "weekly")) (where .Site.Pages "Params.date" "!=" nil)) }}
     {{ range $taxonomies }}
       {{ $defaultSize := 12 }}
-      {{ $maxSize := 60 }}
+      {{ $maxSize := 70 }}
       {{ $count := .Count }}
       {{ $restCount := sub $totalPages $count }}
 
@@ -15,7 +15,9 @@
       {{/* 线性计算字体大小 */}}
       {{ $range := sub $maxSize $defaultSize }}
       {{ $fontSize := int (add $defaultSize (mul $range $percentage 6)) }}
-
+      {{ if gt $fontSize 40 }}{{ $fontSize = int (add 40 (mul (sub $fontSize 40) 0.5)) }}{{ end }}
+      {{ if gt $fontSize 50 }}{{ $fontSize = int (add 50 (mul (sub $fontSize 50) 0.1)) }}{{ end }}
+      {{ if gt $fontSize 60 }}{{ $fontSize = int (add 60 (mul (sub $fontSize 60) 0.05)) }}{{ end }}
       {{/* 确保字体大小在限制范围内 */}}
       {{ if lt $fontSize $defaultSize }}{{ $fontSize = $defaultSize }}{{ end }}
       {{ if gt $fontSize $maxSize }}{{ $fontSize = $maxSize }}{{ end }}

@@ -13,7 +13,7 @@
         <a href="{{ .RelPermalink }}" {{ if eq .Params.redirect true }}target="_blank" rel="noopener"{{ end }}>{{ .Title }}</a>{{ partial "tags-label" . }}
       </h3>
       {{ if .Plain }}
-        <p style="margin-top: 0.1em; margin-left: 8em; color: #6a737d; font-size: 0.9em;">{{- .Plain | truncate 200 -}}</p>
+        <p style="margin-top: 0.1rem; margin-left: 8rem; color: #6a737d; font-size: 0.9rem;">{{- .Plain | truncate 200 -}}</p>
       {{ end }}
       </p>
     </div>
