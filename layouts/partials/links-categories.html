@@ -4,8 +4,8 @@
   {{ range $pages }} 
     {{ $scratch.Add "wordcount" .WordCount }} 
   {{ end }}
-  <p style="color: dimgray">
-    共 {{ len $pages }} 篇转载，通过 <a href="/links/index.xml">RSS</a> 订阅
+  <p style="color: dimgray;">
+    共 {{ len $pages }} 篇转载，通过 <span style="display: inline-block;"><a href="/links/index.xml">RSS</a></span> 订阅
   </p>
   <ul>
     <li class="book-section-flat">
