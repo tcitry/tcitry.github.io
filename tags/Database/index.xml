@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Database on LYon's Blog</title><link>https://yindongliang.com/tags/Database/</link><description>Recent content in Database on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Sat, 18 Oct 2025 13:05:57 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Database/index.xml" rel="self" type="application/rss+xml"/><item><title>Prisma 和 Drizzle 对比</title><link>https://yindongliang.com/posts/Prisma-%E5%92%8C-Drizzle-%E5%AF%B9%E6%AF%94/</link><pubDate>Wed, 24 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/Prisma-%E5%92%8C-Drizzle-%E5%AF%B9%E6%AF%94/</guid><description>&lt;p>Prisma 和 Drizzle 确实是同类工具，它们都属于 &lt;strong>现代 TypeScript/JavaScript ORM（对象关系映射）&lt;/strong>，但在设计哲学、功能特性和使用方式上有显著差异。&lt;/p>
+&lt;h2 id="核心定位对比">核心定位对比&lt;a class="anchor" href="#%e6%a0%b8%e5%bf%83%e5%ae%9a%e4%bd%8d%e5%af%b9%e6%af%94">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>特性&lt;/th>
+ &lt;th>Prisma&lt;/th>
+ &lt;th>Drizzle&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>类型安全&lt;/strong>&lt;/td>
+ &lt;td>🔥 强类型，自动生成 TypeScript 类型&lt;/td>
+ &lt;td>🔥 强类型，基于 TypeScript 推断&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>查询语法&lt;/strong>&lt;/td>
+ &lt;td>声明式，类 GraphQL 风格&lt;/td>
+ &lt;td>类 SQL 的表达式语法&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>架构定义&lt;/strong>&lt;/td>
+ &lt;td>专属的 &lt;code>.prisma&lt;/code> schema 文件&lt;/td>
+ &lt;td>TypeScript 代码定义或配置文件&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>迁移管理&lt;/strong>&lt;/td>
+ &lt;td>内置完整的迁移系统&lt;/td>
+ &lt;td>支持迁移，但更灵活&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>运行时大小&lt;/strong>&lt;/td>
+ &lt;td>较大（~1.5MB）&lt;/td>
+ &lt;td>轻量（~20KB）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>学习曲线&lt;/strong>&lt;/td>
+ &lt;td>中等，需要学习 Prisma 特有语法&lt;/td>
+ &lt;td>较低，对 SQL 用户友好&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="代码示例对比">代码示例对比&lt;a class="anchor" href="#%e4%bb%a3%e7%a0%81%e7%a4%ba%e4%be%8b%e5%af%b9%e6%af%94">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-架构定义">1. 架构定义&lt;a class="anchor" href="#1-%e6%9e%b6%e6%9e%84%e5%ae%9a%e4%b9%89">#&lt;/a>&lt;/h3>
+&lt;p>&lt;strong>Prisma Schema:&lt;/strong>&lt;/p></description></item><item><title>PostgreSQL</title><link>https://yindongliang.com/docs/Linux/PostgreSQL/</link><pubDate>Sat, 20 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/PostgreSQL/</guid><description>&lt;p>这里整理了一份非常实用的 PostgreSQL 常用命令清单，从连接到数据库、基本操作到高级功能都涵盖了。&lt;/p>
+&lt;h3 id="1-连接与退出数据库">1. 连接与退出数据库&lt;a class="anchor" href="#1-%e8%bf%9e%e6%8e%a5%e4%b8%8e%e9%80%80%e5%87%ba%e6%95%b0%e6%8d%ae%e5%ba%93">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>连接到一个特定的数据库&lt;/strong>：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>psql -h &amp;lt;主机名&amp;gt; -p &amp;lt;端口号&amp;gt; -U &amp;lt;用户名&amp;gt; -d &amp;lt;数据库名&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>例如，连接本地的 &lt;code>mydb&lt;/code> 数据库：&lt;code>psql -h localhost -p 5432 -U postgres -d mydb&lt;/code>&lt;/li>
+&lt;li>如果连接本地默认端口（5432）的默认数据库，可以简写为：&lt;code>psql -U postgres&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>退出 psql 命令行界面&lt;/strong>：&lt;/p></description></item><item><title>Drizzle</title><link>https://yindongliang.com/links/202508/Drizzle/</link><pubDate>Tue, 19 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/Drizzle/</guid><description>&lt;p>Drizzle ORM is a headless TypeScript ORM with a head. 🐲&lt;/p></description></item><item><title>Supabase - Build in a weekendScale to millions</title><link>https://yindongliang.com/links/202508/Supabase/</link><pubDate>Sat, 09 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/Supabase/</guid><description>&lt;p>Supabase is the Postgres development platform. Start your project with a Postgres database, Authentication, instant APIs, Edge Functions, Realtime subscriptions, Storage, and Vector embeddings.&lt;/p></description></item><item><title>深入了解 Redis 的各种数据结构</title><link>https://yindongliang.com/posts/deep-in-redis-data-structure/</link><pubDate>Fri, 19 Aug 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/deep-in-redis-data-structure/</guid><description>&lt;p>最近面试中发现我比较薄弱的地方还是在 Redis，很多数据结构对应的底层的原理不知道，于是来看看相关资料和&lt;a href="https://github.com/redis/redis">源码&lt;/a>，工作中没有这么深入研究过，惭愧了。&lt;/p>
+&lt;h2 id="string">String&lt;a class="anchor" href="#string">#&lt;/a>&lt;/h2>
+&lt;h3 id="使用方法">使用方法&lt;a class="anchor" href="#%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>127.0.0.1:6379&amp;gt; &lt;span style="color:#e5c07b">set&lt;/span> key value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>OK
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>127.0.0.1:6379&amp;gt; &lt;span style="color:#e5c07b">set&lt;/span> number &lt;span style="color:#d19a66">10086&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>OK
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>127.0.0.1:6379&amp;gt; &lt;span style="color:#e5c07b">set&lt;/span> title &lt;span style="color:#63c381">&amp;#34;hello redis&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>OK
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>127.0.0.1:6379&amp;gt; get key
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#63c381">&amp;#34;value&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>127.0.0.1:6379&amp;gt; get number
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#63c381">&amp;#34;10086&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>127.0.0.1:6379&amp;gt; get title
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#63c381">&amp;#34;hello redis&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="底层结构">底层结构&lt;a class="anchor" href="#%e5%ba%95%e5%b1%82%e7%bb%93%e6%9e%84">#&lt;/a>&lt;/h3>
+&lt;p>String 类型的底层的数据结构实现主要是 int 和 SDS（简单动态字符串），C 语言内置的 int 就不用介绍了，下面详细说一下 SDS。&lt;/p></description></item><item><title>InnoDB 的缓冲页管理</title><link>https://yindongliang.com/posts/innodb-memory-management/</link><pubDate>Thu, 11 Nov 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/innodb-memory-management/</guid><description>&lt;p>Innodb 存储引擎将存储的数据都是以页的形式存放在表空间中，表空间是 InnoDB 对数据文件的抽象，说到底还是存储在磁盘上，我们都知道 CPU 的速度非常快，不会直接操作磁盘，于是 InnoDB 设计了一个缓存池（Buffer Pool）的机制，有数据库操作时，现将磁盘的文件导入内存进行操作，然后再通过一定机制回写到磁盘上。&lt;/p></description></item><item><title>MySQL 的日志种类</title><link>https://yindongliang.com/posts/mysql-log/</link><pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/mysql-log/</guid><description>&lt;p>MySQL 数据库存在还多类型的日志，每一种日志都代表了一种数据库活动，了解这些日志可以侧面了解数据库的运行过程，在日常开发中也可以适当的运用。MySQL 中常见的日志文件有：错误日志、二进制日志、慢查询日志、一般查询日志、重做日志、回滚日志、中继日志，下面开始详细介绍一下。&lt;/p></description></item><item><title>数据库的索引</title><link>https://yindongliang.com/posts/db-index/</link><pubDate>Fri, 29 Oct 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/db-index/</guid><description>&lt;p>索引在数据库中的地位非常重要，只有搞明白索引，才有可能在日常的数据库相关工作中解决实际问题：提高库表设计能力、优化查询效率、提升数据库性能等核心问题。数据库的索引有哪些？以 MySQL 的 InnoDB 存储引擎为例，一般可分为聚集索引、辅助索引、全文索引、哈希索引。但是只说这些可能还不够，因为你应该还听说过主键索引、联合索引、唯一索引，甚至自适应哈希索引等等，他们都称为索引，只是通常描述的维度不一样，下面会逐渐区分开。本文就先从索引在数据结构上的实现开始说起。&lt;/p></description></item><item><title>数据库的事务</title><link>https://yindongliang.com/posts/db-tx/</link><pubDate>Fri, 22 Oct 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/db-tx/</guid><description>&lt;p>请思考一个我在工作中遇到的一个场景：假设用户参加了一个优惠活动，买了一个30 天的会员卡，然后活动又送了一个 7 天的体验卡，最终我要交付给用户 37 天的会员权益时间。如果这两笔订单同时请求系统进行交付，那如何能够一直正确的交付 37天，并正确计算各订单的开始结束时间？（公司 MySQL 的隔离级别是 RC）&lt;/p></description></item><item><title>数据库的锁</title><link>https://yindongliang.com/posts/db-lock/</link><pubDate>Sat, 16 Oct 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/db-lock/</guid><description>&lt;p>数据库里的锁根据范围和维度都有不同的实现和叫法，如果我这样列出来你可能会很焦虑：GAP 锁，记录锁，显式锁定，表级锁，行级锁，页级锁，咨询锁，间隙锁，共享锁，排他锁，互斥锁，自旋锁，读写锁，悲观锁，乐观锁，因为当初我也是这种感觉，现在我重新整理一遍，希望对你也有帮助。&lt;/p></description></item><item><title>Kafka 和 RabbitMQ 对比</title><link>https://yindongliang.com/posts/compare-kafka-and-rabbitmq/</link><pubDate>Sat, 11 Jul 2020 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/compare-kafka-and-rabbitmq/</guid><description>&lt;p>消息队列中间件（Message Queue Middleware，简称 MQ）在后端领域扮演很重要的角色，但是笔者之前日常多止步于使用，对机制原理研究很少。之前用 Python 写 Web 服务的时候，用到 RabbitMQ 的情况比较多，可能是因为有一个基于 Python 的消息队列的封装库 Celery 非常好用。后来写 Go 服务的时候，接入了公司整体的技术架构，Kafka 又用的比较多。这里接针对两种消息中间件专门对比一下各自的底层机制，方便在业务场景中做决策。&lt;/p></description></item><item><title>Redis 的分布式锁使用注意</title><link>https://yindongliang.com/posts/redis-distribute-lock/</link><pubDate>Fri, 03 Jan 2020 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/redis-distribute-lock/</guid><description>&lt;h2 id="为什么需要分布式锁">为什么需要分布式锁&lt;a class="anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e5%88%86%e5%b8%83%e5%bc%8f%e9%94%81">#&lt;/a>&lt;/h2>
+&lt;p>锁机制用于管理对共享资源的并发访问控制，当同一服务的多台机器间需要控制并发的时候，需要保证服务间在同一时间只能被一个线程访问。由于 Redis 的特点是单进程，并且具有高性能的特点，所以一般用 Redis 来做分布式锁。另外分布式锁还有以下几个特点：&lt;/p></description></item><item><title>Redis 实现布隆过滤器</title><link>https://yindongliang.com/posts/bloom-filter/</link><pubDate>Tue, 12 Nov 2019 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/bloom-filter/</guid><description>&lt;p>布隆过滤器（Bloom Filter，BF），能够确定一个东西&lt;strong>一定不存在或可能存在&lt;/strong>，常用于在海量并发情况下防止缓存击穿，相比较传统的 List、Set、Map 数据结构，布隆过滤器能够在大数据量的情况下，相比其他结构更能节省大量的内存空间。&lt;/p></description></item><item><title>Redis 基础知识</title><link>https://yindongliang.com/posts/redis-101/</link><pubDate>Tue, 05 Nov 2019 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/redis-101/</guid><description>&lt;h2 id="redis-介绍">Redis 介绍&lt;a class="anchor" href="#redis-%e4%bb%8b%e7%bb%8d">#&lt;/a>&lt;/h2>
+&lt;h3 id="历史">历史&lt;a class="anchor" href="#%e5%8e%86%e5%8f%b2">#&lt;/a>&lt;/h3>
+&lt;blockquote class='book-hint '>
+&lt;p>Redis 是一个使用 ANSI C 编写的开源、支持网络、基于内存、分布式、可选持久性的键值对存储数据库，由来自意大利西西里岛的 Salvatore Sanfilippo（Antirez）发起并编写。从2015年6月开始，Redis 的开发由 Redis Labs 赞助，而2013年5月至2015年6月期间，其开发由 Pivotal 赞助。在2013年5月之前，其开发由 VMware 赞助。根据月度排行网站 DB-Engines.com 的数据，Redis 是最流行的键值对存储数据库。&lt;/p></description></item><item><title>数据库的 join 连接类型</title><link>https://yindongliang.com/posts/sql-join/</link><pubDate>Sat, 30 Sep 2017 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/sql-join/</guid><description>&lt;h2 id="内连接">内连接&lt;a class="anchor" href="#%e5%86%85%e8%bf%9e%e6%8e%a5">#&lt;/a>&lt;/h2>
+&lt;p>内连接为默认连接方式，只有两张表都匹配的行才显示。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sql" data-lang="sql">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">SELECT&lt;/span> &lt;span style="color:#54b1c7">*&lt;/span> &lt;span style="color:#76a9f9">from&lt;/span> &lt;span style="color:#aa89ea">a&lt;/span> &lt;span style="color:#76a9f9">INNER&lt;/span> &lt;span style="color:#76a9f9">JOIN&lt;/span> &lt;span style="color:#aa89ea">b&lt;/span> &lt;span style="color:#76a9f9">on&lt;/span> &lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">name&lt;/span>&lt;span style="color:#54b1c7">=&lt;/span>&lt;span style="color:#aa89ea">b&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">name&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="左外连接">左（外）连接&lt;a class="anchor" href="#%e5%b7%a6%e5%a4%96%e8%bf%9e%e6%8e%a5">#&lt;/a>&lt;/h2>
+&lt;p>左边的表不加限制，会全部显示出来，右边的只会显示符合搜索条件的记录，不匹配的记录会以 null 显示。&lt;/p></description></item><item><title>Vagrant 虚拟机 Ubuntu16.04 安装 MariaDB</title><link>https://yindongliang.com/posts/ubuntu-MariaDB/</link><pubDate>Sat, 10 Sep 2016 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/ubuntu-MariaDB/</guid><description>&lt;p>由于宿主机安装了 MySQL，为了避免安装 MariaDB 造成 MySQL 无法使用，所以在 Vagrant 中安装 Mariadb。&lt;/p>
+&lt;p>更换&lt;a href="http://mirrors.163.com/.help/ubuntu.html">网易 apt-get 源&lt;/a> &lt;code>/etc/apt/sources.list&lt;/code>&lt;/p>
+&lt;p>读取源软件列表 &lt;code>sudo apt update&lt;/code>&lt;/p>
+&lt;p>更新软件版本 &lt;code>sudo apt upgrade&lt;/code>&lt;/p>
+&lt;p>安装 MariaDB &lt;code>sudo apt install mariadb-server&lt;/code>&lt;/p>
+&lt;p>安全性设置更新 root 密码 &lt;code>sudo mysql_secure_installation&lt;/code>&lt;/p></description></item></channel></rss>

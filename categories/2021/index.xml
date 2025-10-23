@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>2021 on LYon's Blog</title><link>https://yindongliang.com/categories/2021/</link><description>Recent content in 2021 on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 22 Oct 2025 23:22:53 +0800</lastBuildDate><atom:link href="https://yindongliang.com/categories/2021/index.xml" rel="self" type="application/rss+xml"/><item><title>我的 2021 年总结</title><link>https://yindongliang.com/posts/review-2021/</link><pubDate>Fri, 31 Dec 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/review-2021/</guid><description>&lt;p>这是一篇 2021 年的年终总结，如果给 2021 一个关键词：那绝对是“价值观”。因为 2021 这一年是我价值观发生巨大改变的一年。回头看我还是感谢这一年发生过的事情，生活的很多道理我们都懂，但是如果没有经历过可能就没有深入的思考和实际的改变。&lt;/p></description></item><item><title>HTTP/2 概览</title><link>https://yindongliang.com/posts/http2-101/</link><pubDate>Sat, 25 Dec 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/http2-101/</guid><description>&lt;h2 id="http2-的背景">HTTP/2 的背景&lt;a class="anchor" href="#http2-%e7%9a%84%e8%83%8c%e6%99%af">#&lt;/a>&lt;/h2>
+&lt;p>HTTP/2 协议发布于 2015 年，距离上一个版本 HTTP/1 的发布已经过去了 20 多年，20 年里，随着互联网规模的指数级增长，网络已经成为人们生活的一部分，各种应用对响应要求也越来越严苛，HTTP/1 根本上的性能问题也随之暴露出来。&lt;/p></description></item><item><title>HTTPS 的 SSL/TLS 协议</title><link>https://yindongliang.com/posts/https-ssl-tls-protocol/</link><pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/https-ssl-tls-protocol/</guid><description>&lt;h2 id="https-简介">HTTPS 简介&lt;a class="anchor" href="#https-%e7%ae%80%e4%bb%8b">#&lt;/a>&lt;/h2>
+&lt;p>通过上一篇的&lt;a href="http://localhost:1313/posts/https-algorithems/">HTTPS 之密码学基础&lt;/a>，现在可以正式进入 HTTPS 的介绍了。HTTPS 指的是超文本传输安全协议（&lt;strong>H&lt;/strong>yper&lt;strong>T&lt;/strong>ext &lt;strong>T&lt;/strong>ransfer &lt;strong>P&lt;/strong>rotocol &lt;strong>S&lt;/strong>ecure），顾名思义，比 HTTP 多了一个“安全”，而这里的安全指的就是 SSL/TLS 协议了，即 HTTPS 是由 HTTP + SSL/TLS 协议组成的。&lt;/p></description></item><item><title>HTTPS 的密码学基础</title><link>https://yindongliang.com/posts/https-algorithems/</link><pubDate>Thu, 02 Dec 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/https-algorithems/</guid><description>&lt;p>本来打算直接总结下 HTTPS，但是发现要写的很多内容其实都依靠密码学的基础概念，其实我在阅读别的资料的时候发现基本也是这样，不然说的时候上下文都串不起来，甚至可以说研究 HTTPS 约等于在研究加密算法。所以还是专门分一篇来说一下加密，这样后面说 SSL/TLS 的时候就可以拉通底层概念了。&lt;/p></description></item><item><title>InnoDB 的缓冲页管理</title><link>https://yindongliang.com/posts/innodb-memory-management/</link><pubDate>Thu, 11 Nov 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/innodb-memory-management/</guid><description>&lt;p>Innodb 存储引擎将存储的数据都是以页的形式存放在表空间中，表空间是 InnoDB 对数据文件的抽象，说到底还是存储在磁盘上，我们都知道 CPU 的速度非常快，不会直接操作磁盘，于是 InnoDB 设计了一个缓存池（Buffer Pool）的机制，有数据库操作时，现将磁盘的文件导入内存进行操作，然后再通过一定机制回写到磁盘上。&lt;/p></description></item><item><title>MySQL 的日志种类</title><link>https://yindongliang.com/posts/mysql-log/</link><pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/mysql-log/</guid><description>&lt;p>MySQL 数据库存在还多类型的日志，每一种日志都代表了一种数据库活动，了解这些日志可以侧面了解数据库的运行过程，在日常开发中也可以适当的运用。MySQL 中常见的日志文件有：错误日志、二进制日志、慢查询日志、一般查询日志、重做日志、回滚日志、中继日志，下面开始详细介绍一下。&lt;/p></description></item><item><title>数据库的索引</title><link>https://yindongliang.com/posts/db-index/</link><pubDate>Fri, 29 Oct 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/db-index/</guid><description>&lt;p>索引在数据库中的地位非常重要，只有搞明白索引，才有可能在日常的数据库相关工作中解决实际问题：提高库表设计能力、优化查询效率、提升数据库性能等核心问题。数据库的索引有哪些？以 MySQL 的 InnoDB 存储引擎为例，一般可分为聚集索引、辅助索引、全文索引、哈希索引。但是只说这些可能还不够，因为你应该还听说过主键索引、联合索引、唯一索引，甚至自适应哈希索引等等，他们都称为索引，只是通常描述的维度不一样，下面会逐渐区分开。本文就先从索引在数据结构上的实现开始说起。&lt;/p></description></item><item><title>数据库的事务</title><link>https://yindongliang.com/posts/db-tx/</link><pubDate>Fri, 22 Oct 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/db-tx/</guid><description>&lt;p>请思考一个我在工作中遇到的一个场景：假设用户参加了一个优惠活动，买了一个30 天的会员卡，然后活动又送了一个 7 天的体验卡，最终我要交付给用户 37 天的会员权益时间。如果这两笔订单同时请求系统进行交付，那如何能够一直正确的交付 37天，并正确计算各订单的开始结束时间？（公司 MySQL 的隔离级别是 RC）&lt;/p></description></item><item><title>数据库的锁</title><link>https://yindongliang.com/posts/db-lock/</link><pubDate>Sat, 16 Oct 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/db-lock/</guid><description>&lt;p>数据库里的锁根据范围和维度都有不同的实现和叫法，如果我这样列出来你可能会很焦虑：GAP 锁，记录锁，显式锁定，表级锁，行级锁，页级锁，咨询锁，间隙锁，共享锁，排他锁，互斥锁，自旋锁，读写锁，悲观锁，乐观锁，因为当初我也是这种感觉，现在我重新整理一遍，希望对你也有帮助。&lt;/p></description></item><item><title>交替打印 1-100 之间的奇数和偶数</title><link>https://yindongliang.com/posts/goroutine-print-0-to-100/</link><pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/goroutine-print-0-to-100/</guid><description>&lt;p>题目：两个 goroutine 交替打印1-100之间的奇数和偶数。&lt;/p>
+&lt;h3 id="方法一">方法一&lt;a class="anchor" href="#%e6%96%b9%e6%b3%95%e4%b8%80">#&lt;/a>&lt;/h3>
+&lt;p>利用非缓冲 channel 的阻塞。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">package&lt;/span> &lt;span style="color:#aa89ea">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">import&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#98c379">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#98c379">&amp;#34;sync&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">func&lt;/span> &lt;span style="color:#00b1f7">main&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#aa89ea">ch&lt;/span> &lt;span style="color:#54b1c7">:=&lt;/span> &lt;span style="color:#e5c07b">make&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#76a9f9">chan&lt;/span> &lt;span style="color:#76a9f9">struct&lt;/span>&lt;span style="color:#abb2bf">{})&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#aa89ea">wg&lt;/span> &lt;span style="color:#aa89ea">sync&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">WaitGroup&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#aa89ea">wg&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#00b1f7">Add&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">2&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#76a9f9">go&lt;/span> &lt;span style="color:#76a9f9">func&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>		&lt;span style="color:#76a9f9">defer&lt;/span> &lt;span style="color:#aa89ea">wg&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#00b1f7">Done&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>		&lt;span style="color:#76a9f9">for&lt;/span> &lt;span style="color:#aa89ea">i&lt;/span> &lt;span style="color:#54b1c7">:=&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span> &lt;span style="color:#aa89ea">i&lt;/span> &lt;span style="color:#abb2bf">&amp;lt;&lt;/span> &lt;span style="color:#d19a66">101&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span> &lt;span style="color:#aa89ea">i&lt;/span>&lt;span style="color:#54b1c7">++&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>			&lt;span style="color:#aa89ea">ch&lt;/span> &lt;span style="color:#54b1c7">&amp;lt;-&lt;/span> &lt;span style="color:#76a9f9">struct&lt;/span>&lt;span style="color:#abb2bf">{}{}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>			&lt;span style="color:#8a93a5;font-style:italic">//奇数&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>			&lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#aa89ea">i&lt;/span>&lt;span style="color:#54b1c7">%&lt;/span>&lt;span style="color:#d19a66">2&lt;/span> &lt;span style="color:#54b1c7">==&lt;/span> &lt;span style="color:#d19a66">1&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>				&lt;span style="color:#aa89ea">fmt&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#00b1f7">Println&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;线程1打印:&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>&lt;span style="color:#aa89ea">i&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>			&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>		&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#abb2bf">}()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#76a9f9">go&lt;/span> &lt;span style="color:#76a9f9">func&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>		&lt;span style="color:#76a9f9">defer&lt;/span> &lt;span style="color:#aa89ea">wg&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#00b1f7">Done&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>		&lt;span style="color:#76a9f9">for&lt;/span> &lt;span style="color:#aa89ea">i&lt;/span> &lt;span style="color:#54b1c7">:=&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span> &lt;span style="color:#aa89ea">i&lt;/span> &lt;span style="color:#abb2bf">&amp;lt;&lt;/span> &lt;span style="color:#d19a66">101&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span> &lt;span style="color:#aa89ea">i&lt;/span>&lt;span style="color:#54b1c7">++&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>			&lt;span style="color:#54b1c7">&amp;lt;-&lt;/span> &lt;span style="color:#aa89ea">ch&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>			&lt;span style="color:#8a93a5;font-style:italic">//偶数&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>			&lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#aa89ea">i&lt;/span>&lt;span style="color:#54b1c7">%&lt;/span>&lt;span style="color:#d19a66">2&lt;/span> &lt;span style="color:#54b1c7">==&lt;/span> &lt;span style="color:#d19a66">0&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>				&lt;span style="color:#aa89ea">fmt&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#00b1f7">Println&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;线程2打印:&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>&lt;span style="color:#aa89ea">i&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>			&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>		&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#abb2bf">}()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#aa89ea">wg&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#00b1f7">Wait&lt;/span>&lt;span style="color:#abb2bf">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="方法二">方法二&lt;a class="anchor" href="#%e6%96%b9%e6%b3%95%e4%ba%8c">#&lt;/a>&lt;/h3>
+&lt;p>和方法一类似，但省去了 if 判断。&lt;/p></description></item><item><title>推荐下双拼输入法</title><link>https://yindongliang.com/posts/try-double-pinyin-input/</link><pubDate>Thu, 30 Sep 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/try-double-pinyin-input/</guid><description>&lt;h2 id="问题">问题&lt;a class="anchor" href="#%e9%97%ae%e9%a2%98">#&lt;/a>&lt;/h2>
+&lt;p>最近打字聊天的工作比较多，发现我在拼类似【能不能】这种词语的时候经常打错成类似 &lt;code>negnbuneng&lt;/code> 或者 &lt;code>nengnbuneng&lt;/code>（见下图）这种有需要在两个字母之间来回切换的，还有就是 &lt;code>ang&lt;/code>、&lt;code>eng&lt;/code>、&lt;code>ong&lt;/code>、&lt;code>iong&lt;/code> 、&lt;code>uang&lt;/code>这种拼音，非常不值得敲那么多遍。&lt;/p></description></item><item><title>JS 加号运算符的运用</title><link>https://yindongliang.com/posts/js-plus-operator/</link><pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/js-plus-operator/</guid><description>&lt;h2 id="一元运算符">一元运算符&lt;a class="anchor" href="#%e4%b8%80%e5%85%83%e8%bf%90%e7%ae%97%e7%ac%a6">#&lt;/a>&lt;/h2>
+&lt;p>&lt;strong>语法：&lt;/strong> + Expression&lt;/p>
+&lt;p>&lt;strong>说明：&lt;/strong> &lt;code>+&lt;/code> 号运算符作为一元运算符时，Expression将进行 &lt;a href="http://www.ecma-international.org/ecma-262/6.0/#sec-tonumber">ToNumber&lt;/a> 操作。&lt;/p>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>argument类型&lt;/th>
+ &lt;th>返回值&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Undefined&lt;/td>
+ &lt;td>return NaN&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Null&lt;/td>
+ &lt;td>return +0&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Boolean&lt;/td>
+ &lt;td>true return 1; false return 0;&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Number&lt;/td>
+ &lt;td>return value&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>String&lt;/td>
+ &lt;td>若字符串为纯数字时返回转换后的数字；非纯数字返回NaN&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Symbol&lt;/td>
+ &lt;td>抛出 TypeError 异常&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Object&lt;/td>
+ &lt;td>进行以下步骤：1.先进行ToPrimitive(argument, hint Number)得到rs； 2.然后返回 ToNumber(rs)的结果。&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>示例：&lt;/p></description></item><item><title>JS 非空判断</title><link>https://yindongliang.com/posts/js-if-not-empty/</link><pubDate>Sat, 11 Sep 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/js-if-not-empty/</guid><description>&lt;p>在 js 中，有一个富有哲学意味的问题：「什么是空」？先看下面代码：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">function&lt;/span> &lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#54b1c7">!&lt;/span>&lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">console&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">log&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;空&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span> &lt;span style="color:#76a9f9">else&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">console&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">log&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;非空&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#e5c07b">null&lt;/span>&lt;span style="color:#abb2bf">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#e5c07b">undefined&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#e5c07b">NaN&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 以上全是“空”
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>上面这些好像很好判断，那下面这些呢？&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">function&lt;/span> &lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#54b1c7">!&lt;/span>&lt;span style="color:#aa89ea">a&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">console&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">log&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;空&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span> &lt;span style="color:#76a9f9">else&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">console&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">log&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#63c381">&amp;#34;非空&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#e5c07b">Infinity&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#54b1c7">-&lt;/span>&lt;span style="color:#e5c07b">Infinity&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">({})&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">([])&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">main&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#76a9f9">function&lt;/span>&lt;span style="color:#abb2bf">(){})&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>很可惜，以上 5 种情况全为“非空”。所以，如果一股脑认为 &lt;code>if(!a)&lt;/code> 就可以判断非空的话，未免有些草率了。&lt;/p></description></item><item><title>跨域相关问题</title><link>https://yindongliang.com/posts/http-cross-domain-problem/</link><pubDate>Sat, 21 Aug 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/http-cross-domain-problem/</guid><description>&lt;p>本文先从 &lt;strong>CSRF&lt;/strong> 攻击的介绍开始，说明了跨域存在的问题，然后引入浏览器&lt;strong>同源策略&lt;/strong>的概念，明白了要限制跨域的原因后，再给出了标准的跨域请求方案：&lt;strong>CORS&lt;/strong>，所以总体上就三部分：CSRF、同源策略、CORS，文章有点长但不用慌，按顺序看就可以了。&lt;/p></description></item><item><title>了解下 MobX 概念</title><link>https://yindongliang.com/posts/mobx-primer/</link><pubDate>Mon, 19 Jul 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/mobx-primer/</guid><description>&lt;h2 id="基本概念">基本概念&lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>observable 函数
+&lt;ul>
+&lt;li>定义状态值&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>action 函数
+&lt;ul>
+&lt;li>用于修改状态值&lt;/li>
+&lt;li>接受一个函数，返回一个签名相同的函数，提供触发时调用。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>derivations 派生，有两种：&lt;code>autorun&lt;/code> 和 &lt;code>computed&lt;/code>
+&lt;ul>
+&lt;li>reactions - autorun()
+&lt;ul>
+&lt;li>接受一个函数&lt;/li>
+&lt;li>状态值发生改变后要执行的响应操作。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>computed value - computed()
+&lt;ul>
+&lt;li>接受一个函数，返回计算值对象。&lt;/li>
+&lt;li>状态值发生改变时，计算值对象的值会自动更新。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="observable">observable&lt;a class="anchor" href="#observable">#&lt;/a>&lt;/h2>
+&lt;p>MobX 中通过 &lt;code>observable&lt;/code> 来定义可观察状态。&lt;/p></description></item><item><title>了解下 Redux 概念</title><link>https://yindongliang.com/posts/redux-primer/</link><pubDate>Thu, 24 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/redux-primer/</guid><description>&lt;p>Redux 用来进行复杂的状态管理，Redux 的思想继承自 Flux，并进行了更加简洁的抽象。&lt;/p>
+&lt;ul>
+&lt;li>store
+&lt;ul>
+&lt;li>&lt;code>store.dispatch(action)&lt;/code> 是 View 发出 Action 的唯一方法，接受一个 Action 对象作为参数，将它发送出去。&lt;/li>
+&lt;li>store 允许使用 &lt;code>store.subscribe()&lt;/code> 方法设置监听函数，一旦 State 发生变化，就自动执行这个函数。subscribe 也返回一个函数，调用这个函数就可以解除监听。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>action
+&lt;ul>
+&lt;li>改变 state 的唯一办法，就是使用 action，它会运送数据到 Store。&lt;/li>
+&lt;li>action creator：view 要发送多少种消息，就会有多少种 action，action 有固定的格式。如果都手写，会很麻烦。可以定义一个函数来生成 action，这个函数就叫 action creator。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>state
+&lt;ul>
+&lt;li>&lt;code>Store&lt;/code> 对象包含所有数据。如果想得到某个时点的数据，就要对 Store 生成快照。这种时点的数据集合，就叫做 State，可以通过 &lt;code>store.getState()&lt;/code> 拿到。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>reducer
+&lt;ul>
+&lt;li>store 收到 action 以后，必须给出一个新的 state，这样 View 才会发生变化。这种 state 的计算过程就叫做 reducer。&lt;/li>
+&lt;li>reducer 是一个纯函数&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>，它接受 action 和当前 state 作为参数，返回一个新的 state。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="reducer">reducer&lt;a class="anchor" href="#reducer">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">const&lt;/span> &lt;span style="color:#aa89ea">reducer&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">state&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">action&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">=&amp;gt;&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">switch&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">action&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">type&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">case&lt;/span> &lt;span style="color:#98c379">&amp;#39;INCREMENT&amp;#39;&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#76a9f9">return&lt;/span> &lt;span style="color:#aa89ea">state&lt;/span> &lt;span style="color:#54b1c7">+&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">case&lt;/span> &lt;span style="color:#98c379">&amp;#39;DECREMENT&amp;#39;&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#76a9f9">return&lt;/span> &lt;span style="color:#aa89ea">state&lt;/span> &lt;span style="color:#54b1c7">-&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">default&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#76a9f9">return&lt;/span> &lt;span style="color:#aa89ea">state&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>reducer 是一个纯函数，你可以把所有子 Reducer 放在一个文件里面，然后统一引入。&lt;/p></description></item><item><title>浏览器中的 HTTP 缓存使用策略</title><link>https://yindongliang.com/posts/http-caching-in-browser/</link><pubDate>Sat, 12 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/http-caching-in-browser/</guid><description>&lt;p>浏览器使用缓存数据有非常多的好处，很多情况下静态资源会比 js 代码更大，同时修改的频率又非常低，通过对静态资源使用缓存，可以有效减少重复请求，从而节省网络带宽、降低服务器的请求压力。&lt;/p></description></item><item><title>React</title><link>https://yindongliang.com/docs/Frontend/react/</link><pubDate>Tue, 01 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/react/</guid><description>&lt;h2 id="jsx">JSX&lt;a class="anchor" href="#jsx">#&lt;/a>&lt;/h2>
+&lt;h3 id="classname">className&lt;a class="anchor" href="#classname">#&lt;/a>&lt;/h3>
+&lt;h2 id="props">props&lt;a class="anchor" href="#props">#&lt;/a>&lt;/h2>
+&lt;p>组件无论是使用函数声明还是通过 class 声明，都决不能修改自身的 props。所有 React 组件都必须像纯函数一样保护它们的 props 不被更改。&lt;/p>
+&lt;p>建议从组件本身的角度来命名 props 而不是它被使用的上下文环境。&lt;/p></description></item><item><title>构建工具</title><link>https://yindongliang.com/docs/Frontend/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</link><pubDate>Fri, 28 May 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</guid><description>&lt;h2 id="参考">参考&lt;a class="anchor" href="#%e5%8f%82%e8%80%83">#&lt;/a>&lt;/h2>
+&lt;p>文档 &lt;a href="https://webpack.docschina.org">https://webpack.docschina.org&lt;/a>&lt;/p>
+&lt;p>demo &lt;a href="https://github.com/ruanyf/webpack-demos">https://github.com/ruanyf/webpack-demos&lt;/a>&lt;/p>
+&lt;h2 id="构建一般做哪些事情">构建一般做哪些事情？&lt;a class="anchor" href="#%e6%9e%84%e5%bb%ba%e4%b8%80%e8%88%ac%e5%81%9a%e5%93%aa%e4%ba%9b%e4%ba%8b%e6%83%85">#&lt;/a>&lt;/h2>
+&lt;p>代码转换：将 TypeScript 编译成 JavaScript、将 SCSS 编译成 CSS 等。&lt;/p>
+&lt;p>文件优化：压缩 JavaScript、CSS、HTML 代码，压缩合并图片等。&lt;/p>
+&lt;p>代码分割：提取多个页面的公共代码，提取首屏不需要执行部分的代码让其异步加载。&lt;/p></description></item><item><title>Vue</title><link>https://yindongliang.com/docs/Frontend/vue/</link><pubDate>Fri, 21 May 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/vue/</guid><description>&lt;h2 id="模板语法">模板语法&lt;a class="anchor" href="#%e6%a8%a1%e6%9d%bf%e8%af%ad%e6%b3%95">#&lt;/a>&lt;/h2>
+&lt;p>Mustache 语法不能作用在 HTML attribute 上，遇到这种情况应该使用 &lt;a href="https://cn.vuejs.org/v2/api/#v-bind">&lt;code>v-bind&lt;/code> 指令&lt;/a>来给 attribute 赋值一个变量。&lt;/p>
+&lt;p>v-model&lt;/p>
+&lt;p>v-bind:key&lt;/p>
+&lt;h2 id="data">data&lt;a class="anchor" href="#data">#&lt;/a>&lt;/h2>
+&lt;p>以 &lt;code>$data&lt;/code> 的形式存储在组件实例中。为方便起见，该对象的任何顶级 property 也会直接通过组件实例暴露出来&lt;/p></description></item><item><title>前端的节流和防抖</title><link>https://yindongliang.com/posts/throttle-and-debounce-in-fe/</link><pubDate>Sun, 16 May 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/throttle-and-debounce-in-fe/</guid><description>&lt;p>工作中排查数据问题发现了前端按钮可能会触发两次点击的情况，这个问题除了要在后端做幂等以外，正好最近我也在做一些前端的工作，也就专门研究了下前端的解决方案。本来要解决的是防抖问题，但是查了些资料发现一般都是防抖和节流一起，它们解决方案相似但又不完全相同，下面就分别介绍下方便对比使用。&lt;/p></description></item><item><title>操作系统的设备管理</title><link>https://yindongliang.com/posts/device-management-in-os/</link><pubDate>Wed, 28 Apr 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/device-management-in-os/</guid><description>&lt;p>计算机除了 CPU、内存、硬盘，还需要各种设备才能实现对计算机的操作。本文讨论计算机是如何管理设备的输入输出的。&lt;/p>
+&lt;h2 id="设备控制器">设备控制器&lt;a class="anchor" href="#%e8%ae%be%e5%a4%87%e6%8e%a7%e5%88%b6%e5%99%a8">#&lt;/a>&lt;/h2>
+&lt;p>设备控制器接收 CPU 发来的命令，去控制 I/O 设备工作，使 CPU 从繁杂缓慢的设备控制事务中解放出来。当 CPU 要操作 I/O 设备时，首先要启动这个设备，一方面将启动命令发送给设备控制器，另一方面通过地址线将 I/O 设备的地址发给设备控制器，设备控制器对收到的地址进行译码，再根据所译出的命令对相应的设备进行操作。&lt;/p></description></item><item><title>操作系统的文件系统</title><link>https://yindongliang.com/posts/file-system-in-os/</link><pubDate>Thu, 22 Apr 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/file-system-in-os/</guid><description>&lt;p>文件是操作系统进行存储时使用最多的抽象之一，在 Linux 中，一切皆文件。本文以 Linux 为例，介绍下文件系统中的基础概念。&lt;/p>
+&lt;h2 id="数据结构">数据结构&lt;a class="anchor" href="#%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84">#&lt;/a>&lt;/h2>
+&lt;p>每个文件实质上是一个有名字的字符序列，序列的内容为&lt;em>文件数据&lt;/em>（file data），而序列的长度、序列的修改时间等描述文件数据的属性等其他信息称为&lt;em>文件元数据&lt;/em>（file metadata）。&lt;/p></description></item><item><title>“结点”还是“节点”？</title><link>https://yindongliang.com/posts/node-or-node/</link><pubDate>Thu, 08 Apr 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/node-or-node/</guid><description>&lt;h2 id="结点-还是-节点-">“结点” 还是 “节点” ？&lt;a class="anchor" href="#%e7%bb%93%e7%82%b9-%e8%bf%98%e6%98%af-%e8%8a%82%e7%82%b9-">#&lt;/a>&lt;/h2>
+&lt;p>刷题时，总会遇到“节点”和“结点”的词汇混用，非常困惑，查了一下，一般认为：&lt;/p>
+&lt;ol>
+&lt;li>节点是一个实体，它具有处理的能力，比如网络上的一台计算机。&lt;/li>
+&lt;li>结点是一个交叉点、一个标记，算法中的点一般都称为结点，数据集合中的每一个数据元素都用中间标有元素值的方框来表示，我们称它为结点。&lt;/li>
+&lt;/ol>
+&lt;p>所以我们在看《算法导论》的时候，大部分是结点。在讨论服务架构的时候，一般就是节点了，英文里好像都是“node”。另外说时间的时候，一般我们还是说时间“节点”。&lt;/p></description></item><item><title>实现限流的几种方案</title><link>https://yindongliang.com/posts/go-rate-limit/</link><pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/go-rate-limit/</guid><description>&lt;p>限流是服务在高并发的情况下，通过限制处理请求的速率，以达到保证服务不过载的目的，实现高可用和稳定性的目标。限流的方案一般有计数法、滑动窗口、漏桶、令牌桶几种，其中各有各的特点，通常需要根据场景采用不同的方案。&lt;/p></description></item><item><title>Go 程序是怎样跑起来的？</title><link>https://yindongliang.com/posts/how-go-program-run/</link><pubDate>Wed, 31 Mar 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/how-go-program-run/</guid><description>&lt;p>Go 程序是怎么跑起来的？面对问题我第一反应是，Go 是静态编译型语言，和 C 语言一样，就是编译、链接那一套，尤其是最近对着 Go 的一些资料看感觉又学习了一遍编译原理。编译原理的内容本身就很深，本文仅以我暂时理解到的视角进行总结，参考资料列在了最下面。&lt;/p></description></item><item><title>Go 语言的垃圾回收机制概览</title><link>https://yindongliang.com/posts/go-garbage-collector/</link><pubDate>Mon, 22 Mar 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/go-garbage-collector/</guid><description>&lt;p>之前已经看过了 &lt;a href="https://yindongliang.com/posts/GC-algorithms">常见的垃圾回收算法&lt;/a>，有了一定的基础，现在再来了解下 Go 语言的垃圾回收机制。&lt;/p>
+&lt;h2 id="三色抽象">三色抽象&lt;a class="anchor" href="#%e4%b8%89%e8%89%b2%e6%8a%bd%e8%b1%a1">#&lt;/a>&lt;/h2>
+&lt;p>Go 语言如今已经演变成增量式的垃圾回收策略，即不是一口气运行 GC，而是和 Mutator 交替运行的，因此不会长时间妨碍到 Mutator 的运行。Go 语言增量式回收是基于“标记-清除”算法的一种优化思路，具体的实现是三色标记法。&lt;/p></description></item><item><title>Go 语言的内存管理机制概览</title><link>https://yindongliang.com/posts/go-memory-management/</link><pubDate>Tue, 09 Mar 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/go-memory-management/</guid><description>&lt;p>程序中的数据和变量在运行时会被分配到程序所在的虚拟内存中，内存空间包含两个重要的区域：堆（heap）和栈（stack），函数调用的参数、返回值以及局部变量大都会被分配到栈上，这部分内存由编译器进行管理。&lt;/p></description></item><item><title>常见的垃圾回收算法</title><link>https://yindongliang.com/posts/GC-algorithms/</link><pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/GC-algorithms/</guid><description>&lt;p>本来想直接看下 Go 的垃圾回收机制，但是发现自己现在对内存管理和垃圾回收的了解都比较少，所以只能先来研究下常见的垃圾回收算法了，本篇即是《&lt;a href="https://book.douban.com/subject/26821357/">垃圾回收的算法与实现&lt;/a>》的学习笔记，目标是能够描述清楚各种 GC 算法的复杂度、优缺点。&lt;/p></description></item><item><title>Go 语言中的拷贝和传值</title><link>https://yindongliang.com/posts/go-copy/</link><pubDate>Thu, 25 Feb 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/go-copy/</guid><description>&lt;p>同很多其他语言如 Python、JavaScript 一样，在 Go 中涉及到复制数据的场景也需要注意深拷贝和浅拷贝的问题。&lt;/p>
+&lt;h2 id="深拷贝和浅拷贝">深拷贝和浅拷贝&lt;a class="anchor" href="#%e6%b7%b1%e6%8b%b7%e8%b4%9d%e5%92%8c%e6%b5%85%e6%8b%b7%e8%b4%9d">#&lt;/a>&lt;/h2>
+&lt;p>Go 的数据类型可以分为值类型和引用类型两种。&lt;strong>值类型&lt;/strong>的变量和变量的数据都是存储在栈中，Int、Float、Bool、Array、Sturct、String 等都是值类型。&lt;strong>引用类型&lt;/strong>的变量为一串地址，存储在栈中，变量的数据存储在地址所指向的堆空间中 Slice、Map、Channel、Interface、指针、函数等是引用类型。&lt;/p></description></item><item><title>操作系统的任务调度机制（四）通信、同步和死锁</title><link>https://yindongliang.com/posts/the-communication-synchronization-and-deadlock-of-task-scheduling-in-os/</link><pubDate>Sun, 21 Feb 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/the-communication-synchronization-and-deadlock-of-task-scheduling-in-os/</guid><description>&lt;p>操作系统进程间通信、以及并发的处理方式，是调度器能够高效运行的基础，上篇说了调度器的策略，本篇继续深入调度器的背后，看看进程间通信、同步和并发控制如何支撑着这套现代操作系统的调度机制。内容上是按照进程间通信引出了并发控制方法：同步原语，并发又进而引出了死锁问题。&lt;/p></description></item><item><title>操作系统的任务调度机制（三）调度器策略</title><link>https://yindongliang.com/posts/the-scheduler-policy-of-task-scheduling-in-os/</link><pubDate>Sun, 14 Feb 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/the-scheduler-policy-of-task-scheduling-in-os/</guid><description>&lt;p>操作系统中的调度器有任务调度、I/O 调度（以后再说）、内存调度（之前提到的换页策略）等多种类型，本文主要关注任务调度。在单核多进程并发的环境里，进程之间并不是“并行”执行的，实际上在任何时刻都只有一个进程处于执行状态，背后是 CPU 在不停地进行上下文切换，让你看起来像是多个任务在并行执行。而任务调度器要做的就是决定选择哪个进程执行，什么时候执行，执行多久，下面开始详细介绍。&lt;/p></description></item><item><title>操作系统的任务调度机制（二）进程和线程模型</title><link>https://yindongliang.com/posts/the-process-and-thread-of-task-scheduling-in-os/</link><pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/the-process-and-thread-of-task-scheduling-in-os/</guid><description>&lt;h2 id="进程模型">进程模型&lt;a class="anchor" href="#%e8%bf%9b%e7%a8%8b%e6%a8%a1%e5%9e%8b">#&lt;/a>&lt;/h2>
+&lt;p>进程的概念是随着多道批处理系统的概念产生的，MULTICS 之前还叫 Job，后来它为了区别这个 IBM 公司发明的术语改为了 Process，进程不是程序，程序是放入内存的一段数据，而进程是带有状态的一种活动、一系列动作，它保存了程序运行时的一系列状态。如果一个程序运行两遍，那就算作是两个进程，只不过可能只有一个副本被考入内存。&lt;/p></description></item><item><title>操作系统的任务调度机制（一）演进历史</title><link>https://yindongliang.com/posts/the-evolution-history-of-task-scheduling-in-os/</link><pubDate>Fri, 05 Feb 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/the-evolution-history-of-task-scheduling-in-os/</guid><description>&lt;p>之前说到了 Goroutine 的运行时调度机制，引发了我对操作系统调度的进一步回忆，发现已经非常模糊，只能从头再来。在很多大型系统中，包括编程语言，都有调度器的概念，其核心的作用都是对有限的处理器资源进行最大化利用。具体到我目前关注的，也就是操作系统中关于进程和线程的调度策略以及并发处理机制。&lt;/p></description></item><item><title>操作系统的内存管理机制</title><link>https://yindongliang.com/posts/memory-management-in-os/</link><pubDate>Mon, 01 Feb 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/memory-management-in-os/</guid><description>&lt;p>继续复习操作系统，话说随着 CPU 计算资源的性能开始过剩，压在内存身上的担子越来越重了，堪称新时期的性能瓶颈，对操作系统来说，内存管理机制也要进行近乎极致的优化才可以充分发挥 CPU 的正常水平。&lt;/p></description></item><item><title>使用 DOSBox 和 Debug 命令调试汇编程序</title><link>https://yindongliang.com/posts/dosbox-and-debug-usage/</link><pubDate>Sun, 24 Jan 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/dosbox-and-debug-usage/</guid><description>&lt;p>正在看王爽的《汇编语言》，因为我在 Mac M1 环境，按书上做汇编实验的话，搜索了一圈发现 DOSBox 应该可以满足我的需要，它是一个跨平台的可以运行 MS-DOS 的模拟器。&lt;/p>
+&lt;h2 id="dosbox">DOSBox&lt;a class="anchor" href="#dosbox">#&lt;/a>&lt;/h2>
+&lt;p>下载地址 &lt;a href="https://www.dosbox.com/">https://www.dosbox.com/&lt;/a>&lt;/p></description></item><item><title>汇编语言不会编？</title><link>https://yindongliang.com/posts/writing-assembly-code/</link><pubDate>Thu, 21 Jan 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/writing-assembly-code/</guid><description>&lt;p>&lt;a href="https://yindongliang.com/posts/cpu-register">上篇&lt;/a>已经介绍了 CPU 的寄存器种类，知道了程序是由指令和数据组成的，以及 CPU 是如何通过寄存器运行程序的，那么现在可以真正了解下汇编指令集了。&lt;/p>
+&lt;h2 id="前提须知">前提须知&lt;a class="anchor" href="#%e5%89%8d%e6%8f%90%e9%a1%bb%e7%9f%a5">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>因为不同 CPU 架构的指令集都不尽相同，汇编语言通常不具有可移植性，这里介绍的还是以 16 位的 8086CPU 为主。&lt;/li>
+&lt;li>下面的描述，用 &lt;code>()&lt;/code> 表示一个寄存器或内存单元中的内容，比如（ax）表示 ax 中的内容，（20000H）表示内存 2000H 单元的内容。&lt;/li>
+&lt;li>下面的描述，用 &lt;code>idata&lt;/code> 表示常量，比如 &lt;code>mov ax, [idata]&lt;/code> 就代表 &lt;code>mov ax, [1]&lt;/code>、&lt;code>mov ax, [2]&lt;/code>、&lt;code>mov ax, [3]&lt;/code>。&lt;/li>
+&lt;li>reg 表示一个寄存器，比如：ax、bx、cx、dx、ah、bh、bl、ch、cl、dh、dl、sp、bp、si、di。&lt;/li>
+&lt;li>sreg 表示一个段寄存器，比如：ds、ss、cs、es。&lt;/li>
+&lt;/ul>
+&lt;h2 id="伪指令宏">伪指令（宏）&lt;a class="anchor" href="#%e4%bc%aa%e6%8c%87%e4%bb%a4%e5%ae%8f">#&lt;/a>&lt;/h2>
+&lt;p>用汇编语言写的源程序，包括伪指令和汇编指令。首先主要知道伪指令，它区别于常见的汇编指令。伪指令没有对应的机器指令，最终也不会被 CPU 执行，而是由编译器执行的指令，用于指示编译器如何汇编源程序。&lt;/p></description></item><item><title>CPU 与寄存器</title><link>https://yindongliang.com/posts/cpu-register/</link><pubDate>Sat, 02 Jan 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/cpu-register/</guid><description>&lt;p>看 Go 语言的调度器相关内容的时候里面很多内存堆栈、寄存器的概念，一开始没怎么看懂，需要先回来复习下相关的基础知识，早知道大学就好好学了。&lt;/p>
+&lt;h2 id="前提须知">前提须知&lt;a class="anchor" href="#%e5%89%8d%e6%8f%90%e9%a1%bb%e7%9f%a5">#&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>下面的内容都以 16 位的 8086CPU 的情况为准。&lt;/li>
+&lt;li>通常写一条汇编指令或一个寄存器的名称，不区分大小写。&lt;/li>
+&lt;li>为了区分不同的进制，在十六进制表示的数据的后面加 &lt;code>H&lt;/code>，在二进制表示的数据后面加 &lt;code>B&lt;/code>。&lt;/li>
+&lt;li>现在很多实际的源码中一般都是 32 位或者 64 位的寄存器表示。比如表示 SP 的 32 位寄存器是 ESP，对应 64 位寄存器是 RSP，其他通用寄存器也是同理。&lt;/li>
+&lt;/ol>
+&lt;h2 id="cpu">CPU&lt;a class="anchor" href="#cpu">#&lt;/a>&lt;/h2>
+&lt;p>CPU 的内部由寄存器、控制器、运算器和时钟四个部分构成，各部分之间由电流信号相互连通。寄存器可用来暂存指令、数据等处理对象。根据种类的不同，一个 CPU 内部会有 20～100 个寄存器。控制器负责把内存上的指令、数据等读入寄存器，并根据指令的执行结果来控制整个计算机。运算器负责运算从内存读入寄存器的数据。时钟负责发出CPU开始计时的时钟信号。&lt;/p></description></item></channel></rss>

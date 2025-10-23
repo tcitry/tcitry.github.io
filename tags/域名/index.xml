@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>域名 on LYon's Blog</title><link>https://yindongliang.com/tags/%E5%9F%9F%E5%90%8D/</link><description>Recent content in 域名 on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 22 Oct 2025 23:57:45 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/%E5%9F%9F%E5%90%8D/index.xml" rel="self" type="application/rss+xml"/><item><title>Dynadot - 域名服务商</title><link>https://yindongliang.com/links/202510/Dynadot-%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%95%86/</link><pubDate>Mon, 13 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Dynadot-%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%95%86/</guid><description/></item><item><title>这个博客</title><link>https://yindongliang.com/posts/this-blog/</link><pubDate>Sun, 23 Dec 2012 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/this-blog/</guid><description>&lt;blockquote class='book-hint '>
+&lt;p>这是一篇后记，大约写于 2015 年，但适合作为本站的第一篇来了解一下，而 2012 年是本站注册域名和我开始上大学的时间点。&lt;/p>&lt;/blockquote>&lt;div class="mermaid">timeline
+ 2012 : WordPress
+ : VPS
+ 2013 : Jekyll
+ : Github Pages
+ 2014 : Coding.net
+ 2015 : Hexo
+ : Coding.net
+ 2016 : Ghost
+ : VPS
+ 2019 : Hugo
+ : Typora
+ : Github Pages
+ 2022 : Hugo
+ : Obsidian
+ : Github Pages
+&lt;/div>
+&lt;p>我对做一个自己的博客的过程是可以说非常的折腾，技术架构上有过很多的版本，本文专门来总结一下。&lt;/p></description></item></channel></rss>

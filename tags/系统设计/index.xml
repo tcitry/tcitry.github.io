@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>系统设计 on LYon's Blog</title><link>https://yindongliang.com/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/</link><description>Recent content in 系统设计 on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 22 Oct 2025 10:03:30 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/index.xml" rel="self" type="application/rss+xml"/><item><title>JWT 介绍和场景示例</title><link>https://yindongliang.com/posts/jwt-api-auth/</link><pubDate>Sun, 14 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/jwt-api-auth/</guid><description>&lt;h3 id="一jwt-是什么">一、JWT 是什么？&lt;a class="anchor" href="#%e4%b8%80jwt-%e6%98%af%e4%bb%80%e4%b9%88">#&lt;/a>&lt;/h3>
+&lt;p>&lt;a href="https://www.jwt.io/">&lt;strong>JWT&lt;/strong>&lt;/a> 的英文全称是 JSON Web Token。它是一种开放的、行业标准的方法，用于在双方之间安全地传输信息作为 JSON 对象。&lt;/p>
+&lt;p>最关键的特点是：&lt;strong>这些信息是经过数字签名的，因此可以被验证和信任&lt;/strong>。&lt;/p></description></item><item><title>WebHook URL 概念</title><link>https://yindongliang.com/docs/Linux/WebHook-URL/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/WebHook-URL/</guid><description>&lt;p>关于 Webhook URL 本身并没有一个全球统一的硬性标准，但它有一些广泛接受的实践和常见要求，这些“事实上的标准”确保了不同系统之间能够可靠、安全地协作。&lt;/p>
+&lt;p>下面这个表格汇总了 Webhook URL 及请求的主要实践和常见要求，希望能帮你快速了解：&lt;/p></description></item><item><title>Actor 模型</title><link>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/Actor-%E6%A8%A1%E5%9E%8B/</link><pubDate>Sat, 22 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Swift/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/Actor-%E6%A8%A1%E5%9E%8B/</guid><description>&lt;h2 id="actor-模型详解">&lt;strong>Actor 模型详解&lt;/strong>&lt;a class="anchor" href="#actor-%e6%a8%a1%e5%9e%8b%e8%af%a6%e8%a7%a3">#&lt;/a>&lt;/h2>
+&lt;p>Actor 模型是一种并发编程范式，其核心思想是通过&lt;strong>数据隔离&lt;/strong>和&lt;strong>异步消息传递&lt;/strong>解决多线程环境下的数据竞争问题。以下是其核心概念、设计背景及实现思想的详细解析：&lt;/p></description></item><item><title>I/O 多路复用机制</title><link>https://yindongliang.com/posts/io-multiplexing/</link><pubDate>Sun, 04 Sep 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/io-multiplexing/</guid><description>&lt;p>面试问的太多了，还是专门整理一下吧，理清知识结构。&lt;/p>
+&lt;h2 id="总览">总览&lt;a class="anchor" href="#%e6%80%bb%e8%a7%88">#&lt;/a>&lt;/h2>
+&lt;p>首先需要注意的是，下面讨论的几种 I/O 模型都属于同步（synchronous） I/O 操作，至于异步（asynchronous） I/O 操作，以后再说。&lt;/p></description></item><item><title>一些定律</title><link>https://yindongliang.com/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/</link><pubDate>Wed, 02 Mar 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/some-laws/</guid><description>&lt;h2 id="摩尔定律">摩尔定律&lt;a class="anchor" href="#%e6%91%a9%e5%b0%94%e5%ae%9a%e5%be%8b">#&lt;/a>&lt;/h2>
+&lt;p>&lt;em>摩尔定律&lt;/em>是英特尔创始人之一戈登·摩尔的经验之谈，其核心内容为：&lt;strong>集成电路上可以容纳的晶体管数目在大约每经过18个月便会增加一倍&lt;/strong>。&lt;/p>
+&lt;h2 id="康威定律">康威定律&lt;a class="anchor" href="#%e5%ba%b7%e5%a8%81%e5%ae%9a%e5%be%8b">#&lt;/a>&lt;/h2>
+&lt;p>计算机科学家 &lt;a href="https://zh.wikipedia.org/wiki/%e9%a9%ac%e5%b0%94%e6%96%87%c2%b7%e5%ba%b7%e5%a8%81">马尔文·康威&lt;/a> 1976 年提出，&lt;strong>设计系统的架构受制于产生这些设计的组织的沟通结构&lt;/strong>。&lt;/p></description></item><item><title>TCP/IP 协议理论基础整理</title><link>https://yindongliang.com/posts/tcpip-questions/</link><pubDate>Tue, 01 Mar 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/tcpip-questions/</guid><description>&lt;p>因为 TCP/IP 协议中每个协议都是层层包装、依赖，分开说可能并不会更容易掌握这些理论知识，所以这里把这些协议都放在了一起。&lt;/p>
+&lt;h2 id="名词解释">名词解释&lt;a class="anchor" href="#%e5%90%8d%e8%af%8d%e8%a7%a3%e9%87%8a">#&lt;/a>&lt;/h2>
+&lt;h3 id="七层和四层模型">七层和四层模型&lt;a class="anchor" href="#%e4%b8%83%e5%b1%82%e5%92%8c%e5%9b%9b%e5%b1%82%e6%a8%a1%e5%9e%8b">#&lt;/a>&lt;/h3>
+&lt;p>&lt;a href="https://cdn.yindongliang.com/uPic/20160731161720376.gif">这里&lt;/a>有一张图比较详细。&lt;/p>
+&lt;p>OSI 七层参考模型包括：&lt;/p>
+&lt;ul>
+&lt;li>应用层：应用程序可直接使用的协议，如 HTTP、FTP。&lt;/li>
+&lt;li>表示层：主要是数据格式转化，比如压缩、加密。&lt;/li>
+&lt;li>会话层：定义了如何建立及开始会话，比如 TLS。&lt;/li>
+&lt;li>传输层：接受上一层的数据，并将其交给网络层，且保证数据有效到达。&lt;/li>
+&lt;li>网络层：控制子网的运行，提供标准的端对端的包传输。&lt;/li>
+&lt;li>数据链路层：定义了单个链路上如何传输数据。&lt;/li>
+&lt;li>物理层：传输介质，硬件。&lt;/li>
+&lt;/ul>
+&lt;p>四层协议包括：&lt;/p></description></item><item><title>通用唯一识别码：UUID</title><link>https://yindongliang.com/posts/intro-uuid/</link><pubDate>Wed, 05 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/intro-uuid/</guid><description>&lt;p>UUID（Universally Unique Identifier，通用唯一识别码）的格式基本上是统一的，遵循一定的标准。最常见的 UUID 表示形式是由 3 2个十六进制数字组成，分为五组，这些组通过连字符（-）分隔，形式如下：&lt;/p></description></item><item><title>HTTP/2 概览</title><link>https://yindongliang.com/posts/http2-101/</link><pubDate>Sat, 25 Dec 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/http2-101/</guid><description>&lt;h2 id="http2-的背景">HTTP/2 的背景&lt;a class="anchor" href="#http2-%e7%9a%84%e8%83%8c%e6%99%af">#&lt;/a>&lt;/h2>
+&lt;p>HTTP/2 协议发布于 2015 年，距离上一个版本 HTTP/1 的发布已经过去了 20 多年，20 年里，随着互联网规模的指数级增长，网络已经成为人们生活的一部分，各种应用对响应要求也越来越严苛，HTTP/1 根本上的性能问题也随之暴露出来。&lt;/p></description></item><item><title>HTTPS 的 SSL/TLS 协议</title><link>https://yindongliang.com/posts/https-ssl-tls-protocol/</link><pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/https-ssl-tls-protocol/</guid><description>&lt;h2 id="https-简介">HTTPS 简介&lt;a class="anchor" href="#https-%e7%ae%80%e4%bb%8b">#&lt;/a>&lt;/h2>
+&lt;p>通过上一篇的&lt;a href="http://localhost:1313/posts/https-algorithems/">HTTPS 之密码学基础&lt;/a>，现在可以正式进入 HTTPS 的介绍了。HTTPS 指的是超文本传输安全协议（&lt;strong>H&lt;/strong>yper&lt;strong>T&lt;/strong>ext &lt;strong>T&lt;/strong>ransfer &lt;strong>P&lt;/strong>rotocol &lt;strong>S&lt;/strong>ecure），顾名思义，比 HTTP 多了一个“安全”，而这里的安全指的就是 SSL/TLS 协议了，即 HTTPS 是由 HTTP + SSL/TLS 协议组成的。&lt;/p></description></item><item><title>跨域相关问题</title><link>https://yindongliang.com/posts/http-cross-domain-problem/</link><pubDate>Sat, 21 Aug 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/http-cross-domain-problem/</guid><description>&lt;p>本文先从 &lt;strong>CSRF&lt;/strong> 攻击的介绍开始，说明了跨域存在的问题，然后引入浏览器&lt;strong>同源策略&lt;/strong>的概念，明白了要限制跨域的原因后，再给出了标准的跨域请求方案：&lt;strong>CORS&lt;/strong>，所以总体上就三部分：CSRF、同源策略、CORS，文章有点长但不用慌，按顺序看就可以了。&lt;/p></description></item><item><title>了解下 MobX 概念</title><link>https://yindongliang.com/posts/mobx-primer/</link><pubDate>Mon, 19 Jul 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/mobx-primer/</guid><description>&lt;h2 id="基本概念">基本概念&lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>observable 函数
+&lt;ul>
+&lt;li>定义状态值&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>action 函数
+&lt;ul>
+&lt;li>用于修改状态值&lt;/li>
+&lt;li>接受一个函数，返回一个签名相同的函数，提供触发时调用。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>derivations 派生，有两种：&lt;code>autorun&lt;/code> 和 &lt;code>computed&lt;/code>
+&lt;ul>
+&lt;li>reactions - autorun()
+&lt;ul>
+&lt;li>接受一个函数&lt;/li>
+&lt;li>状态值发生改变后要执行的响应操作。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>computed value - computed()
+&lt;ul>
+&lt;li>接受一个函数，返回计算值对象。&lt;/li>
+&lt;li>状态值发生改变时，计算值对象的值会自动更新。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="observable">observable&lt;a class="anchor" href="#observable">#&lt;/a>&lt;/h2>
+&lt;p>MobX 中通过 &lt;code>observable&lt;/code> 来定义可观察状态。&lt;/p></description></item><item><title>了解下 Redux 概念</title><link>https://yindongliang.com/posts/redux-primer/</link><pubDate>Thu, 24 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/redux-primer/</guid><description>&lt;p>Redux 用来进行复杂的状态管理，Redux 的思想继承自 Flux，并进行了更加简洁的抽象。&lt;/p>
+&lt;ul>
+&lt;li>store
+&lt;ul>
+&lt;li>&lt;code>store.dispatch(action)&lt;/code> 是 View 发出 Action 的唯一方法，接受一个 Action 对象作为参数，将它发送出去。&lt;/li>
+&lt;li>store 允许使用 &lt;code>store.subscribe()&lt;/code> 方法设置监听函数，一旦 State 发生变化，就自动执行这个函数。subscribe 也返回一个函数，调用这个函数就可以解除监听。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>action
+&lt;ul>
+&lt;li>改变 state 的唯一办法，就是使用 action，它会运送数据到 Store。&lt;/li>
+&lt;li>action creator：view 要发送多少种消息，就会有多少种 action，action 有固定的格式。如果都手写，会很麻烦。可以定义一个函数来生成 action，这个函数就叫 action creator。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>state
+&lt;ul>
+&lt;li>&lt;code>Store&lt;/code> 对象包含所有数据。如果想得到某个时点的数据，就要对 Store 生成快照。这种时点的数据集合，就叫做 State，可以通过 &lt;code>store.getState()&lt;/code> 拿到。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>reducer
+&lt;ul>
+&lt;li>store 收到 action 以后，必须给出一个新的 state，这样 View 才会发生变化。这种 state 的计算过程就叫做 reducer。&lt;/li>
+&lt;li>reducer 是一个纯函数&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>，它接受 action 和当前 state 作为参数，返回一个新的 state。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="reducer">reducer&lt;a class="anchor" href="#reducer">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">const&lt;/span> &lt;span style="color:#aa89ea">reducer&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">state&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#d19a66">0&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">action&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">=&amp;gt;&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">switch&lt;/span> &lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">action&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">type&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">case&lt;/span> &lt;span style="color:#98c379">&amp;#39;INCREMENT&amp;#39;&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#76a9f9">return&lt;/span> &lt;span style="color:#aa89ea">state&lt;/span> &lt;span style="color:#54b1c7">+&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">case&lt;/span> &lt;span style="color:#98c379">&amp;#39;DECREMENT&amp;#39;&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#76a9f9">return&lt;/span> &lt;span style="color:#aa89ea">state&lt;/span> &lt;span style="color:#54b1c7">-&lt;/span> &lt;span style="color:#d19a66">1&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#76a9f9">default&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#76a9f9">return&lt;/span> &lt;span style="color:#aa89ea">state&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>reducer 是一个纯函数，你可以把所有子 Reducer 放在一个文件里面，然后统一引入。&lt;/p></description></item><item><title>浏览器中的 HTTP 缓存使用策略</title><link>https://yindongliang.com/posts/http-caching-in-browser/</link><pubDate>Sat, 12 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/http-caching-in-browser/</guid><description>&lt;p>浏览器使用缓存数据有非常多的好处，很多情况下静态资源会比 js 代码更大，同时修改的频率又非常低，通过对静态资源使用缓存，可以有效减少重复请求，从而节省网络带宽、降低服务器的请求压力。&lt;/p></description></item><item><title>前端的节流和防抖</title><link>https://yindongliang.com/posts/throttle-and-debounce-in-fe/</link><pubDate>Sun, 16 May 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/throttle-and-debounce-in-fe/</guid><description>&lt;p>工作中排查数据问题发现了前端按钮可能会触发两次点击的情况，这个问题除了要在后端做幂等以外，正好最近我也在做一些前端的工作，也就专门研究了下前端的解决方案。本来要解决的是防抖问题，但是查了些资料发现一般都是防抖和节流一起，它们解决方案相似但又不完全相同，下面就分别介绍下方便对比使用。&lt;/p></description></item><item><title>实现限流的几种方案</title><link>https://yindongliang.com/posts/go-rate-limit/</link><pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/go-rate-limit/</guid><description>&lt;p>限流是服务在高并发的情况下，通过限制处理请求的速率，以达到保证服务不过载的目的，实现高可用和稳定性的目标。限流的方案一般有计数法、滑动窗口、漏桶、令牌桶几种，其中各有各的特点，通常需要根据场景采用不同的方案。&lt;/p></description></item><item><title>Go 语言的 MPG 并发调度模型</title><link>https://yindongliang.com/posts/go-mpg-concurrency/</link><pubDate>Mon, 21 Dec 2020 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/go-mpg-concurrency/</guid><description>&lt;p>Golang 的高并发能力是通过协程 goroutine 实现的，在 Go 语言的开发中，每涉及到 goroutine 的相关功能实现时，都会意识到自己需要对 MPG 的模型有一个大概的了解，在此基础上才能做好开发上的决策，本篇也即为 MPG 并发调度模型的学习笔记了。&lt;/p></description></item><item><title>权限系统通用的设计模型</title><link>https://yindongliang.com/posts/permission-system-models/</link><pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/permission-system-models/</guid><description>&lt;p>权限系统是一个比较通用的系统，几乎所有的后台业务都会涉及到，关于权限系统的设计经过一些最佳实践也已经被总结成各种模型，比如 ACL、RBAC、ABAC、PBAC等，下面开始详细介绍。&lt;/p></description></item><item><title>了解下 Protobuf 相关概念</title><link>https://yindongliang.com/posts/hello-protobuf/</link><pubDate>Tue, 22 Sep 2020 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/hello-protobuf/</guid><description>&lt;p>说 Protobuf 之前，要先知道 RPC 是什么，可以说 Protobuf 是实现 RPC 的接口描述语言。&lt;/p>
+&lt;h2 id="rpc">RPC&lt;a class="anchor" href="#rpc">#&lt;/a>&lt;/h2>
+&lt;p>RPC，全称 Remote Procedure Call，中文叫远程过程调用。&lt;/p>
+&lt;p>go 语言基于标准库实现了一套自己的 RPC 调用规则：方法只能有两个可序列化的参数，其中第二个参数是指针类型，并且返回一个error类型，同时必须是公开的方法&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>。&lt;/p></description></item><item><title>Kafka 和 RabbitMQ 对比</title><link>https://yindongliang.com/posts/compare-kafka-and-rabbitmq/</link><pubDate>Sat, 11 Jul 2020 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/compare-kafka-and-rabbitmq/</guid><description>&lt;p>消息队列中间件（Message Queue Middleware，简称 MQ）在后端领域扮演很重要的角色，但是笔者之前日常多止步于使用，对机制原理研究很少。之前用 Python 写 Web 服务的时候，用到 RabbitMQ 的情况比较多，可能是因为有一个基于 Python 的消息队列的封装库 Celery 非常好用。后来写 Go 服务的时候，接入了公司整体的技术架构，Kafka 又用的比较多。这里接针对两种消息中间件专门对比一下各自的底层机制，方便在业务场景中做决策。&lt;/p></description></item><item><title>Redis 的分布式锁使用注意</title><link>https://yindongliang.com/posts/redis-distribute-lock/</link><pubDate>Fri, 03 Jan 2020 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/redis-distribute-lock/</guid><description>&lt;h2 id="为什么需要分布式锁">为什么需要分布式锁&lt;a class="anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e5%88%86%e5%b8%83%e5%bc%8f%e9%94%81">#&lt;/a>&lt;/h2>
+&lt;p>锁机制用于管理对共享资源的并发访问控制，当同一服务的多台机器间需要控制并发的时候，需要保证服务间在同一时间只能被一个线程访问。由于 Redis 的特点是单进程，并且具有高性能的特点，所以一般用 Redis 来做分布式锁。另外分布式锁还有以下几个特点：&lt;/p></description></item><item><title>Redis 实现布隆过滤器</title><link>https://yindongliang.com/posts/bloom-filter/</link><pubDate>Tue, 12 Nov 2019 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/bloom-filter/</guid><description>&lt;p>布隆过滤器（Bloom Filter，BF），能够确定一个东西&lt;strong>一定不存在或可能存在&lt;/strong>，常用于在海量并发情况下防止缓存击穿，相比较传统的 List、Set、Map 数据结构，布隆过滤器能够在大数据量的情况下，相比其他结构更能节省大量的内存空间。&lt;/p></description></item><item><title>说说实际工作中 GraphQL 的使用体验</title><link>https://yindongliang.com/posts/talk-about-graphql/</link><pubDate>Fri, 11 Oct 2019 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/talk-about-graphql/</guid><description>&lt;h2 id="背景">背景&lt;a class="anchor" href="#%e8%83%8c%e6%99%af">#&lt;/a>&lt;/h2>
+&lt;p>接触 GraphQL 是工作中需要有一个项目，用来聚合内部很多其他微服务的接口然后统一暴露给外部使用，在这样的场景下，对项目有几点需求：&lt;/p>
+&lt;ul>
+&lt;li>能够让外部业务方对接方便，当然最好有接口文档。&lt;/li>
+&lt;li>各个业务方可以根据他们自己的需要自己选择字段集合。&lt;/li>
+&lt;li>项目提供的接口可以被不同的语言框架通过 HTTP 调用，比如前端、Python、Go 等。&lt;/li>
+&lt;/ul>
+&lt;p>基于以上的需求，在组内一位大神的提议下，顺理成章的使用了 GraphQL 作为解决方案，经过半年多的迭代维护，今天特来从后端角度说下使用体验。&lt;/p></description></item><item><title>UTF、Unicode 和 ASCII 编码的关系</title><link>https://yindongliang.com/posts/utf-unicode-ascii/</link><pubDate>Fri, 20 Sep 2019 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/utf-unicode-ascii/</guid><description>&lt;p>说 UTF 需要先说 Unicode，而说 Unicode 需要先说 ASCII，这三者正好是历史的发展一步步进化而来的，是计算机领域为了解决全世界各种文字之间的编码统一问题而给出的通用解决方案。&lt;/p></description></item><item><title>Django 中 N+1 查询问题优化</title><link>https://yindongliang.com/posts/django-n1-query/</link><pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/django-n1-query/</guid><description>&lt;p>Django ORM 框架虽然很好用，但是如果不注意，在查询时很容易引发 N + 1 的查询问题。&lt;/p>
+&lt;h2 id="n--1-问题">N + 1 问题&lt;a class="anchor" href="#n--1-%e9%97%ae%e9%a2%98">#&lt;/a>&lt;/h2>
+&lt;p>考虑 &lt;code>文章+作者&lt;/code> 这样的 Model 层设计，在这个模型中，Author 和 Article 是一对多的关系。&lt;/p></description></item><item><title>浅谈 Django-REST-Framework 的设计与源码</title><link>https://yindongliang.com/posts/talk-about-django-rest-framework/</link><pubDate>Thu, 20 Oct 2016 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/talk-about-django-rest-framework/</guid><description>&lt;p>最近又重新接触 DRF，翻看文档发现，当时很难理解的东西，如今一看就懂了，顺带看了源码，也比较容易理解，至少比 Django 的源码简单不少。下面开始从 DRF 的设计和源码两个方面，结合自己的看法，谈谈DRF。&lt;/p></description></item></channel></rss>

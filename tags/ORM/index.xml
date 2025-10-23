@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ORM on LYon's Blog</title><link>https://yindongliang.com/tags/ORM/</link><description>Recent content in ORM on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Thu, 25 Sep 2025 12:26:20 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/ORM/index.xml" rel="self" type="application/rss+xml"/><item><title>Prisma 和 Drizzle 对比</title><link>https://yindongliang.com/posts/Prisma-%E5%92%8C-Drizzle-%E5%AF%B9%E6%AF%94/</link><pubDate>Wed, 24 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/Prisma-%E5%92%8C-Drizzle-%E5%AF%B9%E6%AF%94/</guid><description>&lt;p>Prisma 和 Drizzle 确实是同类工具，它们都属于 &lt;strong>现代 TypeScript/JavaScript ORM（对象关系映射）&lt;/strong>，但在设计哲学、功能特性和使用方式上有显著差异。&lt;/p>
+&lt;h2 id="核心定位对比">核心定位对比&lt;a class="anchor" href="#%e6%a0%b8%e5%bf%83%e5%ae%9a%e4%bd%8d%e5%af%b9%e6%af%94">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>特性&lt;/th>
+ &lt;th>Prisma&lt;/th>
+ &lt;th>Drizzle&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>类型安全&lt;/strong>&lt;/td>
+ &lt;td>🔥 强类型，自动生成 TypeScript 类型&lt;/td>
+ &lt;td>🔥 强类型，基于 TypeScript 推断&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>查询语法&lt;/strong>&lt;/td>
+ &lt;td>声明式，类 GraphQL 风格&lt;/td>
+ &lt;td>类 SQL 的表达式语法&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>架构定义&lt;/strong>&lt;/td>
+ &lt;td>专属的 &lt;code>.prisma&lt;/code> schema 文件&lt;/td>
+ &lt;td>TypeScript 代码定义或配置文件&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>迁移管理&lt;/strong>&lt;/td>
+ &lt;td>内置完整的迁移系统&lt;/td>
+ &lt;td>支持迁移，但更灵活&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>运行时大小&lt;/strong>&lt;/td>
+ &lt;td>较大（~1.5MB）&lt;/td>
+ &lt;td>轻量（~20KB）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>学习曲线&lt;/strong>&lt;/td>
+ &lt;td>中等，需要学习 Prisma 特有语法&lt;/td>
+ &lt;td>较低，对 SQL 用户友好&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="代码示例对比">代码示例对比&lt;a class="anchor" href="#%e4%bb%a3%e7%a0%81%e7%a4%ba%e4%be%8b%e5%af%b9%e6%af%94">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-架构定义">1. 架构定义&lt;a class="anchor" href="#1-%e6%9e%b6%e6%9e%84%e5%ae%9a%e4%b9%89">#&lt;/a>&lt;/h3>
+&lt;p>&lt;strong>Prisma Schema:&lt;/strong>&lt;/p></description></item></channel></rss>

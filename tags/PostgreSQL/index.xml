@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>PostgreSQL on LYon's Blog</title><link>https://yindongliang.com/tags/PostgreSQL/</link><description>Recent content in PostgreSQL on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Sat, 20 Sep 2025 17:58:34 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/PostgreSQL/index.xml" rel="self" type="application/rss+xml"/><item><title>PostgreSQL</title><link>https://yindongliang.com/docs/Linux/PostgreSQL/</link><pubDate>Sat, 20 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/PostgreSQL/</guid><description>&lt;p>这里整理了一份非常实用的 PostgreSQL 常用命令清单，从连接到数据库、基本操作到高级功能都涵盖了。&lt;/p>
+&lt;h3 id="1-连接与退出数据库">1. 连接与退出数据库&lt;a class="anchor" href="#1-%e8%bf%9e%e6%8e%a5%e4%b8%8e%e9%80%80%e5%87%ba%e6%95%b0%e6%8d%ae%e5%ba%93">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>连接到一个特定的数据库&lt;/strong>：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>psql -h &amp;lt;主机名&amp;gt; -p &amp;lt;端口号&amp;gt; -U &amp;lt;用户名&amp;gt; -d &amp;lt;数据库名&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>例如，连接本地的 &lt;code>mydb&lt;/code> 数据库：&lt;code>psql -h localhost -p 5432 -U postgres -d mydb&lt;/code>&lt;/li>
+&lt;li>如果连接本地默认端口（5432）的默认数据库，可以简写为：&lt;code>psql -U postgres&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>退出 psql 命令行界面&lt;/strong>：&lt;/p></description></item></channel></rss>

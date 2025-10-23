@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>AI on LYon's Blog</title><link>https://yindongliang.com/tags/AI/</link><description>Recent content in AI on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 22 Oct 2025 09:57:17 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/AI/index.xml" rel="self" type="application/rss+xml"/><item><title>arXiv</title><link>https://yindongliang.com/links/202510/Arxiv/</link><pubDate>Tue, 21 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Arxiv/</guid><description/></item><item><title>How I became a machine learning practitioner</title><link>https://yindongliang.com/links/202510/How-I-became-a-machine-learning-practitioner/</link><pubDate>Tue, 21 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/How-I-became-a-machine-learning-practitioner/</guid><description>&lt;p>OpenAI 共同創辦人 Greg Brockman《我如何成為機器學習實踐者》翻譯文&lt;br>
+&lt;a href="https://www.explainthis.io/zh-hant/career/how-greg-turn-ml-practitioner">https://www.explainthis.io/zh-hant/career/how-greg-turn-ml-practitioner&lt;/a>&lt;/p></description></item><item><title>LangChain</title><link>https://yindongliang.com/links/202510/LangChain/</link><pubDate>Tue, 21 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/LangChain/</guid><description>&lt;p>&lt;a href="https://github.com/langchain-ai/langchain">https://github.com/langchain-ai/langchain&lt;/a>&lt;/p></description></item><item><title>LobeChat</title><link>https://yindongliang.com/links/202510/LobeChat/</link><pubDate>Wed, 15 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/LobeChat/</guid><description>&lt;p>An open-source, modern design ChatGPT/LLMs UI/framework.&lt;/p></description></item><item><title>LM Studio</title><link>https://yindongliang.com/links/202510/LM-Studio/</link><pubDate>Tue, 14 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/LM-Studio/</guid><description>&lt;p>Local AI, on your computer. Run local AI models like &lt;a href="https://lmstudio.ai/models/openai/gpt-oss-20b">&lt;code>gpt-oss&lt;/code>&lt;/a>, &lt;a href="https://lmstudio.ai/models/qwen/qwen3-14b">&lt;code>Qwen&lt;/code>&lt;/a>, &lt;a href="https://lmstudio.ai/models/google/gemma-3n-e4b">&lt;code>Gemma&lt;/code>&lt;/a>, &lt;a href="https://lmstudio.ai/models/deepseek/deepseek-r1-0528-qwen3-8b">&lt;code>DeepSeek&lt;/code>&lt;/a> and many more on your computer, privately and for free.&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/lmstudio-ai">https://github.com/lmstudio-ai&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>Devin AI</title><link>https://yindongliang.com/links/202510/devin/</link><pubDate>Sun, 12 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/devin/</guid><description>&lt;p>Devin, the AI software engineer.&lt;/p></description></item><item><title>Linear</title><link>https://yindongliang.com/links/202510/linear/</link><pubDate>Sun, 12 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/linear/</guid><description>&lt;p>体验了在 Linear 配置 Devin 和 Github 账号，可以直接 @Devin 来提交 PR 解决问题，测试下来效果还可以，Devin 会先分析需求，生成文档等待你确认，没问题了才会开始写代码，有一个问题就是花费还是比较高，每次 PR 差不多需要 30 块钱的样子，可能 Devin 需要开一些虚拟机资源进行“直播”写代码的原因吧。&lt;/p></description></item><item><title>关于印发《人工智能生成合成内容标识办法》的通知</title><link>https://yindongliang.com/links/202510/%E5%85%B3%E4%BA%8E%E5%8D%B0%E5%8F%91%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%94%9F%E6%88%90%E5%90%88%E6%88%90%E5%86%85%E5%AE%B9%E6%A0%87%E8%AF%86%E5%8A%9E%E6%B3%95%E7%9A%84%E9%80%9A%E7%9F%A5/</link><pubDate>Thu, 09 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/%E5%85%B3%E4%BA%8E%E5%8D%B0%E5%8F%91%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%94%9F%E6%88%90%E5%90%88%E6%88%90%E5%86%85%E5%AE%B9%E6%A0%87%E8%AF%86%E5%8A%9E%E6%B3%95%E7%9A%84%E9%80%9A%E7%9F%A5/</guid><description>&lt;p>&lt;strong>人工智能生成合成内容标识办法&lt;/strong>&lt;/p>
+&lt;p>&lt;strong>第一条&lt;/strong> 为了促进人工智能健康发展，规范人工智能生成合成内容标识，保护公民、法人和其他组织合法权益，维护社会公共利益，根据《中华人民共和国网络安全法》、《互联网信息服务算法推荐管理规定》、《互联网信息服务深度合成管理规定》、《生成式人工智能服务管理暂行办法》等法律、行政法规和部门规章，制定本办法。&lt;/p></description></item><item><title>Anthropic: A postmortem of three recent issues</title><link>https://yindongliang.com/links/202509/A-postmortem-of-three-recent-issues/</link><pubDate>Tue, 23 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/A-postmortem-of-three-recent-issues/</guid><description>&lt;p>此为很多人不买账的官方回复。&lt;/p></description></item><item><title>LobeHubIcons</title><link>https://yindongliang.com/links/202509/LobeHubIcons/</link><pubDate>Fri, 19 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/LobeHubIcons/</guid><description>&lt;p>Popular AI / LLM Model Brand SVG Logo and Icon Collection&lt;/p>
+&lt;h2 id="参考">参考&lt;a class="anchor" href="#%e5%8f%82%e8%80%83">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://lobehub.com/">https://lobehub.com/&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>LibLib</title><link>https://yindongliang.com/links/202509/liblib/</link><pubDate>Wed, 17 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/liblib/</guid><description>&lt;p>LibLib AI 是一家研发多模态生成工具的AI原生应用公司，致力于专业场景下的 AI 内容创作与分享，为大创意工作者提供专业、可靠、高效的 AI 时代创作工具而努力引领中国创意内容生产与消费的范式革新。&lt;/p></description></item><item><title>Cherry Studio</title><link>https://yindongliang.com/links/202509/Cherry-Studio/</link><pubDate>Mon, 15 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/Cherry-Studio/</guid><description>&lt;p>支持多服务商集成的 AI 对话客户端&lt;/p></description></item><item><title>Canva</title><link>https://yindongliang.com/links/202509/Canva/</link><pubDate>Tue, 09 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/Canva/</guid><description>&lt;p>Canva 是一款在线图形设计工具，用户可以使用它创建各种视觉内容，包括社交媒体图形、演示文稿、海报等。它提供了大量的模板、字体、图片和设计元素，方便用户进行创作。&lt;/p></description></item><item><title>n8n 介绍</title><link>https://yindongliang.com/docs/Linux/n8n/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/n8n/</guid><description>&lt;p>&lt;a href="https://n8n.io/">n8n&lt;/a> 是一款功能强大的开源工作流自动化工具，它通过可视化的方式让你能够连接各种应用、服务和数据，自动执行重复性的任务和业务流程。&lt;/p>
+&lt;p>&lt;a href="https://docs.n8n.io/">https://docs.n8n.io/&lt;/a>&lt;/p>
+&lt;h1 id="-n8n-工作流自动化平台全面指南">🔧 n8n 工作流自动化平台全面指南&lt;a class="anchor" href="#-n8n-%e5%b7%a5%e4%bd%9c%e6%b5%81%e8%87%aa%e5%8a%a8%e5%8c%96%e5%b9%b3%e5%8f%b0%e5%85%a8%e9%9d%a2%e6%8c%87%e5%8d%97">#&lt;/a>&lt;/h1>
+&lt;h2 id="-核心特点">✨ 核心特点&lt;a class="anchor" href="#-%e6%a0%b8%e5%bf%83%e7%89%b9%e7%82%b9">#&lt;/a>&lt;/h2>
+&lt;p>n8n 有以下几个突出的特点，使其在自动化工具中脱颖而出：&lt;/p></description></item><item><title>一个半月高强度 Claude Code 使用后感受</title><link>https://yindongliang.com/links/202508/%E4%B8%80%E4%B8%AA%E5%8D%8A%E6%9C%88%E9%AB%98%E5%BC%BA%E5%BA%A6-Claude-Code-%E4%BD%BF%E7%94%A8%E5%90%8E%E6%84%9F%E5%8F%97/</link><pubDate>Fri, 29 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/%E4%B8%80%E4%B8%AA%E5%8D%8A%E6%9C%88%E9%AB%98%E5%BC%BA%E5%BA%A6-Claude-Code-%E4%BD%BF%E7%94%A8%E5%90%8E%E6%84%9F%E5%8F%97/</guid><description>&lt;p>By onevcat.&lt;/p></description></item><item><title>HiggsField</title><link>https://yindongliang.com/links/202508/HiggsField/</link><pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/HiggsField/</guid><description>&lt;p>&lt;a href="https://higgsfield.ai/">Higgsfield.ai&lt;/a> 是一家专注于 &lt;strong>AI生成视频技术&lt;/strong>的初创公司.&lt;/p>
+&lt;p>&lt;a href="https://github.com/higgsfield-ai/higgsfield">https://github.com/higgsfield-ai/higgsfield&lt;/a>&lt;/p></description></item><item><title>Andi Search</title><link>https://yindongliang.com/links/202508/Andi-Search/</link><pubDate>Thu, 21 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/Andi-Search/</guid><description>&lt;p>Andi is an AI search agent that can answer anything, find everything, and create great content for you. It&amp;rsquo;s like your AI brain for the web 🚀&lt;/p></description></item><item><title>Unibee</title><link>https://yindongliang.com/links/202508/Unibee/</link><pubDate>Wed, 20 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/Unibee/</guid><description>&lt;p>Replace expensive solutions with open-source subscription billing software to optimize the finances for international business structure.&lt;/p>
+&lt;p>文档 &lt;a href="https://docs.unibee.dev/documentation/overview/introduction">https://docs.unibee.dev/documentation/overview/introduction&lt;/a>&lt;/p></description></item><item><title>Chat &amp; Ask AI</title><link>https://yindongliang.com/links/202508/askaichat/</link><pubDate>Mon, 18 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/askaichat/</guid><description>&lt;p>Meet the new standard for AI Chat. Dive into a world of endless possibilities with Chat &amp;amp; Ask AI, an advanced AI Assistant developed on GPT-4o, DeepSeek R1, DeepSeek V3, Llama 3, Claude 3.5, Gemini and Stable Diffusion XL technologies ✨&lt;/p></description></item><item><title>WaveSpeedAI - Ultimate AI MediaGeneration Platform</title><link>https://yindongliang.com/links/202508/WaveSpeed/</link><pubDate>Sat, 09 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/WaveSpeed/</guid><description>&lt;p>WaveSpeedAI accelerates AI Image and Video generation for you to build, create, and scale faster.&lt;/p></description></item><item><title>Model Context Protocol</title><link>https://yindongliang.com/links/202505/Model-Context-Protocol/</link><pubDate>Sat, 10 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202505/Model-Context-Protocol/</guid><description>&lt;p>MCP 官方文档&lt;/p></description></item><item><title>好用的 AI 工具</title><link>https://yindongliang.com/docs/Awesome/awesome-ai-tools/</link><pubDate>Sat, 12 Oct 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-ai-tools/</guid><description>&lt;h2 id="门户网站">门户网站&lt;a class="anchor" href="#%e9%97%a8%e6%88%b7%e7%bd%91%e7%ab%99">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>AIHub&lt;/td>
+ &lt;td>门户网站&lt;/td>
+ &lt;td>&lt;a href="https://www.aihub.cn/">https://www.aihub.cn/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>302.AI&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://302.ai/">https://302.ai/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://civitai.com/">https://civitai.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="云服务">云服务&lt;a class="anchor" href="#%e4%ba%91%e6%9c%8d%e5%8a%a1">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>阿里云百炼平台&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://bailian.console.aliyun.com">https://bailian.console.aliyun.com&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>百度千帆&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://cloud.baidu.com/product-s/qianfan_home">https://cloud.baidu.com/product-s/qianfan_home&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="chat-工具">Chat 工具&lt;a class="anchor" href="#chat-%e5%b7%a5%e5%85%b7">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Liner&lt;/td>
+ &lt;td>AI 搜索 / Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://getliner.com/zh">https://getliner.com/zh&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Devv&lt;/td>
+ &lt;td>“最懂程序员的新一代 AI 搜索引擎”&lt;/td>
+ &lt;td>&lt;a href="https://devv.ai/zh">https://devv.ai/zh&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Gamma&lt;/td>
+ &lt;td>PPT 生成&lt;/td>
+ &lt;td>&lt;a href="https://gamma.app/">https://gamma.app/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Poe&lt;/td>
+ &lt;td>来自 Quora 的 Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://poe.com/">https://poe.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Sider&lt;/td>
+ &lt;td>Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://sider.ai/">https://sider.ai/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Monica&lt;/td>
+ &lt;td>Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://monica.im">https://monica.im&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>ChatHub&lt;/td>
+ &lt;td>Get insights from ChatGPT, Claude, Gemini, and more - all at once!&lt;/td>
+ &lt;td>&lt;a href="https://chathub.gg/">https://chathub.gg/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>v0.dev&lt;/td>
+ &lt;td>来自 Vercel 的 Chat 工具&lt;/td>
+ &lt;td>&lt;a href="https://v0.dev/">https://v0.dev/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>ChatPlayground&lt;/td>
+ &lt;td>类似 ChatHub，可以同时与多个模型聊天。&lt;/td>
+ &lt;td>&lt;a href="https://www.chatplayground.ai/">https://www.chatplayground.ai/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Deepseek&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://chat.deepseek.com/">https://chat.deepseek.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="软件工具">软件工具&lt;a class="anchor" href="#%e8%bd%af%e4%bb%b6%e5%b7%a5%e5%85%b7">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Cursor&lt;/td>
+ &lt;td>代码编辑器&lt;/td>
+ &lt;td>&lt;a href="https://www.cursor.com/">https://www.cursor.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Codeium&lt;/td>
+ &lt;td>Free AI Code Completion &amp;amp; Chat&lt;/td>
+ &lt;td>&lt;a href="https://codeium.com/">https://codeium.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Cody&lt;/td>
+ &lt;td>Cody uses the latest LLMs and all your development context to help you understand, write, and fix code faster&lt;/td>
+ &lt;td>&lt;a href="https://sourcegraph.com/cody">https://sourcegraph.com/cody&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="图像设计工具">图像设计工具&lt;a class="anchor" href="#%e5%9b%be%e5%83%8f%e8%ae%be%e8%ae%a1%e5%b7%a5%e5%85%b7">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Vector Magic&lt;/td>
+ &lt;td>Easily Convert JPG, PNG, GIF Files to PDF, SVG, EPS Vectors&lt;/td>
+ &lt;td>&lt;a href="https://vectormagic.com/">https://vectormagic.com/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Jitter&lt;/td>
+ &lt;td>Motion design make simple.&lt;/td>
+ &lt;td>&lt;a href="https://jitter.video/">https://jitter.video/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="github">Github&lt;a class="anchor" href="#github">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Awesome-Chatgpt&lt;/td>
+ &lt;td>Awesome list for ChatGPT — an artificial intelligence chatbot developed by OpenAI&lt;/td>
+ &lt;td>&lt;a href="https://github.com/sindresorhus/awesome-chatgpt">https://github.com/sindresorhus/awesome-chatgpt&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="其他参考">其他参考&lt;a class="anchor" href="#%e5%85%b6%e4%bb%96%e5%8f%82%e8%80%83">#&lt;/a>&lt;/h2>
+&lt;p>2024最强 AI 集合！12个领域，47款AI工具，每一个都变态又好用！&lt;br>
+&lt;a href="https://www.bilibili.com/video/BV1Ls421M7qq/">https://www.bilibili.com/video/BV1Ls421M7qq/&lt;/a>&lt;/p></description></item><item><title>为什么面相对象很糟糕</title><link>https://yindongliang.com/weekly/2024/2024-W26/</link><pubDate>Mon, 24 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W26/</guid><description>&lt;h2 id="发现">发现&lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>&lt;/h2>
+&lt;p>为什么面向对象很糟糕&lt;br>
+&lt;a href="https://harmful.cat-v.org/software/OO_programming/why_oo_sucks">https://harmful.cat-v.org/software/OO_programming/why_oo_sucks&lt;/a>&lt;/p>
+&lt;p>鸢(yuān)尾花书：从加减乘除到机器学习&lt;br>
+&lt;a href="https://github.com/Visualize-ML">https://github.com/Visualize-ML&lt;/a>&lt;/p>
+&lt;p>一系列基于 CloudFlare 的开源工具 &amp;amp; 技术栈，旨在帮助独立开发者快速构建和发布 SaaS 产品&lt;br>
+&lt;a href="https://cloudflare.chuhai.tools/">https://cloudflare.chuhai.tools/&lt;/a>&lt;/p></description></item><item><title>2024 年我的工具列表</title><link>https://yindongliang.com/posts/my-toolkit-2024/</link><pubDate>Thu, 30 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/my-toolkit-2024/</guid><description>&lt;p>从桌面端的应用软件这个角度来看，当下也是一个动荡的年代，不管是之前已经有的形态，还是还未出现的形态，也不管是开源的还是收费的，好用的新工具层出不穷，AI 的入场更是要把所有软件重新设计的节奏。我希望整理下最近几年一直在用的软件，记录当前的状态，这是相关主题的第一篇，争取后面每年都能关注下一下这个话题。&lt;/p></description></item><item><title>还是阳了，以及在读《动物农场》</title><link>https://yindongliang.com/weekly/2024/2024-W08/</link><pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W08/</guid><description>&lt;p>大年初二就开始测出阳性了，这回是第一次明确测出来，敢情之前的发烧还真不是新冠呗，这回的症状也确实和新冠症状基本符合，嗓子不舒服，一直干咳，发烧一次吃了退烧药就下来了，即使现在已经转阴了，身上还是说不出来的哪里不对，偶尔莫名酸痛，偶尔有气无力，偶尔拉肚子，偶尔心跳加速，有点意思。&lt;/p></description></item><item><title>看完了风骚律师</title><link>https://yindongliang.com/weekly/2023/2023-W51/</link><pubDate>Mon, 18 Dec 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W51/</guid><description>&lt;p>断断续续看完了整部《风骚律师》（Better Call Saul），因为也不是一直在电视前认认真真看，有一些没看懂，以至于又回头看了一些，发现还是比较模糊，很多场景和铺垫不能完全理解，不过问题不大，我已经知道了故事的大致脉络，以及每个人的结局。比较兴奋的彩蛋就是最后“小粉”、“老白”都出场了，我已知足，毕竟《绝命毒师》（Breaking Bad）是我心目中四两拨千斤的神作。&lt;/p></description></item><item><title>对 ChatGPT 的思考</title><link>https://yindongliang.com/weekly/2023/2023-W12/</link><pubDate>Mon, 20 Mar 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W12/</guid><description>&lt;p>自从把 ChatGPT 接入飞书之后，使用起来就方便很多，也引发了更多的思考，一直到现在，最主要的反应还是恐慌和兴奋。而且随着 ChatGPT 4.0 公布的强大能力，加上微软已经宣布要集成到 Office 等等一系列动作，AI 参与到人们日常工作中的进展正在以意料之外的速度攻城略地，我相信现在能使用到 ChatGPT 的各种圈子应该都很兴奋和恐慌，显然它的能力到底有多大目前是未知的。&lt;/p></description></item><item><title>把玩 AirCode</title><link>https://yindongliang.com/weekly/2023/2023-W11/</link><pubDate>Mon, 13 Mar 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W11/</guid><description>&lt;h2 id="chatgpt">ChatGPT&lt;a class="anchor" href="#chatgpt">#&lt;/a>&lt;/h2>
+&lt;p>这一波真的有点慌。周六使用这个&lt;a href="https://github.com/bestony/ChatGPT-Feishu">项目&lt;/a> 搭建了一个飞书连接 ChatGPT 的机器人，这样使用起来就不担心网络原因了，项目使用了&lt;a href="https://aircode.io/">AirCode&lt;/a> 转发请求到 ChatGPT API，又发现了一个新的好玩的东西。&lt;/p></description></item></channel></rss>

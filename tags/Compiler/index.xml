@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Compiler on LYon's Blog</title><link>https://yindongliang.com/tags/Compiler/</link><description>Recent content in Compiler on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Sat, 18 Oct 2025 13:05:57 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Compiler/index.xml" rel="self" type="application/rss+xml"/><item><title>苹果为了安全让 M2 吃灰</title><link>https://yindongliang.com/weekly/2023/2023-W10/</link><pubDate>Mon, 06 Mar 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2023/2023-W10/</guid><description>&lt;p>拖延症犯了，本周才看完《献给阿尔吉侬的花束》这本书，今年第二本。上一本是《1984》，还是在回山东过年的火车上看完的。想了一下，阅读效率变低的原因一方面通勤从地铁改成了开车，每天的固定阅读时间没了；另一方面就是最近工作比较多。&lt;/p></description></item><item><title>Go 程序是怎样跑起来的？</title><link>https://yindongliang.com/posts/how-go-program-run/</link><pubDate>Wed, 31 Mar 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/how-go-program-run/</guid><description>&lt;p>Go 程序是怎么跑起来的？面对问题我第一反应是，Go 是静态编译型语言，和 C 语言一样，就是编译、链接那一套，尤其是最近对着 Go 的一些资料看感觉又学习了一遍编译原理。编译原理的内容本身就很深，本文仅以我暂时理解到的视角进行总结，参考资料列在了最下面。&lt;/p></description></item><item><title>使用 DOSBox 和 Debug 命令调试汇编程序</title><link>https://yindongliang.com/posts/dosbox-and-debug-usage/</link><pubDate>Sun, 24 Jan 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/dosbox-and-debug-usage/</guid><description>&lt;p>正在看王爽的《汇编语言》，因为我在 Mac M1 环境，按书上做汇编实验的话，搜索了一圈发现 DOSBox 应该可以满足我的需要，它是一个跨平台的可以运行 MS-DOS 的模拟器。&lt;/p>
+&lt;h2 id="dosbox">DOSBox&lt;a class="anchor" href="#dosbox">#&lt;/a>&lt;/h2>
+&lt;p>下载地址 &lt;a href="https://www.dosbox.com/">https://www.dosbox.com/&lt;/a>&lt;/p></description></item><item><title>汇编语言不会编？</title><link>https://yindongliang.com/posts/writing-assembly-code/</link><pubDate>Thu, 21 Jan 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/writing-assembly-code/</guid><description>&lt;p>&lt;a href="https://yindongliang.com/posts/cpu-register">上篇&lt;/a>已经介绍了 CPU 的寄存器种类，知道了程序是由指令和数据组成的，以及 CPU 是如何通过寄存器运行程序的，那么现在可以真正了解下汇编指令集了。&lt;/p>
+&lt;h2 id="前提须知">前提须知&lt;a class="anchor" href="#%e5%89%8d%e6%8f%90%e9%a1%bb%e7%9f%a5">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>因为不同 CPU 架构的指令集都不尽相同，汇编语言通常不具有可移植性，这里介绍的还是以 16 位的 8086CPU 为主。&lt;/li>
+&lt;li>下面的描述，用 &lt;code>()&lt;/code> 表示一个寄存器或内存单元中的内容，比如（ax）表示 ax 中的内容，（20000H）表示内存 2000H 单元的内容。&lt;/li>
+&lt;li>下面的描述，用 &lt;code>idata&lt;/code> 表示常量，比如 &lt;code>mov ax, [idata]&lt;/code> 就代表 &lt;code>mov ax, [1]&lt;/code>、&lt;code>mov ax, [2]&lt;/code>、&lt;code>mov ax, [3]&lt;/code>。&lt;/li>
+&lt;li>reg 表示一个寄存器，比如：ax、bx、cx、dx、ah、bh、bl、ch、cl、dh、dl、sp、bp、si、di。&lt;/li>
+&lt;li>sreg 表示一个段寄存器，比如：ds、ss、cs、es。&lt;/li>
+&lt;/ul>
+&lt;h2 id="伪指令宏">伪指令（宏）&lt;a class="anchor" href="#%e4%bc%aa%e6%8c%87%e4%bb%a4%e5%ae%8f">#&lt;/a>&lt;/h2>
+&lt;p>用汇编语言写的源程序，包括伪指令和汇编指令。首先主要知道伪指令，它区别于常见的汇编指令。伪指令没有对应的机器指令，最终也不会被 CPU 执行，而是由编译器执行的指令，用于指示编译器如何汇编源程序。&lt;/p></description></item><item><title>CPU 与寄存器</title><link>https://yindongliang.com/posts/cpu-register/</link><pubDate>Sat, 02 Jan 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/cpu-register/</guid><description>&lt;p>看 Go 语言的调度器相关内容的时候里面很多内存堆栈、寄存器的概念，一开始没怎么看懂，需要先回来复习下相关的基础知识，早知道大学就好好学了。&lt;/p>
+&lt;h2 id="前提须知">前提须知&lt;a class="anchor" href="#%e5%89%8d%e6%8f%90%e9%a1%bb%e7%9f%a5">#&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>下面的内容都以 16 位的 8086CPU 的情况为准。&lt;/li>
+&lt;li>通常写一条汇编指令或一个寄存器的名称，不区分大小写。&lt;/li>
+&lt;li>为了区分不同的进制，在十六进制表示的数据的后面加 &lt;code>H&lt;/code>，在二进制表示的数据后面加 &lt;code>B&lt;/code>。&lt;/li>
+&lt;li>现在很多实际的源码中一般都是 32 位或者 64 位的寄存器表示。比如表示 SP 的 32 位寄存器是 ESP，对应 64 位寄存器是 RSP，其他通用寄存器也是同理。&lt;/li>
+&lt;/ol>
+&lt;h2 id="cpu">CPU&lt;a class="anchor" href="#cpu">#&lt;/a>&lt;/h2>
+&lt;p>CPU 的内部由寄存器、控制器、运算器和时钟四个部分构成，各部分之间由电流信号相互连通。寄存器可用来暂存指令、数据等处理对象。根据种类的不同，一个 CPU 内部会有 20～100 个寄存器。控制器负责把内存上的指令、数据等读入寄存器，并根据指令的执行结果来控制整个计算机。运算器负责运算从内存读入寄存器的数据。时钟负责发出CPU开始计时的时钟信号。&lt;/p></description></item></channel></rss>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>TypeScript on LYon's Blog</title><link>https://yindongliang.com/docs/Frontend/TypeScript/</link><description>Recent content in TypeScript on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Frontend/TypeScript/index.xml" rel="self" type="application/rss+xml"/><item><title>无标准库</title><link>https://yindongliang.com/docs/Frontend/TypeScript/%E6%97%A0%E6%A0%87%E5%87%86%E5%BA%93/</link><pubDate>Fri, 05 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/%E6%97%A0%E6%A0%87%E5%87%86%E5%BA%93/</guid><description>&lt;p>TypeScript 本身&lt;strong>并没有独立的标准库&lt;/strong>，但它提供了对 JavaScript 标准库的完整类型定义，并且有一个丰富的类型系统来增强 JavaScript 的开发体验。&lt;/p>
+&lt;h2 id="-typescript-的标准库组成">📚 TypeScript 的&amp;quot;标准库&amp;quot;组成&lt;a class="anchor" href="#-typescript-%e7%9a%84%e6%a0%87%e5%87%86%e5%ba%93%e7%bb%84%e6%88%90">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>组成部分&lt;/th>
+ &lt;th>描述&lt;/th>
+ &lt;th>示例&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>JavaScript 标准库类型&lt;/strong>&lt;/td>
+ &lt;td>TypeScript 包含了 ES5、ES6+ 所有内置对象的类型定义&lt;/td>
+ &lt;td>&lt;code>Array&amp;lt;T&amp;gt;&lt;/code>, &lt;code>Promise&amp;lt;T&amp;gt;&lt;/code>, &lt;code>Map&amp;lt;K, V&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>DOM API 类型&lt;/strong>&lt;/td>
+ &lt;td>浏览器环境下的 DOM API 类型定义&lt;/td>
+ &lt;td>&lt;code>document&lt;/code>, &lt;code>window&lt;/code>, &lt;code>HTMLElement&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>TypeScript 补充类型&lt;/strong>&lt;/td>
+ &lt;td>TypeScript 特有的类型工具&lt;/td>
+ &lt;td>&lt;code>Partial&amp;lt;T&amp;gt;&lt;/code>, &lt;code>Pick&amp;lt;T, K&amp;gt;&lt;/code>, &lt;code>Record&amp;lt;K, V&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>@types/node&lt;/strong>&lt;/td>
+ &lt;td>Node.js 环境的标准库类型定义（需单独安装）&lt;/td>
+ &lt;td>&lt;code>fs&lt;/code>, &lt;code>path&lt;/code>, &lt;code>http&lt;/code> 等模块的类型&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="-typescript-的内置类型定义">🔧 TypeScript 的内置类型定义&lt;a class="anchor" href="#-typescript-%e7%9a%84%e5%86%85%e7%bd%ae%e7%b1%bb%e5%9e%8b%e5%ae%9a%e4%b9%89">#&lt;/a>&lt;/h2>
+&lt;p>TypeScript 自带了对 JavaScript 标准库的完整类型定义，这些定义文件位于 TypeScript 安装目录的 &lt;code>lib&lt;/code> 文件夹中。&lt;/p></description></item><item><title>forEach 和 map 的区别</title><link>https://yindongliang.com/docs/Frontend/TypeScript/forEach-%E5%92%8C-map/</link><pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/forEach-%E5%92%8C-map/</guid><description>&lt;p>在 TypeScript（以及 JavaScript）中，&lt;code>forEach&lt;/code> 和 &lt;code>map&lt;/code> 都是数组方法，但它们有重要的区别。了解这些区别对于编写高效和正确的代码至关重要。&lt;/p></description></item><item><title>Promise</title><link>https://yindongliang.com/docs/Frontend/TypeScript/Promise/</link><pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/Promise/</guid><description>&lt;h2 id="1-什么是-promise">1. 什么是 Promise？&lt;a class="anchor" href="#1-%e4%bb%80%e4%b9%88%e6%98%af-promise">#&lt;/a>&lt;/h2>
+&lt;p>在 JavaScript / TypeScript 中，&lt;strong>Promise 表示一个异步操作的最终结果&lt;/strong>（成功或失败）。&lt;br>
+它有三种状态：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>pending&lt;/strong>（进行中）&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>fulfilled&lt;/strong>（成功）&lt;/p></description></item><item><title>Record</title><link>https://yindongliang.com/docs/Frontend/TypeScript/Record/</link><pubDate>Wed, 20 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/Record/</guid><description>&lt;p>&lt;code>Record&lt;/code> 是 &lt;strong>TypeScript 提供的一个工具类型（Utility Type）&lt;/strong>，它用来快速构造一个对象类型，其中的 &lt;strong>键和值的类型&lt;/strong>都可以指定。&lt;/p>
+&lt;h3 id="定义">定义&lt;a class="anchor" href="#%e5%ae%9a%e4%b9%89">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ts" data-lang="ts">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">Record&lt;/span>&lt;span style="color:#abb2bf">&amp;lt;&lt;/span>&lt;span style="color:#76a9f9">Keys&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#cebc3a">Type&lt;/span>&lt;span style="color:#abb2bf">&amp;gt;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>Keys&lt;/strong>: 一组属性键，可以是联合类型（string、number、symbol，或者它们的联合）。&lt;/p></description></item><item><title>TypeScript</title><link>https://yindongliang.com/docs/Frontend/TypeScript/%E8%AF%AD%E6%B3%95/</link><pubDate>Thu, 16 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/%E8%AF%AD%E6%B3%95/</guid><description>&lt;p>&lt;a href="https://www.typescriptlang.org/">https://www.typescriptlang.org/&lt;/a>&lt;/p>
+&lt;h2 id="变量">变量&lt;a class="anchor" href="#%e5%8f%98%e9%87%8f">#&lt;/a>&lt;/h2>
+&lt;h3 id="声明符号-varletconst">声明符号 var、let、const&lt;a class="anchor" href="#%e5%a3%b0%e6%98%8e%e7%ac%a6%e5%8f%b7-varletconst">#&lt;/a>&lt;/h3>
+&lt;p>ts 里面基本弃用了 var，使用场景基本只有 let 和 const，用法和 js 一样。&lt;/p>
+&lt;h3 id="问号的用法">❓问号的用法&lt;a class="anchor" href="#%e9%97%ae%e5%8f%b7%e7%9a%84%e7%94%a8%e6%b3%95">#&lt;/a>&lt;/h3>
+&lt;h2 id="类型系统">类型系统&lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e7%b3%bb%e7%bb%9f">#&lt;/a>&lt;/h2>
+&lt;h3 id="类型别名-type">类型别名 &lt;code>type&lt;/code>&lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e5%88%ab%e5%90%8d-type">#&lt;/a>&lt;/h3>
+&lt;h3 id="类型交叉-">类型交叉 &lt;code>&amp;amp;&lt;/code>&lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e4%ba%a4%e5%8f%89-">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ts" data-lang="ts">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">type&lt;/span> &lt;span style="color:#aa89ea">User&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">name&lt;/span>: &lt;span style="color:#e5c07b">string&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">age&lt;/span>: &lt;span style="color:#e5c07b">number&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">type&lt;/span> &lt;span style="color:#aa89ea">Employee&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">companyId&lt;/span>: &lt;span style="color:#e5c07b">string&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 定义一个交叉类型，包含 User 和 Employee 的所有属性
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">&lt;/span>&lt;span style="color:#76a9f9">type&lt;/span> &lt;span style="color:#aa89ea">UserEmployee&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#aa89ea">User&lt;/span> &lt;span style="color:#54b1c7">&amp;amp;&lt;/span> &lt;span style="color:#aa89ea">Employee&lt;/span>&lt;span style="color:#abb2bf">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 使用交叉类型
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">&lt;/span>&lt;span style="color:#76a9f9">const&lt;/span> &lt;span style="color:#aa89ea">ue&lt;/span>: &lt;span style="color:#e5c07b">UserEmployee&lt;/span> &lt;span style="color:#54b1c7">=&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">name&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#63c381">&amp;#34;Alice&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">age&lt;/span>: &lt;span style="color:#e5c07b">28&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">companyId&lt;/span>&lt;span style="color:#54b1c7">:&lt;/span> &lt;span style="color:#63c381">&amp;#34;1234XYZ&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">};&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="类型声明-declare">类型声明 &lt;code>declare&lt;/code>&lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e5%a3%b0%e6%98%8e-declare">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html">https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html&lt;/a>&lt;/p></description></item></channel></rss>

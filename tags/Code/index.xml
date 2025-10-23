@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Code on LYon's Blog</title><link>https://yindongliang.com/tags/Code/</link><description>Recent content in Code on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 15 Oct 2025 16:06:33 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Code/index.xml" rel="self" type="application/rss+xml"/><item><title>LobeChat</title><link>https://yindongliang.com/links/202510/LobeChat/</link><pubDate>Wed, 15 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/LobeChat/</guid><description>&lt;p>An open-source, modern design ChatGPT/LLMs UI/framework.&lt;/p></description></item><item><title>Cherry Studio</title><link>https://yindongliang.com/links/202509/Cherry-Studio/</link><pubDate>Mon, 15 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/Cherry-Studio/</guid><description>&lt;p>支持多服务商集成的 AI 对话客户端&lt;/p></description></item><item><title>Icon Maker by Raycast</title><link>https://yindongliang.com/links/202508/Icon-Maker-by-Raycast/</link><pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/Icon-Maker-by-Raycast/</guid><description>&lt;p>This repository contains the source code for &lt;a href="https://ray.so/">ray.so&lt;/a>, a collection of tools built by &lt;a href="https://raycast.com/#ref=ray.so">Raycast&lt;/a>. It includes:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/%28code%29">&lt;strong>Code Images&lt;/strong>&lt;/a>: Create beautiful images of your code.&lt;/li>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/icon">&lt;strong>Icon Maker&lt;/strong>&lt;/a>: Create beautiful icons for Raycast Extensions.&lt;/li>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/prompts">&lt;strong>Prompt Explorer&lt;/strong>&lt;/a>: Explore AI Prompts for Raycast.&lt;/li>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/presets">&lt;strong>Preset Explorer&lt;/strong>&lt;/a>: Explore AI Presets for Raycast.&lt;/li>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/quicklinks">&lt;strong>Quicklink Explorer&lt;/strong>&lt;/a>: Browse and import Raycast Quicklinks.&lt;/li>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/snippets">&lt;strong>Snippet Explorer&lt;/strong>&lt;/a>: Browse and import Raycast Snippets.&lt;/li>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/themes">&lt;strong>Theme Explorer&lt;/strong>&lt;/a>: Browse and import Raycast Themes.&lt;/li>
+&lt;/ul>
+&lt;h2 id="项目地址">项目地址&lt;a class="anchor" href="#%e9%a1%b9%e7%9b%ae%e5%9c%b0%e5%9d%80">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="https://github.com/raycast/ray-so">https://github.com/raycast/ray-so&lt;/a>&lt;/p></description></item><item><title>官方示例</title><link>https://yindongliang.com/docs/Apple/Xcode/apple-sample-code/</link><pubDate>Sun, 08 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Xcode/apple-sample-code/</guid><description>&lt;h2 id="官方教程">官方教程&lt;a class="anchor" href="#%e5%ae%98%e6%96%b9%e6%95%99%e7%a8%8b">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>SwiftUI Tutorials
+&lt;ul>
+&lt;li>&lt;a href="https://developer.apple.com/tutorials/swiftui/">https://developer.apple.com/tutorials/swiftui/&lt;/a>&lt;/li>
+&lt;li>&lt;strong>Landmarks&lt;/strong>&lt;/li>
+&lt;li>SwiftUI essentials
+&lt;ul>
+&lt;li>Views&lt;/li>
+&lt;li>Lists and navigation&lt;/li>
+&lt;li>Handling user input&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Drawing and animation&lt;/li>
+&lt;li>App design and layout&lt;/li>
+&lt;li>Framework intergration
+&lt;ul>
+&lt;li>UIKit&lt;/li>
+&lt;li>watchOS&lt;/li>
+&lt;li>macOS&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>SwiftUI Concepts Tutorial
+&lt;ul>
+&lt;li>&lt;a href="https://developer.apple.com/tutorials/swiftui-concepts">https://developer.apple.com/tutorials/swiftui-concepts&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Simple Apps Tutorials
+&lt;ul>
+&lt;li>&lt;a href="https://developer.apple.com/tutorials/sample-apps">https://developer.apple.com/tutorials/sample-apps&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Develop apps for Apple platforms
+&lt;ul>
+&lt;li>&lt;a href="https://developer.apple.com/tutorials/app-dev-training">https://developer.apple.com/tutorials/app-dev-training&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Develop in Swift Tutorials
+&lt;ul>
+&lt;li>&lt;a href="https://developer.apple.com/tutorials/develop-in-swift">https://developer.apple.com/tutorials/develop-in-swift&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="sample-code">Sample Code&lt;a class="anchor" href="#sample-code">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>模块&lt;/th>
+ &lt;th>项目名称&lt;/th>
+ &lt;th>关联文档&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>SwiftUI&lt;/td>
+ &lt;td>WritingApp&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/swiftui/building-a-document-based-app-with-swiftui">Building a document-based app with SwiftUI&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SwiftData&lt;/td>
+ &lt;td>SwiftDataFlashCardSample&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/swiftui/building-a-document-based-app-using-swiftdata">Building a document-based app using SwiftData&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>CoreData / SwiftData&lt;/td>
+ &lt;td>SampleTrips&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/coredata/adopting_swiftdata_for_a_core_data_app/">Adopting SwiftData for a Core Data app&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>CoreData&lt;/td>
+ &lt;td>CoreDataCloudKitShare&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/coredata/sharing_core_data_objects_between_icloud_users">Sharing Core Data objects between iCloud users&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>CloudKit&lt;/td>
+ &lt;td>&lt;a href="https://github.com/apple?q=cloudkit-sample&amp;amp;type=repository">https://github.com/apple?q=cloudkit-sample&amp;type=repository&lt;/a>&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/icloud/cloudkit/">https://developer.apple.com/icloud/cloudkit/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SwiftUI / visionOS&lt;/td>
+ &lt;td>Destination Video&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/visionos/destination-video">https://developer.apple.com/documentation/visionos/destination-video&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>UIKit&lt;/td>
+ &lt;td>Supporting multiple windows on iPad&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/uikit/supporting-multiple-windows-on-ipad">https://developer.apple.com/documentation/uikit/supporting-multiple-windows-on-ipad&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SwiftUI&lt;/td>
+ &lt;td>Creating custom container views&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/swiftui/creating-custom-container-views">https://developer.apple.com/documentation/swiftui/creating-custom-container-views&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SwiftUI - Navigation&lt;/td>
+ &lt;td>Bringing robust navigation structure to your SwiftUI app&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/swiftui/bringing-robust-navigation-structure-to-your-swiftui-app">https://developer.apple.com/documentation/swiftui/bringing-robust-navigation-structure-to-your-swiftui-app&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SwiftData&lt;/td>
+ &lt;td>Filtering and sorting persistent data&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/swiftdata/filtering-and-sorting-persistent-data">https://developer.apple.com/documentation/swiftdata/filtering-and-sorting-persistent-data&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>AVFAudio&lt;/td>
+ &lt;td>Capturing stereo audio from built-In microphones&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/avfaudio/capturing-stereo-audio-from-built-in-microphones">https://developer.apple.com/documentation/avfaudio/capturing-stereo-audio-from-built-in-microphones&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>SwiftUI - Layouts&lt;/td>
+ &lt;td>Composing custom layouts with SwiftUI&lt;/td>
+ &lt;td>&lt;a href="https://developer.apple.com/documentation/swiftui/composing_custom_layouts_with_swiftui">https://developer.apple.com/documentation/swiftui/composing_custom_layouts_with_swiftui&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item></channel></rss>

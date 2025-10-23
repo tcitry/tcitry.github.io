@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>DevOps on LYon's Blog</title><link>https://yindongliang.com/tags/DevOps/</link><description>Recent content in DevOps on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Mon, 20 Oct 2025 22:39:29 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/DevOps/index.xml" rel="self" type="application/rss+xml"/><item><title>一些云服务商</title><link>https://yindongliang.com/docs/Awesome/awesome-clouds-services/</link><pubDate>Thu, 16 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-clouds-services/</guid><description>&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;th>使用过&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Railway&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://railway.com/">https://railway.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>fly.io&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://fly.io/">https://fly.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Cloudflare&lt;/td>
+ &lt;td>全球网络优势&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>✅&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Vercel&lt;/td>
+ &lt;td>主打边缘计算、Serverless&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>✅&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>阿里云百炼平台&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://bailian.console.aliyun.com">https://bailian.console.aliyun.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>百度千帆&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://cloud.baidu.com/product-s/qianfan_home">https://cloud.baidu.com/product-s/qianfan_home&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>Dynadot - 域名服务商</title><link>https://yindongliang.com/links/202510/Dynadot-%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%95%86/</link><pubDate>Mon, 13 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Dynadot-%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%95%86/</guid><description/></item><item><title>宝塔</title><link>https://yindongliang.com/links/202509/%E5%AE%9D%E5%A1%94/</link><pubDate>Sun, 14 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/%E5%AE%9D%E5%A1%94/</guid><description>&lt;p>宝塔,安全高效的服务器运维面板&lt;/p></description></item><item><title>n8n 介绍</title><link>https://yindongliang.com/docs/Linux/n8n/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/n8n/</guid><description>&lt;p>&lt;a href="https://n8n.io/">n8n&lt;/a> 是一款功能强大的开源工作流自动化工具，它通过可视化的方式让你能够连接各种应用、服务和数据，自动执行重复性的任务和业务流程。&lt;/p>
+&lt;p>&lt;a href="https://docs.n8n.io/">https://docs.n8n.io/&lt;/a>&lt;/p>
+&lt;h1 id="-n8n-工作流自动化平台全面指南">🔧 n8n 工作流自动化平台全面指南&lt;a class="anchor" href="#-n8n-%e5%b7%a5%e4%bd%9c%e6%b5%81%e8%87%aa%e5%8a%a8%e5%8c%96%e5%b9%b3%e5%8f%b0%e5%85%a8%e9%9d%a2%e6%8c%87%e5%8d%97">#&lt;/a>&lt;/h1>
+&lt;h2 id="-核心特点">✨ 核心特点&lt;a class="anchor" href="#-%e6%a0%b8%e5%bf%83%e7%89%b9%e7%82%b9">#&lt;/a>&lt;/h2>
+&lt;p>n8n 有以下几个突出的特点，使其在自动化工具中脱颖而出：&lt;/p></description></item><item><title>认识下 Kubernetes</title><link>https://yindongliang.com/docs/Linux/hello-k8s/</link><pubDate>Sun, 09 Oct 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/hello-k8s/</guid><description>&lt;h2 id="一kubernetes-体系架构">一、Kubernetes 体系架构&lt;a class="anchor" href="#%e4%b8%80kubernetes-%e4%bd%93%e7%b3%bb%e6%9e%b6%e6%9e%84">#&lt;/a>&lt;/h2>
+&lt;h3 id="11-核心架构概述">1.1 核心架构概述&lt;a class="anchor" href="#11-%e6%a0%b8%e5%bf%83%e6%9e%b6%e6%9e%84%e6%a6%82%e8%bf%b0">#&lt;/a>&lt;/h3>
+&lt;p>Kubernetes 采用主从架构，主要由&lt;strong>控制平面（Control Plane）&lt;/strong> 和&lt;strong>工作节点（Worker Nodes）&lt;/strong> 组成。&lt;/p>
+&lt;pre tabindex="0">&lt;code>┌─────────────────────────────────────────────────────────────┐
+│ 控制平面 (Control Plane) │
+│ ┌─────────────┐ ┌──────────┐ ┌─────────────┐ ┌────────┐ │
+│ │ API Server │ │ etcd │ │ Scheduler │ │Controller││
+│ │ │ │ │ │ │ │ Manager ││
+│ └─────────────┘ └──────────┘ └─────────────┘ └────────┘ │
+└─────────────────────────────────────────────────────────────┘
+ │
+ ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 工作节点 (Worker Nodes) │
+│ ┌─────────────┐ ┌──────────┐ ┌─────────────┐ │
+│ │ kubelet │ │ kube-proxy│ │ 容器运行时 │ │
+│ │ │ │ │ │ (Docker等) │ │
+│ └─────────────┘ └──────────┘ └─────────────┘ │
+│ ┌───────────────────────────────────────────────────────┐ │
+│ │ Pod (容器组) │ │
+│ │ ┌──────────────┐ ┌──────────────┐ │ │
+│ │ │ 容器1 │ │ 容器2 │ │ │
+│ │ │ (应用) │ │ (边车等) │ │ │
+│ │ └──────────────┘ └──────────────┘ │ │
+│ └───────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘&lt;/code>&lt;/pre>&lt;h3 id="12-控制平面组件">1.2 控制平面组件&lt;a class="anchor" href="#12-%e6%8e%a7%e5%88%b6%e5%b9%b3%e9%9d%a2%e7%bb%84%e4%bb%b6">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>API Server&lt;/strong>: 所有操作的入口点，处理REST请求&lt;/li>
+&lt;li>&lt;strong>etcd&lt;/strong>: 分布式键值存储，保存集群状态&lt;/li>
+&lt;li>&lt;strong>Scheduler&lt;/strong>: 将Pod调度到合适的节点&lt;/li>
+&lt;li>&lt;strong>Controller Manager&lt;/strong>: 运行控制器，确保集群处于期望状态&lt;/li>
+&lt;/ul>
+&lt;h3 id="13-工作节点组件">1.3 工作节点组件&lt;a class="anchor" href="#13-%e5%b7%a5%e4%bd%9c%e8%8a%82%e7%82%b9%e7%bb%84%e4%bb%b6">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>kubelet&lt;/strong>: 节点代理，与API Server通信&lt;/li>
+&lt;li>&lt;strong>kube-proxy&lt;/strong>: 网络代理，处理服务发现和负载均衡&lt;/li>
+&lt;li>&lt;strong>容器运行时&lt;/strong>: 运行容器的软件（Docker, containerd等）&lt;/li>
+&lt;/ul>
+&lt;h2 id="二核心概念">二、核心概念&lt;a class="anchor" href="#%e4%ba%8c%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h2>
+&lt;h3 id="21-pod">2.1 Pod&lt;a class="anchor" href="#21-pod">#&lt;/a>&lt;/h3>
+&lt;p>最小的部署单元，包含一个或多个容器，共享存储和网络&lt;/p></description></item><item><title>构建工具</title><link>https://yindongliang.com/docs/Frontend/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</link><pubDate>Fri, 28 May 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</guid><description>&lt;h2 id="参考">参考&lt;a class="anchor" href="#%e5%8f%82%e8%80%83">#&lt;/a>&lt;/h2>
+&lt;p>文档 &lt;a href="https://webpack.docschina.org">https://webpack.docschina.org&lt;/a>&lt;/p>
+&lt;p>demo &lt;a href="https://github.com/ruanyf/webpack-demos">https://github.com/ruanyf/webpack-demos&lt;/a>&lt;/p>
+&lt;h2 id="构建一般做哪些事情">构建一般做哪些事情？&lt;a class="anchor" href="#%e6%9e%84%e5%bb%ba%e4%b8%80%e8%88%ac%e5%81%9a%e5%93%aa%e4%ba%9b%e4%ba%8b%e6%83%85">#&lt;/a>&lt;/h2>
+&lt;p>代码转换：将 TypeScript 编译成 JavaScript、将 SCSS 编译成 CSS 等。&lt;/p>
+&lt;p>文件优化：压缩 JavaScript、CSS、HTML 代码，压缩合并图片等。&lt;/p>
+&lt;p>代码分割：提取多个页面的公共代码，提取首屏不需要执行部分的代码让其异步加载。&lt;/p></description></item><item><title>Github Actions 实践总结</title><link>https://yindongliang.com/posts/use-github-action/</link><pubDate>Sun, 01 Dec 2019 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/use-github-action/</guid><description>&lt;p>Github Actions 发布有一段时间了，自己用的也挺嗨，过来总结一下。我主要在两个地方用到了，一个是博客，另一个是打包、发布前端项目。整体功能上 Actions 和 &lt;a href="https://docs.gitlab.com/ee/ci/">GitLab CI/CD&lt;/a> 差不多，同样实现了项目的自动化测试、打包、部署，不过 Actions 利用了 GitHub 开源项目平台的特点，提供了 &lt;a href="https://github.com/marketplace">Marketplace&lt;/a>，可以直接复用其他作者的 Action。&lt;/p></description></item><item><title>Gitlab CI/CD 实践总结</title><link>https://yindongliang.com/posts/gitlab-ci-101/</link><pubDate>Thu, 15 Nov 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/gitlab-ci-101/</guid><description>&lt;p>Gitlab 的 CI/CD 功能可能是区别于 GitHub 的一个最有价值的功能之一。接触了 CI/CD 以来，很多以前需要手动测试、打包、部署的工作，现在都可以通过编写 &lt;code>.gitlab-ci.yml&lt;/code> 来实现了，一方面持久化、规范化了部署服务的操作流程，另一方面 CI/CD 功能与 Gitlab 深度结合，方便了开发测试流程，下面总结下最常用到的功能。&lt;/p></description></item><item><title>Docker 使用笔记</title><link>https://yindongliang.com/posts/docker-notes/</link><pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/docker-notes/</guid><description>&lt;h2 id="docker-介绍">Docker 介绍&lt;a class="anchor" href="#docker-%e4%bb%8b%e7%bb%8d">#&lt;/a>&lt;/h2>
+&lt;p>Docker 是一个开放源代码软件，是一个开放平台，用于开发应用、交付（shipping）应用、运行应用。 Docker 允许用户将基础设施（Infrastructure）中的应用单独分割出来，形成更小的颗粒（容器），从而提高交付软件的速度。&lt;/p></description></item><item><title>Vagrant 虚拟机 Ubuntu16.04 安装 MariaDB</title><link>https://yindongliang.com/posts/ubuntu-MariaDB/</link><pubDate>Sat, 10 Sep 2016 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/ubuntu-MariaDB/</guid><description>&lt;p>由于宿主机安装了 MySQL，为了避免安装 MariaDB 造成 MySQL 无法使用，所以在 Vagrant 中安装 Mariadb。&lt;/p>
+&lt;p>更换&lt;a href="http://mirrors.163.com/.help/ubuntu.html">网易 apt-get 源&lt;/a> &lt;code>/etc/apt/sources.list&lt;/code>&lt;/p>
+&lt;p>读取源软件列表 &lt;code>sudo apt update&lt;/code>&lt;/p>
+&lt;p>更新软件版本 &lt;code>sudo apt upgrade&lt;/code>&lt;/p>
+&lt;p>安装 MariaDB &lt;code>sudo apt install mariadb-server&lt;/code>&lt;/p>
+&lt;p>安全性设置更新 root 密码 &lt;code>sudo mysql_secure_installation&lt;/code>&lt;/p></description></item><item><title>Ubuntu 下部署 Django 应用</title><link>https://yindongliang.com/posts/ubuntu-deploy-django/</link><pubDate>Sat, 11 Jul 2015 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/ubuntu-deploy-django/</guid><description>&lt;p>做了一个Django小应用，主要内容是一个论坛，经过好几天的研究，也可以在服务器端运行了，以下所有代码中的操作都需要在命令行运行。&lt;/p>
+&lt;h2 id="安装mysql">安装MySQL&lt;a class="anchor" href="#%e5%ae%89%e8%a3%85mysql">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>apt-get update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>apt-get install mysql-server mysql-client&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>根据提示设置 MySQL root用户密码&lt;/p></description></item><item><title>使用 Github Pages 建立免费的静态网站</title><link>https://yindongliang.com/posts/use-github-page-build-static-website/</link><pubDate>Sun, 28 Jul 2013 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/use-github-page-build-static-website/</guid><description>&lt;p>github 想必都听说过，这个号称程序员的 Facebook 有着很多高质量的项目，github 就是为这些项目提供代码托管服务，你可以将自己做好的项目放到 github 上与大家共享，别人也可提出修改建议。&lt;/p></description></item></channel></rss>

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>LYon's Blog</title><link>https://yindongliang.com/docs/Apple/Foundation/</link><description>Recent content on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Apple/Foundation/index.xml" rel="self" type="application/rss+xml"/><item><title>Locale</title><link>https://yindongliang.com/docs/Apple/Foundation/Locale/</link><pubDate>Sun, 07 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/Locale/</guid><description>&lt;p>Apple 的 Foundation 框架中的 &lt;code>Locale&lt;/code>（在 macOS 和 iOS 开发中，&lt;code>NSLocale&lt;/code> 是其 Objective-C 版本）是一个非常重要的组件，它帮助你管理和利用用户的语言与区域设置信息。下面我将为你介绍它的体系结构、使用方式，并提供一些代码案例。&lt;/p></description></item><item><title>LocalizedStringResource</title><link>https://yindongliang.com/docs/Apple/Foundation/LocalizedStringResource/</link><pubDate>Sat, 07 Jun 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/LocalizedStringResource/</guid><description>&lt;h3 id="localizedstringresource-介绍">LocalizedStringResource 介绍&lt;a class="anchor" href="#localizedstringresource-%e4%bb%8b%e7%bb%8d">#&lt;/a>&lt;/h3>
+&lt;p>&lt;code>LocalizedStringResource&lt;/code> 是 SwiftUI 中的一种类型，用于&lt;strong>按需延迟加载本地化字符串&lt;/strong>。它在 iOS 16+ / macOS 13+ 中被引入，核心价值是&lt;strong>优化性能&lt;/strong>——避免在不需要显示字符串时提前加载资源。&lt;/p></description></item><item><title>Bundle</title><link>https://yindongliang.com/docs/Apple/Foundation/Bundle/</link><pubDate>Tue, 06 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/Bundle/</guid><description>&lt;p>已思考 5 秒&lt;/p>
+&lt;h2 id="概要">概要&lt;a class="anchor" href="#%e6%a6%82%e8%a6%81">#&lt;/a>&lt;/h2>
+&lt;p>在 Foundation 框架中，&lt;code>Bundle&lt;/code>（在 Objective-C 中对应 &lt;code>NSBundle&lt;/code>，在 Core Foundation 中对应 &lt;code>CFBundle&lt;/code>）封装了磁盘上“目录即包”结构，将可执行文件、资源文件、配置文件和子包组织在一起，提供了一套统一的 API 用于访问和管理这些资源。&lt;code>Bundle&lt;/code> 不同的实例可以代表主应用包、框架包、插件包或任何自定义的 &lt;code>.bundle&lt;/code> 目录，支持动态加载、国际化资源查找以及信息字典管理。下面将从核心概念、初始化方式、资源定位、可执行代码加载、本地化支持、子包结构以及性能优化等方面，全面介绍 Foundation 下 &lt;code>Bundle&lt;/code> 的体系结构与使用方法。&lt;/p></description></item><item><title>ProcessInfo</title><link>https://yindongliang.com/docs/Apple/Foundation/ProcessInfo/</link><pubDate>Tue, 06 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/ProcessInfo/</guid><description>&lt;p>在 Apple 的 Foundation 框架中，&lt;strong>&lt;code>ProcessInfo&lt;/code>&lt;/strong>（Objective-C 中为 &lt;code>NSProcessInfo&lt;/code>）是一个用于获取当前进程（应用）运行时环境信息的关键类。它提供了访问进程参数、环境变量、系统信息等能力，是开发中处理系统级操作的常用工具。&lt;/p></description></item><item><title>URL</title><link>https://yindongliang.com/docs/Apple/Foundation/URL/</link><pubDate>Tue, 06 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/URL/</guid><description>&lt;h2 id="概要">概要&lt;a class="anchor" href="#%e6%a6%82%e8%a6%81">#&lt;/a>&lt;/h2>
+&lt;p>在 Swift 的 Foundation 中，&lt;code>URL&lt;/code> 是一个值类型的结构体，用于表示和操作统一资源定位符（URL），并桥接到 Objective-C 的 &lt;code>NSURL&lt;/code> 类。它提供了从字符串或文件路径初始化、解析各组件（如 scheme、host、path、query）、处理百分号编码，以及与 &lt;code>URLComponents&lt;/code> 协作的丰富 API，以便安全、高效地在网络请求、文件操作和跨模块资源管理中使用。&lt;/p></description></item><item><title>JSONEncoder &amp; JSONDecoder</title><link>https://yindongliang.com/docs/Apple/Foundation/JSONEncoder-and-JSONDecoder/</link><pubDate>Sun, 20 Apr 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/JSONEncoder-and-JSONDecoder/</guid><description>&lt;p>&lt;code>JSONEncoder&lt;/code> 和 &lt;code>JSONDecoder&lt;/code> 是 Swift Foundation 框架中用于实现 &lt;strong>JSON 数据与 Swift 对象之间序列化与反序列化&lt;/strong> 的核心工具。它们基于 &lt;code>Codable&lt;/code> 协议，提供了高效且类型安全的 JSON 处理能力。&lt;/p>
+&lt;hr>
+&lt;h2 id="核心概念">核心概念&lt;a class="anchor" href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>&lt;code>Codable&lt;/code> 协议&lt;/strong>&lt;br>
+&lt;code>Codable&lt;/code> 是 &lt;code>Encodable&lt;/code> 和 &lt;code>Decodable&lt;/code> 的类型别名。任何遵循 &lt;code>Codable&lt;/code> 的类型均可被编码为 JSON 或从 JSON 解码。&lt;/p></description></item><item><title>Calendar</title><link>https://yindongliang.com/docs/Apple/Foundation/Calendar/</link><pubDate>Fri, 21 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/Calendar/</guid><description>&lt;h2 id="calendar-介绍">Calendar 介绍&lt;a class="anchor" href="#calendar-%e4%bb%8b%e7%bb%8d">#&lt;/a>&lt;/h2>
+&lt;hr>
+&lt;h3 id="一calendar-核心-api-分类表">一、&lt;code>Calendar&lt;/code> 核心 API 分类表&lt;a class="anchor" href="#%e4%b8%80calendar-%e6%a0%b8%e5%bf%83-api-%e5%88%86%e7%b1%bb%e8%a1%a8">#&lt;/a>&lt;/h3>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>&lt;strong>分类&lt;/strong>&lt;/th>
+ &lt;th>&lt;strong>API / 方法&lt;/strong>&lt;/th>
+ &lt;th>&lt;strong>说明&lt;/strong>&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>静态属性&lt;/strong>&lt;/td>
+ &lt;td>&lt;code>Calendar.current&lt;/code>&lt;/td>
+ &lt;td>用户当前设置的日历（跟随系统设置，但不自动更新）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>Calendar.autoupdatingCurrent&lt;/code>&lt;/td>
+ &lt;td>自动更新时区/本地化设置的当前日历（动态变化）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>Calendar.iso8601&lt;/code>&lt;/td>
+ &lt;td>ISO 8601 标准日历（固定为公历，周一为每周第一天）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>初始化&lt;/strong>&lt;/td>
+ &lt;td>&lt;code>init(identifier: Calendar.Identifier)&lt;/code>&lt;/td>
+ &lt;td>通过标识符创建（如 &lt;code>.gregorian&lt;/code>, &lt;code>.chinese&lt;/code>, &lt;code>.islamic&lt;/code>）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>日历标识符&lt;/strong>&lt;/td>
+ &lt;td>&lt;code>var identifier: Calendar.Identifier&lt;/code>&lt;/td>
+ &lt;td>获取日历类型（只读）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>时区与区域&lt;/strong>&lt;/td>
+ &lt;td>&lt;code>var timeZone: TimeZone&lt;/code>&lt;/td>
+ &lt;td>设置或获取日历的时区&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>var locale: Locale?&lt;/code>&lt;/td>
+ &lt;td>设置或获取本地化规则（影响符号和星期起始日）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>日期分解与合成&lt;/strong>&lt;/td>
+ &lt;td>&lt;code>func component(_ component: Component, from date: Date) -&amp;gt; Int&lt;/code>&lt;/td>
+ &lt;td>提取单个日期单位（如年、月）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>func dateComponents(_ components: Set&amp;lt;Component&amp;gt;, from date: Date) -&amp;gt; DateComponents&lt;/code>&lt;/td>
+ &lt;td>提取多个日期单位&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>func date(from components: DateComponents) -&amp;gt; Date?&lt;/code>&lt;/td>
+ &lt;td>从 &lt;code>DateComponents&lt;/code> 生成日期&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>日期生成与调整&lt;/strong>&lt;/td>
+ &lt;td>&lt;code>func date(byAdding component: Component, value: Int, to date: Date) -&amp;gt; Date?&lt;/code>&lt;/td>
+ &lt;td>日期加减（如加 3 天）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>func date(bySetting component: Component, value: Int, of date: Date) -&amp;gt; Date?&lt;/code>&lt;/td>
+ &lt;td>设置日期的某个单位（如将小时设为 0）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>func startOfDay(for date: Date) -&amp;gt; Date&lt;/code>&lt;/td>
+ &lt;td>返回日期的午夜时间（当日开始时刻）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>日期比较与查询&lt;/strong>&lt;/td>
+ &lt;td>&lt;code>func isDate(_ date1: Date, inSameDayAs date2: Date) -&amp;gt; Bool&lt;/code>&lt;/td>
+ &lt;td>判断是否为同一天&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>func isDateInToday(_ date: Date) -&amp;gt; Bool&lt;/code>&lt;/td>
+ &lt;td>是否为今天&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>func isDateInWeekend(_ date: Date) -&amp;gt; Bool&lt;/code>&lt;/td>
+ &lt;td>是否为周末&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>func compare(_ date1: Date, to date2: Date, toGranularity: Component) -&amp;gt; ComparisonResult&lt;/code>&lt;/td>
+ &lt;td>按粒度比较日期顺序（如是否同年）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>日期范围与周期&lt;/strong>&lt;/td>
+ &lt;td>&lt;code>func dateInterval(of component: Component, for date: Date) -&amp;gt; DateInterval?&lt;/code>&lt;/td>
+ &lt;td>获取日期所在周期（如当天的起止时间）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>func range(of smaller: Component, in larger: Component, for date: Date) -&amp;gt; Range&amp;lt;Int&amp;gt;?&lt;/code>&lt;/td>
+ &lt;td>获取某单位在更大单位内的范围（如某月的天数）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>func enumerateDates(startingAfter start: Date, matching components: DateComponents, matchingPolicy: MatchingPolicy, using block: (Date?, Bool, inout Bool) -&amp;gt; Void)&lt;/code>&lt;/td>
+ &lt;td>遍历符合条件的所有日期（如每月第一天）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>本地化符号&lt;/strong>&lt;/td>
+ &lt;td>&lt;code>var weekdaySymbols: [String]&lt;/code>&lt;/td>
+ &lt;td>星期名称（如 [&amp;ldquo;Sunday&amp;rdquo;, &amp;ldquo;Monday&amp;rdquo;, &amp;hellip;]）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>var monthSymbols: [String]&lt;/code>&lt;/td>
+ &lt;td>月份名称（如 [&amp;ldquo;January&amp;rdquo;, &amp;ldquo;February&amp;rdquo;, &amp;hellip;]）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>var amSymbol: String&lt;/code>&lt;/td>
+ &lt;td>上午符号（如 &amp;ldquo;AM&amp;rdquo;）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>日历元数据&lt;/strong>&lt;/td>
+ &lt;td>&lt;code>var minimumDaysInFirstWeek: Int&lt;/code>&lt;/td>
+ &lt;td>第一周至少包含的天数（通常为 1）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;code>var firstWeekday: Int&lt;/code>&lt;/td>
+ &lt;td>每周的第一天（1=周日，2=周一，依此类推）&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;hr>
+&lt;h3 id="二关键静态属性与常用-api-示例">二、关键静态属性与常用 API 示例&lt;a class="anchor" href="#%e4%ba%8c%e5%85%b3%e9%94%ae%e9%9d%99%e6%80%81%e5%b1%9e%e6%80%a7%e4%b8%8e%e5%b8%b8%e7%94%a8-api-%e7%a4%ba%e4%be%8b">#&lt;/a>&lt;/h3>
+&lt;h4 id="1-静态属性的使用">1. &lt;strong>静态属性的使用&lt;/strong>&lt;a class="anchor" href="#1-%e9%9d%99%e6%80%81%e5%b1%9e%e6%80%a7%e7%9a%84%e4%bd%bf%e7%94%a8">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 使用当前日历（用户设置，不自动更新）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">current&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">Calendar&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">current&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">year&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">current&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">component&lt;/span>&lt;span style="color:#abb2bf">(.&lt;/span>&lt;span style="color:#aa89ea">year&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">from&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">Date&lt;/span>&lt;span style="color:#abb2bf">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 使用自动更新的当前日历（时区变化时会自动更新）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">autoCalendar&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">Calendar&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">autoupdatingCurrent&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="2-日期范围与周期">2. &lt;strong>日期范围与周期&lt;/strong>&lt;a class="anchor" href="#2-%e6%97%a5%e6%9c%9f%e8%8c%83%e5%9b%b4%e4%b8%8e%e5%91%a8%e6%9c%9f">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 获取某个月的天数范围&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">range&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">current&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">range&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">of&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">day&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#76a9f9">in&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">month&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#76a9f9">for&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">Date&lt;/span>&lt;span style="color:#abb2bf">())&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;本月天数: &lt;/span>&lt;span style="color:#98c379">\(&lt;/span>&lt;span style="color:#aa89ea">range&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">count&lt;/span>&lt;span style="color:#98c379">)&lt;/span>&lt;span style="color:#98c379">&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// 如 30&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 获取今天的日期区间（开始和结束时间）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">todayInterval&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">current&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">dateInterval&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">of&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">day&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#76a9f9">for&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">Date&lt;/span>&lt;span style="color:#abb2bf">())&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;今天从 &lt;/span>&lt;span style="color:#98c379">\(&lt;/span>&lt;span style="color:#aa89ea">todayInterval&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">start&lt;/span>&lt;span style="color:#98c379">)&lt;/span>&lt;span style="color:#98c379"> 到 &lt;/span>&lt;span style="color:#98c379">\(&lt;/span>&lt;span style="color:#aa89ea">todayInterval&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">end&lt;/span>&lt;span style="color:#98c379">)&lt;/span>&lt;span style="color:#98c379">&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="3-日期调整与合成">3. &lt;strong>日期调整与合成&lt;/strong>&lt;a class="anchor" href="#3-%e6%97%a5%e6%9c%9f%e8%b0%83%e6%95%b4%e4%b8%8e%e5%90%88%e6%88%90">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 将日期调整到当天的午夜&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">midnight&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">current&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">startOfDay&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#76a9f9">for&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">Date&lt;/span>&lt;span style="color:#abb2bf">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 设置日期的小时为 12&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">noon&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">current&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">date&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">bySetting&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">hour&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">value&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#d19a66">12&lt;/span>&lt;span style="color:#abb2bf">,&lt;/span> &lt;span style="color:#aa89ea">of&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#aa89ea">Date&lt;/span>&lt;span style="color:#abb2bf">())&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="4-本地化符号">4. &lt;strong>本地化符号&lt;/strong>&lt;a class="anchor" href="#4-%e6%9c%ac%e5%9c%b0%e5%8c%96%e7%ac%a6%e5%8f%b7">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8a93a5;font-style:italic">// 获取中文日历的月份符号&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">var&lt;/span> &lt;span style="color:#dcaeea">cnCalendar&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">Calendar&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">identifier&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">chinese&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">cnCalendar&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">locale&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">Locale&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">identifier&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#98c379">&amp;#34;zh_CN&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">cnCalendar&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">monthSymbols&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#8a93a5;font-style:italic">// [&amp;#34;一月&amp;#34;, &amp;#34;二月&amp;#34;, ...]&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h3 id="三补充说明">三、补充说明&lt;a class="anchor" href="#%e4%b8%89%e8%a1%a5%e5%85%85%e8%af%b4%e6%98%8e">#&lt;/a>&lt;/h3>
+&lt;h4 id="calendarcurrent">&lt;strong>&lt;code>Calendar.current&lt;/code> vs &lt;code>Calendar.autoupdatingCurrent&lt;/code>&lt;/strong>&lt;a class="anchor" href="#calendarcurrent">#&lt;/a>&lt;/h4>
+&lt;ul>
+&lt;li>&lt;code>current&lt;/code>: 获取用户当前的日历设置，但不会自动更新（应用生命周期内固定）。&lt;/li>
+&lt;li>&lt;code>autoupdatingCurrent&lt;/code>: 动态跟踪系统设置的变更（如用户切换时区）。&lt;/li>
+&lt;/ul>
+&lt;h4 id="日期组件-">&lt;strong>日期组件 (&lt;code>Calendar.Component&lt;/code>)&lt;/strong>&lt;a class="anchor" href="#%e6%97%a5%e6%9c%9f%e7%bb%84%e4%bb%b6-">#&lt;/a>&lt;/h4>
+&lt;p>完整枚举值包括：&lt;br>
+&lt;code>.era&lt;/code>, &lt;code>.year&lt;/code>, &lt;code>.month&lt;/code>, &lt;code>.day&lt;/code>, &lt;code>.hour&lt;/code>, &lt;code>.minute&lt;/code>, &lt;code>.second&lt;/code>, &lt;code>.weekday&lt;/code>, &lt;code>.weekOfMonth&lt;/code>, &lt;code>.weekOfYear&lt;/code>, &lt;code>.timeZone&lt;/code>, &lt;code>.calendar&lt;/code>, 等。&lt;/p></description></item><item><title>Data</title><link>https://yindongliang.com/docs/Apple/Foundation/Data/</link><pubDate>Thu, 06 Mar 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/Data/</guid><description>&lt;p>Apple 的 Foundation 框架中的 &lt;strong>&lt;code>Data&lt;/code>&lt;/strong> 类型（Swift 中为 &lt;code>Data&lt;/code>，Objective-C 中为 &lt;code>NSData&lt;/code>）是用于表示和操作&lt;strong>二进制数据&lt;/strong>的核心类型。它提供了一种高效、安全的方式来处理内存中的字节流，适用于多种场景，如文件读写、网络传输、加密等。&lt;/p></description></item><item><title>Thread</title><link>https://yindongliang.com/docs/Apple/Foundation/Thread/</link><pubDate>Sat, 22 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/Thread/</guid><description>&lt;p>&lt;a href="https://developer.apple.com/documentation/foundation/thread">官方文档&lt;/a>&lt;/p>
+&lt;h2 id="通义">通义&lt;a class="anchor" href="#%e9%80%9a%e4%b9%89">#&lt;/a>&lt;/h2>
+&lt;p>以下是关于 Foundation 框架中 &lt;code>Thread&lt;/code> 模块的详细介绍：&lt;/p>
+&lt;h3 id="1-thread-模块简介">1. &lt;strong>Thread 模块简介&lt;/strong>&lt;a class="anchor" href="#1-thread-%e6%a8%a1%e5%9d%97%e7%ae%80%e4%bb%8b">#&lt;/a>&lt;/h3>
+&lt;p>&lt;code>Thread&lt;/code> 是 Foundation 框架中的一个核心模块，用于处理多线程编程。它允许开发者在 macOS 和 iOS 等 Apple 平台上创建、管理和操作线程，从而实现并发执行任务。&lt;/p></description></item><item><title>Expression</title><link>https://yindongliang.com/docs/Apple/Foundation/Expression/</link><pubDate>Thu, 20 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/Expression/</guid><description>&lt;p>根据您提供的参考文档链接，&lt;code>Foundation&lt;/code> 框架中的 &lt;strong>&lt;code>Expression&lt;/code>&lt;/strong> 是 Swift 语言中的一个泛型类型，主要用于&lt;strong>构建和计算数学表达式&lt;/strong>或&lt;strong>符号逻辑&lt;/strong>。它不同于传统的 &lt;code>NSExpression&lt;/code>，而是面向 Swift 语言特性设计，支持类型安全、泛型参数和更现代的 API 集成。&lt;/p></description></item><item><title>CharacterSet</title><link>https://yindongliang.com/docs/Apple/Foundation/CharacterSet/</link><pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/CharacterSet/</guid><description>&lt;p>在 iOS 和 macOS 开发中，&lt;a href="https://developer.apple.com/documentation/foundation/characterset">&lt;code>CharacterSet&lt;/code>&lt;/a> 是 Swift 编程语言中用于描述字符的集合的一个结构体。它在处理诸如字符串过滤、验证和匹配等操作时非常有用。&lt;/p>
+&lt;p>以下是对 &lt;code>CharacterSet&lt;/code> 的详细介绍：&lt;/p>
+&lt;hr>
+&lt;h2 id="什么是-characterset">什么是 &lt;code>CharacterSet&lt;/code>？&lt;a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-characterset">#&lt;/a>&lt;/h2>
+&lt;p>&lt;code>CharacterSet&lt;/code> 在 Swift 和 Foundation 框架中定义，用于表示一组 &lt;strong>Unicode 字符&lt;/strong>。这可以包括字母、数字、标点符号、空白符或任何 Unicode 范围的字符。开发者可以使用它来高效地检查字符串中的字符是否属于特定的集合，或者通过它从字符串中过滤字符。&lt;/p></description></item><item><title>NSString</title><link>https://yindongliang.com/docs/Apple/Foundation/NSString/</link><pubDate>Fri, 10 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/NSString/</guid><description>&lt;h2 id="localizedcaseinsensitivecontains">&lt;strong>&lt;code>localizedCaseInsensitiveContains&lt;/code>&lt;/strong>&lt;a class="anchor" href="#localizedcaseinsensitivecontains">#&lt;/a>&lt;/h2>
+&lt;h3 id="localizedcaseinsensitivecontains-1">&lt;strong>&lt;code>localizedCaseInsensitiveContains&lt;/code> 是什么？&lt;/strong>&lt;a class="anchor" href="#localizedcaseinsensitivecontains-1">#&lt;/a>&lt;/h3>
+&lt;p>&lt;strong>&lt;code>localizedCaseInsensitiveContains&lt;/code>&lt;/strong> 是 &lt;strong>&lt;code>String&lt;/code>&lt;/strong> 在 Swift 中的一个方法，用于检查目标字符串是否包含指定字符串，&lt;strong>检查时忽略大小写且遵循本地化规则（如语言、字符集等）&lt;/strong>。&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>作用&lt;/strong>：判断目标字符串是否包含子字符串，匹配时不会区分大小写。例如，&amp;ldquo;Hello&amp;rdquo; 和 &amp;ldquo;hello&amp;rdquo; 会被视为相同。&lt;/li>
+&lt;li>&lt;strong>本地化规则&lt;/strong>：会根据用户的语言环境和特定字符的规则适应语言差异，正确处理大小写转换。例如，德语中 &amp;ldquo;ß&amp;rdquo; 和 &amp;ldquo;ss&amp;rdquo;，土耳其语中的点和不带点的 &amp;ldquo;i&amp;rdquo; 等。&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;h3 id="方法声明">&lt;strong>方法声明&lt;/strong>&lt;a class="anchor" href="#%e6%96%b9%e6%b3%95%e5%a3%b0%e6%98%8e">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">func&lt;/span> &lt;span style="color:#00b1f7">localizedCaseInsensitiveContains&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#e5c07b">_&lt;/span> &lt;span style="color:#aa89ea">other&lt;/span>&lt;span style="color:#abb2bf">:&lt;/span> &lt;span style="color:#e5c07b">String&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">-&amp;gt;&lt;/span> &lt;span style="color:#e5c07b">Bool&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;strong>参数&lt;/strong>：
+&lt;ul>
+&lt;li>&lt;code>other&lt;/code>：目标输入的子字符串，即你要查找的内容。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;strong>返回值&lt;/strong>：布尔值
+&lt;ul>
+&lt;li>&lt;code>true&lt;/code>：如果目标字符串包含该子字符串。&lt;/li>
+&lt;li>&lt;code>false&lt;/code>：如果目标字符串不包含该子字符串。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;h3 id="使用场景">&lt;strong>使用场景&lt;/strong>&lt;a class="anchor" href="#%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af">#&lt;/a>&lt;/h3>
+&lt;ol>
+&lt;li>&lt;strong>忽略大小写的字符串包含检查&lt;/strong>：通过本地化规则判断子字符串是否存在，而无需手动转换大小写。&lt;/li>
+&lt;li>&lt;strong>本地化字符串搜索&lt;/strong>：根据用户语言和地区设置，特别是支持不同语言规则的内容查找。&lt;/li>
+&lt;li>&lt;strong>增强搜索功能：&lt;/strong> 提供更自然、用户友好的匹配功能，例如搜索栏或搜索功能中支持忽略大小写的输入。&lt;/li>
+&lt;/ol>
+&lt;hr>
+&lt;h3 id="基础用法">&lt;strong>基础用法&lt;/strong>&lt;a class="anchor" href="#%e5%9f%ba%e7%a1%80%e7%94%a8%e6%b3%95">#&lt;/a>&lt;/h3>
+&lt;h4 id="示例-1简单比较">&lt;strong>示例 1：简单比较&lt;/strong>&lt;a class="anchor" href="#%e7%a4%ba%e4%be%8b-1%e7%ae%80%e5%8d%95%e6%af%94%e8%be%83">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">text&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#98c379">&amp;#34;Hello, SwiftUI!&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">keyword&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#98c379">&amp;#34;hello&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">if&lt;/span> &lt;span style="color:#aa89ea">text&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">localizedCaseInsensitiveContains&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#aa89ea">keyword&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;The text contains &amp;#39;&lt;/span>&lt;span style="color:#98c379">\(&lt;/span>&lt;span style="color:#aa89ea">keyword&lt;/span>&lt;span style="color:#98c379">)&lt;/span>&lt;span style="color:#98c379">&amp;#39;!&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span> &lt;span style="color:#76a9f9">else&lt;/span> &lt;span style="color:#abb2bf">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#aa89ea">print&lt;/span>&lt;span style="color:#abb2bf">(&lt;/span>&lt;span style="color:#98c379">&amp;#34;The text does not contain &amp;#39;&lt;/span>&lt;span style="color:#98c379">\(&lt;/span>&lt;span style="color:#aa89ea">keyword&lt;/span>&lt;span style="color:#98c379">)&lt;/span>&lt;span style="color:#98c379">&amp;#39;!&amp;#34;&lt;/span>&lt;span style="color:#abb2bf">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#abb2bf">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>输出&lt;/strong>：&lt;/p></description></item><item><title>NotificationCenter</title><link>https://yindongliang.com/docs/Apple/Foundation/NotificationCenter/</link><pubDate>Wed, 08 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/NotificationCenter/</guid><description>&lt;h3 id="1-什么是-notificationcenter">&lt;strong>1. 什么是 NotificationCenter？&lt;/strong>&lt;a class="anchor" href="#1-%e4%bb%80%e4%b9%88%e6%98%af-notificationcenter">#&lt;/a>&lt;/h3>
+&lt;p>&lt;code>NotificationCenter&lt;/code> 是 iOS/macOS 中的一个 &lt;strong>发布/订阅通知机制&lt;/strong>，用于在应用程序运行时实现不同对象之间的松耦合通信。通过 &lt;code>NotificationCenter&lt;/code>，您无需直接引用目标对象，而是通过添加观察者、发布通知的方式，向全局共享的 &lt;code>NotificationCenter&lt;/code> 注册观察者，并当广播通知时触发相应的操作。&lt;/p></description></item><item><title>Date</title><link>https://yindongliang.com/docs/Apple/Foundation/Date/</link><pubDate>Sat, 04 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/Date/</guid><description>&lt;h2 id="datedistantpast">Date.distantPast&lt;a class="anchor" href="#datedistantpast">#&lt;/a>&lt;/h2>
+&lt;p>在 iOS/macOS 的开发中，如果需要一个表示&lt;strong>遥远过去的日期值（distant past）&lt;/strong>，可以使用 &lt;code>Foundation&lt;/code> 框架中提供的 &lt;code>Date&lt;/code> 类型的 &lt;strong>静态属性&lt;/strong> &lt;code>Date.distantPast&lt;/code>。&lt;/p>
+&lt;hr>
+&lt;h3 id="datedistantpast-1">&lt;strong>Date.distantPast&lt;/strong>&lt;a class="anchor" href="#datedistantpast-1">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>Date.distantPast&lt;/code> 是 &lt;code>Date&lt;/code> 的一个静态属性，用于表示一个特别遥远过去的时间点。&lt;/li>
+&lt;li>它通常用于那些需要一个方法返回一个非常早的日期（例如，起始时间）但又不需要指定具体的日期值的场景。&lt;/li>
+&lt;/ul>
+&lt;h4 id="语法">&lt;strong>语法：&lt;/strong>&lt;a class="anchor" href="#%e8%af%ad%e6%b3%95">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#b0c4de;background-color:#282c34;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-swift" data-lang="swift">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#76a9f9">let&lt;/span> &lt;span style="color:#dcaeea">pastDate&lt;/span> &lt;span style="color:#abb2bf">=&lt;/span> &lt;span style="color:#aa89ea">Date&lt;/span>&lt;span style="color:#abb2bf">.&lt;/span>&lt;span style="color:#aa89ea">distantPast&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="值">&lt;strong>值：&lt;/strong>&lt;a class="anchor" href="#%e5%80%bc">#&lt;/a>&lt;/h4>
+&lt;p>&lt;code>Date.distantPast&lt;/code> 的内部表示非常小的时间值，它是早于已知有意义的时间范围的一个时间点。通常在调试或者比较某些时间值时被用作“初始值”。&lt;/p></description></item><item><title>FileManager</title><link>https://yindongliang.com/docs/Apple/Foundation/FileManager/</link><pubDate>Wed, 01 Jan 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/FileManager/</guid><description>&lt;h3 id="filemanager-的简介">&lt;strong>FileManager 的简介&lt;/strong>&lt;a class="anchor" href="#filemanager-%e7%9a%84%e7%ae%80%e4%bb%8b">#&lt;/a>&lt;/h3>
+&lt;p>&lt;code>FileManager&lt;/code> 是 iOS 和 macOS 开发中提供的一个强大的类，用于管理文件系统的操作。它提供了对文件和文件夹进行创建、删除、移动、复制以及检索其属性等多种功能的接口。&lt;/p></description></item><item><title>TimeInterval</title><link>https://yindongliang.com/docs/Apple/Foundation/TimeInterval/</link><pubDate>Tue, 31 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/TimeInterval/</guid><description>&lt;h3 id="timeinterval">&lt;strong>&lt;code>TimeInterval&lt;/code> 是什么？&lt;/strong>&lt;a class="anchor" href="#timeinterval">#&lt;/a>&lt;/h3>
+&lt;p>在 Swift 和 Foundation 框架中，&lt;code>TimeInterval&lt;/code> 是一个用于表示 &lt;strong>时间间隔&lt;/strong> 或 &lt;strong>持续时间&lt;/strong> 的类型。它实际上是 &lt;code>Double&lt;/code> 的一个别名，用于表示以 &lt;strong>秒（seconds）为单位的时间间隔&lt;/strong>。&lt;/p></description></item><item><title>Timer</title><link>https://yindongliang.com/docs/Apple/Foundation/Timer/</link><pubDate>Tue, 31 Dec 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/Timer/</guid><description>&lt;p>在 Swift 中，&lt;a href="https://developer.apple.com/documentation/foundation/timer">&lt;code>Timer&lt;/code>&lt;/a> 是一个非常常用的类，用于在指定的时间间隔内执行某些代码块。它可以用于实现定时任务、延迟执行、重复任务等功能。&lt;/p>
+&lt;p>以下是关于 &lt;code>Timer&lt;/code> 的详细介绍，包括其使用方式、常见场景以及注意事项。&lt;/p></description></item><item><title>UserDefaults</title><link>https://yindongliang.com/docs/Apple/Foundation/Foundation-Preference-UserDefaults/</link><pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Foundation/Foundation-Preference-UserDefaults/</guid><description>&lt;p>&lt;a href="https://developer.apple.com/documentation/foundation/userdefaults">&lt;code>UserDefaults&lt;/code>&lt;/a> 是 Swift 和 Objective-C 编程中一种轻量级的持久存储方式，适用于存储用户设置、偏好、简单应用配置等。以下是一些在 Swift 中使用 &lt;code>UserDefaults&lt;/code> 的基本方法和示例。&lt;/p>
+&lt;h2 id="基本用法">基本用法&lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e7%94%a8%e6%b3%95">#&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>存储数据&lt;/strong>&lt;/p>
+&lt;p>使用 &lt;code>set(_:forKey:)&lt;/code> 方法将数据存储到 &lt;code>UserDefaults&lt;/code> 中。&lt;/p></description></item></channel></rss>

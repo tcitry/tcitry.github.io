@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blog on LYon's Blog</title><link>https://yindongliang.com/tags/Blog/</link><description>Recent content in Blog on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 22 Oct 2025 23:57:45 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Blog/index.xml" rel="self" type="application/rss+xml"/><item><title>How I became a machine learning practitioner</title><link>https://yindongliang.com/links/202510/How-I-became-a-machine-learning-practitioner/</link><pubDate>Tue, 21 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/How-I-became-a-machine-learning-practitioner/</guid><description>&lt;p>OpenAI 共同創辦人 Greg Brockman《我如何成為機器學習實踐者》翻譯文&lt;br>
+&lt;a href="https://www.explainthis.io/zh-hant/career/how-greg-turn-ml-practitioner">https://www.explainthis.io/zh-hant/career/how-greg-turn-ml-practitioner&lt;/a>&lt;/p></description></item><item><title>Dynadot - 域名服务商</title><link>https://yindongliang.com/links/202510/Dynadot-%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%95%86/</link><pubDate>Mon, 13 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Dynadot-%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%95%86/</guid><description/></item><item><title>张鑫旭的 2024 年终小结和展望</title><link>https://yindongliang.com/links/202510/%E5%BC%A0%E9%91%AB%E6%97%AD%E7%9A%84-2024-%E5%B9%B4%E6%80%BB%E7%BB%93/</link><pubDate>Mon, 06 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/%E5%BC%A0%E9%91%AB%E6%97%AD%E7%9A%84-2024-%E5%B9%B4%E6%80%BB%E7%BB%93/</guid><description/></item><item><title>Linux.Do</title><link>https://yindongliang.com/links/202509/Linux/</link><pubDate>Wed, 24 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/Linux/</guid><description>&lt;p>一个论坛&lt;/p></description></item><item><title>Pagefind</title><link>https://yindongliang.com/links/202509/Pagefind/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/Pagefind/</guid><description>&lt;p>Pagefind is a fully static search library that aims to perform well on large sites, while using as little of your users’ bandwidth as possible, and without hosting any infrastructure.&lt;/p></description></item><item><title>哥飞推荐网站合辑</title><link>https://yindongliang.com/links/202508/%E5%93%A5%E9%A3%9E%E6%8E%A8%E8%8D%90%E7%BD%91%E7%AB%99%E5%90%88%E9%9B%86/</link><pubDate>Sat, 09 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/%E5%93%A5%E9%A3%9E%E6%8E%A8%E8%8D%90%E7%BD%91%E7%AB%99%E5%90%88%E9%9B%86/</guid><description/></item><item><title>Hextra - 这个 Hugo 主题不错</title><link>https://yindongliang.com/links/202505/Hugo-Hextra-Theme/</link><pubDate>Mon, 12 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202505/Hugo-Hextra-Theme/</guid><description>&lt;p>Hextra 集成了 Tailwind CSS，“极速且全能的 Hugo 主题框架，为构建现代化的静态网站而生”，我拿来发布了 &lt;a href="https://manaio.com">manaio.com&lt;/a>。&lt;/p></description></item><item><title>Hugo 的 Type 和 Layout 概念的区别</title><link>https://yindongliang.com/posts/Hugo-%E7%9A%84-Type-%E5%92%8C-Layout-%E6%A6%82%E5%BF%B5%E7%9A%84%E5%8C%BA%E5%88%AB/</link><pubDate>Wed, 19 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/Hugo-%E7%9A%84-Type-%E5%92%8C-Layout-%E6%A6%82%E5%BF%B5%E7%9A%84%E5%8C%BA%E5%88%AB/</guid><description>&lt;p>在 Hugo 中，虽然 “type” 和 “layout” 都会影响模板的选择，但它们的用途和工作方式有明显的不同，下面详细说明：&lt;/p>
+&lt;hr>
+&lt;h2 id="1-type">1. type&lt;a class="anchor" href="#1-type">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>定义与默认行为&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>“type” 通常用来定义内容的类型（或类别）。如果在前言中没有显式声明 type，Hugo 会默认将内容文件所在的目录（也就是 section）作为 type。&lt;/li>
+&lt;li>例如，位于 content/posts/ 下的文章默认 type 就是 &amp;ldquo;posts&amp;rdquo;。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>模板查找机制&lt;/strong>&lt;/p></description></item><item><title>使用 Typora 来编辑你的 Hugo 博客</title><link>https://yindongliang.com/posts/use-typora-write-hugo-blog/</link><pubDate>Wed, 01 Apr 2020 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/use-typora-write-hugo-blog/</guid><description>&lt;p>最近 typroa 用的比较多，然后又想着继续维护在 github pages 的博客，觉得把 typora 编辑完的东西再复制到博客项目里很麻烦，于是开始了一番折腾。&lt;/p>
+&lt;h2 id="目标是啥">目标是啥&lt;a class="anchor" href="#%e7%9b%ae%e6%a0%87%e6%98%af%e5%95%a5">#&lt;/a>&lt;/h2>
+&lt;p>在 typora 写的笔记放在了 iCloud，然后可以一键同步到我的线上博客&lt;/p></description></item><item><title>这个博客</title><link>https://yindongliang.com/posts/this-blog/</link><pubDate>Sun, 23 Dec 2012 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/this-blog/</guid><description>&lt;blockquote class='book-hint '>
+&lt;p>这是一篇后记，大约写于 2015 年，但适合作为本站的第一篇来了解一下，而 2012 年是本站注册域名和我开始上大学的时间点。&lt;/p>&lt;/blockquote>&lt;div class="mermaid">timeline
+ 2012 : WordPress
+ : VPS
+ 2013 : Jekyll
+ : Github Pages
+ 2014 : Coding.net
+ 2015 : Hexo
+ : Coding.net
+ 2016 : Ghost
+ : VPS
+ 2019 : Hugo
+ : Typora
+ : Github Pages
+ 2022 : Hugo
+ : Obsidian
+ : Github Pages
+&lt;/div>
+&lt;p>我对做一个自己的博客的过程是可以说非常的折腾，技术架构上有过很多的版本，本文专门来总结一下。&lt;/p></description></item></channel></rss>

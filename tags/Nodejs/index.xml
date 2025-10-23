@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nodejs on LYon's Blog</title><link>https://yindongliang.com/tags/Nodejs/</link><description>Recent content in Nodejs on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Mon, 06 Oct 2025 11:53:06 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Nodejs/index.xml" rel="self" type="application/rss+xml"/><item><title>张鑫旭的 2024 年终小结和展望</title><link>https://yindongliang.com/links/202510/%E5%BC%A0%E9%91%AB%E6%97%AD%E7%9A%84-2024-%E5%B9%B4%E6%80%BB%E7%BB%93/</link><pubDate>Mon, 06 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/%E5%BC%A0%E9%91%AB%E6%97%AD%E7%9A%84-2024-%E5%B9%B4%E6%80%BB%E7%BB%93/</guid><description/></item><item><title>Node.JS 作者 Ryan Dahl 的故事</title><link>https://yindongliang.com/links/202510/Node/</link><pubDate>Sat, 04 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Node/</guid><description>&lt;p>Node.js 的作者 &lt;a href="https://tinyclouds.org/">Ryan Dahl(ry)&lt;/a>，前不久在它的一个演讲主题上了解到了一些关于他的故事。&lt;/p></description></item><item><title>Bun</title><link>https://yindongliang.com/links/202510/Bun/</link><pubDate>Wed, 01 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Bun/</guid><description>&lt;p>Develop, test, run, and bundle JavaScript &amp;amp; TypeScript projects—all with Bun. Bun is an all-in-one JavaScript runtime &amp;amp; toolkit designed for speed, complete with a bundler, &lt;a href="https://bun.com/docs/cli/test">test runner&lt;/a>, and Node.js-compatible &lt;a href="https://bun.com/package-manager">package manager&lt;/a>. Bun aims for 100% Node.js compatibility.&lt;/p></description></item><item><title>无标准库</title><link>https://yindongliang.com/docs/Frontend/TypeScript/%E6%97%A0%E6%A0%87%E5%87%86%E5%BA%93/</link><pubDate>Fri, 05 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/%E6%97%A0%E6%A0%87%E5%87%86%E5%BA%93/</guid><description>&lt;p>TypeScript 本身&lt;strong>并没有独立的标准库&lt;/strong>，但它提供了对 JavaScript 标准库的完整类型定义，并且有一个丰富的类型系统来增强 JavaScript 的开发体验。&lt;/p>
+&lt;h2 id="-typescript-的标准库组成">📚 TypeScript 的&amp;quot;标准库&amp;quot;组成&lt;a class="anchor" href="#-typescript-%e7%9a%84%e6%a0%87%e5%87%86%e5%ba%93%e7%bb%84%e6%88%90">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>组成部分&lt;/th>
+ &lt;th>描述&lt;/th>
+ &lt;th>示例&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>JavaScript 标准库类型&lt;/strong>&lt;/td>
+ &lt;td>TypeScript 包含了 ES5、ES6+ 所有内置对象的类型定义&lt;/td>
+ &lt;td>&lt;code>Array&amp;lt;T&amp;gt;&lt;/code>, &lt;code>Promise&amp;lt;T&amp;gt;&lt;/code>, &lt;code>Map&amp;lt;K, V&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>DOM API 类型&lt;/strong>&lt;/td>
+ &lt;td>浏览器环境下的 DOM API 类型定义&lt;/td>
+ &lt;td>&lt;code>document&lt;/code>, &lt;code>window&lt;/code>, &lt;code>HTMLElement&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>TypeScript 补充类型&lt;/strong>&lt;/td>
+ &lt;td>TypeScript 特有的类型工具&lt;/td>
+ &lt;td>&lt;code>Partial&amp;lt;T&amp;gt;&lt;/code>, &lt;code>Pick&amp;lt;T, K&amp;gt;&lt;/code>, &lt;code>Record&amp;lt;K, V&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>@types/node&lt;/strong>&lt;/td>
+ &lt;td>Node.js 环境的标准库类型定义（需单独安装）&lt;/td>
+ &lt;td>&lt;code>fs&lt;/code>, &lt;code>path&lt;/code>, &lt;code>http&lt;/code> 等模块的类型&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="-typescript-的内置类型定义">🔧 TypeScript 的内置类型定义&lt;a class="anchor" href="#-typescript-%e7%9a%84%e5%86%85%e7%bd%ae%e7%b1%bb%e5%9e%8b%e5%ae%9a%e4%b9%89">#&lt;/a>&lt;/h2>
+&lt;p>TypeScript 自带了对 JavaScript 标准库的完整类型定义，这些定义文件位于 TypeScript 安装目录的 &lt;code>lib&lt;/code> 文件夹中。&lt;/p></description></item><item><title>inspector</title><link>https://yindongliang.com/docs/Frontend/Nodejs/inspector/</link><pubDate>Thu, 04 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Nodejs/inspector/</guid><description>&lt;h1 id="-深入理解-nodejs-的-inspector-模块">🔍 深入理解 Node.js 的 &lt;code>inspector&lt;/code> 模块&lt;a class="anchor" href="#-%e6%b7%b1%e5%85%a5%e7%90%86%e8%a7%a3-nodejs-%e7%9a%84-inspector-%e6%a8%a1%e5%9d%97">#&lt;/a>&lt;/h1>
+&lt;p>&lt;a href="https://nodejs.org/api/inspector.html">https://nodejs.org/api/inspector.html&lt;/a>&lt;/p>
+&lt;h2 id="1-它属于什么是-javascript-还是-typescript-的模块">1. 它属于什么？是 JavaScript 还是 TypeScript 的模块？&lt;a class="anchor" href="#1-%e5%ae%83%e5%b1%9e%e4%ba%8e%e4%bb%80%e4%b9%88%e6%98%af-javascript-%e8%bf%98%e6%98%af-typescript-%e7%9a%84%e6%a8%a1%e5%9d%97">#&lt;/a>&lt;/h2>
+&lt;p>&lt;code>inspector&lt;/code> 是 &lt;strong>Node.js 的核心内置模块&lt;/strong>，不是第三方包，也不是 TypeScript 特有的功能。&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>归属&lt;/strong>: 它是 Node.js 运行时环境的一部分，与 &lt;code>fs&lt;/code>、&lt;code>http&lt;/code>、&lt;code>path&lt;/code> 等模块同级。&lt;/li>
+&lt;li>&lt;strong>语言&lt;/strong>: 它是 JavaScript 模块，用 Node.js 的 JavaScript API 编写和使用。TypeScript 项目当然也可以导入和使用它，因为 TypeScript 最终会编译成 JavaScript 在 Node.js 中运行。&lt;/li>
+&lt;li>&lt;strong>底层技术&lt;/strong>: 它的背后是 &lt;strong>V8 引擎的 Inspector 协议&lt;/strong>，这个协议允许外部工具（如 Chrome DevTools）通过 WebSocket 与 Node.js 进程进行通信、调试和分析。&lt;/li>
+&lt;/ul>
+&lt;h2 id="2-它是用来做什么的">2. 它是用来做什么的？&lt;a class="anchor" href="#2-%e5%ae%83%e6%98%af%e7%94%a8%e6%9d%a5%e5%81%9a%e4%bb%80%e4%b9%88%e7%9a%84">#&lt;/a>&lt;/h2>
+&lt;p>&lt;code>inspector&lt;/code> 模块的主要目的是&lt;strong>开启对 Node.js 进程的调试和分析能力&lt;/strong>。它提供了以编程方式与 V8 Inspector 交互的 API。&lt;/p></description></item><item><title>包管理 - npm</title><link>https://yindongliang.com/docs/Frontend/%E5%8C%85%E7%AE%A1%E7%90%86-npm/</link><pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E5%8C%85%E7%AE%A1%E7%90%86-npm/</guid><description>&lt;h2 id="版本管理">版本管理&lt;a class="anchor" href="#%e7%89%88%e6%9c%ac%e7%ae%a1%e7%90%86">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>~&lt;/code>: 当安装依赖时获取到有新版本时，安装到 &lt;code>x.y.z&lt;/code> 中 &lt;code>z&lt;/code> 的最新的版本。即保持主版本号、次版本号不变的情况下，保持修订号的最新版本。&lt;/li>
+&lt;li>&lt;code>^&lt;/code>: 当安装依赖时获取到有新版本时，安装到 &lt;code>x.y.z&lt;/code> 中 &lt;code>y&lt;/code> 和 &lt;code>z&lt;/code> 都为最新版本。 即保持主版本号不变的情况下，保持次版本号、修订版本号为最新版本。&lt;/li>
+&lt;/ul>
+&lt;p>参考文档：&lt;/p></description></item></channel></rss>
