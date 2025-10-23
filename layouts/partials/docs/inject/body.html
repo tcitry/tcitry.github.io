@@ -26,25 +26,6 @@
   }
 </script>
 
-{{ if .Page.Store.Get "hasMermaid" }}
-  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-  <script>
-    // 只初始化带有class="mermaid"的元素
-    mermaid.initialize({
-      startOnLoad: true,
-      // 只查找class="mermaid"的div元素
-      htmlLabels: true,
-      // 确保只处理明确标记的mermaid代码块
-      securityLevel: 'strict' 
-    });
-  </script>
-{{ end }}
-
-<script src="/fast-image-zoom.js"></script>
-<script>
-  imageZoom()
-</script>
-
 <!-- PageFind 搜索 -->
 <div id="search-container">
   <div id="search-dialog">
