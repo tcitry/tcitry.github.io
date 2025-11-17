@@ -1,8 +1,8 @@
 {{ if default true .Site.Params.BookSearch }}
 <div class="book-search hidden">
   <div class="search-wrapper">
-    <input type="text" id="book-search-input" placeholder="{{ i18n "Search" }}" aria-label="{{ i18n "Search" }}" maxlength="64" data-hotkeys="s/" />
-    <button class="shortcut-hint" onclick="openGlobalSearch()">⌘+k</button>
+    <input type="text" id="book-search-input" placeholder='{{ i18n "Search" }}' aria-label='{{ i18n "Search" }}' maxlength="64" data-hotkeys="s/" />
+    <button class="shortcut-hint" onclick="openGlobalSearch()">⌘+K</button>
   </div>
   <div class="book-search-spinner hidden"></div>
   <ul id="book-search-results"></ul>

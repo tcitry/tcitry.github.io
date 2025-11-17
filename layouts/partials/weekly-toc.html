@@ -3,11 +3,11 @@
   {{ $pages := intersect (where .Site.RegularPages "Type" "in" (slice "weekly")) (where .Site.Pages "Params.date" "!=" nil) }}
     <div class="book-section-flat">
       {{ range $pages }}
-      <div class="flex">
-        <span style="padding: 0.3rem 0">
-          <time class="secondary-info">{{ .Date.Format "Jan 2006" }}</time>&nbsp;»&nbsp;
-          <a href="{{ .RelPermalink }}" {{ if eq .RelPermalink $curr }}class="highlight-toc"{{ end }}>{{ .Title }}</a>
-        </span>
+      <div class="flex" style="padding: 0.3rem 0;">
+        <time class="secondary-info">{{ .Date.Format "Jan 2006" }}</time>&nbsp;»&nbsp;
+        <a href="{{ .RelPermalink }}" {{ if eq .RelPermalink $curr }}style="color: #8250df;"{{ end }}>
+          {{ .Title }}
+        </a>
       </div>
       {{ end }}
     </div>
