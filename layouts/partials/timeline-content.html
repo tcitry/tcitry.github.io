@@ -1,0 +1,81 @@
+{{/* 接收参数：当前页面 */}}
+{{ $currentPage := . }}
+{{/* 获取所有 timeline 页面，按日期降序排列，排除无效日期（年份小于 2000） */}}
+{{ $allPages := where .Site.RegularPages "Type" "timeline" }}
+{{ $validPages := slice }}
+{{ range $allPages }}
+  {{ $year := .Date.Format "2006" | int }}
+  {{ if ge $year 2000 }}
+    {{ $validPages = $validPages | append . }}
+  {{ end }}
+{{ end }}
+{{ $pages := sort $validPages ".Date" "desc" }}
+
+{{/* 判断是列表页还是单页，确定要显示的时间线页面 */}}
+{{ $timelinePage := . }}
+{{ $isListPage := or (eq .Kind "section") (eq .RelPermalink "/timeline/") }}
+{{ if $isListPage }}
+  {{ if gt (len $pages) 0 }}
+    {{ $timelinePage = index $pages 0 }}
+  {{ end }}
+{{ end }}
+
+{{ $currentYear := "" }}
+{{ with $timelinePage }}
+  {{ if .Date }}
+    {{ $currentYear = .Date.Format "2006" }}
+  {{ end }}
+{{ end }}
+{{ $currentLink := .Page.RelPermalink }}
+
+{{/* 年份下拉列表导航栏 */}}
+<nav class="timeline-year-nav">
+  <select id="timeline-year-select" class="timeline-year-select" onchange="window.location.href=this.value">
+    {{ range $pages }}
+      {{ $year := .Date.Format "2006" }}
+      <option value="{{ .RelPermalink }}" {{ if eq $year $currentYear }}selected{{ end }}>
+        {{ $year }}
+      </option>
+    {{ end }}
+  </select>
+</nav>
+<div class="timeline-container">
+  <div class="timeline">
+    {{/* 显示时间线内容 */}}
+    {{ with $timelinePage }}
+      {{/* 解析 markdown 内容，按 h2 标题（日期）分组 */}}
+      {{ range $index, $block := split .Content "<h2" }}
+        {{ if gt $index 0 }}
+          {{/* 先按 </h2> 分割，分离标题和内容 */}}
+          {{ $parts := split $block "</h2>" }}
+          {{ $h2Content := index $parts 0 }}
+          {{ $contentPart := index $parts 1 }}
+          {{/* 从 h2 标签内容中提取日期文本和 id */}}
+          {{ $date := replaceRE `^[^>]*>([^<]+)<.*` "$1" $h2Content | strings.TrimSpace }}
+          {{ $id := replaceRE `^[^>]*id="([^"]+)".*` "$1" $h2Content }}
+          <div class="timeline-item" id="{{ $id }}">
+            <div class="timeline-date">{{ $date }}</div>
+            <div class="timeline-content">
+              {{/* 提取所有 p 标签内的内容（保留 HTML） */}}
+              {{ range $pIndex, $pBlock := split $contentPart "<p>" }}
+                {{ if gt $pIndex 0 }}
+                  {{ $text := replaceRE `</p>.*` "" $pBlock | strings.TrimSpace }}
+                  {{ if ne $text "" }}
+                    <p class="timeline-text">{{ $text | safeHTML }}</p>
+                  {{ end }}
+                {{ end }}
+              {{ end }}
+            </div>
+          </div>
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      <div class="timeline-item">
+        <div class="timeline-date">调试信息</div>
+        <div class="timeline-content">
+          <p class="timeline-text">无法获取时间线页面内容</p>
+        </div>
+      </div>
+    {{ end }}
+  </div>
+</div>

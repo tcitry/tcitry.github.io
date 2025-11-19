@@ -291,7 +291,7 @@ main a[target="_blank"]::after {
   margin-left: 80px;
   margin-top: -10px; /* 将向上偏移减小，使内容与日期保持适当距离 */
   background: #f1faee; /* 默认浅色背景 */
-  padding: 24px; /* 增加内边距，使内容更加宽松 */
+  padding: 0 24px; /* 增加内边距，使内容更加宽松 */
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   line-height: normal;
@@ -302,7 +302,6 @@ main a[target="_blank"]::after {
   }
 
   .timeline-title {
-    margin: 0 0 16px; /* 增加标题下方的间距 */
     font-size: 1.2em;
     color: #000; /* 默认浅色模式标题颜色 */
 
@@ -349,6 +348,48 @@ main a[target="_blank"]::after {
       padding-left: 20px;
       margin: 10px 0;
     }
+  }
+}
+
+.timeline-year-nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  margin-left: 2rem;
+}
+
+.timeline-year-select {
+  padding: 0.5rem 2rem 0.5rem 1rem;
+  border-radius: 4px;
+  border: 1px solid #0da99c;
+  background: white;
+  color: #0da99c;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230da99c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.2rem;
+
+  &:hover {
+    background-color: #e8f5f4;
+    border-color: #0a8a7d;
+  }
+
+  &:focus {
+    border-color: #0da99c;
+    box-shadow: 0 0 0 3px rgba(13, 169, 156, 0.1);
+  }
+
+  option {
+    padding: 0.5rem;
+    background: white;
+    color: #333;
   }
 }
 

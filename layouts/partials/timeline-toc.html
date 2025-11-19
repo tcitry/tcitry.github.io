@@ -1,0 +1,23 @@
+{{/* 动态读取当前页面的内容 */}}
+{{ $timelinePage := . }}
+{{ with $timelinePage }}
+<nav>
+  <div class="book-section-flat">
+    {{/* 解析 markdown 内容，提取所有 h2 标题（日期） */}}
+    {{ range $index, $block := split .Content "<h2" }}
+      {{ if gt $index 0 }}
+        {{/* 提取日期和锚点 ID */}}
+        {{ $parts := split $block "</h2>" }}
+        {{ $h2Content := index $parts 0 }}
+        {{/* 提取 id 属性值 */}}
+        {{ $id := replaceRE `^[^>]*id="([^"]+)".*` "$1" $h2Content }}
+        {{/* 提取日期文本 */}}
+        {{ $date := replaceRE `^[^>]*>([^<]+)<.*` "$1" $h2Content | strings.TrimSpace }}
+        <div class="flex" style="padding: 0.3rem 0;">
+          <time class="secondary-info"><a href="#{{ $id }}">{{ $date }}</a></time>
+        </div>
+      {{ end }}
+    {{ end }}
+  </div>
+</nav>
+{{ end }}
