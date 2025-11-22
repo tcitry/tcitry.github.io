@@ -1,4 +1,13 @@
 items:
+  - title: "Nov 2025"
+    cardTitle: "Timeline"
+    url: "/timeline"
+    tagList: ["timeline"]
+    cardDetailedText:
+      - "一个基于 Hugo 模版的时间线，用于记录自己的工作和学习日志，并且后续根据需要生成 Weekly 和 Links 页面。"
+      - "之前 Weekly 的问题是每次都需要手动写，比较麻烦。"
+      - "Links 的问题是，简单的一个产品链接不太适合放在索引列表里面，因为这个东西目测太多了。"
+
   - title: "July 2025"
     cardTitle: "OnceOne"
     url: "https://apps.apple.com/us/app/onceone-grouping-to-do-tasks/id6744550176"

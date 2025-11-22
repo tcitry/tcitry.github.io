@@ -1,4 +1,4 @@
-{{ if or (not .Title) (not .Date) (not .Params.categories) (not .Params.tags) }}
+{{ if or (not .Title) (not .Date) (not .Params.categories) }}
   {{ .File }} <span class="danger-title">Draft</span>
 {{ end }}
 

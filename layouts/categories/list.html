@@ -8,6 +8,7 @@
       {{ $maxSize := 60 }}
       {{ $count := .Count }}
       {{ $restCount := sub $totalPages $count }}
+      {{ if eq $restCount 0 }}{{ $restCount = 1 }}{{ end }}
 
       {{/* 计算当前数量在总数中的百分比位置 */}}
       {{ $percentage := div (float $count) (float $restCount) }}

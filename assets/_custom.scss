@@ -322,7 +322,7 @@ main a[target="_blank"]::after {
 
   /* 时间线图片容器样式 */
   .timeline-image {
-    margin-bottom: 16px;
+    margin: 16px 0;
     text-align: center;
 
     img {
@@ -356,7 +356,6 @@ main a[target="_blank"]::after {
   gap: 1rem;
   align-items: center;
   margin-bottom: 1rem;
-  margin-left: 2rem;
 }
 
 .timeline-year-select {
