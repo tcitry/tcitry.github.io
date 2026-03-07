@@ -295,6 +295,10 @@ main a[target="_blank"]::after {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   line-height: normal;
+  overflow-wrap: break-word; /* 防止长单词溢出 */
+  word-break: break-word; /* 允许在单词内换行 */
+  overflow-x: auto; /* 水平溢出时显示滚动条 */
+  max-width: 100%; /* 确保不超过父容器宽度 */
 
   @media (max-width: 768px) {
     margin-left: 0;
@@ -331,6 +335,32 @@ main a[target="_blank"]::after {
       border-radius: 4px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
+  }
+
+  /* 代码块样式 - 防止超出容器 */
+  pre {
+    overflow-x: auto;
+    max-width: 100%;
+    background-color: #f6f8fa;
+    padding: 16px;
+    border-radius: 6px;
+    margin: 10px 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    background-color: #f6f8fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+  }
+
+  pre code {
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
   }
 
   .timeline-text {
@@ -523,11 +553,26 @@ main a[target="_blank"]::after {
     }
 
     .timeline-subtitle {
-      color: #f0f0f0; // 深色模式下副标题颜色
+      color: #f0f0f0; /* 深色模式下副标题颜色 */
+    }
+
+    /* 代码块样式 - 深色模式 */
+    pre {
+      background-color: #1e1e1e;
+      color: #d4d4d4;
+    }
+
+    code {
+      background-color: #2d2d2d;
+      color: #d4d4d4;
+    }
+
+    pre code {
+      background-color: transparent;
     }
 
     .timeline-text {
-      color: #cccccc; // 深色模式下文本颜色更亮
+      color: #cccccc; /* 深色模式下文本颜色更亮 */
     }
   }
 

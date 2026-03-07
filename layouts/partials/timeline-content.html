@@ -56,15 +56,8 @@
           <div class="timeline-item" id="{{ $id }}">
             <div class="timeline-date">{{ $date }}</div>
             <div class="timeline-content">
-              {{/* 提取所有 p 标签内的内容（保留 HTML） */}}
-              {{ range $pIndex, $pBlock := split $contentPart "<p>" }}
-                {{ if gt $pIndex 0 }}
-                  {{ $text := replaceRE `</p>.*` "" $pBlock | strings.TrimSpace }}
-                  {{ if ne $text "" }}
-                    <p class="timeline-text">{{ $text | safeHTML }}</p>
-                  {{ end }}
-                {{ end }}
-              {{ end }}
+              {{/* 直接渲染内容，保留所有 HTML 标签 */}}
+              {{ $contentPart | safeHTML }}
             </div>
           </div>
         {{ end }}
