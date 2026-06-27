@@ -1,0 +1,821 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Linux on LYon's Blog</title><link>https://yindongliang.com/tags/Linux/</link><description>Recent content in Linux on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 06 May 2026 17:53:17 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Linux/index.xml" rel="self" type="application/rss+xml"/><item><title>Kubernetes 架构全景：关键组件分类详解</title><link>https://yindongliang.com/docs/Kubernetes/hello-k8s/</link><pubDate>Sun, 09 Oct 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Kubernetes/hello-k8s/</guid><description>&lt;p>Kubernetes 是一个复杂的分布式系统，由众多相互协作的组件构成。下面按照架构层次对所有关键组件和概念进行系统化分类：&lt;/p>
+&lt;h2 id="1-控制平面组件-control-plane">1. 控制平面组件 (Control Plane)&lt;a class="anchor" href="#1-%e6%8e%a7%e5%88%b6%e5%b9%b3%e9%9d%a2%e7%bb%84%e4%bb%b6-control-plane">#&lt;/a>&lt;/h2>
+&lt;p>控制平面是集群的大脑，负责全局决策和状态管理。&lt;/p></description></item><item><title>命令行</title><link>https://yindongliang.com/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/</link><pubDate>Mon, 02 Mar 2020 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Golang/%E5%91%BD%E4%BB%A4%E8%A1%8C/</guid><description>&lt;p>自带的主要有 build, clean, get, install, list, run, and test&lt;/p>
+&lt;h2 id="run">run&lt;a class="anchor" href="#run">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>go run main.go&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>-mod&lt;/code>选项，&lt;code>go help modules&lt;/code>查看详细，&lt;code>-mod&lt;/code> 在其他部分命令中也可指定。&lt;/p>
+&lt;ul>
+&lt;li>vendor&lt;/li>
+&lt;li>mod&lt;/li>
+&lt;li>readonly&lt;/li>
+&lt;/ul>
+&lt;h2 id="get">get&lt;a class="anchor" href="#get">#&lt;/a>&lt;/h2>
+&lt;p>使用 @ 指定版本&lt;/p></description></item><item><title>命令行</title><link>https://yindongliang.com/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/</link><pubDate>Fri, 02 Mar 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/</guid><description>&lt;h2 id="概要">概要&lt;a class="anchor" href="#%e6%a6%82%e8%a6%81">#&lt;/a>&lt;/h2>
+&lt;p>文档可参考 &lt;a href="https://github.com/jlevy/the-art-of-command-line">the-art-of-command-line&lt;/a> / &lt;a href="https://github.com/jlevy/the-art-of-command-line/blob/master/README-zh.md">命令行的艺术&lt;/a>&lt;/p>
+&lt;p>如今有 AI 了，也就不需要记住大量选项，高频使用的命令自然而然会记住。&lt;/p>
+&lt;h2 id="awk">awk&lt;a class="anchor" href="#awk">#&lt;/a>&lt;/h2>
+&lt;p>AWK 镇楼&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>cat table.csv | awk -F&lt;span style="color:#5af78e">&amp;#39;,&amp;#39;&lt;/span> &lt;span style="color:#5af78e">&amp;#39;{print $4}&amp;#39;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="alias">alias&lt;a class="anchor" href="#alias">#&lt;/a>&lt;/h2>
+&lt;p>下面是我在 &lt;code>.zshrc&lt;/code> 的 &lt;code>alias&lt;/code> 相关配置，非常实用。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">a&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;. venv/bin/activate&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#5af78e">&amp;#39;cd..&amp;#39;&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;cd ..&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">cdr&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;cd-gitroot&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">o&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;open .&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">ctags&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;/usr/local/Cellar/ctags/5.8_1/bin/ctags&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">s&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">merge&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/Applications/Sublime\ Merge.app/Contents/SharedSupport/bin/smerge&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">c&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;~/.cargo/bin/cargo&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">p&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>pyhton3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">i&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>ipython
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">lg&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;lazygit&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">d&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>docker
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">de&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>deactivate
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">k&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>kubectl
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">gg&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>gitup
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">f&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>fuck
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">ts&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>ts-node
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">my&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;mycli -uroot -p 12345678 -h localhost&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">stree&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;/Applications/SourceTree.app/Contents/Resources/stree&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">x&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;sudo xattr -r -d com.apple.quarantine&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="cat">cat&lt;a class="anchor" href="#cat">#&lt;/a>&lt;/h2>
+&lt;h2 id="comm">comm&lt;a class="anchor" href="#comm">#&lt;/a>&lt;/h2>
+&lt;p>命令用于比较两个已排过序的文件，不常见但很有用。&lt;/p></description></item><item><title>正则表达式</title><link>https://yindongliang.com/docs/Linux/regular-expression/</link><pubDate>Tue, 13 Mar 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/regular-expression/</guid><description>&lt;h2 id="举例子">举例子&lt;a class="anchor" href="#%e4%b8%be%e4%be%8b%e5%ad%90">#&lt;/a>&lt;/h2>
+&lt;p>base64正则匹配&lt;/p>
+&lt;pre tabindex="0">&lt;code>^[A-Za-z0-9+/]*={0,2}$&lt;/code>&lt;/pre>&lt;h2 id="特殊字符">特殊字符&lt;a class="anchor" href="#%e7%89%b9%e6%ae%8a%e5%ad%97%e7%ac%a6">#&lt;/a>&lt;/h2>
+&lt;p>点 &lt;code>.&lt;/code> 表示匹配换行符 &lt;code>\n&lt;/code> 以外的任何字符。&lt;/p>
+&lt;h2 id="限定符">限定符&lt;a class="anchor" href="#%e9%99%90%e5%ae%9a%e7%ac%a6">#&lt;/a>&lt;/h2>
+&lt;p>星号 &lt;code>*&lt;/code> 表示匹配前面的子表达式零次或多次。&lt;/p>
+&lt;p>加号 &lt;code>+&lt;/code> 表示一次或多次，至少一次。&lt;/p>
+&lt;p>问号 &lt;code>?&lt;/code> 表示零次或一次。&lt;/p></description></item><item><title>Shell 脚本</title><link>https://yindongliang.com/docs/Linux/Shell/</link><pubDate>Tue, 19 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/Shell/</guid><description>&lt;h2 id="bash-版本">Bash 版本&lt;a class="anchor" href="#bash-%e7%89%88%e6%9c%ac">#&lt;/a>&lt;/h2>
+&lt;p>Dash: Debian Almquist shell&lt;/p>
+&lt;p>现在 zsh 比较常用，配合 &lt;a href="https://ohmyz.sh/">oh-my-zsh&lt;/a> 使用更香，zsh 相比 bash 还支持更多脚本功能。&lt;/p>
+&lt;h2 id="shell-的父子关系">Shell 的父子关系&lt;a class="anchor" href="#shell-%e7%9a%84%e7%88%b6%e5%ad%90%e5%85%b3%e7%b3%bb">#&lt;/a>&lt;/h2>
+&lt;p>通过 &lt;code>ps -f&lt;/code> 可以查看 &lt;code>PID&lt;/code> 和 &lt;code>PPID&lt;/code> 号来判断父子关系，创建了子 Shell 就意味着创建了子进程。&lt;/p></description></item><item><title>C 语言基础</title><link>https://yindongliang.com/docs/Clang/C/</link><pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Clang/C/</guid><description>&lt;p>出于看一些源码的需要，比如 Redis，发现很多之前的 C 语法细节已经忘了，现在再补回来，时过境迁，现在的感觉就是 C 语言已经和当初上学看的那个东西完全不一样了，先上 hello world 镇楼。&lt;/p></description></item><item><title>系统调用</title><link>https://yindongliang.com/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/</link><pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Clang/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/</guid><description>&lt;p>Unix 操作系统通过一系列的系统调用提供服务，这些系统调用实际上是操作系统内的函数，它们可以被用户程序调用。本文介绍如何在 C 语言程序中使用一些重要的系统调用。&lt;/p></description></item><item><title>CS自学指南</title><link>https://yindongliang.com/links/202602/CS%E8%87%AA%E5%AD%A6%E6%8C%87%E5%8D%97/</link><pubDate>Mon, 09 Feb 2026 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202602/CS%E8%87%AA%E5%AD%A6%E6%8C%87%E5%8D%97/</guid><description/></item><item><title>SSH 常用命令指南</title><link>https://yindongliang.com/docs/Linux/SSH-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%8C%87%E5%8D%97/</link><pubDate>Tue, 30 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/SSH-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%8C%87%E5%8D%97/</guid><description>&lt;h2 id="1-生成-ssh-密钥对">1. 生成 SSH 密钥对&lt;a class="anchor" href="#1-%e7%94%9f%e6%88%90-ssh-%e5%af%86%e9%92%a5%e5%af%b9">#&lt;/a>&lt;/h2>
+&lt;h3 id="生成-rsa-密钥对-传统">生成 RSA 密钥对 (传统)&lt;a class="anchor" href="#%e7%94%9f%e6%88%90-rsa-%e5%af%86%e9%92%a5%e5%af%b9-%e4%bc%a0%e7%bb%9f">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh-keygen -t rsa -b &lt;span style="color:#ff9f43">4096&lt;/span> -C &lt;span style="color:#5af78e">&amp;#34;your_email@example.com&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;code>-t rsa&lt;/code>: 指定密钥类型为 RSA&lt;/li>
+&lt;li>&lt;code>-b 4096&lt;/code>: 指定密钥位数为 4096 位&lt;/li>
+&lt;li>&lt;code>-C &amp;quot;comment&amp;quot;&lt;/code>: 添加注释（通常是邮箱）&lt;/li>
+&lt;/ul>
+&lt;h3 id="生成-ed25519-密钥对-推荐更安全高效">生成 ED25519 密钥对 (推荐，更安全高效)&lt;a class="anchor" href="#%e7%94%9f%e6%88%90-ed25519-%e5%af%86%e9%92%a5%e5%af%b9-%e6%8e%a8%e8%8d%90%e6%9b%b4%e5%ae%89%e5%85%a8%e9%ab%98%e6%95%88">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh-keygen -t ed25519 -C &lt;span style="color:#5af78e">&amp;#34;your_email@example.com&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="指定保存路径和密码">指定保存路径和密码&lt;a class="anchor" href="#%e6%8c%87%e5%ae%9a%e4%bf%9d%e5%ad%98%e8%b7%af%e5%be%84%e5%92%8c%e5%af%86%e7%a0%81">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_custom -N &lt;span style="color:#5af78e">&amp;#34;passphrase&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;code>-f&lt;/code>: 指定密钥文件保存路径&lt;/li>
+&lt;li>&lt;code>-N&lt;/code>: 指定密码（空密码为&lt;code>&amp;quot;&amp;quot;&lt;/code>，不推荐）&lt;/li>
+&lt;/ul>
+&lt;h2 id="2-使用密钥连接远程服务器">2. 使用密钥连接远程服务器&lt;a class="anchor" href="#2-%e4%bd%bf%e7%94%a8%e5%af%86%e9%92%a5%e8%bf%9e%e6%8e%a5%e8%bf%9c%e7%a8%8b%e6%9c%8d%e5%8a%a1%e5%99%a8">#&lt;/a>&lt;/h2>
+&lt;h3 id="指定密钥文件连接">指定密钥文件连接&lt;a class="anchor" href="#%e6%8c%87%e5%ae%9a%e5%af%86%e9%92%a5%e6%96%87%e4%bb%b6%e8%bf%9e%e6%8e%a5">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh -i /path/to/private_key username@hostname&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;code>-i&lt;/code>: 指定私钥文件路径&lt;/li>
+&lt;/ul>
+&lt;h3 id="指定端口和密钥">指定端口和密钥&lt;a class="anchor" href="#%e6%8c%87%e5%ae%9a%e7%ab%af%e5%8f%a3%e5%92%8c%e5%af%86%e9%92%a5">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh -i ~/.ssh/id_ed25519 -p &lt;span style="color:#ff9f43">2222&lt;/span> user@server.com&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;code>-p&lt;/code>: 指定连接端口&lt;/li>
+&lt;/ul>
+&lt;h2 id="3-ssh-配置文件">3. SSH 配置文件&lt;a class="anchor" href="#3-ssh-%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6">#&lt;/a>&lt;/h2>
+&lt;h3 id="配置文件示例-sshconfig">配置文件示例 (~/.ssh/config)&lt;a class="anchor" href="#%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e7%a4%ba%e4%be%8b-sshconfig">#&lt;/a>&lt;/h3>
+&lt;pre tabindex="0">&lt;code>Host myserver
+ HostName server.com
+ User username
+ IdentityFile ~/.ssh/id_ed25519_custom
+ Port 2222
+ ServerAliveInterval 60
+ 
+Host github
+ HostName github.com
+ User git
+ IdentityFile ~/.ssh/id_ed25519_github&lt;/code>&lt;/pre>&lt;p>使用配置后连接:&lt;/p></description></item><item><title>Flock 锁的详细使用指南</title><link>https://yindongliang.com/posts/Flock-%E9%94%81%E7%9A%84%E8%AF%A6%E7%BB%86%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</link><pubDate>Wed, 24 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/Flock-%E9%94%81%E7%9A%84%E8%AF%A6%E7%BB%86%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</guid><description>&lt;h2 id="一flock锁的使用方法">一、Flock锁的使用方法&lt;a class="anchor" href="#%e4%b8%80flock%e9%94%81%e7%9a%84%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-基本操作方式">1. 基本操作方式&lt;a class="anchor" href="#1-%e5%9f%ba%e6%9c%ac%e6%93%8d%e4%bd%9c%e6%96%b9%e5%bc%8f">#&lt;/a>&lt;/h3>
+&lt;p>flock支持两种主要操作模式：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>阻塞模式&lt;/strong>：当无法获取锁时，进程会一直等待直到锁可用&lt;/li>
+&lt;li>&lt;strong>非阻塞模式&lt;/strong>：当无法获取锁时立即返回，通常会返回一个错误&lt;/li>
+&lt;/ul>
+&lt;h3 id="2-锁类型">2. 锁类型&lt;a class="anchor" href="#2-%e9%94%81%e7%b1%bb%e5%9e%8b">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>共享锁(SHARED/LOCK_SH)&lt;/strong>：允许多个进程同时持有，适用于读操作&lt;/li>
+&lt;li>&lt;strong>排他锁(EXCLUSIVE/LOCK_EX)&lt;/strong>：只允许一个进程持有，适用于写操作&lt;/li>
+&lt;li>&lt;strong>解锁(UNLOCK/LOCK_UN)&lt;/strong>：释放已获取的锁&lt;/li>
+&lt;/ul>
+&lt;h3 id="3-锁的特性">3. 锁的特性&lt;a class="anchor" href="#3-%e9%94%81%e7%9a%84%e7%89%b9%e6%80%a7">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>基于文件描述符&lt;/strong>：锁与文件描述符关联，而非文件路径&lt;/li>
+&lt;li>&lt;strong>自动释放&lt;/strong>：进程终止或文件关闭时锁自动释放&lt;/li>
+&lt;li>&lt;strong>不支持嵌套&lt;/strong>：同一进程对同一文件多次加锁不会累积&lt;/li>
+&lt;li>&lt;strong>建议性锁&lt;/strong>：flock是建议性锁，不强制阻止访问，需要所有参与者遵守&lt;/li>
+&lt;/ul>
+&lt;h2 id="二典型使用场景">二、典型使用场景&lt;a class="anchor" href="#%e4%ba%8c%e5%85%b8%e5%9e%8b%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af">#&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>&lt;strong>单实例应用控制&lt;/strong>：确保同一时间只有一个程序实例运行&lt;/li>
+&lt;li>&lt;strong>文件写保护&lt;/strong>：防止多个进程同时写入同一文件导致数据损坏&lt;/li>
+&lt;li>&lt;strong>批处理作业协调&lt;/strong>：确保资源密集型任务不同时执行&lt;/li>
+&lt;li>&lt;strong>定时任务防重叠&lt;/strong>：防止长时间运行的cron任务重叠执行&lt;/li>
+&lt;li>&lt;strong>临界区保护&lt;/strong>：保护共享资源的访问，如缓存更新&lt;/li>
+&lt;/ol>
+&lt;h2 id="三shell使用案例">三、Shell使用案例&lt;a class="anchor" href="#%e4%b8%89shell%e4%bd%bf%e7%94%a8%e6%a1%88%e4%be%8b">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-基本语法">1. 基本语法&lt;a class="anchor" href="#1-%e5%9f%ba%e6%9c%ac%e8%af%ad%e6%b3%95">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>flock &lt;span style="color:#ff6ac1">[&lt;/span>options&lt;span style="color:#ff6ac1">]&lt;/span> &amp;lt;file|directory|fd&amp;gt; &amp;lt;command&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-单实例脚本保护">2. 单实例脚本保护&lt;a class="anchor" href="#2-%e5%8d%95%e5%ae%9e%e4%be%8b%e8%84%9a%e6%9c%ac%e4%bf%9d%e6%8a%a4">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff5c57">LOCK_FILE&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/tmp/my_script.lock&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 尝试获取排他锁，如果失败则退出&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">exec&lt;/span> 200&amp;gt;&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#ff5c57">$LOCK_FILE&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>flock -n &lt;span style="color:#ff9f43">200&lt;/span> &lt;span style="color:#ff6ac1">||&lt;/span> &lt;span style="color:#ff6ac1">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">echo&lt;/span> &lt;span style="color:#5af78e">&amp;#34;Another instance is running&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">exit&lt;/span> &lt;span style="color:#ff9f43">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 脚本主体&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">echo&lt;/span> &lt;span style="color:#5af78e">&amp;#34;Running critical section at &lt;/span>&lt;span style="color:#ff6ac1">$(&lt;/span>date&lt;span style="color:#ff6ac1">)&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sleep &lt;span style="color:#ff9f43">10&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 自动释放锁（脚本结束时文件描述符关闭）&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-保护文件写入操作">3. 保护文件写入操作&lt;a class="anchor" href="#3-%e4%bf%9d%e6%8a%a4%e6%96%87%e4%bb%b6%e5%86%99%e5%85%a5%e6%93%8d%e4%bd%9c">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff5c57">LOG_FILE&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/var/log/app.log&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">LOCK_FILE&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/var/lock/app.log.lock&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 使用flock命令直接保护写入操作&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>flock -x &lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#ff5c57">$LOCK_FILE&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span> -- &lt;span style="color:#5af78e">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#5af78e">&lt;/span> &lt;span style="color:#ff5c57">echo&lt;/span> &lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#ff6ac1">$(&lt;/span>date&lt;span style="color:#ff6ac1">)&lt;/span>&lt;span style="color:#5af78e">: New log entry&amp;#34;&lt;/span> &amp;gt;&amp;gt; &lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#ff5c57">$LOG_FILE&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="4-非阻塞模式与超时">4. 非阻塞模式与超时&lt;a class="anchor" href="#4-%e9%9d%9e%e9%98%bb%e5%a1%9e%e6%a8%a1%e5%bc%8f%e4%b8%8e%e8%b6%85%e6%97%b6">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff5c57">LOCK_FILE&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/tmp/process.lock&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 非阻塞模式，如果无法获取锁立即返回&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">if&lt;/span> ! flock -n 9; &lt;span style="color:#ff6ac1">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">echo&lt;/span> &lt;span style="color:#5af78e">&amp;#34;Cannot acquire lock, exiting&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">exit&lt;/span> &lt;span style="color:#ff9f43">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">fi&lt;/span> 9&amp;gt;&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#ff5c57">$LOCK_FILE&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 临界区代码&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">echo&lt;/span> &lt;span style="color:#5af78e">&amp;#34;Processing...&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="四python使用案例">四、Python使用案例&lt;a class="anchor" href="#%e5%9b%9bpython%e4%bd%bf%e7%94%a8%e6%a1%88%e4%be%8b">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-基本文件锁实现">1. 基本文件锁实现&lt;a class="anchor" href="#1-%e5%9f%ba%e6%9c%ac%e6%96%87%e4%bb%b6%e9%94%81%e5%ae%9e%e7%8e%b0">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> fcntl
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> time
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">write_with_lock&lt;/span>(filename, content):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">with&lt;/span> &lt;span style="color:#ff5c57">open&lt;/span>(filename, &lt;span style="color:#5af78e">&amp;#39;a&amp;#39;&lt;/span>) &lt;span style="color:#ff6ac1">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 获取排他锁&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fcntl&lt;span style="color:#ff6ac1">.&lt;/span>flock(f&lt;span style="color:#ff6ac1">.&lt;/span>fileno(), fcntl&lt;span style="color:#ff6ac1">.&lt;/span>LOCK_EX)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">try&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 写入操作&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#ff6ac1">.&lt;/span>write(content &lt;span style="color:#ff6ac1">+&lt;/span> &lt;span style="color:#5af78e">&amp;#39;&lt;/span>&lt;span style="color:#5af78e">\n&lt;/span>&lt;span style="color:#5af78e">&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#ff6ac1">.&lt;/span>flush()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">finally&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 释放锁&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fcntl&lt;span style="color:#ff6ac1">.&lt;/span>flock(f&lt;span style="color:#ff6ac1">.&lt;/span>fileno(), fcntl&lt;span style="color:#ff6ac1">.&lt;/span>LOCK_UN)&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-上下文管理器实现推荐">2. 上下文管理器实现（推荐）&lt;a class="anchor" href="#2-%e4%b8%8a%e4%b8%8b%e6%96%87%e7%ae%a1%e7%90%86%e5%99%a8%e5%ae%9e%e7%8e%b0%e6%8e%a8%e8%8d%90">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> fcntl
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">class&lt;/span> &lt;span style="color:#f3f99d">FileLock&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">def&lt;/span> __init__(self, lock_file, timeout&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#ff6ac1">None&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self&lt;span style="color:#ff6ac1">.&lt;/span>lock_file &lt;span style="color:#ff6ac1">=&lt;/span> lock_file
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self&lt;span style="color:#ff6ac1">.&lt;/span>timeout &lt;span style="color:#ff6ac1">=&lt;/span> timeout
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self&lt;span style="color:#ff6ac1">.&lt;/span>fd &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">def&lt;/span> __enter__(self):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self&lt;span style="color:#ff6ac1">.&lt;/span>fd &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff5c57">open&lt;/span>(self&lt;span style="color:#ff6ac1">.&lt;/span>lock_file, &lt;span style="color:#5af78e">&amp;#39;w+&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> start_time &lt;span style="color:#ff6ac1">=&lt;/span> time&lt;span style="color:#ff6ac1">.&lt;/span>time()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">while&lt;/span> &lt;span style="color:#ff6ac1">True&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">try&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fcntl&lt;span style="color:#ff6ac1">.&lt;/span>flock(self&lt;span style="color:#ff6ac1">.&lt;/span>fd&lt;span style="color:#ff6ac1">.&lt;/span>fileno(), fcntl&lt;span style="color:#ff6ac1">.&lt;/span>LOCK_EX &lt;span style="color:#ff6ac1">|&lt;/span> fcntl&lt;span style="color:#ff6ac1">.&lt;/span>LOCK_NB)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">break&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">except&lt;/span> IOError &lt;span style="color:#ff6ac1">as&lt;/span> e:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> self&lt;span style="color:#ff6ac1">.&lt;/span>timeout &lt;span style="color:#ff6ac1">is&lt;/span> &lt;span style="color:#ff6ac1">not&lt;/span> &lt;span style="color:#ff6ac1">None&lt;/span> &lt;span style="color:#ff6ac1">and&lt;/span> time&lt;span style="color:#ff6ac1">.&lt;/span>time() &lt;span style="color:#ff6ac1">-&lt;/span> start_time &lt;span style="color:#ff6ac1">&amp;gt;&lt;/span> self&lt;span style="color:#ff6ac1">.&lt;/span>timeout:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">raise&lt;/span> TimeoutError(&lt;span style="color:#5af78e">&amp;#34;Could not acquire lock within timeout&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> time&lt;span style="color:#ff6ac1">.&lt;/span>sleep(&lt;span style="color:#ff9f43">0.1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> self
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">def&lt;/span> __exit__(self, exc_type, exc_val, exc_tb):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fcntl&lt;span style="color:#ff6ac1">.&lt;/span>flock(self&lt;span style="color:#ff6ac1">.&lt;/span>fd&lt;span style="color:#ff6ac1">.&lt;/span>fileno(), fcntl&lt;span style="color:#ff6ac1">.&lt;/span>LOCK_UN)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self&lt;span style="color:#ff6ac1">.&lt;/span>fd&lt;span style="color:#ff6ac1">.&lt;/span>close()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 使用示例&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">try&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">with&lt;/span> FileLock(&lt;span style="color:#5af78e">&amp;#34;/tmp/myapp.lock&amp;#34;&lt;/span>, timeout&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#ff9f43">5&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;Lock acquired, performing critical operation&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 执行临界区代码&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">except&lt;/span> TimeoutError:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;Could not acquire lock within timeout period&amp;#34;&lt;/span>)&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-保护配置文件更新">3. 保护配置文件更新&lt;a class="anchor" href="#3-%e4%bf%9d%e6%8a%a4%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e6%9b%b4%e6%96%b0">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> fcntl
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">update_config&lt;/span>(config_path, update_func):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#5af78e">&amp;#34;&amp;#34;&amp;#34;安全更新JSON配置文件&amp;#34;&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 读取现有配置&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">with&lt;/span> &lt;span style="color:#ff5c57">open&lt;/span>(config_path, &lt;span style="color:#5af78e">&amp;#39;r+&amp;#39;&lt;/span>) &lt;span style="color:#ff6ac1">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 获取排他锁&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fcntl&lt;span style="color:#ff6ac1">.&lt;/span>flock(f&lt;span style="color:#ff6ac1">.&lt;/span>fileno(), fcntl&lt;span style="color:#ff6ac1">.&lt;/span>LOCK_EX)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">try&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 读取内容&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> config &lt;span style="color:#ff6ac1">=&lt;/span> json&lt;span style="color:#ff6ac1">.&lt;/span>load(f)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 应用更新&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> updated_config &lt;span style="color:#ff6ac1">=&lt;/span> update_func(config)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 回到文件开始位置&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#ff6ac1">.&lt;/span>seek(&lt;span style="color:#ff9f43">0&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#ff6ac1">.&lt;/span>truncate()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 写入更新后的内容&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json&lt;span style="color:#ff6ac1">.&lt;/span>dump(updated_config, f, indent&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#ff9f43">2&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#ff6ac1">.&lt;/span>flush()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#ff6ac1">.&lt;/span>fsync(f&lt;span style="color:#ff6ac1">.&lt;/span>fileno()) &lt;span style="color:#78787e"># 确保写入磁盘&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">finally&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 释放锁&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fcntl&lt;span style="color:#ff6ac1">.&lt;/span>flock(f&lt;span style="color:#ff6ac1">.&lt;/span>fileno(), fcntl&lt;span style="color:#ff6ac1">.&lt;/span>LOCK_UN)&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="五注意事项与最佳实践">五、注意事项与最佳实践&lt;a class="anchor" href="#%e4%ba%94%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9%e4%b8%8e%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5">#&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>锁文件位置&lt;/strong>：&lt;/p></description></item><item><title>CIDR 表示法</title><link>https://yindongliang.com/posts/CIDR-%E8%A1%A8%E7%A4%BA%E6%B3%95/</link><pubDate>Mon, 22 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/CIDR-%E8%A1%A8%E7%A4%BA%E6%B3%95/</guid><description>&lt;h2 id="1-cidr-的最小定义一句话版">1. CIDR 的最小定义（一句话版）&lt;a class="anchor" href="#1-cidr-%e7%9a%84%e6%9c%80%e5%b0%8f%e5%ae%9a%e4%b9%89%e4%b8%80%e5%8f%a5%e8%af%9d%e7%89%88">#&lt;/a>&lt;/h2>
+&lt;p>&lt;strong>CIDR 是一种表示“一段连续 IP 地址范围”的写法。&lt;/strong>&lt;/p>
+&lt;p>形式固定为：&lt;/p>
+&lt;pre tabindex="0">&lt;code>IP地址/数字&lt;/code>&lt;/pre>&lt;p>例如：&lt;/p>
+&lt;pre tabindex="0">&lt;code>192.168.1.0/24&lt;/code>&lt;/pre>&lt;hr>
+&lt;h2 id="2-斜杠后面的数字到底是什么意思">2. 斜杠后面的数字，到底是什么意思&lt;a class="anchor" href="#2-%e6%96%9c%e6%9d%a0%e5%90%8e%e9%9d%a2%e7%9a%84%e6%95%b0%e5%ad%97%e5%88%b0%e5%ba%95%e6%98%af%e4%bb%80%e4%b9%88%e6%84%8f%e6%80%9d">#&lt;/a>&lt;/h2>
+&lt;p>斜杠后面的数字，&lt;strong>只表示一件事&lt;/strong>：&lt;/p></description></item><item><title>mount 挂载命令</title><link>https://yindongliang.com/posts/mount-%E6%8C%82%E8%BD%BD%E5%91%BD%E4%BB%A4/</link><pubDate>Mon, 22 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/mount-%E6%8C%82%E8%BD%BD%E5%91%BD%E4%BB%A4/</guid><description>&lt;p>&lt;code>mount&lt;/code> 是 Linux 系统中用于挂载文件系统的命令，它将一个存储设备（如硬盘分区、U盘、光盘、网络文件系统等）连接到文件系统树中的某个目录（称为“挂载点”），从而让用户可以访问该设备上的数据。&lt;/p></description></item><item><title>Helm 常用命令技术文档</title><link>https://yindongliang.com/docs/Kubernetes/Helm-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/</link><pubDate>Tue, 16 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Kubernetes/Helm-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/</guid><description>&lt;h2 id="1-概述">1. 概述&lt;a class="anchor" href="#1-%e6%a6%82%e8%bf%b0">#&lt;/a>&lt;/h2>
+&lt;p>Helm 是 Kubernetes 的包管理器，用于简化应用的部署、升级和管理。本文档介绍 Helm 的常用命令及其用法。&lt;/p>
+&lt;h2 id="2-环境准备与初始化">2. 环境准备与初始化&lt;a class="anchor" href="#2-%e7%8e%af%e5%a2%83%e5%87%86%e5%a4%87%e4%b8%8e%e5%88%9d%e5%a7%8b%e5%8c%96">#&lt;/a>&lt;/h2>
+&lt;h3 id="21-安装-helm">2.1 安装 Helm&lt;a class="anchor" href="#21-%e5%ae%89%e8%a3%85-helm">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># macOS (Homebrew)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>brew install helm
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># Linux&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># Windows (Chocolatey)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>choco install kubernetes-helm&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="22-验证安装">2.2 验证安装&lt;a class="anchor" href="#22-%e9%aa%8c%e8%af%81%e5%ae%89%e8%a3%85">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>helm version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 或&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm version --short&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-仓库管理命令">3. 仓库管理命令&lt;a class="anchor" href="#3-%e4%bb%93%e5%ba%93%e7%ae%a1%e7%90%86%e5%91%bd%e4%bb%a4">#&lt;/a>&lt;/h2>
+&lt;h3 id="31-添加仓库">3.1 添加仓库&lt;a class="anchor" href="#31-%e6%b7%bb%e5%8a%a0%e4%bb%93%e5%ba%93">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 添加官方稳定仓库&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm repo add stable https://charts.helm.sh/stable
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 添加 Bitnami 仓库&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm repo add bitnami https://charts.bitnami.com/bitnami
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 添加自定义仓库&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm repo add myrepo http://myrepo.example.com/charts&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="32-列出仓库">3.2 列出仓库&lt;a class="anchor" href="#32-%e5%88%97%e5%87%ba%e4%bb%93%e5%ba%93">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看已添加的仓库&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm repo list
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 详细输出&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm repo list -o yaml&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="33-更新仓库">3.3 更新仓库&lt;a class="anchor" href="#33-%e6%9b%b4%e6%96%b0%e4%bb%93%e5%ba%93">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 更新所有仓库&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm repo update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 更新特定仓库&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm repo update stable&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="34-移除仓库">3.4 移除仓库&lt;a class="anchor" href="#34-%e7%a7%bb%e9%99%a4%e4%bb%93%e5%ba%93">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>helm repo remove bitnami&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-搜索与查找命令">4. 搜索与查找命令&lt;a class="anchor" href="#4-%e6%90%9c%e7%b4%a2%e4%b8%8e%e6%9f%a5%e6%89%be%e5%91%bd%e4%bb%a4">#&lt;/a>&lt;/h2>
+&lt;h3 id="41-搜索-chart">4.1 搜索 Chart&lt;a class="anchor" href="#41-%e6%90%9c%e7%b4%a2-chart">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 从所有仓库搜索&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm search repo nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 从特定仓库搜索&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm search repo bitnami/nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 搜索所有版本&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm search repo nginx -l
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 从 Artifact Hub 搜索（无需添加仓库）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm search hub wordpress&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="42-查看-chart-信息">4.2 查看 Chart 信息&lt;a class="anchor" href="#42-%e6%9f%a5%e7%9c%8b-chart-%e4%bf%a1%e6%81%af">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看 Chart 详情&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm show chart bitnami/nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看所有信息&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm show all bitnami/nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看 values.yaml&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm show values bitnami/nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看 README&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm show readme bitnami/nginx&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-安装与部署命令">5. 安装与部署命令&lt;a class="anchor" href="#5-%e5%ae%89%e8%a3%85%e4%b8%8e%e9%83%a8%e7%bd%b2%e5%91%bd%e4%bb%a4">#&lt;/a>&lt;/h2>
+&lt;h3 id="51-基本安装">5.1 基本安装&lt;a class="anchor" href="#51-%e5%9f%ba%e6%9c%ac%e5%ae%89%e8%a3%85">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 从仓库安装&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-nginx bitnami/nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 指定命名空间&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-nginx bitnami/nginx -n my-namespace
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 或&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-nginx bitnami/nginx --namespace my-namespace
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 安装时指定 values 文件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-nginx bitnami/nginx -f custom-values.yaml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 安装时覆盖参数&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-nginx bitnami/nginx --set &lt;span style="color:#ff5c57">replicaCount&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#ff9f43">3&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-nginx bitnami/nginx --set service.type&lt;span style="color:#ff6ac1">=&lt;/span>LoadBalancer&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="52-高级安装选项">5.2 高级安装选项&lt;a class="anchor" href="#52-%e9%ab%98%e7%ba%a7%e5%ae%89%e8%a3%85%e9%80%89%e9%a1%b9">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 指定版本&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-nginx bitnami/nginx --version 13.2.1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 生成 manifest 但不安装（dry-run）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-nginx bitnami/nginx --dry-run
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 调试模式（显示详细输出）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-nginx bitnami/nginx --debug
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 等待部署完成&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-nginx bitnami/nginx --wait
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 设置超时时间&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-nginx bitnami/nginx --timeout 5m&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="53-从本地文件安装">5.3 从本地文件安装&lt;a class="anchor" href="#53-%e4%bb%8e%e6%9c%ac%e5%9c%b0%e6%96%87%e4%bb%b6%e5%ae%89%e8%a3%85">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 从本地 Chart 目录安装&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-app ./my-chart
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 从打包的 Chart 安装&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-app ./my-chart-1.0.0.tgz
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 从 OCI 仓库安装&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-app oci://registry.example.com/charts/my-app&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-升级与回滚命令">6. 升级与回滚命令&lt;a class="anchor" href="#6-%e5%8d%87%e7%ba%a7%e4%b8%8e%e5%9b%9e%e6%bb%9a%e5%91%bd%e4%bb%a4">#&lt;/a>&lt;/h2>
+&lt;h3 id="61-升级-release">6.1 升级 Release&lt;a class="anchor" href="#61-%e5%8d%87%e7%ba%a7-release">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 基本升级&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm upgrade my-nginx bitnami/nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 升级到指定版本&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm upgrade my-nginx bitnami/nginx --version 13.2.2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 升级时更新 values&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm upgrade my-nginx bitnami/nginx -f new-values.yaml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 升级时覆盖参数&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm upgrade my-nginx bitnami/nginx --set &lt;span style="color:#ff5c57">replicaCount&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#ff9f43">5&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 重置 values 到 Chart 默认值&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm upgrade my-nginx bitnami/nginx --reset-values&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="62-查看历史记录">6.2 查看历史记录&lt;a class="anchor" href="#62-%e6%9f%a5%e7%9c%8b%e5%8e%86%e5%8f%b2%e8%ae%b0%e5%bd%95">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看发布历史&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm &lt;span style="color:#ff5c57">history&lt;/span> my-nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 详细输出&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm &lt;span style="color:#ff5c57">history&lt;/span> my-nginx -o yaml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 显示最大数量&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm &lt;span style="color:#ff5c57">history&lt;/span> my-nginx --max &lt;span style="color:#ff9f43">10&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="63-回滚-release">6.3 回滚 Release&lt;a class="anchor" href="#63-%e5%9b%9e%e6%bb%9a-release">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 回滚到上一个版本&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm rollback my-nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 回滚到指定版本&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm rollback my-nginx &lt;span style="color:#ff9f43">2&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 等待回滚完成&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm rollback my-nginx &lt;span style="color:#ff9f43">2&lt;/span> --wait&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-查看与管理-release">7. 查看与管理 Release&lt;a class="anchor" href="#7-%e6%9f%a5%e7%9c%8b%e4%b8%8e%e7%ae%a1%e7%90%86-release">#&lt;/a>&lt;/h2>
+&lt;h3 id="71-列出-release">7.1 列出 Release&lt;a class="anchor" href="#71-%e5%88%97%e5%87%ba-release">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 列出当前命名空间的 Release&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm list
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 或&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm ls
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 列出所有命名空间的 Release&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm list --all-namespaces
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 或&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm list -A
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 指定命名空间&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm list -n my-namespace
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 按时间排序&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm list --date
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># JSON 输出&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm list -o json&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="72-查看-release-状态">7.2 查看 Release 状态&lt;a class="anchor" href="#72-%e6%9f%a5%e7%9c%8b-release-%e7%8a%b6%e6%80%81">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看状态&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm status my-nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看资源&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm get manifest my-nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看 values&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm get values my-nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看所有配置&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm get all my-nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看 hooks&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm get hooks my-nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看 notes&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm get notes my-nginx&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="73-卸载-release">7.3 卸载 Release&lt;a class="anchor" href="#73-%e5%8d%b8%e8%bd%bd-release">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 卸载 Release&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm uninstall my-nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 卸载时保留历史&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm uninstall my-nginx --keep-history
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 强制卸载（即使失败也继续）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm uninstall my-nginx --no-hooks
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 指定超时时间&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm uninstall my-nginx --timeout 5m&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="8-chart-开发与打包命令">8. Chart 开发与打包命令&lt;a class="anchor" href="#8-chart-%e5%bc%80%e5%8f%91%e4%b8%8e%e6%89%93%e5%8c%85%e5%91%bd%e4%bb%a4">#&lt;/a>&lt;/h2>
+&lt;h3 id="81-创建-chart">8.1 创建 Chart&lt;a class="anchor" href="#81-%e5%88%9b%e5%bb%ba-chart">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 创建新 Chart&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm create my-chart
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 创建时指定 API 版本&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm create my-chart --api-version v2&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="82-验证-chart">8.2 验证 Chart&lt;a class="anchor" href="#82-%e9%aa%8c%e8%af%81-chart">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 验证 Chart 格式&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm lint ./my-chart
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 严格验证&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm lint ./my-chart --strict
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 验证并输出详细信息&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm lint ./my-chart --debug&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="83-打包与发布">8.3 打包与发布&lt;a class="anchor" href="#83-%e6%89%93%e5%8c%85%e4%b8%8e%e5%8f%91%e5%b8%83">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 打包 Chart&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm package ./my-chart
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 指定版本号&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm package ./my-chart --version 1.2.3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 指定应用版本&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm package ./my-chart --app-version 2.0.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 指定输出目录&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm package ./my-chart --destination ./packages
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 推送到 OCI 仓库&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm push my-chart-1.0.0.tgz oci://registry.example.com/charts&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="84-依赖管理">8.4 依赖管理&lt;a class="anchor" href="#84-%e4%be%9d%e8%b5%96%e7%ae%a1%e7%90%86">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 更新依赖&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm dependency update ./my-chart
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 构建依赖&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm dependency build ./my-chart
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 列出依赖&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm dependency list ./my-chart&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="9-模板操作命令">9. 模板操作命令&lt;a class="anchor" href="#9-%e6%a8%a1%e6%9d%bf%e6%93%8d%e4%bd%9c%e5%91%bd%e4%bb%a4">#&lt;/a>&lt;/h2>
+&lt;h3 id="91-渲染模板">9.1 渲染模板&lt;a class="anchor" href="#91-%e6%b8%b2%e6%9f%93%e6%a8%a1%e6%9d%bf">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 渲染模板（本地查看）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm template my-app ./my-chart
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 指定 values 文件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm template my-app ./my-chart -f values.yaml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 覆盖参数&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm template my-app ./my-chart --set &lt;span style="color:#ff5c57">replicaCount&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#ff9f43">2&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 输出到文件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm template my-app ./my-chart &amp;gt; manifest.yaml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 渲染特定命名空间&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm template my-app ./my-chart -n my-namespace&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="92-调试模板">9.2 调试模板&lt;a class="anchor" href="#92-%e8%b0%83%e8%af%95%e6%a8%a1%e6%9d%bf">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 显示渲染的模板&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install --dry-run --debug my-app ./my-chart
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 使用模板函数调试&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm template my-app ./my-chart --debug&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="10-插件管理命令">10. 插件管理命令&lt;a class="anchor" href="#10-%e6%8f%92%e4%bb%b6%e7%ae%a1%e7%90%86%e5%91%bd%e4%bb%a4">#&lt;/a>&lt;/h2>
+&lt;h3 id="101-插件操作">10.1 插件操作&lt;a class="anchor" href="#101-%e6%8f%92%e4%bb%b6%e6%93%8d%e4%bd%9c">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 安装插件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm plugin install https://github.com/databus23/helm-diff
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 列出已安装插件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm plugin list
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 更新插件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm plugin update diff
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 卸载插件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm plugin uninstall diff&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="102-常用插件">10.2 常用插件&lt;a class="anchor" href="#102-%e5%b8%b8%e7%94%a8%e6%8f%92%e4%bb%b6">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># helm-diff：查看变更&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm diff upgrade my-app ./my-chart
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># helm-secrets：管理加密 values&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm secrets install my-app ./my-chart -f secrets.yaml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># helm-git：从 Git 仓库安装&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm git install https://github.com/example/charts.git&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="11-环境与配置命令">11. 环境与配置命令&lt;a class="anchor" href="#11-%e7%8e%af%e5%a2%83%e4%b8%8e%e9%85%8d%e7%bd%ae%e5%91%bd%e4%bb%a4">#&lt;/a>&lt;/h2>
+&lt;h3 id="111-环境变量">11.1 环境变量&lt;a class="anchor" href="#111-%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看环境配置&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm env
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 设置环境变量&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">export&lt;/span> &lt;span style="color:#ff5c57">HELM_NAMESPACE&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>production
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">export&lt;/span> &lt;span style="color:#ff5c57">HELM_KUBECONTEXT&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>prod-cluster&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="112-配置管理">11.2 配置管理&lt;a class="anchor" href="#112-%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看当前配置&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm get values my-app
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看指定修订版的配置&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm get values my-app --revision &lt;span style="color:#ff9f43">3&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 输出为 yaml&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm get values my-app -o yaml&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="12-实用命令示例">12. 实用命令示例&lt;a class="anchor" href="#12-%e5%ae%9e%e7%94%a8%e5%91%bd%e4%bb%a4%e7%a4%ba%e4%be%8b">#&lt;/a>&lt;/h2>
+&lt;h3 id="121-一键部署-wordpress">12.1 一键部署 WordPress&lt;a class="anchor" href="#121-%e4%b8%80%e9%94%ae%e9%83%a8%e7%bd%b2-wordpress">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 添加仓库&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm repo add bitnami https://charts.bitnami.com/bitnami
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm repo update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 部署 WordPress&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install my-wordpress bitnami/wordpress &lt;span style="color:#5af78e">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#5af78e">&lt;/span> --namespace wordpress &lt;span style="color:#5af78e">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#5af78e">&lt;/span> --set &lt;span style="color:#ff5c57">wordpressUsername&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>admin &lt;span style="color:#5af78e">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#5af78e">&lt;/span> --set &lt;span style="color:#ff5c57">wordpressPassword&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>password &lt;span style="color:#5af78e">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#5af78e">&lt;/span> --set mariadb.auth.rootPassword&lt;span style="color:#ff6ac1">=&lt;/span>secretpassword &lt;span style="color:#5af78e">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#5af78e">&lt;/span> --wait &lt;span style="color:#5af78e">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#5af78e">&lt;/span> --timeout 10m&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="122-升级并验证">12.2 升级并验证&lt;a class="anchor" href="#122-%e5%8d%87%e7%ba%a7%e5%b9%b6%e9%aa%8c%e8%af%81">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 检查升级变更&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm diff upgrade my-app ./my-chart
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 执行升级&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm upgrade my-app ./my-chart &lt;span style="color:#5af78e">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#5af78e">&lt;/span> --values values.yaml &lt;span style="color:#5af78e">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#5af78e">&lt;/span> --set image.tag&lt;span style="color:#ff6ac1">=&lt;/span>v2.0.0 &lt;span style="color:#5af78e">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#5af78e">&lt;/span> --wait &lt;span style="color:#5af78e">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#5af78e">&lt;/span> --timeout 5m
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 验证升级&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm status my-app
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl get pods -l &lt;span style="color:#ff5c57">app&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>my-app&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="123-清理旧-release">12.3 清理旧 Release&lt;a class="anchor" href="#123-%e6%b8%85%e7%90%86%e6%97%a7-release">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看失败的 Release&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm list --failed
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 删除所有失败状态的 Release&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm list --failed --short | xargs -L1 helm uninstall
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 删除指定天数之前的 Release&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm list --date | grep &lt;span style="color:#5af78e">&amp;#34;days ago&amp;#34;&lt;/span> | awk &lt;span style="color:#5af78e">&amp;#39;{print $1}&amp;#39;&lt;/span> | xargs -L1 helm uninstall&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="13-常用命令速查表">13. 常用命令速查表&lt;a class="anchor" href="#13-%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4%e9%80%9f%e6%9f%a5%e8%a1%a8">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>功能&lt;/th>
+ &lt;th>命令&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>安装&lt;/td>
+ &lt;td>&lt;code>helm install &amp;lt;name&amp;gt; &amp;lt;chart&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>升级&lt;/td>
+ &lt;td>&lt;code>helm upgrade &amp;lt;release&amp;gt; &amp;lt;chart&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>回滚&lt;/td>
+ &lt;td>&lt;code>helm rollback &amp;lt;release&amp;gt; &amp;lt;revision&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>卸载&lt;/td>
+ &lt;td>&lt;code>helm uninstall &amp;lt;release&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>列表&lt;/td>
+ &lt;td>&lt;code>helm list&lt;/code> 或 &lt;code>helm ls&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>查看状态&lt;/td>
+ &lt;td>&lt;code>helm status &amp;lt;release&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>查看历史&lt;/td>
+ &lt;td>&lt;code>helm history &amp;lt;release&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>搜索&lt;/td>
+ &lt;td>&lt;code>helm search repo &amp;lt;keyword&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>添加仓库&lt;/td>
+ &lt;td>&lt;code>helm repo add &amp;lt;name&amp;gt; &amp;lt;url&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>更新仓库&lt;/td>
+ &lt;td>&lt;code>helm repo update&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>创建 Chart&lt;/td>
+ &lt;td>&lt;code>helm create &amp;lt;name&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>打包 Chart&lt;/td>
+ &lt;td>&lt;code>helm package &amp;lt;path&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>验证 Chart&lt;/td>
+ &lt;td>&lt;code>helm lint &amp;lt;path&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>渲染模板&lt;/td>
+ &lt;td>&lt;code>helm template &amp;lt;name&amp;gt; &amp;lt;chart&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="14-注意事项">14. 注意事项&lt;a class="anchor" href="#14-%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9">#&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>&lt;strong>命名空间&lt;/strong>：默认使用 &lt;code>default&lt;/code> 命名空间，可通过 &lt;code>-n&lt;/code> 或 &lt;code>--namespace&lt;/code> 指定&lt;/li>
+&lt;li>&lt;strong>版本管理&lt;/strong>：每次升级都会创建一个新的修订版&lt;/li>
+&lt;li>&lt;strong>资源清理&lt;/strong>：卸载时默认删除所有相关资源&lt;/li>
+&lt;li>&lt;strong>配置管理&lt;/strong>：建议使用 values 文件管理配置，而非命令行参数&lt;/li>
+&lt;li>&lt;strong>生产环境&lt;/strong>：推荐使用 &lt;code>--wait&lt;/code> 和 &lt;code>--timeout&lt;/code> 参数确保部署成功&lt;/li>
+&lt;/ol>
+&lt;h2 id="15-故障排除">15. 故障排除&lt;a class="anchor" href="#15-%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看详细错误信息&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>helm install --debug --dry-run
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 检查 Kubernetes 配置&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config view
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 检查集群连接&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl cluster-info
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看 Helm 事件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl get events --sort-by&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;.lastTimestamp&amp;#39;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>本文档覆盖了 Helm 的常用命令，实际使用中可结合具体场景选择合适的命令和参数。&lt;/p></description></item><item><title>port-forward 命令详解</title><link>https://yindongliang.com/docs/Kubernetes/port-forward-%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/</link><pubDate>Tue, 16 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Kubernetes/port-forward-%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/</guid><description>&lt;p>&lt;code>kubectl port-forward&lt;/code> 是 Kubernetes 提供的一个命令行工具，用于将本地机器（你的开发机或笔记本）上的一个端口&lt;strong>转发到 Kubernetes 集群中某个 Pod 的端口&lt;/strong>。它常用于调试、测试或临时访问集群内部服务，而无需将服务暴露到外部网络。&lt;/p></description></item><item><title>pm2 使用</title><link>https://yindongliang.com/posts/pm2-%E4%BD%BF%E7%94%A8/</link><pubDate>Thu, 27 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/pm2-%E4%BD%BF%E7%94%A8/</guid><description>&lt;p>&lt;a href="https://pm2.keymetrics.io/">https://pm2.keymetrics.io/&lt;/a>&lt;/p>
+&lt;h1 id="pm2-使用指南">PM2 使用指南&lt;a class="anchor" href="#pm2-%e4%bd%bf%e7%94%a8%e6%8c%87%e5%8d%97">#&lt;/a>&lt;/h1>
+&lt;h2 id="1-什么是-pm2">1. 什么是 PM2&lt;a class="anchor" href="#1-%e4%bb%80%e4%b9%88%e6%98%af-pm2">#&lt;/a>&lt;/h2>
+&lt;p>PM2（Process Manager 2）是一个 Node.js 应用程序的进程管理器，它提供了负载均衡、自动重启、日志管理、监控等功能，帮助开发者更轻松地管理和部署 Node.js 应用。&lt;/p></description></item><item><title>使用 GDB 调试 Python</title><link>https://yindongliang.com/posts/%E4%BD%BF%E7%94%A8-GDB-%E8%B0%83%E8%AF%95-Python/</link><pubDate>Thu, 27 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E4%BD%BF%E7%94%A8-GDB-%E8%B0%83%E8%AF%95-Python/</guid><description>&lt;h1 id="使用-gdb-调试-python">使用 GDB 调试 Python&lt;a class="anchor" href="#%e4%bd%bf%e7%94%a8-gdb-%e8%b0%83%e8%af%95-python">#&lt;/a>&lt;/h1>
+&lt;h2 id="1-引言">1. 引言&lt;a class="anchor" href="#1-%e5%bc%95%e8%a8%80">#&lt;/a>&lt;/h2>
+&lt;p>GDB (GNU Debugger) 是一个功能强大的命令行调试工具，常用于调试 C/C++ 程序。但你知道吗？GDB 也可以用于调试 Python 程序，特别是在以下场景中：&lt;/p>
+&lt;ul>
+&lt;li>Python 解释器崩溃时分析核心转储&lt;/li>
+&lt;li>调试 Python 扩展模块（C/C++ 编写）&lt;/li>
+&lt;li>分析 Python 程序的性能瓶颈&lt;/li>
+&lt;li>调试 Python 解释器本身&lt;/li>
+&lt;/ul>
+&lt;p>本文将详细介绍如何使用 GDB 调试 Python 程序，从基础配置到高级技巧，帮助你掌握这一强大的调试方法。&lt;/p></description></item><item><title>Serverless与边缘计算：从底层硬件到架构的深度解析</title><link>https://yindongliang.com/posts/Serverless%E4%B8%8E%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97%E4%BB%8E%E5%BA%95%E5%B1%82%E7%A1%AC%E4%BB%B6%E5%88%B0%E6%9E%B6%E6%9E%84%E7%9A%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/</link><pubDate>Wed, 26 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/Serverless%E4%B8%8E%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97%E4%BB%8E%E5%BA%95%E5%B1%82%E7%A1%AC%E4%BB%B6%E5%88%B0%E6%9E%B6%E6%9E%84%E7%9A%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/</guid><description>&lt;h2 id="引言">引言&lt;a class="anchor" href="#%e5%bc%95%e8%a8%80">#&lt;/a>&lt;/h2>
+&lt;p>Serverless和边缘计算是当今云计算领域最热门的两个概念，但它们常常被误解或混淆。本文将从&lt;strong>底层硬件与架构角度&lt;/strong>深入解释两者的本质区别和运行机制，帮助你超越&amp;quot;无服务器&amp;quot;和&amp;quot;离用户近&amp;quot;等表层理解，真正把握它们的核心原理和适用场景。&lt;/p></description></item><item><title>.gitattributes 的用途和工作机制</title><link>https://yindongliang.com/docs/Git/gitattributes/</link><pubDate>Wed, 19 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Git/gitattributes/</guid><description>&lt;p>&lt;a href="https://git-lfs.com/">https://git-lfs.com/&lt;/a>&lt;/p>
+&lt;h2 id="一gitattributes-概念与总体作用">一、.gitattributes 概念与总体作用&lt;a class="anchor" href="#%e4%b8%80gitattributes-%e6%a6%82%e5%bf%b5%e4%b8%8e%e6%80%bb%e4%bd%93%e4%bd%9c%e7%94%a8">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-gitattributes-是什么">1. .gitattributes 是什么&lt;a class="anchor" href="#1-gitattributes-%e6%98%af%e4%bb%80%e4%b9%88">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>.gitattributes 是 Git 仓库中的一个配置文件，用来“按文件路径匹配”控制 Git 对这些文件的各种行为。&lt;/li>
+&lt;li>它可以存在于：
+&lt;ul>
+&lt;li>仓库根目录（最常见）&lt;/li>
+&lt;li>任意子目录（子目录中的 .gitattributes 会叠加/覆盖上层目录的规则）&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>在克隆仓库时，.gitattributes 作为普通文件一起被拉取，因此所有协作者都会拿到同样的“文件行为规则”。&lt;/li>
+&lt;/ul>
+&lt;h3 id="2-gitattributes-大致控制哪些行为">2. .gitattributes 大致控制哪些行为&lt;a class="anchor" href="#2-gitattributes-%e5%a4%a7%e8%87%b4%e6%8e%a7%e5%88%b6%e5%93%aa%e4%ba%9b%e8%a1%8c%e4%b8%ba">#&lt;/a>&lt;/h3>
+&lt;p>主要控制这些：&lt;/p></description></item><item><title>kubectl 常用命令大全</title><link>https://yindongliang.com/docs/Kubernetes/kubectl-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%A4%A7%E5%85%A8/</link><pubDate>Tue, 18 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Kubernetes/kubectl-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%A4%A7%E5%85%A8/</guid><description>&lt;h2 id="1-基础与配置相关命令">1. 基础与配置相关命令&lt;a class="anchor" href="#1-%e5%9f%ba%e7%a1%80%e4%b8%8e%e9%85%8d%e7%bd%ae%e7%9b%b8%e5%85%b3%e5%91%bd%e4%bb%a4">#&lt;/a>&lt;/h2>
+&lt;h3 id="11-上下文与命名空间管理">1.1 上下文与命名空间管理&lt;a class="anchor" href="#11-%e4%b8%8a%e4%b8%8b%e6%96%87%e4%b8%8e%e5%91%bd%e5%90%8d%e7%a9%ba%e9%97%b4%e7%ae%a1%e7%90%86">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看当前上下文&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config current-context
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看所有上下文&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config get-contexts
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 切换上下文&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config use-context my-context
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看集群信息&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config view --minify
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 设置默认命名空间（为当前上下文）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config set-context --current --namespace&lt;span style="color:#ff6ac1">=&lt;/span>my-namespace
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看当前命名空间&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config view --minify --output &lt;span style="color:#5af78e">&amp;#39;jsonpath={..namespace}&amp;#39;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>要查看 Kubernetes (k8s) 中的所有命名空间，最核心的命令是 &lt;code>kubectl get namespaces&lt;/code> 或它的简写 &lt;code>kubectl get ns&lt;/code>。&lt;/p></description></item><item><title>Kubectl 速查手册</title><link>https://yindongliang.com/docs/Kubernetes/Kubectl-%E9%80%9F%E6%9F%A5%E6%89%8B%E5%86%8C/</link><pubDate>Tue, 18 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Kubernetes/Kubectl-%E9%80%9F%E6%9F%A5%E6%89%8B%E5%86%8C/</guid><description>&lt;p>下面是一份偏“速查手册”风格的 kubectl 常用命令大全，尽量按功能分类，并给出大量可直接参考执行的命令示例。为了便于阅读，示例统一使用一些通用占位符，如 my-namespace、my-pod、my-deploy、app=myapp 等。&lt;/p></description></item><item><title>一些云服务商</title><link>https://yindongliang.com/docs/Awesome/awesome-clouds-services/</link><pubDate>Thu, 16 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-clouds-services/</guid><description>&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;th>使用过&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Railway&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://railway.com/">https://railway.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>fly.io&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://fly.io/">https://fly.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Cloudflare&lt;/td>
+ &lt;td>全球网络优势&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>✅&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Vercel&lt;/td>
+ &lt;td>主打边缘计算、Serverless&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>✅&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>阿里云百炼平台&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://bailian.console.aliyun.com">https://bailian.console.aliyun.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>百度千帆&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://cloud.baidu.com/product-s/qianfan_home">https://cloud.baidu.com/product-s/qianfan_home&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>PyPI Package 版本号规范</title><link>https://yindongliang.com/docs/Python/PyPI-Package-%E7%89%88%E6%9C%AC%E5%8F%B7%E8%A7%84%E8%8C%83/</link><pubDate>Wed, 15 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/PyPI-Package-%E7%89%88%E6%9C%AC%E5%8F%B7%E8%A7%84%E8%8C%83/</guid><description>&lt;p>&lt;a href="https://pip.pypa.io/en/stable/reference/requirements-file-format/">https://pip.pypa.io/en/stable/reference/requirements-file-format/&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-txt" data-lang="txt">&lt;span style="display:flex;">&lt;span># The syntax supported here is the same as that of requirement specifiers.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>docopt == 0.6.1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>requests [security] &amp;gt;= 2.8.1, == 2.8.* ; python_version &amp;lt; &amp;#34;2.7&amp;#34;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>urllib3 @ https://github.com/urllib3/urllib3/archive/refs/tags/1.26.8.zip&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在 pip 的 &lt;code>requirements.txt&lt;/code> 文件中，PyPI package 的版本号指定遵循 &lt;strong>PEP 440&lt;/strong> 规范。以下是主要的版本指定方式：&lt;/p></description></item><item><title>Dynadot - 域名服务商</title><link>https://yindongliang.com/links/202510/Dynadot-%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%95%86/</link><pubDate>Mon, 13 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Dynadot-%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%95%86/</guid><description/></item><item><title>Shell Script to Check if a File Exists</title><link>https://yindongliang.com/posts/Shell-Script-to-Check-if-a-File-Exists/</link><pubDate>Sat, 20 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/Shell-Script-to-Check-if-a-File-Exists/</guid><description>&lt;p>To check if a file exists in a shell script, you can use the &lt;code>test&lt;/code> command or the &lt;code>[&lt;/code> command. Both commands are equivalent, but the &lt;code>test&lt;/code> command is more powerful and allows you to perform more complex checks.&lt;/p>
+&lt;p>Here&amp;rsquo;s an example using the &lt;code>test&lt;/code> command:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">if&lt;/span> &lt;span style="color:#ff5c57">test&lt;/span> -e &lt;span style="color:#ff6ac1">{&lt;/span>filename&lt;span style="color:#ff6ac1">}&lt;/span>; &lt;span style="color:#ff6ac1">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">echo&lt;/span> &lt;span style="color:#5af78e">&amp;#34;File exists&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">echo&lt;/span> &lt;span style="color:#5af78e">&amp;#34;File does not exist&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">fi&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Alternatively, you can use the &lt;code>[&lt;/code> command:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">if&lt;/span> &lt;span style="color:#ff6ac1">[&lt;/span> -e &lt;span style="color:#ff6ac1">{&lt;/span>filename&lt;span style="color:#ff6ac1">}&lt;/span> &lt;span style="color:#ff6ac1">]&lt;/span>; &lt;span style="color:#ff6ac1">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">echo&lt;/span> &lt;span style="color:#5af78e">&amp;#34;File exists&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">echo&lt;/span> &lt;span style="color:#5af78e">&amp;#34;File does not exist&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">fi&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>In both cases, replace &lt;code>{filename}&lt;/code> with the name of the file you want to check.&lt;/p></description></item><item><title>宝塔</title><link>https://yindongliang.com/links/202509/%E5%AE%9D%E5%A1%94/</link><pubDate>Sun, 14 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/%E5%AE%9D%E5%A1%94/</guid><description>&lt;p>宝塔,安全高效的服务器运维面板&lt;/p></description></item><item><title>n8n 介绍</title><link>https://yindongliang.com/docs/Linux/n8n/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/n8n/</guid><description>&lt;p>&lt;a href="https://n8n.io/">n8n&lt;/a> 是一款功能强大的开源工作流自动化工具，它通过可视化的方式让你能够连接各种应用、服务和数据，自动执行重复性的任务和业务流程。&lt;/p>
+&lt;p>&lt;a href="https://docs.n8n.io/">https://docs.n8n.io/&lt;/a>&lt;/p>
+&lt;h1 id="-n8n-工作流自动化平台全面指南">🔧 n8n 工作流自动化平台全面指南&lt;a class="anchor" href="#-n8n-%e5%b7%a5%e4%bd%9c%e6%b5%81%e8%87%aa%e5%8a%a8%e5%8c%96%e5%b9%b3%e5%8f%b0%e5%85%a8%e9%9d%a2%e6%8c%87%e5%8d%97">#&lt;/a>&lt;/h1>
+&lt;h2 id="-核心特点">✨ 核心特点&lt;a class="anchor" href="#-%e6%a0%b8%e5%bf%83%e7%89%b9%e7%82%b9">#&lt;/a>&lt;/h2>
+&lt;p>n8n 有以下几个突出的特点，使其在自动化工具中脱颖而出：&lt;/p></description></item><item><title>WebHook URL 概念</title><link>https://yindongliang.com/docs/Linux/WebHook-URL/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/WebHook-URL/</guid><description>&lt;p>关于 Webhook URL 本身并没有一个全球统一的硬性标准，但它有一些广泛接受的实践和常见要求，这些“事实上的标准”确保了不同系统之间能够可靠、安全地协作。&lt;/p>
+&lt;p>下面这个表格汇总了 Webhook URL 及请求的主要实践和常见要求，希望能帮你快速了解：&lt;/p></description></item><item><title>了解 glob 模式匹配</title><link>https://yindongliang.com/posts/%E4%BA%86%E8%A7%A3-glob-%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D/</link><pubDate>Sat, 18 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E4%BA%86%E8%A7%A3-glob-%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D/</guid><description>&lt;p>在 Visual Studio Code（VSCode）以及许多其他工具和库中，文件路径匹配通常使用 &lt;a href="https://en.wikipedia.org/wiki/Glob_%28programming%29">glob 模式&lt;/a>。&lt;/p>
+&lt;h2 id="glob-模式中的通配符">Glob 模式中的通配符&lt;a class="anchor" href="#glob-%e6%a8%a1%e5%bc%8f%e4%b8%ad%e7%9a%84%e9%80%9a%e9%85%8d%e7%ac%a6">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>*&lt;/code>：匹配任意数量的字符（不包括路径分隔符 &lt;code>/&lt;/code>）。&lt;/li>
+&lt;li>&lt;code>**&lt;/code>：匹配任意数量的目录层级，包括子目录。&lt;/li>
+&lt;li>&lt;code>?&lt;/code>：匹配单个字符。&lt;/li>
+&lt;li>&lt;code>[abc]&lt;/code>：匹配方括号内的任意一个字符。&lt;/li>
+&lt;li>&lt;code>{a,b}&lt;/code>：匹配花括号内的任意一个模式。&lt;/li>
+&lt;/ul>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>Wildcard&lt;/th>
+ &lt;th>Description&lt;/th>
+ &lt;th>Example&lt;/th>
+ &lt;th>Matches&lt;/th>
+ &lt;th>Does not match&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;code>*&lt;/code>&lt;/td>
+ &lt;td>matches any number of any characters including none&lt;/td>
+ &lt;td>&lt;code>Law*&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Law&lt;/code>, &lt;code>Laws&lt;/code>, or &lt;code>Lawyer&lt;/code>&lt;/td>
+ &lt;td>&lt;code>GrokLaw&lt;/code>, &lt;code>La&lt;/code>, or &lt;code>aw&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>*Law*&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Law&lt;/code>, &lt;code>GrokLaw&lt;/code>, or &lt;code>Lawyer&lt;/code>.&lt;/td>
+ &lt;td>&lt;code>La&lt;/code>, or &lt;code>aw&lt;/code>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>?&lt;/code>&lt;/td>
+ &lt;td>matches any single character&lt;/td>
+ &lt;td>&lt;code>?at&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Cat&lt;/code>, &lt;code>cat&lt;/code>, &lt;code>Bat&lt;/code> or &lt;code>bat&lt;/code>&lt;/td>
+ &lt;td>&lt;code>at&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>[abc]&lt;/code>&lt;/td>
+ &lt;td>matches one character given in the bracket&lt;/td>
+ &lt;td>&lt;code>[CB]at&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Cat&lt;/code> or &lt;code>Bat&lt;/code>&lt;/td>
+ &lt;td>&lt;code>cat&lt;/code>, &lt;code>bat&lt;/code> or &lt;code>CBat&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;code>[a-z]&lt;/code>&lt;/td>
+ &lt;td>matches one character from the (locale-dependent) range given in the bracket&lt;/td>
+ &lt;td>&lt;code>Letter[0-9]&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Letter0&lt;/code>, &lt;code>Letter1&lt;/code>, &lt;code>Letter2&lt;/code> up to &lt;code>Letter9&lt;/code>&lt;/td>
+ &lt;td>&lt;code>Letters&lt;/code>, &lt;code>Letter&lt;/code> or &lt;code>Letter10&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="示例解释">示例解释&lt;a class="anchor" href="#%e7%a4%ba%e4%be%8b%e8%a7%a3%e9%87%8a">#&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;code>**/*.log&lt;/code>：&lt;/p></description></item><item><title>Linux 运维</title><link>https://yindongliang.com/docs/Linux/DevOps/</link><pubDate>Thu, 18 May 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/DevOps/</guid><description>&lt;h2 id="权限系统">权限系统&lt;a class="anchor" href="#%e6%9d%83%e9%99%90%e7%b3%bb%e7%bb%9f">#&lt;/a>&lt;/h2>
+&lt;p>Linux 系统使用一个专门的 &lt;code>/etc/passwd&lt;/code> 文件来匹配登录名与对应的 UID 值，用户密码不保存在此文件，而是在 &lt;code>/etc/shadow&lt;/code> 中，只有特定程序或 root 才可以访问。&lt;/p>
+&lt;h3 id="用户管理">用户管理&lt;a class="anchor" href="#%e7%94%a8%e6%88%b7%e7%ae%a1%e7%90%86">#&lt;/a>&lt;/h3>
+&lt;p>使用 &lt;code>useradd&lt;/code> 来创建新用户，&lt;code>userdel&lt;/code> 来删除用户，&lt;code>usermod&lt;/code> 来修改用户信息。&lt;/p></description></item><item><title>命令行</title><link>https://yindongliang.com/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/</link><pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Rust/%E5%91%BD%E4%BB%A4%E8%A1%8C/</guid><description>&lt;p>&lt;a href="https://rust-cli.github.io/book/index.html">Command Line Applications in Rust&lt;/a>&lt;/p>
+&lt;h2 id="rustup">Rustup&lt;a class="anchor" href="#rustup">#&lt;/a>&lt;/h2>
+&lt;p>Rustup: the Rust installer and version management tool&lt;/p>
+&lt;p>通过 Rustup 安装 Rust 并管理不同版本。&lt;/p>
+&lt;h2 id="cargo">Cargo&lt;a class="anchor" href="#cargo">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="https://doc.rust-lang.org/cargo/index.html">The Cargo Book&lt;/a>&lt;/p>
+&lt;p>the Rust build tool and package manager&lt;/p>
+&lt;p>When you install Rustup you’ll also get the latest stable version of the Rust build tool and package manager, also known as Cargo. Cargo does lots of things:&lt;/p></description></item><item><title>tar 命令中的绝对路径和相对路径使用注意</title><link>https://yindongliang.com/posts/tar-absolute-and-relative-path/</link><pubDate>Tue, 14 Mar 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/tar-absolute-and-relative-path/</guid><description>&lt;p>&lt;code>tar&lt;/code> 命令是在 Linux 操作系统中用于打包和压缩文件的命令，先看下基本使用，然后再讨论相对路径和绝对路径的问题。&lt;/p>
+&lt;h2 id="基本使用方法">基本使用方法&lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95">#&lt;/a>&lt;/h2>
+&lt;h3 id="压缩">压缩&lt;a class="anchor" href="#%e5%8e%8b%e7%bc%a9">#&lt;/a>&lt;/h3>
+&lt;p>要将多个文件打包成一个文件，可以使用以下命令：&lt;/p></description></item><item><title>I/O 多路复用机制</title><link>https://yindongliang.com/posts/io-multiplexing/</link><pubDate>Sun, 04 Sep 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/io-multiplexing/</guid><description>&lt;p>面试问的太多了，还是专门整理一下吧，理清知识结构。&lt;/p>
+&lt;h2 id="总览">总览&lt;a class="anchor" href="#%e6%80%bb%e8%a7%88">#&lt;/a>&lt;/h2>
+&lt;p>首先需要注意的是，下面讨论的几种 I/O 模型都属于同步（synchronous） I/O 操作，至于异步（asynchronous） I/O 操作，以后再说。&lt;/p></description></item><item><title>Unix 编程艺术</title><link>https://yindongliang.com/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/</link><pubDate>Thu, 21 Jul 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/taoup/</guid><description>&lt;p>&lt;a href="https://book.douban.com/subject/1467587/">Unix 编程艺术&lt;/a> 这本书主要介绍了 Unix 系统领域的一些文化和设计哲学，本书最初在2006 年出版，译者在序言里也说发现本书作者 ESR（Eric S·Raymond）是个&lt;em>美国愤青&lt;/em>，所以书中的内容也肯定不是教科书的论调，很多观点随着时间发展到现在，需要读者自己思考并做出判断。&lt;/p></description></item><item><title>操作系统的文件系统</title><link>https://yindongliang.com/posts/file-system-in-os/</link><pubDate>Thu, 22 Apr 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/file-system-in-os/</guid><description>&lt;p>文件是操作系统进行存储时使用最多的抽象之一，在 Linux 中，一切皆文件。本文以 Linux 为例，介绍下文件系统中的基础概念。&lt;/p>
+&lt;h2 id="数据结构">数据结构&lt;a class="anchor" href="#%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84">#&lt;/a>&lt;/h2>
+&lt;p>每个文件实质上是一个有名字的字符序列，序列的内容为&lt;em>文件数据&lt;/em>（file data），而序列的长度、序列的修改时间等描述文件数据的属性等其他信息称为&lt;em>文件元数据&lt;/em>（file metadata）。&lt;/p></description></item><item><title>Git</title><link>https://yindongliang.com/docs/Git/git/</link><pubDate>Sat, 24 Mar 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Git/git/</guid><description>&lt;h2 id="分支管理必读">分支管理必读&lt;a class="anchor" href="#%e5%88%86%e6%94%af%e7%ae%a1%e7%90%86%e5%bf%85%e8%af%bb">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="https://nvie.com/posts/a-successful-git-branching-model/">A successful Git branching model&lt;/a>&lt;/p>
+&lt;h2 id="github-网络问题">Github 网络问题&lt;a class="anchor" href="#github-%e7%bd%91%e7%bb%9c%e9%97%ae%e9%a2%98">#&lt;/a>&lt;/h2>
+&lt;p>如果在本地 Terminal push 不上去代码，可以尝试在 &lt;code>/etc/hosts&lt;/code> 中加入下面代码，明确指定 github.com 的 IP 地址。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>140.82.112.4 github.com&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外也可以尝试修改 DNS，防止被污染。&lt;/p></description></item><item><title>Vagrant 虚拟机 Ubuntu16.04 安装 MariaDB</title><link>https://yindongliang.com/posts/ubuntu-MariaDB/</link><pubDate>Sat, 10 Sep 2016 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/ubuntu-MariaDB/</guid><description>&lt;p>由于宿主机安装了 MySQL，为了避免安装 MariaDB 造成 MySQL 无法使用，所以在 Vagrant 中安装 Mariadb。&lt;/p>
+&lt;p>更换&lt;a href="http://mirrors.163.com/.help/ubuntu.html">网易 apt-get 源&lt;/a> &lt;code>/etc/apt/sources.list&lt;/code>&lt;/p>
+&lt;p>读取源软件列表 &lt;code>sudo apt update&lt;/code>&lt;/p>
+&lt;p>更新软件版本 &lt;code>sudo apt upgrade&lt;/code>&lt;/p>
+&lt;p>安装 MariaDB &lt;code>sudo apt install mariadb-server&lt;/code>&lt;/p>
+&lt;p>安全性设置更新 root 密码 &lt;code>sudo mysql_secure_installation&lt;/code>&lt;/p></description></item><item><title>Ubuntu 下部署 Django 应用</title><link>https://yindongliang.com/posts/ubuntu-deploy-django/</link><pubDate>Sat, 11 Jul 2015 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/ubuntu-deploy-django/</guid><description>&lt;p>做了一个Django小应用，主要内容是一个论坛，经过好几天的研究，也可以在服务器端运行了，以下所有代码中的操作都需要在命令行运行。&lt;/p>
+&lt;h2 id="安装mysql">安装MySQL&lt;a class="anchor" href="#%e5%ae%89%e8%a3%85mysql">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>apt-get update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>apt-get install mysql-server mysql-client&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>根据提示设置 MySQL root用户密码&lt;/p></description></item></channel></rss>

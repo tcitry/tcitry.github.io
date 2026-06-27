@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CSS on LYon's Blog</title><link>https://yindongliang.com/docs/Frontend/CSS/</link><description>Recent content in CSS on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Frontend/CSS/index.xml" rel="self" type="application/rss+xml"/><item><title>transform</title><link>https://yindongliang.com/docs/Frontend/CSS/transform/</link><pubDate>Mon, 06 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/CSS/transform/</guid><description>&lt;h1 id="css-transform-体系详解">CSS Transform 体系详解&lt;a class="anchor" href="#css-transform-%e4%bd%93%e7%b3%bb%e8%af%a6%e8%a7%a3">#&lt;/a>&lt;/h1>
+&lt;p>Transform 是 CSS 中用于对元素进行&lt;strong>变形处理&lt;/strong>的模块，可以让你在不改变文档流的情况下对元素进行旋转、缩放、移动和倾斜等操作。&lt;/p>
+&lt;h2 id="-核心变换函数">🎯 核心变换函数&lt;a class="anchor" href="#-%e6%a0%b8%e5%bf%83%e5%8f%98%e6%8d%a2%e5%87%bd%e6%95%b0">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-2d-变换函数">1. &lt;strong>2D 变换函数&lt;/strong>&lt;a class="anchor" href="#1-2d-%e5%8f%98%e6%8d%a2%e5%87%bd%e6%95%b0">#&lt;/a>&lt;/h3>
+&lt;h4 id="-位移-translate">📍 位移 (Translate)&lt;a class="anchor" href="#-%e4%bd%8d%e7%a7%bb-translate">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translateX&lt;/span>(&lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>); &lt;span style="color:#78787e">/* 水平移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translateY&lt;/span>(&lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>); &lt;span style="color:#78787e">/* 垂直移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translate&lt;/span>(&lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>, &lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>); &lt;span style="color:#78787e">/* 同时设置 X 和 Y */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translate&lt;/span>(&lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">%&lt;/span>); &lt;span style="color:#78787e">/* 使用百分比（相对于元素自身尺寸） */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="-旋转-rotate">🔄 旋转 (Rotate)&lt;a class="anchor" href="#-%e6%97%8b%e8%bd%ac-rotate">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotate&lt;/span>(&lt;span style="color:#ff9f43">45&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 顺时针旋转45度 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotate&lt;/span>(&lt;span style="color:#ff9f43">-90&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 逆时针旋转90度 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotate&lt;/span>(&lt;span style="color:#ff9f43">0.25&lt;/span>&lt;span style="color:#9aedfe">turn&lt;/span>); &lt;span style="color:#78787e">/* 使用turn单位（0.25turn = 90deg） */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="-缩放-scale">📏 缩放 (Scale)&lt;a class="anchor" href="#-%e7%bc%a9%e6%94%be-scale">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">scale&lt;/span>(&lt;span style="color:#ff9f43">1.5&lt;/span>); &lt;span style="color:#78787e">/* 等比例放大1.5倍 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">scaleX&lt;/span>(&lt;span style="color:#ff9f43">2&lt;/span>); &lt;span style="color:#78787e">/* 仅水平方向放大 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">scaleY&lt;/span>(&lt;span style="color:#ff9f43">0.5&lt;/span>); &lt;span style="color:#78787e">/* 仅垂直方向缩小 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">scale&lt;/span>(&lt;span style="color:#ff9f43">2&lt;/span>, &lt;span style="color:#ff9f43">0.5&lt;/span>); &lt;span style="color:#78787e">/* 水平2倍，垂直0.5倍 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="-倾斜-skew">📐 倾斜 (Skew)&lt;a class="anchor" href="#-%e5%80%be%e6%96%9c-skew">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">skewX&lt;/span>(&lt;span style="color:#ff9f43">15&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 水平方向倾斜 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">skewY&lt;/span>(&lt;span style="color:#ff9f43">10&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 垂直方向倾斜 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#57c7ff">skew&lt;/span>(&lt;span style="color:#ff9f43">15&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>, &lt;span style="color:#ff9f43">10&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 同时设置 X 和 Y */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-3d-变换函数">2. &lt;strong>3D 变换函数&lt;/strong>&lt;a class="anchor" href="#2-3d-%e5%8f%98%e6%8d%a2%e5%87%bd%e6%95%b0">#&lt;/a>&lt;/h3>
+&lt;h4 id="-3d-位移">🎭 3D 位移&lt;a class="anchor" href="#-3d-%e4%bd%8d%e7%a7%bb">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translateZ&lt;/span>(&lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>); &lt;span style="color:#78787e">/* Z轴移动（远近） */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translate3d&lt;/span>(&lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>, &lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>, &lt;span style="color:#ff9f43">200&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>); &lt;span style="color:#78787e">/* 3D空间移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="-3d-旋转">🎡 3D 旋转&lt;a class="anchor" href="#-3d-%e6%97%8b%e8%bd%ac">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotateX&lt;/span>(&lt;span style="color:#ff9f43">45&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 绕X轴旋转 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotateY&lt;/span>(&lt;span style="color:#ff9f43">30&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 绕Y轴旋转 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotateZ&lt;/span>(&lt;span style="color:#ff9f43">60&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 绕Z轴旋转（等同于rotate） */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotate3d&lt;/span>(&lt;span style="color:#ff9f43">1&lt;/span>, &lt;span style="color:#ff9f43">1&lt;/span>, &lt;span style="color:#ff9f43">0&lt;/span>, &lt;span style="color:#ff9f43">45&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 自定义轴旋转 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-关键属性配置">🔧 关键属性配置&lt;a class="anchor" href="#-%e5%85%b3%e9%94%ae%e5%b1%9e%e6%80%a7%e9%85%8d%e7%bd%ae">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-变换原点-transform-origin">1. &lt;strong>变换原点 (transform-origin)&lt;/strong>&lt;a class="anchor" href="#1-%e5%8f%98%e6%8d%a2%e5%8e%9f%e7%82%b9-transform-origin">#&lt;/a>&lt;/h3>
+&lt;p>控制变换的基准点：&lt;/p></description></item><item><title>transition</title><link>https://yindongliang.com/docs/Frontend/CSS/transition/</link><pubDate>Mon, 06 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/CSS/transition/</guid><description>&lt;p>让我详细解释一下 &lt;code>transition&lt;/code> 和 &lt;code>transform&lt;/code> 的关系：&lt;/p>
+&lt;h2 id="-transition-和-transform-的关系">🔄 &lt;code>transition&lt;/code> 和 &lt;code>transform&lt;/code> 的关系&lt;a class="anchor" href="#-transition-%e5%92%8c-transform-%e7%9a%84%e5%85%b3%e7%b3%bb">#&lt;/a>&lt;/h2>
+&lt;p>&lt;strong>简单来说：&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>&lt;code>transform&lt;/code>&lt;/strong>：定义元素&lt;strong>最终变成什么样子&lt;/strong>（状态）&lt;/li>
+&lt;li>&lt;strong>&lt;code>transition&lt;/code>&lt;/strong>：定义&lt;strong>如何平滑地过渡&lt;/strong>到那个状态（过程）&lt;/li>
+&lt;/ul>
+&lt;h2 id="-详细解释第一个例子">📖 详细解释第一个例子&lt;a class="anchor" href="#-%e8%af%a6%e7%bb%86%e8%a7%a3%e9%87%8a%e7%ac%ac%e4%b8%80%e4%b8%aa%e4%be%8b%e5%ad%90">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">button&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">/* 这行代码的意思是：当 transform 属性发生变化时，用0.3秒的时间平滑过渡，使用 ease 缓动函数 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transition&lt;/span>: &lt;span style="color:#ff6ac1">transform&lt;/span> &lt;span style="color:#ff9f43">0.3&lt;/span>&lt;span style="color:#9aedfe">s&lt;/span> &lt;span style="color:#ff6ac1">ease&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">/* 初始状态：没有变换 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">scale&lt;/span>(&lt;span style="color:#ff9f43">1&lt;/span>); &lt;span style="color:#78787e">/* 实际上这行可以省略，因为默认就是 scale(1) */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">button&lt;/span>:&lt;span style="color:#ff9f43">hover&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">/* 目标状态：放大1.1倍，并向上移动2像素 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">scale&lt;/span>(&lt;span style="color:#ff9f43">1.1&lt;/span>) &lt;span style="color:#ff5c57">translateY&lt;/span>(&lt;span style="color:#ff9f43">-2&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="分解说明">分解说明：&lt;a class="anchor" href="#%e5%88%86%e8%a7%a3%e8%af%b4%e6%98%8e">#&lt;/a>&lt;/h3>
+&lt;p>&lt;strong>1. 初始状态（默认）&lt;/strong>&lt;/p></description></item><item><title>translate</title><link>https://yindongliang.com/docs/Frontend/CSS/translate/</link><pubDate>Mon, 06 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/CSS/translate/</guid><description>&lt;h1 id="css-translate-属性详解">CSS &lt;code>translate&lt;/code> 属性详解&lt;a class="anchor" href="#css-translate-%e5%b1%9e%e6%80%a7%e8%af%a6%e8%a7%a3">#&lt;/a>&lt;/h1>
+&lt;p>&lt;code>translate&lt;/code> 是一个独立的 CSS 属性，用于移动元素，它是 &lt;code>transform: translate()&lt;/code> 的独立版本。让我为你详细解释这个现代 CSS 特性：&lt;/p>
+&lt;h2 id="-translate-vs-transform-translate">🆚 &lt;code>translate&lt;/code> vs &lt;code>transform: translate()&lt;/code>&lt;a class="anchor" href="#-translate-vs-transform-translate">#&lt;/a>&lt;/h2>
+&lt;h3 id="传统方式transform">传统方式（transform）&lt;a class="anchor" href="#%e4%bc%a0%e7%bb%9f%e6%96%b9%e5%bc%8ftransform">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translate&lt;/span>(&lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>, &lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="现代方式独立属性">现代方式（独立属性）&lt;a class="anchor" href="#%e7%8e%b0%e4%bb%a3%e6%96%b9%e5%bc%8f%e7%8b%ac%e7%ab%8b%e5%b1%9e%e6%80%a7">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> translate: &lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span> &lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-语法和取值">📖 语法和取值&lt;a class="anchor" href="#-%e8%af%ad%e6%b3%95%e5%92%8c%e5%8f%96%e5%80%bc">#&lt;/a>&lt;/h2>
+&lt;h3 id="基本语法">基本语法&lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e8%af%ad%e6%b3%95">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 一个值 - 同时设置 X 和 Y */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 两个值 - X 和 Y */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span> &lt;span style="color:#ff6ac1">50px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 三个值 - X, Y 和 Z */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span> &lt;span style="color:#ff6ac1">50px&lt;/span> &lt;span style="color:#ff6ac1">20px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 百分比 - 相对于元素自身尺寸 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">50&lt;/span>&lt;span style="color:#ff6ac1">%&lt;/span> &lt;span style="color:#ff6ac1">25&lt;/span>&lt;span style="color:#ff6ac1">%;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 关键词 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">none&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="详细用法示例">详细用法示例&lt;a class="anchor" href="#%e8%af%a6%e7%bb%86%e7%94%a8%e6%b3%95%e7%a4%ba%e4%be%8b">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* X 轴移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span> &lt;span style="color:#78787e">/* X: 100px, Y: 0 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span> &lt;span style="color:#ff6ac1">0&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span> &lt;span style="color:#78787e">/* 同上 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* X 和 Y 轴移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span> &lt;span style="color:#ff6ac1">50px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span> &lt;span style="color:#78787e">/* 向右100px，向下50px */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">-50px&lt;/span> &lt;span style="color:#ff6ac1">-20px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span> &lt;span style="color:#78787e">/* 向左50px，向上20px */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 3D 移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span> &lt;span style="color:#ff6ac1">50px&lt;/span> &lt;span style="color:#ff6ac1">30px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span> &lt;span style="color:#78787e">/* X, Y, Z 轴移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 百分比移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">50&lt;/span>&lt;span style="color:#ff6ac1">%&lt;/span> &lt;span style="color:#ff6ac1">25&lt;/span>&lt;span style="color:#ff6ac1">%;&lt;/span> &lt;span style="color:#78787e">/* 向右自身宽度的50%，向下自身高度的25% */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 重置 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">none&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span> &lt;span style="color:#78787e">/* 不移动 */&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-为什么需要独立的-translate-属性">🎯 为什么需要独立的 &lt;code>translate&lt;/code> 属性？&lt;a class="anchor" href="#-%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e7%8b%ac%e7%ab%8b%e7%9a%84-translate-%e5%b1%9e%e6%80%a7">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-更好的可读性和维护性">1. &lt;strong>更好的可读性和维护性&lt;/strong>&lt;a class="anchor" href="#1-%e6%9b%b4%e5%a5%bd%e7%9a%84%e5%8f%af%e8%af%bb%e6%80%a7%e5%92%8c%e7%bb%b4%e6%8a%a4%e6%80%a7">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 传统方式 - 所有变换混在一起 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translateX&lt;/span>(&lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>) &lt;span style="color:#ff5c57">rotate&lt;/span>(&lt;span style="color:#ff9f43">45&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>) &lt;span style="color:#ff5c57">scale&lt;/span>(&lt;span style="color:#ff9f43">1.2&lt;/span>) &lt;span style="color:#ff5c57">translateY&lt;/span>(&lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 现代方式 - 分离关注点 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> translate: &lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span> &lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rotate: &lt;span style="color:#ff9f43">45&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> scale: &lt;span style="color:#ff9f43">1.2&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-独立的动画控制">2. &lt;strong>独立的动画控制&lt;/strong>&lt;a class="anchor" href="#2-%e7%8b%ac%e7%ab%8b%e7%9a%84%e5%8a%a8%e7%94%bb%e6%8e%a7%e5%88%b6">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">box&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> translate: &lt;span style="color:#ff9f43">0&lt;/span> &lt;span style="color:#ff9f43">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rotate: &lt;span style="color:#ff9f43">0&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> scale: &lt;span style="color:#ff9f43">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transition&lt;/span>: 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> translate &lt;span style="color:#ff9f43">0.3&lt;/span>&lt;span style="color:#9aedfe">s&lt;/span> &lt;span style="color:#ff6ac1">ease&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rotate &lt;span style="color:#ff9f43">0.5&lt;/span>&lt;span style="color:#9aedfe">s&lt;/span> &lt;span style="color:#ff6ac1">ease-out&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> scale &lt;span style="color:#ff9f43">0.2&lt;/span>&lt;span style="color:#9aedfe">s&lt;/span> &lt;span style="color:#ff6ac1">linear&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">box&lt;/span>:&lt;span style="color:#ff9f43">hover&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> translate: &lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span> &lt;span style="color:#ff9f43">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rotate: &lt;span style="color:#ff9f43">45&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> scale: &lt;span style="color:#ff9f43">1.1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-性能优化">3. &lt;strong>性能优化&lt;/strong>&lt;a class="anchor" href="#3-%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96">#&lt;/a>&lt;/h3>
+&lt;p>浏览器可以单独优化每个属性的变化，特别是在使用 &lt;code>will-change&lt;/code> 时：&lt;/p></description></item><item><title>position</title><link>https://yindongliang.com/docs/Frontend/CSS/CSS/</link><pubDate>Thu, 30 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/CSS/CSS/</guid><description>&lt;p>CSS 的 &lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/position">&lt;code>position&lt;/code>&lt;/a> 属性及其几个选项，可以分为两大类：相对定位（&lt;code>relative&lt;/code> 和 &lt;code>sticky&lt;/code>）和绝对定位（&lt;code>absolute&lt;/code> 和 &lt;code>fixed&lt;/code>）。&lt;/p>
+&lt;h3 id="1-position-static">1. &lt;code>position: static&lt;/code>&lt;a class="anchor" href="#1-position-static">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>默认值&lt;/strong>：所有元素的默认值。元素遵循正常的文档流，不受 &lt;code>top&lt;/code>, &lt;code>right&lt;/code>, &lt;code>bottom&lt;/code>, &lt;code>left&lt;/code> 等位置属性的影响。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：不需要显式定位时使用。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;static&amp;#34;&lt;/span>&amp;gt;Static element (default)&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">static&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">static&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightgrey&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-position-relative">2. &lt;code>position: relative&lt;/code>&lt;a class="anchor" href="#2-position-relative">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>相对定位&lt;/strong>：相对于其正常位置进行定位。&lt;code>top&lt;/code>, &lt;code>right&lt;/code>, &lt;code>bottom&lt;/code>, &lt;code>left&lt;/code> 会使元素相对于其在正常文档流中的位置进行偏移，而不会影响其他元素。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：当需要微调元素位置或作为绝对定位元素的容器时。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;relative-container&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;relative&amp;#34;&lt;/span>&amp;gt;Relative element&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">relative-container&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightgreen&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">height&lt;/span>: &lt;span style="color:#ff9f43">200&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">relative&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">relative&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">top&lt;/span>: &lt;span style="color:#ff9f43">20&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">left&lt;/span>: &lt;span style="color:#ff9f43">30&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightblue&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-position-absolute">3. &lt;code>position: absolute&lt;/code>&lt;a class="anchor" href="#3-position-absolute">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>绝对定位&lt;/strong>：相对于最近的定位祖先（不是 &lt;code>static&lt;/code> 的祖先元素）或相对于整个文档进行定位。元素脱离文档流，不会影响其他元素的位置。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：将元素精确放置在容器内的特定位置。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;absolute-container&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;absolute&amp;#34;&lt;/span>&amp;gt;Absolute element&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">absolute-container&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">relative&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightyellow&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">height&lt;/span>: &lt;span style="color:#ff9f43">200&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">absolute&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">absolute&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">top&lt;/span>: &lt;span style="color:#ff9f43">20&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">right&lt;/span>: &lt;span style="color:#ff9f43">30&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightcoral&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="4-position-fixed">4. &lt;code>position: fixed&lt;/code>&lt;a class="anchor" href="#4-position-fixed">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>固定定位&lt;/strong>：相对于浏览器窗口进行定位。元素始终保持在指定位置，不受页面滚动的影响。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：创建始终可见的导航栏或按钮等。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;fixed&amp;#34;&lt;/span>&amp;gt;Fixed element&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">fixed&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">fixed&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">bottom&lt;/span>: &lt;span style="color:#ff9f43">20&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">right&lt;/span>: &lt;span style="color:#ff9f43">30&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightsalmon&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="5-position-sticky">5. &lt;code>position: sticky&lt;/code>&lt;a class="anchor" href="#5-position-sticky">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>粘性定位&lt;/strong>：结合了相对定位和固定定位的特性。元素根据用户的滚动位置进行定位，在特定条件下固定在视口的某个位置。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：创建在某个滚动阈值内保持固定然后随其滚动的内容。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;sticky-container&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;sticky&amp;#34;&lt;/span>&amp;gt;Sticky element&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">p&lt;/span>&amp;gt;Scroll down to see the sticky element in action.&amp;lt;/&lt;span style="color:#ff6ac1">p&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">p&lt;/span>&amp;gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vel urna elit. Donec consequat massa vel leo volutpat, eget tincidunt velit ullamcorper...&amp;lt;/&lt;span style="color:#ff6ac1">p&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">sticky-container&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">height&lt;/span>: &lt;span style="color:#ff9f43">200&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">overflow-y&lt;/span>: &lt;span style="color:#ff6ac1">scroll&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightgoldenrodyellow&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">sticky&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">-webkit-&lt;/span>&lt;span style="color:#ff6ac1">sticky&lt;/span>; &lt;span style="color:#78787e">/* For Safari */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">sticky&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">top&lt;/span>: &lt;span style="color:#ff9f43">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightpink&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="总结">总结&lt;a class="anchor" href="#%e6%80%bb%e7%bb%93">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>static&lt;/code>：默认值，不进行任何特殊定位。&lt;/li>
+&lt;li>&lt;code>relative&lt;/code>：相对自身的正常位置进行定位，仍保留其在文档流中的空间。&lt;/li>
+&lt;li>&lt;code>absolute&lt;/code>：相对于最近的定位祖先进行定位，脱离文档流。&lt;/li>
+&lt;li>&lt;code>fixed&lt;/code>：相对于浏览器窗口进行定位，脱离文档流，不随页面滚动。&lt;/li>
+&lt;li>&lt;code>sticky&lt;/code>：在特定条件下相对定位和固定定位之间切换。&lt;/li>
+&lt;/ul></description></item></channel></rss>

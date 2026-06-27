@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Cloud on LYon's Blog</title><link>https://yindongliang.com/tags/Cloud/</link><description>Recent content in Cloud on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Tue, 13 Jan 2026 12:02:41 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Cloud/index.xml" rel="self" type="application/rss+xml"/><item><title>Pulumi 中的 all 和 apply 方法使用介绍</title><link>https://yindongliang.com/posts/Pulumi-%E4%B8%AD%E7%9A%84-all-%E5%92%8C-apply-%E6%96%B9%E6%B3%95%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/</link><pubDate>Tue, 13 Jan 2026 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/Pulumi-%E4%B8%AD%E7%9A%84-all-%E5%92%8C-apply-%E6%96%B9%E6%B3%95%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/</guid><description>&lt;p>在 Pulumi 中，&lt;code>all&lt;/code> 和 &lt;code>apply&lt;/code> 是处理 Output 值的关键方法。由于 Pulumi 资源属性通常在运行时才能确定其值（表示为 Output 类型），这两个方法帮助我们处理这些异步值。&lt;/p>
+&lt;h2 id="apply-方法">apply 方法&lt;a class="anchor" href="#apply-%e6%96%b9%e6%b3%95">#&lt;/a>&lt;/h2>
+&lt;p>&lt;code>apply&lt;/code> 用于对单个 Output 值进行转换或执行基于该值的操作：&lt;/p></description></item><item><title>Serverless与边缘计算：从底层硬件到架构的深度解析</title><link>https://yindongliang.com/posts/Serverless%E4%B8%8E%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97%E4%BB%8E%E5%BA%95%E5%B1%82%E7%A1%AC%E4%BB%B6%E5%88%B0%E6%9E%B6%E6%9E%84%E7%9A%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/</link><pubDate>Wed, 26 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/Serverless%E4%B8%8E%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97%E4%BB%8E%E5%BA%95%E5%B1%82%E7%A1%AC%E4%BB%B6%E5%88%B0%E6%9E%B6%E6%9E%84%E7%9A%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/</guid><description>&lt;h2 id="引言">引言&lt;a class="anchor" href="#%e5%bc%95%e8%a8%80">#&lt;/a>&lt;/h2>
+&lt;p>Serverless和边缘计算是当今云计算领域最热门的两个概念，但它们常常被误解或混淆。本文将从&lt;strong>底层硬件与架构角度&lt;/strong>深入解释两者的本质区别和运行机制，帮助你超越&amp;quot;无服务器&amp;quot;和&amp;quot;离用户近&amp;quot;等表层理解，真正把握它们的核心原理和适用场景。&lt;/p></description></item><item><title>Kubectl 速查手册</title><link>https://yindongliang.com/docs/Kubernetes/Kubectl-%E9%80%9F%E6%9F%A5%E6%89%8B%E5%86%8C/</link><pubDate>Tue, 18 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Kubernetes/Kubectl-%E9%80%9F%E6%9F%A5%E6%89%8B%E5%86%8C/</guid><description>&lt;p>下面是一份偏“速查手册”风格的 kubectl 常用命令大全，尽量按功能分类，并给出大量可直接参考执行的命令示例。为了便于阅读，示例统一使用一些通用占位符，如 my-namespace、my-pod、my-deploy、app=myapp 等。&lt;/p></description></item><item><title>Firebase Studio</title><link>https://yindongliang.com/links/202511/Firebase-Studio/</link><pubDate>Tue, 04 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202511/Firebase-Studio/</guid><description>&lt;p>The full  stackAI workspace by Google.&lt;/p></description></item><item><title>Clerk</title><link>https://yindongliang.com/links/202510/Clerk/</link><pubDate>Fri, 31 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Clerk/</guid><description>&lt;p>More than authentication, Complete User Management.&lt;/p></description></item><item><title>Terraform</title><link>https://yindongliang.com/links/202510/Terraform/</link><pubDate>Tue, 28 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Terraform/</guid><description>&lt;p>Terraform is an infrastructure as code tool that lets you build, change, and version cloud and on-prem resources safely and efficiently.&lt;/p></description></item><item><title>一些云服务商</title><link>https://yindongliang.com/docs/Awesome/awesome-clouds-services/</link><pubDate>Thu, 16 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-clouds-services/</guid><description>&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;th>使用过&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Railway&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://railway.com/">https://railway.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>fly.io&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://fly.io/">https://fly.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Cloudflare&lt;/td>
+ &lt;td>全球网络优势&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>✅&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Vercel&lt;/td>
+ &lt;td>主打边缘计算、Serverless&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>✅&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>阿里云百炼平台&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://bailian.console.aliyun.com">https://bailian.console.aliyun.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>百度千帆&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://cloud.baidu.com/product-s/qianfan_home">https://cloud.baidu.com/product-s/qianfan_home&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>Dynadot - 域名服务商</title><link>https://yindongliang.com/links/202510/Dynadot-%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%95%86/</link><pubDate>Mon, 13 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Dynadot-%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%95%86/</guid><description/></item></channel></rss>

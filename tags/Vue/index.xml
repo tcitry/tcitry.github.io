@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Vue on LYon's Blog</title><link>https://yindongliang.com/tags/Vue/</link><description>Recent content in Vue on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Sat, 04 Oct 2025 22:35:55 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Vue/index.xml" rel="self" type="application/rss+xml"/><item><title>包管理 - npm</title><link>https://yindongliang.com/docs/Frontend/%E5%8C%85%E7%AE%A1%E7%90%86-npm/</link><pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E5%8C%85%E7%AE%A1%E7%90%86-npm/</guid><description>&lt;h2 id="版本管理">版本管理&lt;a class="anchor" href="#%e7%89%88%e6%9c%ac%e7%ae%a1%e7%90%86">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>~&lt;/code>: 当安装依赖时获取到有新版本时，安装到 &lt;code>x.y.z&lt;/code> 中 &lt;code>z&lt;/code> 的最新的版本。即保持主版本号、次版本号不变的情况下，保持修订号的最新版本。&lt;/li>
+&lt;li>&lt;code>^&lt;/code>: 当安装依赖时获取到有新版本时，安装到 &lt;code>x.y.z&lt;/code> 中 &lt;code>y&lt;/code> 和 &lt;code>z&lt;/code> 都为最新版本。 即保持主版本号不变的情况下，保持次版本号、修订版本号为最新版本。&lt;/li>
+&lt;/ul>
+&lt;p>参考文档：&lt;/p></description></item></channel></rss>

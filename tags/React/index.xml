@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>React on LYon's Blog</title><link>https://yindongliang.com/tags/React/</link><description>Recent content in React on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 24 Dec 2025 17:01:00 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/React/index.xml" rel="self" type="application/rss+xml"/><item><title>全面掌握 TanStack Query：现代 React 应用的数据管理利器</title><link>https://yindongliang.com/posts/%E5%85%A8%E9%9D%A2%E6%8E%8C%E6%8F%A1-TanStack-Query%E7%8E%B0%E4%BB%A3-React-%E5%BA%94%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E5%88%A9%E5%99%A8/</link><pubDate>Wed, 24 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E5%85%A8%E9%9D%A2%E6%8E%8C%E6%8F%A1-TanStack-Query%E7%8E%B0%E4%BB%A3-React-%E5%BA%94%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E5%88%A9%E5%99%A8/</guid><description>&lt;h2 id="什么是-tanstack-query">什么是 TanStack Query？&lt;a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-tanstack-query">#&lt;/a>&lt;/h2>
+&lt;p>TanStack Query（原名 React Query）是一个强大的数据获取和状态管理库，专门用于处理服务器状态。它不是传统意义上的状态管理库（如 Redux 或 Zustand），而是专注于解决异步数据获取、缓存、同步和更新的问题。&lt;/p></description></item><item><title>全面掌握 tRPC：端到端类型安全的下一代 API 框架</title><link>https://yindongliang.com/posts/%E5%85%A8%E9%9D%A2%E6%8E%8C%E6%8F%A1-tRPC%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%B1%BB%E5%9E%8B%E5%AE%89%E5%85%A8%E7%9A%84%E4%B8%8B%E4%B8%80%E4%BB%A3-API-%E6%A1%86%E6%9E%B6/</link><pubDate>Wed, 24 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E5%85%A8%E9%9D%A2%E6%8E%8C%E6%8F%A1-tRPC%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%B1%BB%E5%9E%8B%E5%AE%89%E5%85%A8%E7%9A%84%E4%B8%8B%E4%B8%80%E4%BB%A3-API-%E6%A1%86%E6%9E%B6/</guid><description>&lt;h2 id="什么是-trpc">什么是 tRPC？&lt;a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-trpc">#&lt;/a>&lt;/h2>
+&lt;p>tRPC 是一个颠覆性的远程过程调用框架，允许你在 TypeScript 中定义后端 API，并在前端直接调用这些 API 函数，同时享受&lt;strong>完整的端到端类型安全&lt;/strong>。它不是一个替代 REST 或 GraphQL 的方案，而是一种全新的全栈开发范式。&lt;/p></description></item><item><title>React 实现右键菜单功能</title><link>https://yindongliang.com/docs/Frontend/React/%E5%AE%9E%E7%8E%B0%E5%8F%B3%E9%94%AE%E8%8F%9C%E5%8D%95/</link><pubDate>Thu, 27 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/React/%E5%AE%9E%E7%8E%B0%E5%8F%B3%E9%94%AE%E8%8F%9C%E5%8D%95/</guid><description>&lt;h2 id="1-引言">1. 引言&lt;a class="anchor" href="#1-%e5%bc%95%e8%a8%80">#&lt;/a>&lt;/h2>
+&lt;p>右键菜单（Context Menu）是 Web 应用中常见的交互组件，它允许用户通过右键点击触发特定操作菜单，提升了应用的交互体验和操作效率。在 React 应用中实现右键菜单功能，需要处理事件监听、状态管理、DOM 定位等多个方面。&lt;/p></description></item><item><title>DaisyUI</title><link>https://yindongliang.com/links/202510/DaisyUI/</link><pubDate>Tue, 07 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/DaisyUI/</guid><description>&lt;p>The most popular, free and open-source Tailwind CSS component library.&lt;/p></description></item><item><title>Bun</title><link>https://yindongliang.com/links/202510/Bun/</link><pubDate>Wed, 01 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Bun/</guid><description>&lt;p>Develop, test, run, and bundle JavaScript &amp;amp; TypeScript projects—all with Bun. Bun is an all-in-one JavaScript runtime &amp;amp; toolkit designed for speed, complete with a bundler, &lt;a href="https://bun.com/docs/cli/test">test runner&lt;/a>, and Node.js-compatible &lt;a href="https://bun.com/package-manager">package manager&lt;/a>. Bun aims for 100% Node.js compatibility.&lt;/p></description></item><item><title>React Router</title><link>https://yindongliang.com/links/202510/React-Router/</link><pubDate>Wed, 01 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/React-Router/</guid><description>&lt;p>React Router 是一个适用于 React 的多策略路由器，这里详细介绍如何在 React 项目中使用 React Router。&lt;/p>
+&lt;h2 id="-安装与基础设置">🔧 安装与基础设置&lt;a class="anchor" href="#-%e5%ae%89%e8%a3%85%e4%b8%8e%e5%9f%ba%e7%a1%80%e8%ae%be%e7%bd%ae">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-安装-react-router">1. 安装 React Router&lt;a class="anchor" href="#1-%e5%ae%89%e8%a3%85-react-router">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 使用 npm&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>npm install react-router-dom
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 使用 yarn&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>yarn add react-router-dom
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 使用 bun&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>bun add react-router-dom&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-基础路由设置">2. 基础路由设置&lt;a class="anchor" href="#2-%e5%9f%ba%e7%a1%80%e8%b7%af%e7%94%b1%e8%ae%be%e7%bd%ae">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// main.jsx 或 index.js
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> React from &lt;span style="color:#5af78e">&amp;#39;react&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> ReactDOM from &lt;span style="color:#5af78e">&amp;#39;react-dom/client&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> { BrowserRouter } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> App from &lt;span style="color:#5af78e">&amp;#39;./App&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ReactDOM.createRoot(&lt;span style="color:#ff5c57">document&lt;/span>.getElementById(&lt;span style="color:#5af78e">&amp;#39;root&amp;#39;&lt;/span>)).render(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">React.StrictMode&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">BrowserRouter&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">App&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">BrowserRouter&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">React.StrictMode&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>)&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-核心组件与-hook">🎯 核心组件与 Hook&lt;a class="anchor" href="#-%e6%a0%b8%e5%bf%83%e7%bb%84%e4%bb%b6%e4%b8%8e-hook">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-基本路由配置">1. 基本路由配置&lt;a class="anchor" href="#1-%e5%9f%ba%e6%9c%ac%e8%b7%af%e7%94%b1%e9%85%8d%e7%bd%ae">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// App.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { Routes, Route } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> Home from &lt;span style="color:#5af78e">&amp;#39;./pages/Home&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> About from &lt;span style="color:#5af78e">&amp;#39;./pages/About&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> Contact from &lt;span style="color:#5af78e">&amp;#39;./pages/Contact&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> Navbar from &lt;span style="color:#5af78e">&amp;#39;./components/Navbar&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> App() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">className&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;app&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Navbar&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">Home&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/about&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">About&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/contact&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">Contact&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">export&lt;/span> &lt;span style="color:#ff6ac1">default&lt;/span> App&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-导航组件">2. 导航组件&lt;a class="anchor" href="#2-%e5%af%bc%e8%88%aa%e7%bb%84%e4%bb%b6">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// components/Navbar.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { Link, NavLink } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> Navbar() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">nav&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {&lt;span style="color:#78787e">/* Link - 普通导航链接 */&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Link&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/&amp;#34;&lt;/span>&amp;gt;首页&amp;lt;/&lt;span style="color:#ff6ac1">Link&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {&lt;span style="color:#78787e">/* NavLink - 支持激活状态的链接 */&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">NavLink&lt;/span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/about&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#57c7ff">className&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{({ isActive }) =&amp;gt; isActive &lt;span style="color:#ff6ac1">?&lt;/span> &lt;span style="color:#5af78e">&amp;#39;active&amp;#39;&lt;/span> &lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#39;&amp;#39;&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 关于我们
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">NavLink&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">NavLink&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/contact&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {({ isActive }) =&amp;gt; (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">span&lt;/span> &lt;span style="color:#57c7ff">className&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{isActive &lt;span style="color:#ff6ac1">?&lt;/span> &lt;span style="color:#5af78e">&amp;#39;text-blue-500&amp;#39;&lt;/span> &lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#39;&amp;#39;&lt;/span>}&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 联系我们
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">span&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">NavLink&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">nav&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-动态路由与参数">🔄 动态路由与参数&lt;a class="anchor" href="#-%e5%8a%a8%e6%80%81%e8%b7%af%e7%94%b1%e4%b8%8e%e5%8f%82%e6%95%b0">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-动态路由参数">1. 动态路由参数&lt;a class="anchor" href="#1-%e5%8a%a8%e6%80%81%e8%b7%af%e7%94%b1%e5%8f%82%e6%95%b0">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// App.jsx - 路由配置
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&amp;lt;&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/users&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">UserList&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/users/:userId&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">UserProfile&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/products/:category/:id&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">ProductDetail&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-获取路由参数">2. 获取路由参数&lt;a class="anchor" href="#2-%e8%8e%b7%e5%8f%96%e8%b7%af%e7%94%b1%e5%8f%82%e6%95%b0">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// pages/UserProfile.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { useParams, useSearchParams } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> UserProfile() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 获取路径参数
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#ff6ac1">const&lt;/span> { userId } &lt;span style="color:#ff6ac1">=&lt;/span> useParams()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 获取查询参数
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#ff6ac1">const&lt;/span> [searchParams, setSearchParams] &lt;span style="color:#ff6ac1">=&lt;/span> useSearchParams()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> tab &lt;span style="color:#ff6ac1">=&lt;/span> searchParams.get(&lt;span style="color:#5af78e">&amp;#39;tab&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> sort &lt;span style="color:#ff6ac1">=&lt;/span> searchParams.get(&lt;span style="color:#5af78e">&amp;#39;sort&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> updateQueryParams &lt;span style="color:#ff6ac1">=&lt;/span> () =&amp;gt; {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> setSearchParams({ tab&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#39;info&amp;#39;&lt;/span>, sort&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#39;asc&amp;#39;&lt;/span> })
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">h1&lt;/span>&amp;gt;用户资料&lt;span style="color:#ff6ac1">:&lt;/span> {userId}&amp;lt;/&lt;span style="color:#ff6ac1">h1&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">p&lt;/span>&amp;gt;当前标签&lt;span style="color:#ff6ac1">:&lt;/span> {tab}&amp;lt;/&lt;span style="color:#ff6ac1">p&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">button&lt;/span> &lt;span style="color:#57c7ff">onClick&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{updateQueryParams}&amp;gt;更新查询参数&amp;lt;/&lt;span style="color:#ff6ac1">button&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-编程式导航">🎪 编程式导航&lt;a class="anchor" href="#-%e7%bc%96%e7%a8%8b%e5%bc%8f%e5%af%bc%e8%88%aa">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// components/LoginForm.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { useNavigate, useLocation } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> LoginForm() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> navigate &lt;span style="color:#ff6ac1">=&lt;/span> useNavigate()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> location &lt;span style="color:#ff6ac1">=&lt;/span> useLocation()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> handleLogin &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">async&lt;/span> () =&amp;gt; {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">try&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 模拟登录逻辑
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> loginUser()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 登录后跳转
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#ff6ac1">const&lt;/span> from &lt;span style="color:#ff6ac1">=&lt;/span> location.state&lt;span style="color:#ff6ac1">?&lt;/span>.from&lt;span style="color:#ff6ac1">?&lt;/span>.pathname &lt;span style="color:#ff6ac1">||&lt;/span> &lt;span style="color:#5af78e">&amp;#39;/dashboard&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> navigate(from, { replace&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">true&lt;/span> })
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 其他导航方式
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#78787e">// navigate(-1) // 返回上一页
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#78787e">// navigate(&amp;#39;/dashboard&amp;#39;, { state: { user: userData } }) // 传递状态
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> } &lt;span style="color:#ff6ac1">catch&lt;/span> (error) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> console.error(&lt;span style="color:#5af78e">&amp;#39;登录失败&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">form&lt;/span> &lt;span style="color:#57c7ff">onSubmit&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{(e) =&amp;gt; {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> e.preventDefault()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> handleLogin()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }}&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {&lt;span style="color:#78787e">/* 表单内容 */&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">button&lt;/span> &lt;span style="color:#57c7ff">type&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;submit&amp;#34;&lt;/span>&amp;gt;登录&amp;lt;/&lt;span style="color:#ff6ac1">button&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">form&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-嵌套路由">🏗️ 嵌套路由&lt;a class="anchor" href="#-%e5%b5%8c%e5%a5%97%e8%b7%af%e7%94%b1">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-定义嵌套路由">1. 定义嵌套路由&lt;a class="anchor" href="#1-%e5%ae%9a%e4%b9%89%e5%b5%8c%e5%a5%97%e8%b7%af%e7%94%b1">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// App.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&amp;lt;&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/dashboard&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">DashboardLayout&lt;/span> /&amp;gt;}&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">index&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">DashboardHome&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;profile&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">Profile&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;settings&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">Settings&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;analytics&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">Analytics&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">Route&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-布局组件中使用-outlet">2. 布局组件中使用 Outlet&lt;a class="anchor" href="#2-%e5%b8%83%e5%b1%80%e7%bb%84%e4%bb%b6%e4%b8%ad%e4%bd%bf%e7%94%a8-outlet">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// layouts/DashboardLayout.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { Outlet, Link } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> DashboardLayout() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">className&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;dashboard-layout&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">aside&lt;/span> &lt;span style="color:#57c7ff">className&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;sidebar&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">nav&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Link&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/dashboard&amp;#34;&lt;/span>&amp;gt;概览&amp;lt;/&lt;span style="color:#ff6ac1">Link&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Link&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/dashboard/profile&amp;#34;&lt;/span>&amp;gt;个人资料&amp;lt;/&lt;span style="color:#ff6ac1">Link&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Link&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/dashboard/settings&amp;#34;&lt;/span>&amp;gt;设置&amp;lt;/&lt;span style="color:#ff6ac1">Link&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Link&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/dashboard/analytics&amp;#34;&lt;/span>&amp;gt;分析&amp;lt;/&lt;span style="color:#ff6ac1">Link&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">nav&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">aside&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">main&lt;/span> &lt;span style="color:#57c7ff">className&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;main-content&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {&lt;span style="color:#78787e">/* 子路由将在这里渲染 */&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Outlet&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">main&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-保护路由与权限控制">🛡️ 保护路由与权限控制&lt;a class="anchor" href="#-%e4%bf%9d%e6%8a%a4%e8%b7%af%e7%94%b1%e4%b8%8e%e6%9d%83%e9%99%90%e6%8e%a7%e5%88%b6">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-路由保护组件">1. 路由保护组件&lt;a class="anchor" href="#1-%e8%b7%af%e7%94%b1%e4%bf%9d%e6%8a%a4%e7%bb%84%e4%bb%b6">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// components/ProtectedRoute.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { Navigate, useLocation } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> ProtectedRoute({ children, requiredRole }) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> location &lt;span style="color:#ff6ac1">=&lt;/span> useLocation()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> { user, isAuthenticated } &lt;span style="color:#ff6ac1">=&lt;/span> useAuth() &lt;span style="color:#78787e">// 假设有认证 Hook
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> (&lt;span style="color:#ff6ac1">!&lt;/span>isAuthenticated) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 重定向到登录页，并保存当前位置以便登录后返回
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#ff6ac1">return&lt;/span> &amp;lt;&lt;span style="color:#ff6ac1">Navigate&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/login&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">state&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{{ from&lt;span style="color:#ff6ac1">:&lt;/span> location }} &lt;span style="color:#57c7ff">replace&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> (requiredRole &lt;span style="color:#ff6ac1">&amp;amp;&amp;amp;&lt;/span> user.role &lt;span style="color:#ff6ac1">!==&lt;/span> requiredRole) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 权限不足
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#ff6ac1">return&lt;/span> &amp;lt;&lt;span style="color:#ff6ac1">Navigate&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/unauthorized&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">replace&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> children
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-使用保护路由">2. 使用保护路由&lt;a class="anchor" href="#2-%e4%bd%bf%e7%94%a8%e4%bf%9d%e6%8a%a4%e8%b7%af%e7%94%b1">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// App.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&amp;lt;&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/admin&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">ProtectedRoute&lt;/span> &lt;span style="color:#57c7ff">requiredRole&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;admin&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">AdminLayout&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">ProtectedRoute&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">index&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">AdminDashboard&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;users&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">UserManagement&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">Route&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/profile&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">ProtectedRoute&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">UserProfile&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">ProtectedRoute&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-高级功能">📚 高级功能&lt;a class="anchor" href="#-%e9%ab%98%e7%ba%a7%e5%8a%9f%e8%83%bd">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-懒加载路由">1. 懒加载路由&lt;a class="anchor" href="#1-%e6%87%92%e5%8a%a0%e8%bd%bd%e8%b7%af%e7%94%b1">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> { lazy, Suspense } from &lt;span style="color:#5af78e">&amp;#39;react&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">const&lt;/span> LazyDashboard &lt;span style="color:#ff6ac1">=&lt;/span> lazy(() =&amp;gt; &lt;span style="color:#ff6ac1">import&lt;/span>(&lt;span style="color:#5af78e">&amp;#39;./pages/Dashboard&amp;#39;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">const&lt;/span> LazyAdmin &lt;span style="color:#ff6ac1">=&lt;/span> lazy(() =&amp;gt; &lt;span style="color:#ff6ac1">import&lt;/span>(&lt;span style="color:#5af78e">&amp;#39;./pages/Admin&amp;#39;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> App() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/dashboard&amp;#34;&lt;/span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Suspense&lt;/span> &lt;span style="color:#57c7ff">fallback&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;加载中...&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;}&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">LazyDashboard&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">Suspense&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-404-页面处理">2. 404 页面处理&lt;a class="anchor" href="#2-404-%e9%a1%b5%e9%9d%a2%e5%a4%84%e7%90%86">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">Home&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/about&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">About&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;*&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">NotFound&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-路由配置对象v64-数据路由">3. 路由配置对象（v6.4+ 数据路由）&lt;a class="anchor" href="#3-%e8%b7%af%e7%94%b1%e9%85%8d%e7%bd%ae%e5%af%b9%e8%b1%a1v64-%e6%95%b0%e6%8d%ae%e8%b7%af%e7%94%b1">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> { createBrowserRouter, RouterProvider } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">const&lt;/span> router &lt;span style="color:#ff6ac1">=&lt;/span> createBrowserRouter([
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> path&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#39;/&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> element&lt;span style="color:#ff6ac1">:&lt;/span> &amp;lt;&lt;span style="color:#ff6ac1">RootLayout&lt;/span> /&amp;gt;,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> children&lt;span style="color:#ff6ac1">:&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> { index&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">true&lt;/span>, element&lt;span style="color:#ff6ac1">:&lt;/span> &amp;lt;&lt;span style="color:#ff6ac1">Home&lt;/span> /&amp;gt; },
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> { 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> path&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#39;users&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> element&lt;span style="color:#ff6ac1">:&lt;/span> &amp;lt;&lt;span style="color:#ff6ac1">Users&lt;/span> /&amp;gt;,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> loader&lt;span style="color:#ff6ac1">:&lt;/span> usersLoader, &lt;span style="color:#78787e">// 数据加载器
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> action&lt;span style="color:#ff6ac1">:&lt;/span> userAction &lt;span style="color:#78787e">// 数据操作
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// 在 main.jsx 中使用
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>ReactDOM.createRoot(&lt;span style="color:#ff5c57">document&lt;/span>.getElementById(&lt;span style="color:#5af78e">&amp;#39;root&amp;#39;&lt;/span>)).render(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">React.StrictMode&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">RouterProvider&lt;/span> &lt;span style="color:#57c7ff">router&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{router} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">React.StrictMode&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>)&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-最佳实践">💡 最佳实践&lt;a class="anchor" href="#-%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5">#&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>&lt;strong>文件组织&lt;/strong>：&lt;/li>
+&lt;/ol>
+&lt;pre tabindex="0">&lt;code>src/
+ components/
+ pages/
+ Home.jsx
+ About.jsx
+ users/
+ UserList.jsx
+ UserProfile.jsx
+ layouts/
+ MainLayout.jsx
+ DashboardLayout.jsx
+ routes/
+ index.jsx&lt;/code>&lt;/pre>&lt;ol start="2">
+&lt;li>&lt;strong>路由集中管理&lt;/strong>：&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// routes/index.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { useRoutes } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> routesConfig from &lt;span style="color:#5af78e">&amp;#39;./routesConfig&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> Router() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> useRoutes(routesConfig)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">export&lt;/span> &lt;span style="color:#ff6ac1">default&lt;/span> Router&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="3">
+&lt;li>&lt;strong>类型安全&lt;/strong>（使用 TypeScript）：&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-typescript" data-lang="typescript">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// types/router.d.ts
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">declare&lt;/span> module &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">interface&lt;/span> ParamKeys {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> userId: &lt;span style="color:#9aedfe">string&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> productId: &lt;span style="color:#9aedfe">string&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>React Router 提供了强大而灵活的路由解决方案，从简单的 SPA 导航到复杂的企业级应用路由管理都能胜任。掌握这些核心概念后，你可以根据项目需求选择合适的路由模式和组织方式。&lt;/p></description></item><item><title>Remix</title><link>https://yindongliang.com/links/202508/Remix/</link><pubDate>Tue, 19 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/Remix/</guid><description>&lt;p>Remix是一个基于React的全栈Web开发框架，它通过将客户端和服务器紧密集成，旨在提供优秀的用户体验和快速的Web应用开发能力。下面为你详细介绍这个框架。&lt;/p></description></item><item><title>包管理 - npm</title><link>https://yindongliang.com/docs/Frontend/%E5%8C%85%E7%AE%A1%E7%90%86-npm/</link><pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E5%8C%85%E7%AE%A1%E7%90%86-npm/</guid><description>&lt;h2 id="版本管理">版本管理&lt;a class="anchor" href="#%e7%89%88%e6%9c%ac%e7%ae%a1%e7%90%86">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>~&lt;/code>: 当安装依赖时获取到有新版本时，安装到 &lt;code>x.y.z&lt;/code> 中 &lt;code>z&lt;/code> 的最新的版本。即保持主版本号、次版本号不变的情况下，保持修订号的最新版本。&lt;/li>
+&lt;li>&lt;code>^&lt;/code>: 当安装依赖时获取到有新版本时，安装到 &lt;code>x.y.z&lt;/code> 中 &lt;code>y&lt;/code> 和 &lt;code>z&lt;/code> 都为最新版本。 即保持主版本号不变的情况下，保持次版本号、修订版本号为最新版本。&lt;/li>
+&lt;/ul>
+&lt;p>参考文档：&lt;/p></description></item><item><title>理解 useMemo、useCallback 和 memo</title><link>https://yindongliang.com/posts/useMemo-useCallback-and-memo/</link><pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/useMemo-useCallback-and-memo/</guid><description>&lt;p>虽然 React 的官方文档已经写的很清楚了，但我还是想总结下。形而上地讲前两个是 Hook，而 &lt;code>memo&lt;/code> 是 API。形而下地说，&lt;code>useMemo&lt;/code>、&lt;code>useCallback&lt;/code> 和 &lt;code>React.memo&lt;/code> 是 React 中用于优化性能的工具，它们帮助你避免不必要的重新渲染。&lt;/p></description></item><item><title>了解下 MobX 概念</title><link>https://yindongliang.com/posts/mobx-primer/</link><pubDate>Mon, 19 Jul 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/mobx-primer/</guid><description>&lt;h2 id="基本概念">基本概念&lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>observable 函数
+&lt;ul>
+&lt;li>定义状态值&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>action 函数
+&lt;ul>
+&lt;li>用于修改状态值&lt;/li>
+&lt;li>接受一个函数，返回一个签名相同的函数，提供触发时调用。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>derivations 派生，有两种：&lt;code>autorun&lt;/code> 和 &lt;code>computed&lt;/code>
+&lt;ul>
+&lt;li>reactions - autorun()
+&lt;ul>
+&lt;li>接受一个函数&lt;/li>
+&lt;li>状态值发生改变后要执行的响应操作。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>computed value - computed()
+&lt;ul>
+&lt;li>接受一个函数，返回计算值对象。&lt;/li>
+&lt;li>状态值发生改变时，计算值对象的值会自动更新。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="observable">observable&lt;a class="anchor" href="#observable">#&lt;/a>&lt;/h2>
+&lt;p>MobX 中通过 &lt;code>observable&lt;/code> 来定义可观察状态。&lt;/p></description></item><item><title>了解下 Redux 概念</title><link>https://yindongliang.com/posts/redux-primer/</link><pubDate>Thu, 24 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/redux-primer/</guid><description>&lt;p>Redux 用来进行复杂的状态管理，Redux 的思想继承自 Flux，并进行了更加简洁的抽象。&lt;/p>
+&lt;ul>
+&lt;li>store
+&lt;ul>
+&lt;li>&lt;code>store.dispatch(action)&lt;/code> 是 View 发出 Action 的唯一方法，接受一个 Action 对象作为参数，将它发送出去。&lt;/li>
+&lt;li>store 允许使用 &lt;code>store.subscribe()&lt;/code> 方法设置监听函数，一旦 State 发生变化，就自动执行这个函数。subscribe 也返回一个函数，调用这个函数就可以解除监听。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>action
+&lt;ul>
+&lt;li>改变 state 的唯一办法，就是使用 action，它会运送数据到 Store。&lt;/li>
+&lt;li>action creator：view 要发送多少种消息，就会有多少种 action，action 有固定的格式。如果都手写，会很麻烦。可以定义一个函数来生成 action，这个函数就叫 action creator。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>state
+&lt;ul>
+&lt;li>&lt;code>Store&lt;/code> 对象包含所有数据。如果想得到某个时点的数据，就要对 Store 生成快照。这种时点的数据集合，就叫做 State，可以通过 &lt;code>store.getState()&lt;/code> 拿到。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>reducer
+&lt;ul>
+&lt;li>store 收到 action 以后，必须给出一个新的 state，这样 View 才会发生变化。这种 state 的计算过程就叫做 reducer。&lt;/li>
+&lt;li>reducer 是一个纯函数&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>，它接受 action 和当前 state 作为参数，返回一个新的 state。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="reducer">reducer&lt;a class="anchor" href="#reducer">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">const&lt;/span> reducer &lt;span style="color:#ff6ac1">=&lt;/span> (state &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff9f43">0&lt;/span>, action) =&amp;gt; {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">switch&lt;/span> (action.type) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">case&lt;/span> &lt;span style="color:#5af78e">&amp;#39;INCREMENT&amp;#39;&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">return&lt;/span> state &lt;span style="color:#ff6ac1">+&lt;/span> &lt;span style="color:#ff9f43">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">case&lt;/span> &lt;span style="color:#5af78e">&amp;#39;DECREMENT&amp;#39;&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">return&lt;/span> state &lt;span style="color:#ff6ac1">-&lt;/span> &lt;span style="color:#ff9f43">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">default&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">return&lt;/span> state;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>};&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>reducer 是一个纯函数，你可以把所有子 Reducer 放在一个文件里面，然后统一引入。&lt;/p></description></item><item><title>基础概念</title><link>https://yindongliang.com/docs/Frontend/React/react/</link><pubDate>Tue, 01 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/React/react/</guid><description>&lt;h2 id="jsx">JSX&lt;a class="anchor" href="#jsx">#&lt;/a>&lt;/h2>
+&lt;h3 id="classname">className&lt;a class="anchor" href="#classname">#&lt;/a>&lt;/h3>
+&lt;h2 id="props">props&lt;a class="anchor" href="#props">#&lt;/a>&lt;/h2>
+&lt;p>组件无论是使用函数声明还是通过 class 声明，都决不能修改自身的 props。所有 React 组件都必须像纯函数一样保护它们的 props 不被更改。&lt;/p>
+&lt;p>建议从组件本身的角度来命名 props 而不是它被使用的上下文环境。&lt;/p></description></item></channel></rss>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Debug on LYon's Blog</title><link>https://yindongliang.com/tags/Debug/</link><description>Recent content in Debug on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Thu, 27 Nov 2025 16:22:34 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Debug/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 GDB 调试 Python</title><link>https://yindongliang.com/posts/%E4%BD%BF%E7%94%A8-GDB-%E8%B0%83%E8%AF%95-Python/</link><pubDate>Thu, 27 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E4%BD%BF%E7%94%A8-GDB-%E8%B0%83%E8%AF%95-Python/</guid><description>&lt;h1 id="使用-gdb-调试-python">使用 GDB 调试 Python&lt;a class="anchor" href="#%e4%bd%bf%e7%94%a8-gdb-%e8%b0%83%e8%af%95-python">#&lt;/a>&lt;/h1>
+&lt;h2 id="1-引言">1. 引言&lt;a class="anchor" href="#1-%e5%bc%95%e8%a8%80">#&lt;/a>&lt;/h2>
+&lt;p>GDB (GNU Debugger) 是一个功能强大的命令行调试工具，常用于调试 C/C++ 程序。但你知道吗？GDB 也可以用于调试 Python 程序，特别是在以下场景中：&lt;/p>
+&lt;ul>
+&lt;li>Python 解释器崩溃时分析核心转储&lt;/li>
+&lt;li>调试 Python 扩展模块（C/C++ 编写）&lt;/li>
+&lt;li>分析 Python 程序的性能瓶颈&lt;/li>
+&lt;li>调试 Python 解释器本身&lt;/li>
+&lt;/ul>
+&lt;p>本文将详细介绍如何使用 GDB 调试 Python 程序，从基础配置到高级技巧，帮助你掌握这一强大的调试方法。&lt;/p></description></item><item><title>Anthropic: A postmortem of three recent issues</title><link>https://yindongliang.com/links/202509/A-postmortem-of-three-recent-issues/</link><pubDate>Tue, 23 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/A-postmortem-of-three-recent-issues/</guid><description>&lt;p>此为很多人不买账的官方回复。&lt;/p></description></item></channel></rss>

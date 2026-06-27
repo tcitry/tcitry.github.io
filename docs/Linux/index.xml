@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>"Linux" on LYon's Blog</title><link>https://yindongliang.com/docs/Linux/</link><description>Recent content in "Linux" on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Linux/index.xml" rel="self" type="application/rss+xml"/><item><title>命令行</title><link>https://yindongliang.com/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/</link><pubDate>Fri, 02 Mar 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/%E5%91%BD%E4%BB%A4%E8%A1%8C/</guid><description>&lt;h2 id="概要">概要&lt;a class="anchor" href="#%e6%a6%82%e8%a6%81">#&lt;/a>&lt;/h2>
+&lt;p>文档可参考 &lt;a href="https://github.com/jlevy/the-art-of-command-line">the-art-of-command-line&lt;/a> / &lt;a href="https://github.com/jlevy/the-art-of-command-line/blob/master/README-zh.md">命令行的艺术&lt;/a>&lt;/p>
+&lt;p>如今有 AI 了，也就不需要记住大量选项，高频使用的命令自然而然会记住。&lt;/p>
+&lt;h2 id="awk">awk&lt;a class="anchor" href="#awk">#&lt;/a>&lt;/h2>
+&lt;p>AWK 镇楼&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>cat table.csv | awk -F&lt;span style="color:#5af78e">&amp;#39;,&amp;#39;&lt;/span> &lt;span style="color:#5af78e">&amp;#39;{print $4}&amp;#39;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="alias">alias&lt;a class="anchor" href="#alias">#&lt;/a>&lt;/h2>
+&lt;p>下面是我在 &lt;code>.zshrc&lt;/code> 的 &lt;code>alias&lt;/code> 相关配置，非常实用。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">a&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;. venv/bin/activate&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#5af78e">&amp;#39;cd..&amp;#39;&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;cd ..&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">cdr&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;cd-gitroot&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">o&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;open .&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">ctags&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;/usr/local/Cellar/ctags/5.8_1/bin/ctags&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">s&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">merge&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/Applications/Sublime\ Merge.app/Contents/SharedSupport/bin/smerge&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">c&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;~/.cargo/bin/cargo&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">p&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>pyhton3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">i&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>ipython
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">lg&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;lazygit&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">d&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>docker
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">de&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>deactivate
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">k&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>kubectl
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">gg&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>gitup
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">f&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>fuck
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">ts&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>ts-node
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">my&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;mycli -uroot -p 12345678 -h localhost&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">stree&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;/Applications/SourceTree.app/Contents/Resources/stree&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">alias&lt;/span> &lt;span style="color:#ff5c57">x&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;sudo xattr -r -d com.apple.quarantine&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="cat">cat&lt;a class="anchor" href="#cat">#&lt;/a>&lt;/h2>
+&lt;h2 id="comm">comm&lt;a class="anchor" href="#comm">#&lt;/a>&lt;/h2>
+&lt;p>命令用于比较两个已排过序的文件，不常见但很有用。&lt;/p></description></item><item><title>正则表达式</title><link>https://yindongliang.com/docs/Linux/regular-expression/</link><pubDate>Tue, 13 Mar 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/regular-expression/</guid><description>&lt;h2 id="举例子">举例子&lt;a class="anchor" href="#%e4%b8%be%e4%be%8b%e5%ad%90">#&lt;/a>&lt;/h2>
+&lt;p>base64正则匹配&lt;/p>
+&lt;pre tabindex="0">&lt;code>^[A-Za-z0-9+/]*={0,2}$&lt;/code>&lt;/pre>&lt;h2 id="特殊字符">特殊字符&lt;a class="anchor" href="#%e7%89%b9%e6%ae%8a%e5%ad%97%e7%ac%a6">#&lt;/a>&lt;/h2>
+&lt;p>点 &lt;code>.&lt;/code> 表示匹配换行符 &lt;code>\n&lt;/code> 以外的任何字符。&lt;/p>
+&lt;h2 id="限定符">限定符&lt;a class="anchor" href="#%e9%99%90%e5%ae%9a%e7%ac%a6">#&lt;/a>&lt;/h2>
+&lt;p>星号 &lt;code>*&lt;/code> 表示匹配前面的子表达式零次或多次。&lt;/p>
+&lt;p>加号 &lt;code>+&lt;/code> 表示一次或多次，至少一次。&lt;/p>
+&lt;p>问号 &lt;code>?&lt;/code> 表示零次或一次。&lt;/p></description></item><item><title>Shell 脚本</title><link>https://yindongliang.com/docs/Linux/Shell/</link><pubDate>Tue, 19 Mar 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/Shell/</guid><description>&lt;h2 id="bash-版本">Bash 版本&lt;a class="anchor" href="#bash-%e7%89%88%e6%9c%ac">#&lt;/a>&lt;/h2>
+&lt;p>Dash: Debian Almquist shell&lt;/p>
+&lt;p>现在 zsh 比较常用，配合 &lt;a href="https://ohmyz.sh/">oh-my-zsh&lt;/a> 使用更香，zsh 相比 bash 还支持更多脚本功能。&lt;/p>
+&lt;h2 id="shell-的父子关系">Shell 的父子关系&lt;a class="anchor" href="#shell-%e7%9a%84%e7%88%b6%e5%ad%90%e5%85%b3%e7%b3%bb">#&lt;/a>&lt;/h2>
+&lt;p>通过 &lt;code>ps -f&lt;/code> 可以查看 &lt;code>PID&lt;/code> 和 &lt;code>PPID&lt;/code> 号来判断父子关系，创建了子 Shell 就意味着创建了子进程。&lt;/p></description></item><item><title>SSH 常用命令指南</title><link>https://yindongliang.com/docs/Linux/SSH-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%8C%87%E5%8D%97/</link><pubDate>Tue, 30 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/SSH-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E6%8C%87%E5%8D%97/</guid><description>&lt;h2 id="1-生成-ssh-密钥对">1. 生成 SSH 密钥对&lt;a class="anchor" href="#1-%e7%94%9f%e6%88%90-ssh-%e5%af%86%e9%92%a5%e5%af%b9">#&lt;/a>&lt;/h2>
+&lt;h3 id="生成-rsa-密钥对-传统">生成 RSA 密钥对 (传统)&lt;a class="anchor" href="#%e7%94%9f%e6%88%90-rsa-%e5%af%86%e9%92%a5%e5%af%b9-%e4%bc%a0%e7%bb%9f">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh-keygen -t rsa -b &lt;span style="color:#ff9f43">4096&lt;/span> -C &lt;span style="color:#5af78e">&amp;#34;your_email@example.com&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;code>-t rsa&lt;/code>: 指定密钥类型为 RSA&lt;/li>
+&lt;li>&lt;code>-b 4096&lt;/code>: 指定密钥位数为 4096 位&lt;/li>
+&lt;li>&lt;code>-C &amp;quot;comment&amp;quot;&lt;/code>: 添加注释（通常是邮箱）&lt;/li>
+&lt;/ul>
+&lt;h3 id="生成-ed25519-密钥对-推荐更安全高效">生成 ED25519 密钥对 (推荐，更安全高效)&lt;a class="anchor" href="#%e7%94%9f%e6%88%90-ed25519-%e5%af%86%e9%92%a5%e5%af%b9-%e6%8e%a8%e8%8d%90%e6%9b%b4%e5%ae%89%e5%85%a8%e9%ab%98%e6%95%88">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh-keygen -t ed25519 -C &lt;span style="color:#5af78e">&amp;#34;your_email@example.com&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="指定保存路径和密码">指定保存路径和密码&lt;a class="anchor" href="#%e6%8c%87%e5%ae%9a%e4%bf%9d%e5%ad%98%e8%b7%af%e5%be%84%e5%92%8c%e5%af%86%e7%a0%81">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_custom -N &lt;span style="color:#5af78e">&amp;#34;passphrase&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;code>-f&lt;/code>: 指定密钥文件保存路径&lt;/li>
+&lt;li>&lt;code>-N&lt;/code>: 指定密码（空密码为&lt;code>&amp;quot;&amp;quot;&lt;/code>，不推荐）&lt;/li>
+&lt;/ul>
+&lt;h2 id="2-使用密钥连接远程服务器">2. 使用密钥连接远程服务器&lt;a class="anchor" href="#2-%e4%bd%bf%e7%94%a8%e5%af%86%e9%92%a5%e8%bf%9e%e6%8e%a5%e8%bf%9c%e7%a8%8b%e6%9c%8d%e5%8a%a1%e5%99%a8">#&lt;/a>&lt;/h2>
+&lt;h3 id="指定密钥文件连接">指定密钥文件连接&lt;a class="anchor" href="#%e6%8c%87%e5%ae%9a%e5%af%86%e9%92%a5%e6%96%87%e4%bb%b6%e8%bf%9e%e6%8e%a5">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh -i /path/to/private_key username@hostname&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;code>-i&lt;/code>: 指定私钥文件路径&lt;/li>
+&lt;/ul>
+&lt;h3 id="指定端口和密钥">指定端口和密钥&lt;a class="anchor" href="#%e6%8c%87%e5%ae%9a%e7%ab%af%e5%8f%a3%e5%92%8c%e5%af%86%e9%92%a5">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh -i ~/.ssh/id_ed25519 -p &lt;span style="color:#ff9f43">2222&lt;/span> user@server.com&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;code>-p&lt;/code>: 指定连接端口&lt;/li>
+&lt;/ul>
+&lt;h2 id="3-ssh-配置文件">3. SSH 配置文件&lt;a class="anchor" href="#3-ssh-%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6">#&lt;/a>&lt;/h2>
+&lt;h3 id="配置文件示例-sshconfig">配置文件示例 (~/.ssh/config)&lt;a class="anchor" href="#%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e7%a4%ba%e4%be%8b-sshconfig">#&lt;/a>&lt;/h3>
+&lt;pre tabindex="0">&lt;code>Host myserver
+ HostName server.com
+ User username
+ IdentityFile ~/.ssh/id_ed25519_custom
+ Port 2222
+ ServerAliveInterval 60
+ 
+Host github
+ HostName github.com
+ User git
+ IdentityFile ~/.ssh/id_ed25519_github&lt;/code>&lt;/pre>&lt;p>使用配置后连接:&lt;/p></description></item><item><title>PostgreSQL</title><link>https://yindongliang.com/docs/Linux/PostgreSQL/</link><pubDate>Sat, 20 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/PostgreSQL/</guid><description>&lt;p>这里整理了一份非常实用的 PostgreSQL 常用命令清单，从连接到数据库、基本操作到高级功能都涵盖了。&lt;/p>
+&lt;h3 id="1-连接与退出数据库">1. 连接与退出数据库&lt;a class="anchor" href="#1-%e8%bf%9e%e6%8e%a5%e4%b8%8e%e9%80%80%e5%87%ba%e6%95%b0%e6%8d%ae%e5%ba%93">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>连接到一个特定的数据库&lt;/strong>：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>psql -h &amp;lt;主机名&amp;gt; -p &amp;lt;端口号&amp;gt; -U &amp;lt;用户名&amp;gt; -d &amp;lt;数据库名&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>例如，连接本地的 &lt;code>mydb&lt;/code> 数据库：&lt;code>psql -h localhost -p 5432 -U postgres -d mydb&lt;/code>&lt;/li>
+&lt;li>如果连接本地默认端口（5432）的默认数据库，可以简写为：&lt;code>psql -U postgres&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>退出 psql 命令行界面&lt;/strong>：&lt;/p></description></item><item><title>n8n 介绍</title><link>https://yindongliang.com/docs/Linux/n8n/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/n8n/</guid><description>&lt;p>&lt;a href="https://n8n.io/">n8n&lt;/a> 是一款功能强大的开源工作流自动化工具，它通过可视化的方式让你能够连接各种应用、服务和数据，自动执行重复性的任务和业务流程。&lt;/p>
+&lt;p>&lt;a href="https://docs.n8n.io/">https://docs.n8n.io/&lt;/a>&lt;/p>
+&lt;h1 id="-n8n-工作流自动化平台全面指南">🔧 n8n 工作流自动化平台全面指南&lt;a class="anchor" href="#-n8n-%e5%b7%a5%e4%bd%9c%e6%b5%81%e8%87%aa%e5%8a%a8%e5%8c%96%e5%b9%b3%e5%8f%b0%e5%85%a8%e9%9d%a2%e6%8c%87%e5%8d%97">#&lt;/a>&lt;/h1>
+&lt;h2 id="-核心特点">✨ 核心特点&lt;a class="anchor" href="#-%e6%a0%b8%e5%bf%83%e7%89%b9%e7%82%b9">#&lt;/a>&lt;/h2>
+&lt;p>n8n 有以下几个突出的特点，使其在自动化工具中脱颖而出：&lt;/p></description></item><item><title>WebHook URL 概念</title><link>https://yindongliang.com/docs/Linux/WebHook-URL/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/WebHook-URL/</guid><description>&lt;p>关于 Webhook URL 本身并没有一个全球统一的硬性标准，但它有一些广泛接受的实践和常见要求，这些“事实上的标准”确保了不同系统之间能够可靠、安全地协作。&lt;/p>
+&lt;p>下面这个表格汇总了 Webhook URL 及请求的主要实践和常见要求，希望能帮你快速了解：&lt;/p></description></item><item><title>VSCode 使用技巧</title><link>https://yindongliang.com/docs/Linux/VSCode/</link><pubDate>Sat, 18 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/VSCode/</guid><description>&lt;h2 id="排除文件夹">排除文件夹&lt;a class="anchor" href="#%e6%8e%92%e9%99%a4%e6%96%87%e4%bb%b6%e5%a4%b9">#&lt;/a>&lt;/h2>
+&lt;p>使用 &lt;code>search.exclude&lt;/code> 在&lt;strong>搜索结果&lt;/strong>中排除特定的文件或文件夹。&lt;/p>
+&lt;p>使用 &lt;code>files.exclude&lt;/code> 在&lt;strong>文件资源管理器&lt;/strong>中隐藏特定的文件或文件夹。&lt;/p>
+&lt;p>使用 &lt;code>files.watcherExclude&lt;/code> 在&lt;strong>文件监视器&lt;/strong>排除某些文件或文件夹，以提高性能。&lt;/p>
+&lt;h2 id="目录树的颜色">目录树的颜色&lt;a class="anchor" href="#%e7%9b%ae%e5%bd%95%e6%a0%91%e7%9a%84%e9%a2%9c%e8%89%b2">#&lt;/a>&lt;/h2>
+&lt;p>&lt;img src="https://cdn.yindongliang.com/2024/du1nKE.png" alt="" />&lt;/p></description></item><item><title>Mac 技巧</title><link>https://yindongliang.com/docs/Linux/mac-tips/</link><pubDate>Thu, 18 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/mac-tips/</guid><description>&lt;h2 id="允许打开任何来源的-app">允许打开任何来源的 APP&lt;a class="anchor" href="#%e5%85%81%e8%ae%b8%e6%89%93%e5%bc%80%e4%bb%bb%e4%bd%95%e6%9d%a5%e6%ba%90%e7%9a%84-app">#&lt;/a>&lt;/h2>
+&lt;p>适用于 14.0&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo spctl --master-disable&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>上面不奏效就使用下面的命令。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo xattr -r -d com.apple.quarantine + APP路径&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="美区礼品卡官方购买链接">美区礼品卡官方购买链接&lt;a class="anchor" href="#%e7%be%8e%e5%8c%ba%e7%a4%bc%e5%93%81%e5%8d%a1%e5%ae%98%e6%96%b9%e8%b4%ad%e4%b9%b0%e9%93%be%e6%8e%a5">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="https://www.apple.com/shop/gift-cards">Apple Gift Card&lt;/a>&lt;/p>
+&lt;p>可用于在美区 App Store 消费，比如 ChatGPT 4.0&lt;/p>
+&lt;h2 id="调试技巧">调试技巧&lt;a class="anchor" href="#%e8%b0%83%e8%af%95%e6%8a%80%e5%b7%a7">#&lt;/a>&lt;/h2>
+&lt;p>命令行启动 App 时加上 &lt;code>-_NS_4445425547 YES&lt;/code> 可以开启某种神秘的 debug 模式。参考：&lt;/p></description></item><item><title>Spark</title><link>https://yindongliang.com/docs/Linux/Spark/</link><pubDate>Mon, 16 Oct 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/Spark/</guid><description>&lt;p>Spark 是内存密集型的分布式大数据计算引擎。Apache Spark™ is a multi-language &lt;strong>engine&lt;/strong> for executing data engineering, data science, and machine learning on single-node machines or clusters&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>.&lt;/p>
+&lt;p>Spark 生态圈以 Spark Core 为核心，支持从 HDFS、Amazon S3、HBase、ElasticSearch、MongoDB、MySQL、Kafka 等多种数据源读取数据。同时，Spark 支持以 Standalone、Hadoop YARN、Apache Mesos、Kubernetes 为资源管理器调度任务，从而完成 Spark 应用程序的计算任务。&lt;/p></description></item><item><title>Linux 运维</title><link>https://yindongliang.com/docs/Linux/DevOps/</link><pubDate>Thu, 18 May 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/DevOps/</guid><description>&lt;h2 id="权限系统">权限系统&lt;a class="anchor" href="#%e6%9d%83%e9%99%90%e7%b3%bb%e7%bb%9f">#&lt;/a>&lt;/h2>
+&lt;p>Linux 系统使用一个专门的 &lt;code>/etc/passwd&lt;/code> 文件来匹配登录名与对应的 UID 值，用户密码不保存在此文件，而是在 &lt;code>/etc/shadow&lt;/code> 中，只有特定程序或 root 才可以访问。&lt;/p>
+&lt;h3 id="用户管理">用户管理&lt;a class="anchor" href="#%e7%94%a8%e6%88%b7%e7%ae%a1%e7%90%86">#&lt;/a>&lt;/h3>
+&lt;p>使用 &lt;code>useradd&lt;/code> 来创建新用户，&lt;code>userdel&lt;/code> 来删除用户，&lt;code>usermod&lt;/code> 来修改用户信息。&lt;/p></description></item><item><title/><link>https://yindongliang.com/docs/Linux/devcontainer/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/devcontainer/</guid><description/></item><item><title/><link>https://yindongliang.com/docs/Linux/Hadoop/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/Hadoop/</guid><description/></item><item><title/><link>https://yindongliang.com/docs/Linux/SQL-%E6%8A%80%E5%B7%A7/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/SQL-%E6%8A%80%E5%B7%A7/</guid><description/></item></channel></rss>

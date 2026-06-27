@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hugo on LYon's Blog</title><link>https://yindongliang.com/tags/Hugo/</link><description>Recent content in Hugo on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Mon, 12 May 2025 17:04:26 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Hugo/index.xml" rel="self" type="application/rss+xml"/><item><title>Hextra - 这个 Hugo 主题不错</title><link>https://yindongliang.com/links/202505/Hugo-Hextra-Theme/</link><pubDate>Mon, 12 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202505/Hugo-Hextra-Theme/</guid><description>&lt;p>Hextra 集成了 Tailwind CSS，“极速且全能的 Hugo 主题框架，为构建现代化的静态网站而生”，我拿来发布了 &lt;a href="https://manaio.com">manaio.com&lt;/a>。&lt;/p></description></item><item><title>Hugo 的 Type 和 Layout 概念的区别</title><link>https://yindongliang.com/posts/Hugo-%E7%9A%84-Type-%E5%92%8C-Layout-%E6%A6%82%E5%BF%B5%E7%9A%84%E5%8C%BA%E5%88%AB/</link><pubDate>Wed, 19 Feb 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/Hugo-%E7%9A%84-Type-%E5%92%8C-Layout-%E6%A6%82%E5%BF%B5%E7%9A%84%E5%8C%BA%E5%88%AB/</guid><description>&lt;p>在 Hugo 中，虽然 “type” 和 “layout” 都会影响模板的选择，但它们的用途和工作方式有明显的不同，下面详细说明：&lt;/p>
+&lt;hr>
+&lt;h2 id="1-type">1. type&lt;a class="anchor" href="#1-type">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>定义与默认行为&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>“type” 通常用来定义内容的类型（或类别）。如果在前言中没有显式声明 type，Hugo 会默认将内容文件所在的目录（也就是 section）作为 type。&lt;/li>
+&lt;li>例如，位于 content/posts/ 下的文章默认 type 就是 &amp;ldquo;posts&amp;rdquo;。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>模板查找机制&lt;/strong>&lt;/p></description></item></channel></rss>

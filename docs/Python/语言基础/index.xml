@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>语言基础 on LYon's Blog</title><link>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/</link><description>Recent content in 语言基础 on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/index.xml" rel="self" type="application/rss+xml"/><item><title>`__call__` 方法的使用场景</title><link>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/__call__/</link><pubDate>Mon, 01 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/__call__/</guid><description>&lt;p>&lt;code>__call__&lt;/code> 是 Python 中的一个特殊方法（魔术方法），它允许类的实例像函数一样被调用。当一个类定义了 &lt;code>__call__&lt;/code> 方法后，该类的实例就可以使用函数调用语法 &lt;code>instance()&lt;/code>。&lt;/p>
+&lt;h2 id="主要使用场景">主要使用场景&lt;a class="anchor" href="#%e4%b8%bb%e8%a6%81%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-创建可调用对象">1. 创建可调用对象&lt;a class="anchor" href="#1-%e5%88%9b%e5%bb%ba%e5%8f%af%e8%b0%83%e7%94%a8%e5%af%b9%e8%b1%a1">#&lt;/a>&lt;/h3>
+&lt;p>让对象表现得像函数一样，可以保存状态并在多次调用间保持状态。&lt;/p></description></item><item><title>Typing 模块使用指南</title><link>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/typing/</link><pubDate>Thu, 28 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/typing/</guid><description>&lt;p>Python 的 &lt;code>typing&lt;/code> 模块提供了类型提示（Type Hints）支持，它可以帮助开发者编写更清晰、更易维护的代码，并允许静态类型检查器在代码运行前发现潜在的错误。&lt;/p></description></item><item><title>abc 模块与 abstractmethod 使用方法</title><link>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/abc/</link><pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/abc/</guid><description>&lt;h2 id="概述">概述&lt;a class="anchor" href="#%e6%a6%82%e8%bf%b0">#&lt;/a>&lt;/h2>
+&lt;p>Python 的 &lt;code>abc&lt;/code> 模块（Abstract Base Classes）提供了创建抽象基类的功能，其中 &lt;code>abstractmethod&lt;/code> 装饰器用于定义抽象方法。这是实现接口和多态性的重要工具，遵循&amp;quot;面向接口编程，而不是实现&amp;quot;的原则。&lt;/p></description></item><item><title>async 和 await 关键字</title><link>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/async-%E5%92%8C-await/</link><pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/async-%E5%92%8C-await/</guid><description>&lt;p>&lt;code>async&lt;/code> 和 &lt;code>await&lt;/code> 是 Python 中用于异步编程的关键字，它们使得编写异步代码更加简洁和直观，特别适用于 I/O 密集型任务和高并发场景。&lt;/p>
+&lt;h2 id="基本概念">基本概念&lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-异步函数定义">1. 异步函数定义&lt;a class="anchor" href="#1-%e5%bc%82%e6%ad%a5%e5%87%bd%e6%95%b0%e5%ae%9a%e4%b9%89">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 使用 async def 定义异步函数&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">say_hello&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;Hello&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(&lt;span style="color:#ff9f43">1&lt;/span>) &lt;span style="color:#78787e"># 模拟异步操作&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;World&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 运行异步函数&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(say_hello())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-基本-await-使用">2. 基本 await 使用&lt;a class="anchor" href="#2-%e5%9f%ba%e6%9c%ac-await-%e4%bd%bf%e7%94%a8">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">fetch_data&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;开始获取数据&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(&lt;span style="color:#ff9f43">2&lt;/span>) &lt;span style="color:#78787e"># 模拟网络请求&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;数据获取完成&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> {&lt;span style="color:#5af78e">&amp;#34;data&amp;#34;&lt;/span>: &lt;span style="color:#ff9f43">123&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> fetch_data() &lt;span style="color:#78787e"># 等待异步操作完成&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;获取到的数据: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>result&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="高级用法">高级用法&lt;a class="anchor" href="#%e9%ab%98%e7%ba%a7%e7%94%a8%e6%b3%95">#&lt;/a>&lt;/h2>
+&lt;h3 id="3-并发执行多个任务">3. 并发执行多个任务&lt;a class="anchor" href="#3-%e5%b9%b6%e5%8f%91%e6%89%a7%e8%a1%8c%e5%a4%9a%e4%b8%aa%e4%bb%bb%e5%8a%a1">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> time
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">task&lt;/span>(name, delay):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;任务 &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 开始&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(delay)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;任务 &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 完成&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> &lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;任务 &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 结果&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> start_time &lt;span style="color:#ff6ac1">=&lt;/span> time&lt;span style="color:#ff6ac1">.&lt;/span>time()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 同时启动多个任务&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> task1 &lt;span style="color:#ff6ac1">=&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>create_task(task(&lt;span style="color:#5af78e">&amp;#34;A&amp;#34;&lt;/span>, &lt;span style="color:#ff9f43">2&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> task2 &lt;span style="color:#ff6ac1">=&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>create_task(task(&lt;span style="color:#5af78e">&amp;#34;B&amp;#34;&lt;/span>, &lt;span style="color:#ff9f43">1&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> task3 &lt;span style="color:#ff6ac1">=&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>create_task(task(&lt;span style="color:#5af78e">&amp;#34;C&amp;#34;&lt;/span>, &lt;span style="color:#ff9f43">3&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 等待所有任务完成&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> results &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>gather(task1, task2, task3)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> end_time &lt;span style="color:#ff6ac1">=&lt;/span> time&lt;span style="color:#ff6ac1">.&lt;/span>time()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;所有任务完成，耗时: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>end_time &lt;span style="color:#ff6ac1">-&lt;/span> start_time&lt;span style="color:#5af78e">:&lt;/span>&lt;span style="color:#5af78e">.2f&lt;/span>&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">秒&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;结果: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>results&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="4-使用异步上下文管理器">4. 使用异步上下文管理器&lt;a class="anchor" href="#4-%e4%bd%bf%e7%94%a8%e5%bc%82%e6%ad%a5%e4%b8%8a%e4%b8%8b%e6%96%87%e7%ae%a1%e7%90%86%e5%99%a8">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">class&lt;/span> &lt;span style="color:#f3f99d">AsyncResource&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> __aenter__(self):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;获取资源&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(&lt;span style="color:#ff9f43">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> self
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> __aexit__(self, exc_type, exc_val, exc_tb):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;释放资源&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(&lt;span style="color:#ff9f43">0.5&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">process&lt;/span>(self):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;处理资源&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(&lt;span style="color:#ff9f43">2&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">with&lt;/span> AsyncResource() &lt;span style="color:#ff6ac1">as&lt;/span> resource:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> resource&lt;span style="color:#ff6ac1">.&lt;/span>process()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="5-异步迭代器">5. 异步迭代器&lt;a class="anchor" href="#5-%e5%bc%82%e6%ad%a5%e8%bf%ad%e4%bb%a3%e5%99%a8">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">class&lt;/span> &lt;span style="color:#f3f99d">AsyncCounter&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">def&lt;/span> __init__(self, stop):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self&lt;span style="color:#ff6ac1">.&lt;/span>current &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff9f43">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self&lt;span style="color:#ff6ac1">.&lt;/span>stop &lt;span style="color:#ff6ac1">=&lt;/span> stop
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">def&lt;/span> __aiter__(self):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> self
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> __anext__(self):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> self&lt;span style="color:#ff6ac1">.&lt;/span>current &lt;span style="color:#ff6ac1">&amp;gt;=&lt;/span> self&lt;span style="color:#ff6ac1">.&lt;/span>stop:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">raise&lt;/span> StopAsyncIteration
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(&lt;span style="color:#ff9f43">0.5&lt;/span>) &lt;span style="color:#78787e"># 模拟异步操作&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> self&lt;span style="color:#ff6ac1">.&lt;/span>current &lt;span style="color:#ff6ac1">+=&lt;/span> &lt;span style="color:#ff9f43">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> self&lt;span style="color:#ff6ac1">.&lt;/span>current
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">for&lt;/span> number &lt;span style="color:#ff6ac1">in&lt;/span> AsyncCounter(&lt;span style="color:#ff9f43">5&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;计数: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>number&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="实际应用场景">实际应用场景&lt;a class="anchor" href="#%e5%ae%9e%e9%99%85%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af">#&lt;/a>&lt;/h2>
+&lt;h3 id="6-异步网络请求">6. 异步网络请求&lt;a class="anchor" href="#6-%e5%bc%82%e6%ad%a5%e7%bd%91%e7%bb%9c%e8%af%b7%e6%b1%82">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> aiohttp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">fetch_url&lt;/span>(session, url):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">with&lt;/span> session&lt;span style="color:#ff6ac1">.&lt;/span>get(url) &lt;span style="color:#ff6ac1">as&lt;/span> response:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> response&lt;span style="color:#ff6ac1">.&lt;/span>text()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> urls &lt;span style="color:#ff6ac1">=&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#5af78e">&amp;#34;https://httpbin.org/delay/1&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#5af78e">&amp;#34;https://httpbin.org/delay/2&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#5af78e">&amp;#34;https://httpbin.org/delay/3&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">with&lt;/span> aiohttp&lt;span style="color:#ff6ac1">.&lt;/span>ClientSession() &lt;span style="color:#ff6ac1">as&lt;/span> session:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> tasks &lt;span style="color:#ff6ac1">=&lt;/span> [fetch_url(session, url) &lt;span style="color:#ff6ac1">for&lt;/span> url &lt;span style="color:#ff6ac1">in&lt;/span> urls]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> results &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>gather(&lt;span style="color:#ff6ac1">*&lt;/span>tasks)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">for&lt;/span> url, content &lt;span style="color:#ff6ac1">in&lt;/span> &lt;span style="color:#ff5c57">zip&lt;/span>(urls, results):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>url&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>&lt;span style="color:#ff5c57">len&lt;/span>(content)&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 字符&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="7-异步数据库操作">7. 异步数据库操作&lt;a class="anchor" href="#7-%e5%bc%82%e6%ad%a5%e6%95%b0%e6%8d%ae%e5%ba%93%e6%93%8d%e4%bd%9c">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncpg
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 连接数据库&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> conn &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncpg&lt;span style="color:#ff6ac1">.&lt;/span>connect(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> user&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;user&amp;#39;&lt;/span>, password&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;password&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> database&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;database&amp;#39;&lt;/span>, host&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#39;localhost&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 执行查询&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> conn&lt;span style="color:#ff6ac1">.&lt;/span>fetch(&lt;span style="color:#5af78e">&amp;#39;SELECT * FROM users WHERE active = $1&amp;#39;&lt;/span>, &lt;span style="color:#ff6ac1">True&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">for&lt;/span> row &lt;span style="color:#ff6ac1">in&lt;/span> result:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;用户: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>row[&lt;span style="color:#5af78e">&amp;#39;username&amp;#39;&lt;/span>]&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">, 邮箱: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>row[&lt;span style="color:#5af78e">&amp;#39;email&amp;#39;&lt;/span>]&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 关闭连接&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> conn&lt;span style="color:#ff6ac1">.&lt;/span>close()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="注意事项">注意事项&lt;a class="anchor" href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9">#&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>异步函数必须使用 &lt;code>await&lt;/code> 调用其他异步函数，否则不会实际执行&lt;/li>
+&lt;li>不能在同步函数中直接使用 &lt;code>await&lt;/code>，必须在异步函数中使用&lt;/li>
+&lt;li>使用 &lt;code>asyncio.run()&lt;/code> 运行最外层的异步函数&lt;/li>
+&lt;li>避免在异步函数中使用阻塞式操作，这会阻止事件循环&lt;/li>
+&lt;li>可以使用 &lt;code>asyncio.create_task()&lt;/code> 创建并发任务&lt;/li>
+&lt;/ol>
+&lt;p>&lt;code>async&lt;/code> 和 &lt;code>await&lt;/code> 关键字使得 Python 异步编程更加简洁和直观，特别适合处理 I/O 密集型任务，能够显著提高程序的并发性能和响应能力。&lt;/p></description></item><item><title>asyncio 包的使用方法及典型例子</title><link>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/asyncio/</link><pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/asyncio/</guid><description>&lt;p>&lt;code>asyncio&lt;/code> 是 Python 的异步 I/O 框架，用于编写并发代码，特别适合处理 I/O 密集型和高并发任务。它基于事件循环和协程构建，提供了丰富的工具和 API。&lt;/p>
+&lt;h2 id="核心概念">核心概念&lt;a class="anchor" href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-事件循环-event-loop">1. 事件循环 (Event Loop)&lt;a class="anchor" href="#1-%e4%ba%8b%e4%bb%b6%e5%be%aa%e7%8e%af-event-loop">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 获取事件循环&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>loop &lt;span style="color:#ff6ac1">=&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>get_event_loop()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 创建异步任务&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;Hello&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(&lt;span style="color:#ff9f43">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;World&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 运行直到完成&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>loop&lt;span style="color:#ff6ac1">.&lt;/span>run_until_complete(main())
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 关闭事件循环&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>loop&lt;span style="color:#ff6ac1">.&lt;/span>close()&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-协程任务-coroutine-tasks">2. 协程任务 (Coroutine Tasks)&lt;a class="anchor" href="#2-%e5%8d%8f%e7%a8%8b%e4%bb%bb%e5%8a%a1-coroutine-tasks">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">task&lt;/span>(name, delay):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;任务 &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 开始&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(delay)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;任务 &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 完成&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> &lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 的结果&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 创建任务&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> task1 &lt;span style="color:#ff6ac1">=&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>create_task(task(&lt;span style="color:#5af78e">&amp;#34;A&amp;#34;&lt;/span>, &lt;span style="color:#ff9f43">2&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> task2 &lt;span style="color:#ff6ac1">=&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>create_task(task(&lt;span style="color:#5af78e">&amp;#34;B&amp;#34;&lt;/span>, &lt;span style="color:#ff9f43">1&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> task3 &lt;span style="color:#ff6ac1">=&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>create_task(task(&lt;span style="color:#5af78e">&amp;#34;C&amp;#34;&lt;/span>, &lt;span style="color:#ff9f43">3&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 等待任务完成&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> results &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>gather(task1, task2, task3)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;所有任务完成: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>results&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="核心功能">核心功能&lt;a class="anchor" href="#%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd">#&lt;/a>&lt;/h2>
+&lt;h3 id="3-并发执行">3. 并发执行&lt;a class="anchor" href="#3-%e5%b9%b6%e5%8f%91%e6%89%a7%e8%a1%8c">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> time
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">worker&lt;/span>(name, delay):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 开始工作&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(delay)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 工作完成&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> &lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 的结果&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> start_time &lt;span style="color:#ff6ac1">=&lt;/span> time&lt;span style="color:#ff6ac1">.&lt;/span>time()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 使用 gather 并发执行多个任务&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> results &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>gather(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> worker(&lt;span style="color:#5af78e">&amp;#34;工人1&amp;#34;&lt;/span>, &lt;span style="color:#ff9f43">2&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> worker(&lt;span style="color:#5af78e">&amp;#34;工人2&amp;#34;&lt;/span>, &lt;span style="color:#ff9f43">1&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> worker(&lt;span style="color:#5af78e">&amp;#34;工人3&amp;#34;&lt;/span>, &lt;span style="color:#ff9f43">3&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> end_time &lt;span style="color:#ff6ac1">=&lt;/span> time&lt;span style="color:#ff6ac1">.&lt;/span>time()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;所有工作完成，耗时: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>end_time &lt;span style="color:#ff6ac1">-&lt;/span> start_time&lt;span style="color:#5af78e">:&lt;/span>&lt;span style="color:#5af78e">.2f&lt;/span>&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">秒&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;结果: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>results&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="4-超时控制">4. 超时控制&lt;a class="anchor" href="#4-%e8%b6%85%e6%97%b6%e6%8e%a7%e5%88%b6">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">long_running_task&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(&lt;span style="color:#ff9f43">5&lt;/span>) &lt;span style="color:#78787e"># 模拟长时间运行的任务&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> &lt;span style="color:#5af78e">&amp;#34;任务完成&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">try&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 设置超时时间为3秒&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>wait_for(long_running_task(), timeout&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#ff9f43">3.0&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(result)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">except&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>TimeoutError:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;任务超时&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="5-同步原语">5. 同步原语&lt;a class="anchor" href="#5-%e5%90%8c%e6%ad%a5%e5%8e%9f%e8%af%ad">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">worker&lt;/span>(lock, name):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">with&lt;/span> lock: &lt;span style="color:#78787e"># 获取锁&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 获取了锁&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(&lt;span style="color:#ff9f43">1&lt;/span>) &lt;span style="color:#78787e"># 模拟工作&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 释放了锁&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> lock &lt;span style="color:#ff6ac1">=&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>Lock() &lt;span style="color:#78787e"># 创建锁&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 创建多个任务竞争锁&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>gather(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> worker(lock, &lt;span style="color:#5af78e">&amp;#34;任务A&amp;#34;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> worker(lock, &lt;span style="color:#5af78e">&amp;#34;任务B&amp;#34;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> worker(lock, &lt;span style="color:#5af78e">&amp;#34;任务C&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="实际应用场景">实际应用场景&lt;a class="anchor" href="#%e5%ae%9e%e9%99%85%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af">#&lt;/a>&lt;/h2>
+&lt;h3 id="6-异步http请求">6. 异步HTTP请求&lt;a class="anchor" href="#6-%e5%bc%82%e6%ad%a5http%e8%af%b7%e6%b1%82">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> aiohttp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">fetch_url&lt;/span>(session, url):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">try&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">with&lt;/span> session&lt;span style="color:#ff6ac1">.&lt;/span>get(url) &lt;span style="color:#ff6ac1">as&lt;/span> response:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> response&lt;span style="color:#ff6ac1">.&lt;/span>text()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">except&lt;/span> Exception &lt;span style="color:#ff6ac1">as&lt;/span> e:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> &lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;错误: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>e&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> urls &lt;span style="color:#ff6ac1">=&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#5af78e">&amp;#34;https://httpbin.org/delay/1&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#5af78e">&amp;#34;https://httpbin.org/delay/2&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#5af78e">&amp;#34;https://httpbin.org/delay/3&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#5af78e">&amp;#34;https://httpbin.org/delay/1&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#5af78e">&amp;#34;https://httpbin.org/delay/2&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">with&lt;/span> aiohttp&lt;span style="color:#ff6ac1">.&lt;/span>ClientSession() &lt;span style="color:#ff6ac1">as&lt;/span> session:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> tasks &lt;span style="color:#ff6ac1">=&lt;/span> [fetch_url(session, url) &lt;span style="color:#ff6ac1">for&lt;/span> url &lt;span style="color:#ff6ac1">in&lt;/span> urls]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> results &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>gather(&lt;span style="color:#ff6ac1">*&lt;/span>tasks)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">for&lt;/span> url, content &lt;span style="color:#ff6ac1">in&lt;/span> &lt;span style="color:#ff5c57">zip&lt;/span>(urls, results):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>url&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">: 响应长度 &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>&lt;span style="color:#ff5c57">len&lt;/span>(content)&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="7-异步文件操作">7. 异步文件操作&lt;a class="anchor" href="#7-%e5%bc%82%e6%ad%a5%e6%96%87%e4%bb%b6%e6%93%8d%e4%bd%9c">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> aiofiles
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">async_write_file&lt;/span>(filename, content):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">with&lt;/span> aiofiles&lt;span style="color:#ff6ac1">.&lt;/span>open(filename, &lt;span style="color:#5af78e">&amp;#39;w&amp;#39;&lt;/span>) &lt;span style="color:#ff6ac1">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> f&lt;span style="color:#ff6ac1">.&lt;/span>write(content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;文件 &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>filename&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 写入完成&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">async_read_file&lt;/span>(filename):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">with&lt;/span> aiofiles&lt;span style="color:#ff6ac1">.&lt;/span>open(filename, &lt;span style="color:#5af78e">&amp;#39;r&amp;#39;&lt;/span>) &lt;span style="color:#ff6ac1">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> f&lt;span style="color:#ff6ac1">.&lt;/span>read()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;文件 &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>filename&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 读取完成，内容长度: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>&lt;span style="color:#ff5c57">len&lt;/span>(content)&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 并发写入文件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>gather(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> async_write_file(&lt;span style="color:#5af78e">&amp;#34;file1.txt&amp;#34;&lt;/span>, &lt;span style="color:#5af78e">&amp;#34;Hello, World!&amp;#34;&lt;/span> &lt;span style="color:#ff6ac1">*&lt;/span> &lt;span style="color:#ff9f43">100&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> async_write_file(&lt;span style="color:#5af78e">&amp;#34;file2.txt&amp;#34;&lt;/span>, &lt;span style="color:#5af78e">&amp;#34;Python asyncio is awesome!&amp;#34;&lt;/span> &lt;span style="color:#ff6ac1">*&lt;/span> &lt;span style="color:#ff9f43">100&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 并发读取文件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> contents &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>gather(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> async_read_file(&lt;span style="color:#5af78e">&amp;#34;file1.txt&amp;#34;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> async_read_file(&lt;span style="color:#5af78e">&amp;#34;file2.txt&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;读取到的内容总长度: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>&lt;span style="color:#ff5c57">sum&lt;/span>(&lt;span style="color:#ff5c57">len&lt;/span>(c) &lt;span style="color:#ff6ac1">for&lt;/span> c &lt;span style="color:#ff6ac1">in&lt;/span> contents)&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="8-异步web服务器">8. 异步Web服务器&lt;a class="anchor" href="#8-%e5%bc%82%e6%ad%a5web%e6%9c%8d%e5%8a%a1%e5%99%a8">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">from&lt;/span> aiohttp &lt;span style="color:#ff6ac1">import&lt;/span> web
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">handle&lt;/span>(request):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> name &lt;span style="color:#ff6ac1">=&lt;/span> request&lt;span style="color:#ff6ac1">.&lt;/span>match_params&lt;span style="color:#ff6ac1">.&lt;/span>get(&lt;span style="color:#5af78e">&amp;#39;name&amp;#39;&lt;/span>, &lt;span style="color:#5af78e">&amp;#39;World&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> text &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;Hello, &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">!&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> web&lt;span style="color:#ff6ac1">.&lt;/span>Response(text&lt;span style="color:#ff6ac1">=&lt;/span>text)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">init_app&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> app &lt;span style="color:#ff6ac1">=&lt;/span> web&lt;span style="color:#ff6ac1">.&lt;/span>Application()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> app&lt;span style="color:#ff6ac1">.&lt;/span>router&lt;span style="color:#ff6ac1">.&lt;/span>add_get(&lt;span style="color:#5af78e">&amp;#39;/&amp;#39;&lt;/span>, handle)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> app&lt;span style="color:#ff6ac1">.&lt;/span>router&lt;span style="color:#ff6ac1">.&lt;/span>add_get(&lt;span style="color:#5af78e">&amp;#39;/&lt;/span>&lt;span style="color:#5af78e">{name}&lt;/span>&lt;span style="color:#5af78e">&amp;#39;&lt;/span>, handle)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> app
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> app &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> init_app()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> runner &lt;span style="color:#ff6ac1">=&lt;/span> web&lt;span style="color:#ff6ac1">.&lt;/span>AppRunner(app)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> runner&lt;span style="color:#ff6ac1">.&lt;/span>setup()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> site &lt;span style="color:#ff6ac1">=&lt;/span> web&lt;span style="color:#ff6ac1">.&lt;/span>TCPSite(runner, &lt;span style="color:#5af78e">&amp;#39;localhost&amp;#39;&lt;/span>, &lt;span style="color:#ff9f43">8080&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> site&lt;span style="color:#ff6ac1">.&lt;/span>start()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;服务器运行在 http://localhost:8080&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 保持服务器运行&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>Event()&lt;span style="color:#ff6ac1">.&lt;/span>wait()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">try&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">except&lt;/span> KeyboardInterrupt:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">&amp;#34;服务器已停止&amp;#34;&lt;/span>)&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="9-与多线程多进程结合">9. 与多线程/多进程结合&lt;a class="anchor" href="#9-%e4%b8%8e%e5%a4%9a%e7%ba%bf%e7%a8%8b%e5%a4%9a%e8%bf%9b%e7%a8%8b%e7%bb%93%e5%90%88">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> concurrent.futures
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> time
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">cpu_intensive_task&lt;/span>(n):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#5af78e">&amp;#34;&amp;#34;&amp;#34;CPU密集型任务（模拟）&amp;#34;&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;开始CPU密集型任务 &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>n&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> time&lt;span style="color:#ff6ac1">.&lt;/span>sleep(&lt;span style="color:#ff9f43">2&lt;/span>) &lt;span style="color:#78787e"># 模拟CPU密集型工作&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> &lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;CPU任务 &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>n&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 完成&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 创建线程池执行器&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">with&lt;/span> concurrent&lt;span style="color:#ff6ac1">.&lt;/span>futures&lt;span style="color:#ff6ac1">.&lt;/span>ThreadPoolExecutor(max_workers&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#ff9f43">3&lt;/span>) &lt;span style="color:#ff6ac1">as&lt;/span> executor:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> loop &lt;span style="color:#ff6ac1">=&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>get_event_loop()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 将CPU密集型任务提交到线程池&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> tasks &lt;span style="color:#ff6ac1">=&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> loop&lt;span style="color:#ff6ac1">.&lt;/span>run_in_executor(executor, cpu_intensive_task, i)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">for&lt;/span> i &lt;span style="color:#ff6ac1">in&lt;/span> &lt;span style="color:#ff5c57">range&lt;/span>(&lt;span style="color:#ff9f43">5&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 等待所有任务完成&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> results &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>gather(&lt;span style="color:#ff6ac1">*&lt;/span>tasks)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;所有CPU任务完成: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>results&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="高级特性">高级特性&lt;a class="anchor" href="#%e9%ab%98%e7%ba%a7%e7%89%b9%e6%80%a7">#&lt;/a>&lt;/h2>
+&lt;h3 id="10-异步队列">10. 异步队列&lt;a class="anchor" href="#10-%e5%bc%82%e6%ad%a5%e9%98%9f%e5%88%97">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> random
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">producer&lt;/span>(queue, name):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">for&lt;/span> i &lt;span style="color:#ff6ac1">in&lt;/span> &lt;span style="color:#ff5c57">range&lt;/span>(&lt;span style="color:#ff9f43">5&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> item &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">-产品&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>i&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> queue&lt;span style="color:#ff6ac1">.&lt;/span>put(item)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 生产了: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>item&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(random&lt;span style="color:#ff6ac1">.&lt;/span>uniform(&lt;span style="color:#ff9f43">0.1&lt;/span>, &lt;span style="color:#ff9f43">0.5&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">consumer&lt;/span>(queue, name):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">while&lt;/span> &lt;span style="color:#ff6ac1">True&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> item &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> queue&lt;span style="color:#ff6ac1">.&lt;/span>get()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff5c57">print&lt;/span>(&lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>name&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e"> 消费了: &lt;/span>&lt;span style="color:#5af78e">{&lt;/span>item&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>sleep(random&lt;span style="color:#ff6ac1">.&lt;/span>uniform(&lt;span style="color:#ff9f43">0.2&lt;/span>, &lt;span style="color:#ff9f43">0.7&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> queue&lt;span style="color:#ff6ac1">.&lt;/span>task_done()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">async&lt;/span> &lt;span style="color:#ff6ac1">def&lt;/span> &lt;span style="color:#57c7ff">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> queue &lt;span style="color:#ff6ac1">=&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>Queue(maxsize&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#ff9f43">3&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 创建生产者和消费者&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> producers &lt;span style="color:#ff6ac1">=&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>create_task(producer(queue, &lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;生产者&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>i&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">for&lt;/span> i &lt;span style="color:#ff6ac1">in&lt;/span> &lt;span style="color:#ff5c57">range&lt;/span>(&lt;span style="color:#ff9f43">2&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> consumers &lt;span style="color:#ff6ac1">=&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>create_task(consumer(queue, &lt;span style="color:#5af78e">f&lt;/span>&lt;span style="color:#5af78e">&amp;#34;消费者&lt;/span>&lt;span style="color:#5af78e">{&lt;/span>i&lt;span style="color:#5af78e">}&lt;/span>&lt;span style="color:#5af78e">&amp;#34;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">for&lt;/span> i &lt;span style="color:#ff6ac1">in&lt;/span> &lt;span style="color:#ff5c57">range&lt;/span>(&lt;span style="color:#ff9f43">3&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 等待所有生产者完成&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> asyncio&lt;span style="color:#ff6ac1">.&lt;/span>gather(&lt;span style="color:#ff6ac1">*&lt;/span>producers)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 等待队列清空&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">await&lt;/span> queue&lt;span style="color:#ff6ac1">.&lt;/span>join()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e"># 取消消费者任务&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">for&lt;/span> c &lt;span style="color:#ff6ac1">in&lt;/span> consumers:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> c&lt;span style="color:#ff6ac1">.&lt;/span>cancel()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asyncio&lt;span style="color:#ff6ac1">.&lt;/span>run(main())&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="注意事项">注意事项&lt;a class="anchor" href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9">#&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>使用 &lt;code>asyncio.run()&lt;/code> 运行最外层的异步函数&lt;/li>
+&lt;li>避免在异步代码中使用阻塞操作，使用异步替代方案&lt;/li>
+&lt;li>合理设置并发任务数量，避免资源耗尽&lt;/li>
+&lt;li>使用适当的同步原语保护共享资源&lt;/li>
+&lt;li>注意异常处理，使用 &lt;code>try/except&lt;/code> 捕获异步操作中的异常&lt;/li>
+&lt;/ol>
+&lt;p>&lt;code>asyncio&lt;/code> 提供了强大的异步编程能力，特别适合处理 I/O 密集型和高并发场景。通过合理使用其提供的各种工具和 API，可以编写出高效、可扩展的异步应用程序。&lt;/p></description></item><item><title>yield</title><link>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/yield/</link><pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/yield/</guid><description>&lt;p>&lt;code>yield&lt;/code> 是 Python 中用于创建生成器（generator）的关键字，它允许函数返回一个可迭代的序列，同时保持函数的状态，以便下次调用时从停止的地方继续执行。&lt;/p></description></item></channel></rss>

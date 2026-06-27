@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>DevOps on LYon's Blog</title><link>https://yindongliang.com/tags/DevOps/</link><description>Recent content in DevOps on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 07 Jan 2026 17:49:11 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/DevOps/index.xml" rel="self" type="application/rss+xml"/><item><title>Kubernetes 架构全景：关键组件分类详解</title><link>https://yindongliang.com/docs/Kubernetes/hello-k8s/</link><pubDate>Sun, 09 Oct 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Kubernetes/hello-k8s/</guid><description>&lt;p>Kubernetes 是一个复杂的分布式系统，由众多相互协作的组件构成。下面按照架构层次对所有关键组件和概念进行系统化分类：&lt;/p>
+&lt;h2 id="1-控制平面组件-control-plane">1. 控制平面组件 (Control Plane)&lt;a class="anchor" href="#1-%e6%8e%a7%e5%88%b6%e5%b9%b3%e9%9d%a2%e7%bb%84%e4%bb%b6-control-plane">#&lt;/a>&lt;/h2>
+&lt;p>控制平面是集群的大脑，负责全局决策和状态管理。&lt;/p></description></item><item><title>Containerd 深度解析：现代容器运行时的核心引擎</title><link>https://yindongliang.com/docs/Kubernetes/Containerd-%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%E7%8E%B0%E4%BB%A3%E5%AE%B9%E5%99%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E7%9A%84%E6%A0%B8%E5%BF%83%E5%BC%95%E6%93%8E/</link><pubDate>Wed, 07 Jan 2026 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Kubernetes/Containerd-%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%E7%8E%B0%E4%BB%A3%E5%AE%B9%E5%99%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E7%9A%84%E6%A0%B8%E5%BF%83%E5%BC%95%E6%93%8E/</guid><description>&lt;h2 id="1-概述">1. 概述&lt;a class="anchor" href="#1-%e6%a6%82%e8%bf%b0">#&lt;/a>&lt;/h2>
+&lt;p>Containerd 是一个工业级标准的容器运行时，负责管理容器的完整生命周期。作为 CNCF (云原生计算基金会) 毕业项目，它已成为 Kubernetes 和现代容器平台的基础设施组件。本文将深入探讨 containerd 的架构、功能及在容器生态系统中的定位，帮助开发者理解这一关键组件。&lt;/p></description></item><item><title>port-forward 命令详解</title><link>https://yindongliang.com/docs/Kubernetes/port-forward-%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/</link><pubDate>Tue, 16 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Kubernetes/port-forward-%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/</guid><description>&lt;p>&lt;code>kubectl port-forward&lt;/code> 是 Kubernetes 提供的一个命令行工具，用于将本地机器（你的开发机或笔记本）上的一个端口&lt;strong>转发到 Kubernetes 集群中某个 Pod 的端口&lt;/strong>。它常用于调试、测试或临时访问集群内部服务，而无需将服务暴露到外部网络。&lt;/p></description></item><item><title>pm2 使用</title><link>https://yindongliang.com/posts/pm2-%E4%BD%BF%E7%94%A8/</link><pubDate>Thu, 27 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/pm2-%E4%BD%BF%E7%94%A8/</guid><description>&lt;p>&lt;a href="https://pm2.keymetrics.io/">https://pm2.keymetrics.io/&lt;/a>&lt;/p>
+&lt;h1 id="pm2-使用指南">PM2 使用指南&lt;a class="anchor" href="#pm2-%e4%bd%bf%e7%94%a8%e6%8c%87%e5%8d%97">#&lt;/a>&lt;/h1>
+&lt;h2 id="1-什么是-pm2">1. 什么是 PM2&lt;a class="anchor" href="#1-%e4%bb%80%e4%b9%88%e6%98%af-pm2">#&lt;/a>&lt;/h2>
+&lt;p>PM2（Process Manager 2）是一个 Node.js 应用程序的进程管理器，它提供了负载均衡、自动重启、日志管理、监控等功能，帮助开发者更轻松地管理和部署 Node.js 应用。&lt;/p></description></item><item><title>Serverless与边缘计算：从底层硬件到架构的深度解析</title><link>https://yindongliang.com/posts/Serverless%E4%B8%8E%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97%E4%BB%8E%E5%BA%95%E5%B1%82%E7%A1%AC%E4%BB%B6%E5%88%B0%E6%9E%B6%E6%9E%84%E7%9A%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/</link><pubDate>Wed, 26 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/Serverless%E4%B8%8E%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97%E4%BB%8E%E5%BA%95%E5%B1%82%E7%A1%AC%E4%BB%B6%E5%88%B0%E6%9E%B6%E6%9E%84%E7%9A%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/</guid><description>&lt;h2 id="引言">引言&lt;a class="anchor" href="#%e5%bc%95%e8%a8%80">#&lt;/a>&lt;/h2>
+&lt;p>Serverless和边缘计算是当今云计算领域最热门的两个概念，但它们常常被误解或混淆。本文将从&lt;strong>底层硬件与架构角度&lt;/strong>深入解释两者的本质区别和运行机制，帮助你超越&amp;quot;无服务器&amp;quot;和&amp;quot;离用户近&amp;quot;等表层理解，真正把握它们的核心原理和适用场景。&lt;/p></description></item><item><title>.gitattributes 的用途和工作机制</title><link>https://yindongliang.com/docs/Git/gitattributes/</link><pubDate>Wed, 19 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Git/gitattributes/</guid><description>&lt;p>&lt;a href="https://git-lfs.com/">https://git-lfs.com/&lt;/a>&lt;/p>
+&lt;h2 id="一gitattributes-概念与总体作用">一、.gitattributes 概念与总体作用&lt;a class="anchor" href="#%e4%b8%80gitattributes-%e6%a6%82%e5%bf%b5%e4%b8%8e%e6%80%bb%e4%bd%93%e4%bd%9c%e7%94%a8">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-gitattributes-是什么">1. .gitattributes 是什么&lt;a class="anchor" href="#1-gitattributes-%e6%98%af%e4%bb%80%e4%b9%88">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>.gitattributes 是 Git 仓库中的一个配置文件，用来“按文件路径匹配”控制 Git 对这些文件的各种行为。&lt;/li>
+&lt;li>它可以存在于：
+&lt;ul>
+&lt;li>仓库根目录（最常见）&lt;/li>
+&lt;li>任意子目录（子目录中的 .gitattributes 会叠加/覆盖上层目录的规则）&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>在克隆仓库时，.gitattributes 作为普通文件一起被拉取，因此所有协作者都会拿到同样的“文件行为规则”。&lt;/li>
+&lt;/ul>
+&lt;h3 id="2-gitattributes-大致控制哪些行为">2. .gitattributes 大致控制哪些行为&lt;a class="anchor" href="#2-gitattributes-%e5%a4%a7%e8%87%b4%e6%8e%a7%e5%88%b6%e5%93%aa%e4%ba%9b%e8%a1%8c%e4%b8%ba">#&lt;/a>&lt;/h3>
+&lt;p>主要控制这些：&lt;/p></description></item><item><title>kubectl 常用命令大全</title><link>https://yindongliang.com/docs/Kubernetes/kubectl-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%A4%A7%E5%85%A8/</link><pubDate>Tue, 18 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Kubernetes/kubectl-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%A4%A7%E5%85%A8/</guid><description>&lt;h2 id="1-基础与配置相关命令">1. 基础与配置相关命令&lt;a class="anchor" href="#1-%e5%9f%ba%e7%a1%80%e4%b8%8e%e9%85%8d%e7%bd%ae%e7%9b%b8%e5%85%b3%e5%91%bd%e4%bb%a4">#&lt;/a>&lt;/h2>
+&lt;h3 id="11-上下文与命名空间管理">1.1 上下文与命名空间管理&lt;a class="anchor" href="#11-%e4%b8%8a%e4%b8%8b%e6%96%87%e4%b8%8e%e5%91%bd%e5%90%8d%e7%a9%ba%e9%97%b4%e7%ae%a1%e7%90%86">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看当前上下文&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config current-context
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看所有上下文&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config get-contexts
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 切换上下文&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config use-context my-context
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看集群信息&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config view --minify
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 设置默认命名空间（为当前上下文）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config set-context --current --namespace&lt;span style="color:#ff6ac1">=&lt;/span>my-namespace
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 查看当前命名空间&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>kubectl config view --minify --output &lt;span style="color:#5af78e">&amp;#39;jsonpath={..namespace}&amp;#39;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>要查看 Kubernetes (k8s) 中的所有命名空间，最核心的命令是 &lt;code>kubectl get namespaces&lt;/code> 或它的简写 &lt;code>kubectl get ns&lt;/code>。&lt;/p></description></item><item><title>Kubectl 速查手册</title><link>https://yindongliang.com/docs/Kubernetes/Kubectl-%E9%80%9F%E6%9F%A5%E6%89%8B%E5%86%8C/</link><pubDate>Tue, 18 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Kubernetes/Kubectl-%E9%80%9F%E6%9F%A5%E6%89%8B%E5%86%8C/</guid><description>&lt;p>下面是一份偏“速查手册”风格的 kubectl 常用命令大全，尽量按功能分类，并给出大量可直接参考执行的命令示例。为了便于阅读，示例统一使用一些通用占位符，如 my-namespace、my-pod、my-deploy、app=myapp 等。&lt;/p></description></item><item><title>Poetry - Python 依赖管理和打包工具</title><link>https://yindongliang.com/docs/Python/Poetry-%E4%BD%BF%E7%94%A8/</link><pubDate>Tue, 11 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Python/Poetry-%E4%BD%BF%E7%94%A8/</guid><description>&lt;p>Poetry 是一个现代化的 Python 依赖管理和打包工具，它简化了依赖管理、虚拟环境管理和包发布的过程。&lt;/p>
+&lt;h2 id="主要特性">主要特性&lt;a class="anchor" href="#%e4%b8%bb%e8%a6%81%e7%89%b9%e6%80%a7">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>&lt;strong>依赖管理&lt;/strong>: 自动处理依赖关系&lt;/li>
+&lt;li>&lt;strong>虚拟环境管理&lt;/strong>: 自动创建和管理虚拟环境&lt;/li>
+&lt;li>&lt;strong>包发布&lt;/strong>: 简化包构建和发布到 PyPI 的过程&lt;/li>
+&lt;li>&lt;strong>锁定文件&lt;/strong>: 确保依赖版本一致性&lt;/li>
+&lt;li>&lt;strong>插件系统&lt;/strong>: 支持扩展功能&lt;/li>
+&lt;/ul>
+&lt;h2 id="安装-poetry">安装 Poetry&lt;a class="anchor" href="#%e5%ae%89%e8%a3%85-poetry">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 官方安装方法（推荐）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>curl -sSL https://install.python-poetry.org | python3 -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 或使用 pip（不推荐，可能产生依赖冲突）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>pip install --user poetry&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="常用命令和使用场景">常用命令和使用场景&lt;a class="anchor" href="#%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4%e5%92%8c%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-项目初始化">1. 项目初始化&lt;a class="anchor" href="#1-%e9%a1%b9%e7%9b%ae%e5%88%9d%e5%a7%8b%e5%8c%96">#&lt;/a>&lt;/h3>
+&lt;p>&lt;strong>场景&lt;/strong>: 开始一个新项目&lt;/p></description></item><item><title>Checkly</title><link>https://yindongliang.com/links/202510/Checkly/</link><pubDate>Fri, 31 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Checkly/</guid><description>&lt;p>Checkly 是一个专注于现代Web应用的&lt;strong>监控即代码平台&lt;/strong>，它通过合成监控的方式，帮助开发者和工程师确保API接口和Web应用关键业务流程的可用性与性能。其核心思想是&lt;strong>用代码来定义、管理和维护监控逻辑&lt;/strong>，使其能够无缝集成到现代软件开发工作流中。&lt;/p></description></item><item><title>Terraform</title><link>https://yindongliang.com/links/202510/Terraform/</link><pubDate>Tue, 28 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Terraform/</guid><description>&lt;p>Terraform is an infrastructure as code tool that lets you build, change, and version cloud and on-prem resources safely and efficiently.&lt;/p></description></item><item><title>instatus</title><link>https://yindongliang.com/links/202510/instatus/</link><pubDate>Sun, 26 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/instatus/</guid><description>&lt;p>Get ready for downtime&lt;/p>
+&lt;ul>
+&lt;li>Monitor your services&lt;/li>
+&lt;li>Fix incidents with your team&lt;/li>
+&lt;li>Share your status with customers&lt;/li>
+&lt;/ul></description></item><item><title>一些云服务商</title><link>https://yindongliang.com/docs/Awesome/awesome-clouds-services/</link><pubDate>Thu, 16 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-clouds-services/</guid><description>&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>介绍&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;th>使用过&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Railway&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://railway.com/">https://railway.com/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>fly.io&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://fly.io/">https://fly.io/&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Cloudflare&lt;/td>
+ &lt;td>全球网络优势&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>✅&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Vercel&lt;/td>
+ &lt;td>主打边缘计算、Serverless&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>✅&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>阿里云百炼平台&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://bailian.console.aliyun.com">https://bailian.console.aliyun.com&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>百度千帆&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://cloud.baidu.com/product-s/qianfan_home">https://cloud.baidu.com/product-s/qianfan_home&lt;/a>&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table></description></item><item><title>Dynadot - 域名服务商</title><link>https://yindongliang.com/links/202510/Dynadot-%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%95%86/</link><pubDate>Mon, 13 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Dynadot-%E5%9F%9F%E5%90%8D%E6%9C%8D%E5%8A%A1%E5%95%86/</guid><description/></item><item><title>宝塔</title><link>https://yindongliang.com/links/202509/%E5%AE%9D%E5%A1%94/</link><pubDate>Sun, 14 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/%E5%AE%9D%E5%A1%94/</guid><description>&lt;p>宝塔,安全高效的服务器运维面板&lt;/p></description></item><item><title>n8n 介绍</title><link>https://yindongliang.com/docs/Linux/n8n/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/n8n/</guid><description>&lt;p>&lt;a href="https://n8n.io/">n8n&lt;/a> 是一款功能强大的开源工作流自动化工具，它通过可视化的方式让你能够连接各种应用、服务和数据，自动执行重复性的任务和业务流程。&lt;/p>
+&lt;p>&lt;a href="https://docs.n8n.io/">https://docs.n8n.io/&lt;/a>&lt;/p>
+&lt;h1 id="-n8n-工作流自动化平台全面指南">🔧 n8n 工作流自动化平台全面指南&lt;a class="anchor" href="#-n8n-%e5%b7%a5%e4%bd%9c%e6%b5%81%e8%87%aa%e5%8a%a8%e5%8c%96%e5%b9%b3%e5%8f%b0%e5%85%a8%e9%9d%a2%e6%8c%87%e5%8d%97">#&lt;/a>&lt;/h1>
+&lt;h2 id="-核心特点">✨ 核心特点&lt;a class="anchor" href="#-%e6%a0%b8%e5%bf%83%e7%89%b9%e7%82%b9">#&lt;/a>&lt;/h2>
+&lt;p>n8n 有以下几个突出的特点，使其在自动化工具中脱颖而出：&lt;/p></description></item><item><title>Linux 运维</title><link>https://yindongliang.com/docs/Linux/DevOps/</link><pubDate>Thu, 18 May 2023 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/DevOps/</guid><description>&lt;h2 id="权限系统">权限系统&lt;a class="anchor" href="#%e6%9d%83%e9%99%90%e7%b3%bb%e7%bb%9f">#&lt;/a>&lt;/h2>
+&lt;p>Linux 系统使用一个专门的 &lt;code>/etc/passwd&lt;/code> 文件来匹配登录名与对应的 UID 值，用户密码不保存在此文件，而是在 &lt;code>/etc/shadow&lt;/code> 中，只有特定程序或 root 才可以访问。&lt;/p>
+&lt;h3 id="用户管理">用户管理&lt;a class="anchor" href="#%e7%94%a8%e6%88%b7%e7%ae%a1%e7%90%86">#&lt;/a>&lt;/h3>
+&lt;p>使用 &lt;code>useradd&lt;/code> 来创建新用户，&lt;code>userdel&lt;/code> 来删除用户，&lt;code>usermod&lt;/code> 来修改用户信息。&lt;/p></description></item><item><title>构建工具</title><link>https://yindongliang.com/docs/Frontend/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</link><pubDate>Fri, 28 May 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</guid><description>&lt;h2 id="参考">参考&lt;a class="anchor" href="#%e5%8f%82%e8%80%83">#&lt;/a>&lt;/h2>
+&lt;p>文档 &lt;a href="https://webpack.docschina.org">https://webpack.docschina.org&lt;/a>&lt;/p>
+&lt;p>demo &lt;a href="https://github.com/ruanyf/webpack-demos">https://github.com/ruanyf/webpack-demos&lt;/a>&lt;/p>
+&lt;h2 id="构建一般做哪些事情">构建一般做哪些事情？&lt;a class="anchor" href="#%e6%9e%84%e5%bb%ba%e4%b8%80%e8%88%ac%e5%81%9a%e5%93%aa%e4%ba%9b%e4%ba%8b%e6%83%85">#&lt;/a>&lt;/h2>
+&lt;p>代码转换：将 TypeScript 编译成 JavaScript、将 SCSS 编译成 CSS 等。&lt;/p>
+&lt;p>文件优化：压缩 JavaScript、CSS、HTML 代码，压缩合并图片等。&lt;/p>
+&lt;p>代码分割：提取多个页面的公共代码，提取首屏不需要执行部分的代码让其异步加载。&lt;/p></description></item><item><title>Github Actions 实践总结</title><link>https://yindongliang.com/posts/use-github-action/</link><pubDate>Sun, 01 Dec 2019 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/use-github-action/</guid><description>&lt;p>Github Actions 发布有一段时间了，自己用的也挺嗨，过来总结一下。我主要在两个地方用到了，一个是博客，另一个是打包、发布前端项目。整体功能上 Actions 和 &lt;a href="https://docs.gitlab.com/ee/ci/">GitLab CI/CD&lt;/a> 差不多，同样实现了项目的自动化测试、打包、部署，不过 Actions 利用了 GitHub 开源项目平台的特点，提供了 &lt;a href="https://github.com/marketplace">Marketplace&lt;/a>，可以直接复用其他作者的 Action。&lt;/p></description></item><item><title>Gitlab CI/CD 实践总结</title><link>https://yindongliang.com/posts/gitlab-ci-101/</link><pubDate>Thu, 15 Nov 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/gitlab-ci-101/</guid><description>&lt;p>Gitlab 的 CI/CD 功能可能是区别于 GitHub 的一个最有价值的功能之一。接触了 CI/CD 以来，很多以前需要手动测试、打包、部署的工作，现在都可以通过编写 &lt;code>.gitlab-ci.yml&lt;/code> 来实现了，一方面持久化、规范化了部署服务的操作流程，另一方面 CI/CD 功能与 Gitlab 深度结合，方便了开发测试流程，下面总结下最常用到的功能。&lt;/p></description></item><item><title>Docker 使用笔记</title><link>https://yindongliang.com/posts/docker-notes/</link><pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/docker-notes/</guid><description>&lt;h2 id="docker-介绍">Docker 介绍&lt;a class="anchor" href="#docker-%e4%bb%8b%e7%bb%8d">#&lt;/a>&lt;/h2>
+&lt;p>Docker 是一个开放源代码软件，是一个开放平台，用于开发应用、交付（shipping）应用、运行应用。 Docker 允许用户将基础设施（Infrastructure）中的应用单独分割出来，形成更小的颗粒（容器），从而提高交付软件的速度。&lt;/p></description></item><item><title>Vagrant 虚拟机 Ubuntu16.04 安装 MariaDB</title><link>https://yindongliang.com/posts/ubuntu-MariaDB/</link><pubDate>Sat, 10 Sep 2016 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/ubuntu-MariaDB/</guid><description>&lt;p>由于宿主机安装了 MySQL，为了避免安装 MariaDB 造成 MySQL 无法使用，所以在 Vagrant 中安装 Mariadb。&lt;/p>
+&lt;p>更换&lt;a href="http://mirrors.163.com/.help/ubuntu.html">网易 apt-get 源&lt;/a> &lt;code>/etc/apt/sources.list&lt;/code>&lt;/p>
+&lt;p>读取源软件列表 &lt;code>sudo apt update&lt;/code>&lt;/p>
+&lt;p>更新软件版本 &lt;code>sudo apt upgrade&lt;/code>&lt;/p>
+&lt;p>安装 MariaDB &lt;code>sudo apt install mariadb-server&lt;/code>&lt;/p>
+&lt;p>安全性设置更新 root 密码 &lt;code>sudo mysql_secure_installation&lt;/code>&lt;/p></description></item><item><title>Ubuntu 下部署 Django 应用</title><link>https://yindongliang.com/posts/ubuntu-deploy-django/</link><pubDate>Sat, 11 Jul 2015 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/ubuntu-deploy-django/</guid><description>&lt;p>做了一个Django小应用，主要内容是一个论坛，经过好几天的研究，也可以在服务器端运行了，以下所有代码中的操作都需要在命令行运行。&lt;/p>
+&lt;h2 id="安装mysql">安装MySQL&lt;a class="anchor" href="#%e5%ae%89%e8%a3%85mysql">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>apt-get update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>apt-get install mysql-server mysql-client&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>根据提示设置 MySQL root用户密码&lt;/p></description></item><item><title>使用 Github Pages 建立免费的静态网站</title><link>https://yindongliang.com/posts/use-github-page-build-static-website/</link><pubDate>Sun, 28 Jul 2013 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/use-github-page-build-static-website/</guid><description>&lt;p>github 想必都听说过，这个号称程序员的 Facebook 有着很多高质量的项目，github 就是为这些项目提供代码托管服务，你可以将自己做好的项目放到 github 上与大家共享，别人也可提出修改建议。&lt;/p></description></item></channel></rss>

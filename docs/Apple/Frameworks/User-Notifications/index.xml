@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>User Notifications on LYon's Blog</title><link>https://yindongliang.com/docs/Apple/Frameworks/User-Notifications/</link><description>Recent content in User Notifications on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Apple/Frameworks/User-Notifications/index.xml" rel="self" type="application/rss+xml"/><item><title>UNMutableNotificationContent</title><link>https://yindongliang.com/docs/Apple/Frameworks/User-Notifications/UNMutableNotificationContent/</link><pubDate>Wed, 28 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/Frameworks/User-Notifications/UNMutableNotificationContent/</guid><description>&lt;p>UNMutableNotificationContent 是 iOS/macOS 开发中用于配置本地通知内容的类，属于 UserNotifications 框架。它允许开发者动态设置通知的标题、内容、声音、附加数据等属性。以下将分场景和用法详细说明：&lt;/p>
+&lt;hr>
+&lt;h3 id="一使用场景">一、使用场景&lt;a class="anchor" href="#%e4%b8%80%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af">#&lt;/a>&lt;/h3>
+&lt;ol>
+&lt;li>
+&lt;p>​&lt;strong>动态内容通知&lt;/strong>​&lt;br>
+当通知内容需根据用户行为或应用数据实时生成时使用，例如：&lt;/p></description></item></channel></rss>
