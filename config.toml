@@ -1,5 +1,4 @@
 baseURL = "https://yindongliang.com"
-theme = "hugo-book"
 title = "LYon's Blog"
 description = "LYon's Blog offers insights on algorithms, coding, technology, and personal reflections. Explore tutorials, resources, and more."
 keywords = ["LYon", "Blog", "Algorithms", "Coding", "Technology", "Personal Reflections"]
@@ -71,6 +70,10 @@ unsafe = true # enable raw HTML in Markdown
 
 [menu]
 # [[menu.before]]
+
+[module]
+[[module.imports]]
+path = "github.com/alex-shpak/hugo-book"
 
 [params]
 

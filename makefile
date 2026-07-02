@@ -3,5 +3,6 @@ server:
 build:
 	hugo --minify --ignoreCache --cleanDestinationDir --gc
 	npx -y pagefind --site public
-sub:
-	git submodule update --init --recursive
+deps:
+	hugo mod tidy
+sub: deps
