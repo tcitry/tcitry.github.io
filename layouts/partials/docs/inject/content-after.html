@@ -73,7 +73,10 @@
       </div>
     {{ end }}
 
-    {{ if and (in (slice "docs" "posts" "about" "weekly" "links") .Type) .IsPage }}
+    {{ if and
+        (in (slice "docs" "posts" "about" "weekly" "links") .Type)
+        (or .IsPage (and (eq .Type "docs") (eq .Kind "section")))
+    }}
         <script src="https://giscus.app/client.js"
             data-repo="tcitry/tcitry.github.io"
             data-repo-id="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk="
