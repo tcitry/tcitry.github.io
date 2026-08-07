@@ -1,0 +1,984 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Frontend on LYon's Blog</title><link>https://yindongliang.com/tags/Frontend/</link><description>Recent content in Frontend on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Mon, 08 Jun 2026 14:28:29 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Frontend/index.xml" rel="self" type="application/rss+xml"/><item><title>语法</title><link>https://yindongliang.com/docs/Frontend/JavaScript/%E8%AF%AD%E6%B3%95/</link><pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/JavaScript/%E8%AF%AD%E6%B3%95/</guid><description>&lt;h2 id="dombomwindowdocument">DOM、BOM、Window、Document&lt;a class="anchor" href="#dombomwindowdocument">#&lt;/a>&lt;/h2>
+&lt;p>DOM 是操作文档的 API，Document 是其一个对象。&lt;/p>
+&lt;p>BOM 是操作浏览器的 API，Window 是其一个对象。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> component(s) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> element &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff5c57">document&lt;/span>.createElement(&lt;span style="color:#5af78e">&amp;#39;div&amp;#39;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> element.innerHTML &lt;span style="color:#ff6ac1">=&lt;/span> s;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> element;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">document&lt;/span>.body.appendChild(component(&lt;span style="color:#5af78e">&amp;#34;hello&amp;#34;&lt;/span>));&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="ssr-vs-csr">SSR vs CSR&lt;a class="anchor" href="#ssr-vs-csr">#&lt;/a>&lt;/h2>
+&lt;p>服务器渲染和客户端渲染。&lt;/p></description></item><item><title>We removed 80% of our agent’s tools</title><link>https://yindongliang.com/links/202601/We-removed-80-of-our-agents-tools/</link><pubDate>Sat, 24 Jan 2026 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202601/We-removed-80-of-our-agents-tools/</guid><description/></item><item><title>CRDT 详解</title><link>https://yindongliang.com/posts/CRDT-%E8%AF%A6%E8%A7%A3/</link><pubDate>Fri, 26 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/CRDT-%E8%AF%A6%E8%A7%A3/</guid><description>&lt;h3 id="一什么是-crdt">一、什么是 CRDT？&lt;a class="anchor" href="#%e4%b8%80%e4%bb%80%e4%b9%88%e6%98%af-crdt">#&lt;/a>&lt;/h3>
+&lt;p>&lt;strong>CRDT&lt;/strong>（Conflict-free Replicated Data Type，无冲突复制数据类型）是一种&lt;strong>分布式数据结构&lt;/strong>，能够在网络中的多个节点间&lt;strong>自动解决冲突&lt;/strong>，最终达到一致状态。&lt;/p></description></item><item><title>全面掌握 TanStack Query：现代 React 应用的数据管理利器</title><link>https://yindongliang.com/posts/%E5%85%A8%E9%9D%A2%E6%8E%8C%E6%8F%A1-TanStack-Query%E7%8E%B0%E4%BB%A3-React-%E5%BA%94%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E5%88%A9%E5%99%A8/</link><pubDate>Wed, 24 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E5%85%A8%E9%9D%A2%E6%8E%8C%E6%8F%A1-TanStack-Query%E7%8E%B0%E4%BB%A3-React-%E5%BA%94%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E5%88%A9%E5%99%A8/</guid><description>&lt;h2 id="什么是-tanstack-query">什么是 TanStack Query？&lt;a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-tanstack-query">#&lt;/a>&lt;/h2>
+&lt;p>TanStack Query（原名 React Query）是一个强大的数据获取和状态管理库，专门用于处理服务器状态。它不是传统意义上的状态管理库（如 Redux 或 Zustand），而是专注于解决异步数据获取、缓存、同步和更新的问题。&lt;/p></description></item><item><title>全面掌握 tRPC：端到端类型安全的下一代 API 框架</title><link>https://yindongliang.com/posts/%E5%85%A8%E9%9D%A2%E6%8E%8C%E6%8F%A1-tRPC%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%B1%BB%E5%9E%8B%E5%AE%89%E5%85%A8%E7%9A%84%E4%B8%8B%E4%B8%80%E4%BB%A3-API-%E6%A1%86%E6%9E%B6/</link><pubDate>Wed, 24 Dec 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E5%85%A8%E9%9D%A2%E6%8E%8C%E6%8F%A1-tRPC%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%B1%BB%E5%9E%8B%E5%AE%89%E5%85%A8%E7%9A%84%E4%B8%8B%E4%B8%80%E4%BB%A3-API-%E6%A1%86%E6%9E%B6/</guid><description>&lt;h2 id="什么是-trpc">什么是 tRPC？&lt;a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-trpc">#&lt;/a>&lt;/h2>
+&lt;p>tRPC 是一个颠覆性的远程过程调用框架，允许你在 TypeScript 中定义后端 API，并在前端直接调用这些 API 函数，同时享受&lt;strong>完整的端到端类型安全&lt;/strong>。它不是一个替代 REST 或 GraphQL 的方案，而是一种全新的全栈开发范式。&lt;/p></description></item><item><title>pm2 使用</title><link>https://yindongliang.com/posts/pm2-%E4%BD%BF%E7%94%A8/</link><pubDate>Thu, 27 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/pm2-%E4%BD%BF%E7%94%A8/</guid><description>&lt;p>&lt;a href="https://pm2.keymetrics.io/">https://pm2.keymetrics.io/&lt;/a>&lt;/p>
+&lt;h1 id="pm2-使用指南">PM2 使用指南&lt;a class="anchor" href="#pm2-%e4%bd%bf%e7%94%a8%e6%8c%87%e5%8d%97">#&lt;/a>&lt;/h1>
+&lt;h2 id="1-什么是-pm2">1. 什么是 PM2&lt;a class="anchor" href="#1-%e4%bb%80%e4%b9%88%e6%98%af-pm2">#&lt;/a>&lt;/h2>
+&lt;p>PM2（Process Manager 2）是一个 Node.js 应用程序的进程管理器，它提供了负载均衡、自动重启、日志管理、监控等功能，帮助开发者更轻松地管理和部署 Node.js 应用。&lt;/p></description></item><item><title>React 实现右键菜单功能</title><link>https://yindongliang.com/docs/Frontend/React/%E5%AE%9E%E7%8E%B0%E5%8F%B3%E9%94%AE%E8%8F%9C%E5%8D%95/</link><pubDate>Thu, 27 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/React/%E5%AE%9E%E7%8E%B0%E5%8F%B3%E9%94%AE%E8%8F%9C%E5%8D%95/</guid><description>&lt;h2 id="1-引言">1. 引言&lt;a class="anchor" href="#1-%e5%bc%95%e8%a8%80">#&lt;/a>&lt;/h2>
+&lt;p>右键菜单（Context Menu）是 Web 应用中常见的交互组件，它允许用户通过右键点击触发特定操作菜单，提升了应用的交互体验和操作效率。在 React 应用中实现右键菜单功能，需要处理事件监听、状态管理、DOM 定位等多个方面。&lt;/p></description></item><item><title>WebRTC 介绍</title><link>https://yindongliang.com/posts/WebRTC-%E4%BB%8B%E7%BB%8D/</link><pubDate>Thu, 27 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/WebRTC-%E4%BB%8B%E7%BB%8D/</guid><description>&lt;h2 id="1-引言">1. 引言&lt;a class="anchor" href="#1-%e5%bc%95%e8%a8%80">#&lt;/a>&lt;/h2>
+&lt;p>在当今数字化时代，实时通信已经成为互联网应用的核心需求之一。无论是视频会议、在线教育、远程医疗还是实时游戏，用户都期望获得低延迟、高质量的实时交互体验。WebRTC（Web Real-Time Communication）正是为满足这一需求而诞生的一项革命性技术。&lt;/p></description></item><item><title>Mintlify</title><link>https://yindongliang.com/links/202511/Mintlify/</link><pubDate>Tue, 04 Nov 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202511/Mintlify/</guid><description>&lt;p>一个可快速搭建的文档系统&lt;/p>
+&lt;p>&lt;a href="https://github.com/mintlify/starter">https://github.com/mintlify/starter&lt;/a>&lt;/p></description></item><item><title>Checkly</title><link>https://yindongliang.com/links/202510/Checkly/</link><pubDate>Fri, 31 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Checkly/</guid><description>&lt;p>Checkly 是一个专注于现代Web应用的&lt;strong>监控即代码平台&lt;/strong>，它通过合成监控的方式，帮助开发者和工程师确保API接口和Web应用关键业务流程的可用性与性能。其核心思想是&lt;strong>用代码来定义、管理和维护监控逻辑&lt;/strong>，使其能够无缝集成到现代软件开发工作流中。&lt;/p></description></item><item><title>Clerk</title><link>https://yindongliang.com/links/202510/Clerk/</link><pubDate>Fri, 31 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Clerk/</guid><description>&lt;p>More than authentication, Complete User Management.&lt;/p></description></item><item><title>Lovart</title><link>https://yindongliang.com/links/202510/Lovart/</link><pubDate>Fri, 31 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Lovart/</guid><description>&lt;p>the DESIGN Agent.&lt;/p></description></item><item><title>Lovable</title><link>https://yindongliang.com/links/202510/Lovable/</link><pubDate>Thu, 30 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Lovable/</guid><description>&lt;p>Create apps and websites by chatting with AI.&lt;/p></description></item><item><title>Pixso AI</title><link>https://yindongliang.com/links/202510/Pixso-AI/</link><pubDate>Wed, 29 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Pixso-AI/</guid><description>&lt;p>Pixso AI 可以快速生成一个 UI 界面，并附上相关前端代码。&lt;/p></description></item><item><title>Boardmix</title><link>https://yindongliang.com/links/202510/Boardmix/</link><pubDate>Tue, 28 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Boardmix/</guid><description>&lt;p>“白板+AI=无限画布×无限可能”&lt;/p></description></item><item><title>LottieFiles</title><link>https://yindongliang.com/links/202510/LottieFiles/</link><pubDate>Mon, 27 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/LottieFiles/</guid><description>&lt;p>Create, manage and implement lightweight animations across websites, apps, presentations, social and more.&lt;/p></description></item><item><title>AFFiNE</title><link>https://yindongliang.com/links/202510/AFFiNE/</link><pubDate>Sun, 26 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/AFFiNE/</guid><description>&lt;p>&lt;a href="https://affine.pro/">AFFiNE&lt;/a> is an open-source, all-in-one workspace and an operating system for all the building blocks that assemble your knowledge base and much more &amp;ndash; wiki, knowledge management, presentation and digital assets. It&amp;rsquo;s a better alternative to Notion and Miro.&lt;/p></description></item><item><title>Wappalyzer</title><link>https://yindongliang.com/links/202510/Wappalyzer/</link><pubDate>Fri, 24 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Wappalyzer/</guid><description>&lt;p>这个 Chrome 插件非常好用，可以检测一个网站所使用的技术方案。&lt;/p></description></item><item><title>Lodash</title><link>https://yindongliang.com/links/202510/lodash/</link><pubDate>Sun, 19 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/lodash/</guid><description>&lt;p>A modern JavaScript utility library delivering modularity, performance &amp;amp; extras.&lt;/p></description></item><item><title>LobeChat</title><link>https://yindongliang.com/links/202510/LobeChat/</link><pubDate>Wed, 15 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/LobeChat/</guid><description>&lt;p>An open-source, modern design ChatGPT/LLMs UI/framework.&lt;/p></description></item><item><title>LM Studio</title><link>https://yindongliang.com/links/202510/LM-Studio/</link><pubDate>Tue, 14 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/LM-Studio/</guid><description>&lt;p>Local AI, on your computer. Run local AI models like &lt;a href="https://lmstudio.ai/models/openai/gpt-oss-20b">&lt;code>gpt-oss&lt;/code>&lt;/a>, &lt;a href="https://lmstudio.ai/models/qwen/qwen3-14b">&lt;code>Qwen&lt;/code>&lt;/a>, &lt;a href="https://lmstudio.ai/models/google/gemma-3n-e4b">&lt;code>Gemma&lt;/code>&lt;/a>, &lt;a href="https://lmstudio.ai/models/deepseek/deepseek-r1-0528-qwen3-8b">&lt;code>DeepSeek&lt;/code>&lt;/a> and many more on your computer, privately and for free.&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/lmstudio-ai">https://github.com/lmstudio-ai&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>Vega Projects</title><link>https://yindongliang.com/links/202510/Vega-Projects/</link><pubDate>Thu, 09 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Vega-Projects/</guid><description>&lt;p>The Vega projects provide an ecosystem of tools for declarative data visualizations. The various components of this ecosystem build on each other providing different levels of abstraction.&lt;/p></description></item><item><title>Algolia</title><link>https://yindongliang.com/links/202510/algolia/</link><pubDate>Wed, 08 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/algolia/</guid><description>&lt;p>Algolia是一家提供&lt;strong>搜索即服务&lt;/strong> 的科技公司，旨在帮助开发者为网站和移动应用构建快速、相关的搜索体验。下面这个表格汇总了它的核心信息：&lt;/p>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th style="text-align: left">项目&lt;/th>
+ &lt;th style="text-align: left">详细信息&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td style="text-align: left">&lt;strong>公司全名&lt;/strong>&lt;/td>
+ &lt;td style="text-align: left">Algolia Inc.&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td style="text-align: left">&lt;strong>成立时间&lt;/strong>&lt;/td>
+ &lt;td style="text-align: left">2012年&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td style="text-align: left">&lt;strong>总部位置&lt;/strong>&lt;/td>
+ &lt;td style="text-align: left">美国加利福尼亚州旧金山&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td style="text-align: left">&lt;strong>核心业务&lt;/strong>&lt;/td>
+ &lt;td style="text-align: left">通过SaaS模式提供网络搜索产品，即&amp;quot;搜索即服务&amp;quot;&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td style="text-align: left">&lt;strong>核心特点&lt;/strong>&lt;/td>
+ &lt;td style="text-align: left">🔍 &lt;strong>毫秒级响应速度&lt;/strong>&lt;br>🎯 &lt;strong>高度可定制的相关性排名&lt;/strong>&lt;br>🌐 &lt;strong>全球分布式搜索网络&lt;/strong>&lt;br>🛠 &lt;strong>丰富的开发者工具与API&lt;/strong>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h3 id="-algolia-详解">🔍 Algolia 详解&lt;a class="anchor" href="#-algolia-%e8%af%a6%e8%a7%a3">#&lt;/a>&lt;/h3>
+&lt;h4 id="基本工作模式">基本工作模式&lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e5%b7%a5%e4%bd%9c%e6%a8%a1%e5%bc%8f">#&lt;/a>&lt;/h4>
+&lt;p>Algolia的运作主要分为两个阶段：&lt;strong>索引&lt;/strong>和&lt;strong>搜索&lt;/strong>。&lt;/p></description></item><item><title>DaisyUI</title><link>https://yindongliang.com/links/202510/DaisyUI/</link><pubDate>Tue, 07 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/DaisyUI/</guid><description>&lt;p>The most popular, free and open-source Tailwind CSS component library.&lt;/p></description></item><item><title>Lightning CSS</title><link>https://yindongliang.com/links/202510/Lightning-CSS/</link><pubDate>Tue, 07 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Lightning-CSS/</guid><description>&lt;p>An extremely fast CSS parser, transformer, bundler, and minifier.&lt;/p></description></item><item><title>Wavesurfer.js</title><link>https://yindongliang.com/links/202510/Wavesurfer/</link><pubDate>Tue, 07 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Wavesurfer/</guid><description>&lt;p>&lt;strong>Wavesurfer.js&lt;/strong> is an open-source audio visualization library for creating interactive, customizable waveforms.&lt;/p></description></item><item><title>transform</title><link>https://yindongliang.com/docs/Frontend/CSS/transform/</link><pubDate>Mon, 06 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/CSS/transform/</guid><description>&lt;h1 id="css-transform-体系详解">CSS Transform 体系详解&lt;a class="anchor" href="#css-transform-%e4%bd%93%e7%b3%bb%e8%af%a6%e8%a7%a3">#&lt;/a>&lt;/h1>
+&lt;p>Transform 是 CSS 中用于对元素进行&lt;strong>变形处理&lt;/strong>的模块，可以让你在不改变文档流的情况下对元素进行旋转、缩放、移动和倾斜等操作。&lt;/p>
+&lt;h2 id="-核心变换函数">🎯 核心变换函数&lt;a class="anchor" href="#-%e6%a0%b8%e5%bf%83%e5%8f%98%e6%8d%a2%e5%87%bd%e6%95%b0">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-2d-变换函数">1. &lt;strong>2D 变换函数&lt;/strong>&lt;a class="anchor" href="#1-2d-%e5%8f%98%e6%8d%a2%e5%87%bd%e6%95%b0">#&lt;/a>&lt;/h3>
+&lt;h4 id="-位移-translate">📍 位移 (Translate)&lt;a class="anchor" href="#-%e4%bd%8d%e7%a7%bb-translate">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translateX&lt;/span>(&lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>); &lt;span style="color:#78787e">/* 水平移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translateY&lt;/span>(&lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>); &lt;span style="color:#78787e">/* 垂直移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translate&lt;/span>(&lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>, &lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>); &lt;span style="color:#78787e">/* 同时设置 X 和 Y */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translate&lt;/span>(&lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">%&lt;/span>); &lt;span style="color:#78787e">/* 使用百分比（相对于元素自身尺寸） */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="-旋转-rotate">🔄 旋转 (Rotate)&lt;a class="anchor" href="#-%e6%97%8b%e8%bd%ac-rotate">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotate&lt;/span>(&lt;span style="color:#ff9f43">45&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 顺时针旋转45度 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotate&lt;/span>(&lt;span style="color:#ff9f43">-90&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 逆时针旋转90度 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotate&lt;/span>(&lt;span style="color:#ff9f43">0.25&lt;/span>&lt;span style="color:#9aedfe">turn&lt;/span>); &lt;span style="color:#78787e">/* 使用turn单位（0.25turn = 90deg） */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="-缩放-scale">📏 缩放 (Scale)&lt;a class="anchor" href="#-%e7%bc%a9%e6%94%be-scale">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">scale&lt;/span>(&lt;span style="color:#ff9f43">1.5&lt;/span>); &lt;span style="color:#78787e">/* 等比例放大1.5倍 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">scaleX&lt;/span>(&lt;span style="color:#ff9f43">2&lt;/span>); &lt;span style="color:#78787e">/* 仅水平方向放大 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">scaleY&lt;/span>(&lt;span style="color:#ff9f43">0.5&lt;/span>); &lt;span style="color:#78787e">/* 仅垂直方向缩小 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">scale&lt;/span>(&lt;span style="color:#ff9f43">2&lt;/span>, &lt;span style="color:#ff9f43">0.5&lt;/span>); &lt;span style="color:#78787e">/* 水平2倍，垂直0.5倍 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="-倾斜-skew">📐 倾斜 (Skew)&lt;a class="anchor" href="#-%e5%80%be%e6%96%9c-skew">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">skewX&lt;/span>(&lt;span style="color:#ff9f43">15&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 水平方向倾斜 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">skewY&lt;/span>(&lt;span style="color:#ff9f43">10&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 垂直方向倾斜 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#57c7ff">skew&lt;/span>(&lt;span style="color:#ff9f43">15&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>, &lt;span style="color:#ff9f43">10&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 同时设置 X 和 Y */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-3d-变换函数">2. &lt;strong>3D 变换函数&lt;/strong>&lt;a class="anchor" href="#2-3d-%e5%8f%98%e6%8d%a2%e5%87%bd%e6%95%b0">#&lt;/a>&lt;/h3>
+&lt;h4 id="-3d-位移">🎭 3D 位移&lt;a class="anchor" href="#-3d-%e4%bd%8d%e7%a7%bb">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translateZ&lt;/span>(&lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>); &lt;span style="color:#78787e">/* Z轴移动（远近） */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translate3d&lt;/span>(&lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>, &lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>, &lt;span style="color:#ff9f43">200&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>); &lt;span style="color:#78787e">/* 3D空间移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="-3d-旋转">🎡 3D 旋转&lt;a class="anchor" href="#-3d-%e6%97%8b%e8%bd%ac">#&lt;/a>&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotateX&lt;/span>(&lt;span style="color:#ff9f43">45&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 绕X轴旋转 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotateY&lt;/span>(&lt;span style="color:#ff9f43">30&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 绕Y轴旋转 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotateZ&lt;/span>(&lt;span style="color:#ff9f43">60&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 绕Z轴旋转（等同于rotate） */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">rotate3d&lt;/span>(&lt;span style="color:#ff9f43">1&lt;/span>, &lt;span style="color:#ff9f43">1&lt;/span>, &lt;span style="color:#ff9f43">0&lt;/span>, &lt;span style="color:#ff9f43">45&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>); &lt;span style="color:#78787e">/* 自定义轴旋转 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-关键属性配置">🔧 关键属性配置&lt;a class="anchor" href="#-%e5%85%b3%e9%94%ae%e5%b1%9e%e6%80%a7%e9%85%8d%e7%bd%ae">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-变换原点-transform-origin">1. &lt;strong>变换原点 (transform-origin)&lt;/strong>&lt;a class="anchor" href="#1-%e5%8f%98%e6%8d%a2%e5%8e%9f%e7%82%b9-transform-origin">#&lt;/a>&lt;/h3>
+&lt;p>控制变换的基准点：&lt;/p></description></item><item><title>transition</title><link>https://yindongliang.com/docs/Frontend/CSS/transition/</link><pubDate>Mon, 06 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/CSS/transition/</guid><description>&lt;p>让我详细解释一下 &lt;code>transition&lt;/code> 和 &lt;code>transform&lt;/code> 的关系：&lt;/p>
+&lt;h2 id="-transition-和-transform-的关系">🔄 &lt;code>transition&lt;/code> 和 &lt;code>transform&lt;/code> 的关系&lt;a class="anchor" href="#-transition-%e5%92%8c-transform-%e7%9a%84%e5%85%b3%e7%b3%bb">#&lt;/a>&lt;/h2>
+&lt;p>&lt;strong>简单来说：&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>&lt;code>transform&lt;/code>&lt;/strong>：定义元素&lt;strong>最终变成什么样子&lt;/strong>（状态）&lt;/li>
+&lt;li>&lt;strong>&lt;code>transition&lt;/code>&lt;/strong>：定义&lt;strong>如何平滑地过渡&lt;/strong>到那个状态（过程）&lt;/li>
+&lt;/ul>
+&lt;h2 id="-详细解释第一个例子">📖 详细解释第一个例子&lt;a class="anchor" href="#-%e8%af%a6%e7%bb%86%e8%a7%a3%e9%87%8a%e7%ac%ac%e4%b8%80%e4%b8%aa%e4%be%8b%e5%ad%90">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">button&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">/* 这行代码的意思是：当 transform 属性发生变化时，用0.3秒的时间平滑过渡，使用 ease 缓动函数 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transition&lt;/span>: &lt;span style="color:#ff6ac1">transform&lt;/span> &lt;span style="color:#ff9f43">0.3&lt;/span>&lt;span style="color:#9aedfe">s&lt;/span> &lt;span style="color:#ff6ac1">ease&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">/* 初始状态：没有变换 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">scale&lt;/span>(&lt;span style="color:#ff9f43">1&lt;/span>); &lt;span style="color:#78787e">/* 实际上这行可以省略，因为默认就是 scale(1) */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">button&lt;/span>:&lt;span style="color:#ff9f43">hover&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">/* 目标状态：放大1.1倍，并向上移动2像素 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">scale&lt;/span>(&lt;span style="color:#ff9f43">1.1&lt;/span>) &lt;span style="color:#ff5c57">translateY&lt;/span>(&lt;span style="color:#ff9f43">-2&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="分解说明">分解说明：&lt;a class="anchor" href="#%e5%88%86%e8%a7%a3%e8%af%b4%e6%98%8e">#&lt;/a>&lt;/h3>
+&lt;p>&lt;strong>1. 初始状态（默认）&lt;/strong>&lt;/p></description></item><item><title>translate</title><link>https://yindongliang.com/docs/Frontend/CSS/translate/</link><pubDate>Mon, 06 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/CSS/translate/</guid><description>&lt;h1 id="css-translate-属性详解">CSS &lt;code>translate&lt;/code> 属性详解&lt;a class="anchor" href="#css-translate-%e5%b1%9e%e6%80%a7%e8%af%a6%e8%a7%a3">#&lt;/a>&lt;/h1>
+&lt;p>&lt;code>translate&lt;/code> 是一个独立的 CSS 属性，用于移动元素，它是 &lt;code>transform: translate()&lt;/code> 的独立版本。让我为你详细解释这个现代 CSS 特性：&lt;/p>
+&lt;h2 id="-translate-vs-transform-translate">🆚 &lt;code>translate&lt;/code> vs &lt;code>transform: translate()&lt;/code>&lt;a class="anchor" href="#-translate-vs-transform-translate">#&lt;/a>&lt;/h2>
+&lt;h3 id="传统方式transform">传统方式（transform）&lt;a class="anchor" href="#%e4%bc%a0%e7%bb%9f%e6%96%b9%e5%bc%8ftransform">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translate&lt;/span>(&lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>, &lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="现代方式独立属性">现代方式（独立属性）&lt;a class="anchor" href="#%e7%8e%b0%e4%bb%a3%e6%96%b9%e5%bc%8f%e7%8b%ac%e7%ab%8b%e5%b1%9e%e6%80%a7">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> translate: &lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span> &lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-语法和取值">📖 语法和取值&lt;a class="anchor" href="#-%e8%af%ad%e6%b3%95%e5%92%8c%e5%8f%96%e5%80%bc">#&lt;/a>&lt;/h2>
+&lt;h3 id="基本语法">基本语法&lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e8%af%ad%e6%b3%95">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 一个值 - 同时设置 X 和 Y */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 两个值 - X 和 Y */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span> &lt;span style="color:#ff6ac1">50px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 三个值 - X, Y 和 Z */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span> &lt;span style="color:#ff6ac1">50px&lt;/span> &lt;span style="color:#ff6ac1">20px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 百分比 - 相对于元素自身尺寸 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">50&lt;/span>&lt;span style="color:#ff6ac1">%&lt;/span> &lt;span style="color:#ff6ac1">25&lt;/span>&lt;span style="color:#ff6ac1">%;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 关键词 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">none&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="详细用法示例">详细用法示例&lt;a class="anchor" href="#%e8%af%a6%e7%bb%86%e7%94%a8%e6%b3%95%e7%a4%ba%e4%be%8b">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* X 轴移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span> &lt;span style="color:#78787e">/* X: 100px, Y: 0 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span> &lt;span style="color:#ff6ac1">0&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span> &lt;span style="color:#78787e">/* 同上 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* X 和 Y 轴移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span> &lt;span style="color:#ff6ac1">50px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span> &lt;span style="color:#78787e">/* 向右100px，向下50px */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">-50px&lt;/span> &lt;span style="color:#ff6ac1">-20px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span> &lt;span style="color:#78787e">/* 向左50px，向上20px */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 3D 移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">100px&lt;/span> &lt;span style="color:#ff6ac1">50px&lt;/span> &lt;span style="color:#ff6ac1">30px&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span> &lt;span style="color:#78787e">/* X, Y, Z 轴移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 百分比移动 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">50&lt;/span>&lt;span style="color:#ff6ac1">%&lt;/span> &lt;span style="color:#ff6ac1">25&lt;/span>&lt;span style="color:#ff6ac1">%;&lt;/span> &lt;span style="color:#78787e">/* 向右自身宽度的50%，向下自身高度的25% */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 重置 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">translate&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">none&lt;/span>&lt;span style="color:#ff6ac1">;&lt;/span> &lt;span style="color:#78787e">/* 不移动 */&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-为什么需要独立的-translate-属性">🎯 为什么需要独立的 &lt;code>translate&lt;/code> 属性？&lt;a class="anchor" href="#-%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e7%8b%ac%e7%ab%8b%e7%9a%84-translate-%e5%b1%9e%e6%80%a7">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-更好的可读性和维护性">1. &lt;strong>更好的可读性和维护性&lt;/strong>&lt;a class="anchor" href="#1-%e6%9b%b4%e5%a5%bd%e7%9a%84%e5%8f%af%e8%af%bb%e6%80%a7%e5%92%8c%e7%bb%b4%e6%8a%a4%e6%80%a7">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 传统方式 - 所有变换混在一起 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transform&lt;/span>: &lt;span style="color:#ff5c57">translateX&lt;/span>(&lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>) &lt;span style="color:#ff5c57">rotate&lt;/span>(&lt;span style="color:#ff9f43">45&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>) &lt;span style="color:#ff5c57">scale&lt;/span>(&lt;span style="color:#ff9f43">1.2&lt;/span>) &lt;span style="color:#ff5c57">translateY&lt;/span>(&lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/* 现代方式 - 分离关注点 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">element&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> translate: &lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span> &lt;span style="color:#ff9f43">50&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rotate: &lt;span style="color:#ff9f43">45&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> scale: &lt;span style="color:#ff9f43">1.2&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-独立的动画控制">2. &lt;strong>独立的动画控制&lt;/strong>&lt;a class="anchor" href="#2-%e7%8b%ac%e7%ab%8b%e7%9a%84%e5%8a%a8%e7%94%bb%e6%8e%a7%e5%88%b6">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">box&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> translate: &lt;span style="color:#ff9f43">0&lt;/span> &lt;span style="color:#ff9f43">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rotate: &lt;span style="color:#ff9f43">0&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> scale: &lt;span style="color:#ff9f43">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">transition&lt;/span>: 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> translate &lt;span style="color:#ff9f43">0.3&lt;/span>&lt;span style="color:#9aedfe">s&lt;/span> &lt;span style="color:#ff6ac1">ease&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rotate &lt;span style="color:#ff9f43">0.5&lt;/span>&lt;span style="color:#9aedfe">s&lt;/span> &lt;span style="color:#ff6ac1">ease-out&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> scale &lt;span style="color:#ff9f43">0.2&lt;/span>&lt;span style="color:#9aedfe">s&lt;/span> &lt;span style="color:#ff6ac1">linear&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">box&lt;/span>:&lt;span style="color:#ff9f43">hover&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> translate: &lt;span style="color:#ff9f43">100&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span> &lt;span style="color:#ff9f43">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rotate: &lt;span style="color:#ff9f43">45&lt;/span>&lt;span style="color:#9aedfe">deg&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> scale: &lt;span style="color:#ff9f43">1.1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-性能优化">3. &lt;strong>性能优化&lt;/strong>&lt;a class="anchor" href="#3-%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96">#&lt;/a>&lt;/h3>
+&lt;p>浏览器可以单独优化每个属性的变化，特别是在使用 &lt;code>will-change&lt;/code> 时：&lt;/p></description></item><item><title>张鑫旭的 2024 年终小结和展望</title><link>https://yindongliang.com/links/202510/%E5%BC%A0%E9%91%AB%E6%97%AD%E7%9A%84-2024-%E5%B9%B4%E6%80%BB%E7%BB%93/</link><pubDate>Mon, 06 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/%E5%BC%A0%E9%91%AB%E6%97%AD%E7%9A%84-2024-%E5%B9%B4%E6%80%BB%E7%BB%93/</guid><description/></item><item><title>Node.JS 作者 Ryan Dahl 的故事</title><link>https://yindongliang.com/links/202510/Node/</link><pubDate>Sat, 04 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Node/</guid><description>&lt;p>Node.js 的作者 &lt;a href="https://tinyclouds.org/">Ryan Dahl(ry)&lt;/a>，前不久在它的一个演讲主题上了解到了一些关于他的故事。&lt;/p></description></item><item><title>Bun</title><link>https://yindongliang.com/links/202510/Bun/</link><pubDate>Wed, 01 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/Bun/</guid><description>&lt;p>Develop, test, run, and bundle JavaScript &amp;amp; TypeScript projects—all with Bun. Bun is an all-in-one JavaScript runtime &amp;amp; toolkit designed for speed, complete with a bundler, &lt;a href="https://bun.com/docs/cli/test">test runner&lt;/a>, and Node.js-compatible &lt;a href="https://bun.com/package-manager">package manager&lt;/a>. Bun aims for 100% Node.js compatibility.&lt;/p></description></item><item><title>React Router</title><link>https://yindongliang.com/links/202510/React-Router/</link><pubDate>Wed, 01 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/React-Router/</guid><description>&lt;p>React Router 是一个适用于 React 的多策略路由器，这里详细介绍如何在 React 项目中使用 React Router。&lt;/p>
+&lt;h2 id="-安装与基础设置">🔧 安装与基础设置&lt;a class="anchor" href="#-%e5%ae%89%e8%a3%85%e4%b8%8e%e5%9f%ba%e7%a1%80%e8%ae%be%e7%bd%ae">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-安装-react-router">1. 安装 React Router&lt;a class="anchor" href="#1-%e5%ae%89%e8%a3%85-react-router">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 使用 npm&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>npm install react-router-dom
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 使用 yarn&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>yarn add react-router-dom
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e"># 使用 bun&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>bun add react-router-dom&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-基础路由设置">2. 基础路由设置&lt;a class="anchor" href="#2-%e5%9f%ba%e7%a1%80%e8%b7%af%e7%94%b1%e8%ae%be%e7%bd%ae">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// main.jsx 或 index.js
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> React from &lt;span style="color:#5af78e">&amp;#39;react&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> ReactDOM from &lt;span style="color:#5af78e">&amp;#39;react-dom/client&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> { BrowserRouter } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> App from &lt;span style="color:#5af78e">&amp;#39;./App&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ReactDOM.createRoot(&lt;span style="color:#ff5c57">document&lt;/span>.getElementById(&lt;span style="color:#5af78e">&amp;#39;root&amp;#39;&lt;/span>)).render(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">React.StrictMode&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">BrowserRouter&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">App&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">BrowserRouter&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">React.StrictMode&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>)&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-核心组件与-hook">🎯 核心组件与 Hook&lt;a class="anchor" href="#-%e6%a0%b8%e5%bf%83%e7%bb%84%e4%bb%b6%e4%b8%8e-hook">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-基本路由配置">1. 基本路由配置&lt;a class="anchor" href="#1-%e5%9f%ba%e6%9c%ac%e8%b7%af%e7%94%b1%e9%85%8d%e7%bd%ae">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// App.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { Routes, Route } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> Home from &lt;span style="color:#5af78e">&amp;#39;./pages/Home&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> About from &lt;span style="color:#5af78e">&amp;#39;./pages/About&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> Contact from &lt;span style="color:#5af78e">&amp;#39;./pages/Contact&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> Navbar from &lt;span style="color:#5af78e">&amp;#39;./components/Navbar&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> App() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">className&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;app&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Navbar&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">Home&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/about&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">About&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/contact&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">Contact&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">export&lt;/span> &lt;span style="color:#ff6ac1">default&lt;/span> App&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-导航组件">2. 导航组件&lt;a class="anchor" href="#2-%e5%af%bc%e8%88%aa%e7%bb%84%e4%bb%b6">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// components/Navbar.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { Link, NavLink } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> Navbar() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">nav&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {&lt;span style="color:#78787e">/* Link - 普通导航链接 */&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Link&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/&amp;#34;&lt;/span>&amp;gt;首页&amp;lt;/&lt;span style="color:#ff6ac1">Link&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {&lt;span style="color:#78787e">/* NavLink - 支持激活状态的链接 */&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">NavLink&lt;/span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/about&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#57c7ff">className&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{({ isActive }) =&amp;gt; isActive &lt;span style="color:#ff6ac1">?&lt;/span> &lt;span style="color:#5af78e">&amp;#39;active&amp;#39;&lt;/span> &lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#39;&amp;#39;&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 关于我们
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">NavLink&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">NavLink&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/contact&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {({ isActive }) =&amp;gt; (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">span&lt;/span> &lt;span style="color:#57c7ff">className&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{isActive &lt;span style="color:#ff6ac1">?&lt;/span> &lt;span style="color:#5af78e">&amp;#39;text-blue-500&amp;#39;&lt;/span> &lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#39;&amp;#39;&lt;/span>}&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 联系我们
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">span&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">NavLink&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">nav&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-动态路由与参数">🔄 动态路由与参数&lt;a class="anchor" href="#-%e5%8a%a8%e6%80%81%e8%b7%af%e7%94%b1%e4%b8%8e%e5%8f%82%e6%95%b0">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-动态路由参数">1. 动态路由参数&lt;a class="anchor" href="#1-%e5%8a%a8%e6%80%81%e8%b7%af%e7%94%b1%e5%8f%82%e6%95%b0">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// App.jsx - 路由配置
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&amp;lt;&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/users&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">UserList&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/users/:userId&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">UserProfile&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/products/:category/:id&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">ProductDetail&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-获取路由参数">2. 获取路由参数&lt;a class="anchor" href="#2-%e8%8e%b7%e5%8f%96%e8%b7%af%e7%94%b1%e5%8f%82%e6%95%b0">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// pages/UserProfile.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { useParams, useSearchParams } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> UserProfile() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 获取路径参数
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#ff6ac1">const&lt;/span> { userId } &lt;span style="color:#ff6ac1">=&lt;/span> useParams()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 获取查询参数
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#ff6ac1">const&lt;/span> [searchParams, setSearchParams] &lt;span style="color:#ff6ac1">=&lt;/span> useSearchParams()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> tab &lt;span style="color:#ff6ac1">=&lt;/span> searchParams.get(&lt;span style="color:#5af78e">&amp;#39;tab&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> sort &lt;span style="color:#ff6ac1">=&lt;/span> searchParams.get(&lt;span style="color:#5af78e">&amp;#39;sort&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> updateQueryParams &lt;span style="color:#ff6ac1">=&lt;/span> () =&amp;gt; {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> setSearchParams({ tab&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#39;info&amp;#39;&lt;/span>, sort&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#39;asc&amp;#39;&lt;/span> })
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">h1&lt;/span>&amp;gt;用户资料&lt;span style="color:#ff6ac1">:&lt;/span> {userId}&amp;lt;/&lt;span style="color:#ff6ac1">h1&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">p&lt;/span>&amp;gt;当前标签&lt;span style="color:#ff6ac1">:&lt;/span> {tab}&amp;lt;/&lt;span style="color:#ff6ac1">p&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">button&lt;/span> &lt;span style="color:#57c7ff">onClick&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{updateQueryParams}&amp;gt;更新查询参数&amp;lt;/&lt;span style="color:#ff6ac1">button&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-编程式导航">🎪 编程式导航&lt;a class="anchor" href="#-%e7%bc%96%e7%a8%8b%e5%bc%8f%e5%af%bc%e8%88%aa">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// components/LoginForm.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { useNavigate, useLocation } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> LoginForm() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> navigate &lt;span style="color:#ff6ac1">=&lt;/span> useNavigate()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> location &lt;span style="color:#ff6ac1">=&lt;/span> useLocation()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> handleLogin &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff6ac1">async&lt;/span> () =&amp;gt; {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">try&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 模拟登录逻辑
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#ff6ac1">await&lt;/span> loginUser()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 登录后跳转
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#ff6ac1">const&lt;/span> from &lt;span style="color:#ff6ac1">=&lt;/span> location.state&lt;span style="color:#ff6ac1">?&lt;/span>.from&lt;span style="color:#ff6ac1">?&lt;/span>.pathname &lt;span style="color:#ff6ac1">||&lt;/span> &lt;span style="color:#5af78e">&amp;#39;/dashboard&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> navigate(from, { replace&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">true&lt;/span> })
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 其他导航方式
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#78787e">// navigate(-1) // 返回上一页
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#78787e">// navigate(&amp;#39;/dashboard&amp;#39;, { state: { user: userData } }) // 传递状态
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> } &lt;span style="color:#ff6ac1">catch&lt;/span> (error) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> console.error(&lt;span style="color:#5af78e">&amp;#39;登录失败&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">form&lt;/span> &lt;span style="color:#57c7ff">onSubmit&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{(e) =&amp;gt; {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> e.preventDefault()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> handleLogin()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }}&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {&lt;span style="color:#78787e">/* 表单内容 */&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">button&lt;/span> &lt;span style="color:#57c7ff">type&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;submit&amp;#34;&lt;/span>&amp;gt;登录&amp;lt;/&lt;span style="color:#ff6ac1">button&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">form&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-嵌套路由">🏗️ 嵌套路由&lt;a class="anchor" href="#-%e5%b5%8c%e5%a5%97%e8%b7%af%e7%94%b1">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-定义嵌套路由">1. 定义嵌套路由&lt;a class="anchor" href="#1-%e5%ae%9a%e4%b9%89%e5%b5%8c%e5%a5%97%e8%b7%af%e7%94%b1">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// App.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&amp;lt;&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/dashboard&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">DashboardLayout&lt;/span> /&amp;gt;}&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">index&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">DashboardHome&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;profile&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">Profile&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;settings&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">Settings&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;analytics&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">Analytics&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">Route&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-布局组件中使用-outlet">2. 布局组件中使用 Outlet&lt;a class="anchor" href="#2-%e5%b8%83%e5%b1%80%e7%bb%84%e4%bb%b6%e4%b8%ad%e4%bd%bf%e7%94%a8-outlet">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// layouts/DashboardLayout.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { Outlet, Link } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> DashboardLayout() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">className&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;dashboard-layout&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">aside&lt;/span> &lt;span style="color:#57c7ff">className&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;sidebar&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">nav&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Link&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/dashboard&amp;#34;&lt;/span>&amp;gt;概览&amp;lt;/&lt;span style="color:#ff6ac1">Link&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Link&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/dashboard/profile&amp;#34;&lt;/span>&amp;gt;个人资料&amp;lt;/&lt;span style="color:#ff6ac1">Link&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Link&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/dashboard/settings&amp;#34;&lt;/span>&amp;gt;设置&amp;lt;/&lt;span style="color:#ff6ac1">Link&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Link&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/dashboard/analytics&amp;#34;&lt;/span>&amp;gt;分析&amp;lt;/&lt;span style="color:#ff6ac1">Link&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">nav&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">aside&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">main&lt;/span> &lt;span style="color:#57c7ff">className&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;main-content&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {&lt;span style="color:#78787e">/* 子路由将在这里渲染 */&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Outlet&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">main&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-保护路由与权限控制">🛡️ 保护路由与权限控制&lt;a class="anchor" href="#-%e4%bf%9d%e6%8a%a4%e8%b7%af%e7%94%b1%e4%b8%8e%e6%9d%83%e9%99%90%e6%8e%a7%e5%88%b6">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-路由保护组件">1. 路由保护组件&lt;a class="anchor" href="#1-%e8%b7%af%e7%94%b1%e4%bf%9d%e6%8a%a4%e7%bb%84%e4%bb%b6">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// components/ProtectedRoute.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { Navigate, useLocation } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> ProtectedRoute({ children, requiredRole }) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> location &lt;span style="color:#ff6ac1">=&lt;/span> useLocation()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> { user, isAuthenticated } &lt;span style="color:#ff6ac1">=&lt;/span> useAuth() &lt;span style="color:#78787e">// 假设有认证 Hook
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> (&lt;span style="color:#ff6ac1">!&lt;/span>isAuthenticated) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 重定向到登录页，并保存当前位置以便登录后返回
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#ff6ac1">return&lt;/span> &amp;lt;&lt;span style="color:#ff6ac1">Navigate&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/login&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">state&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{{ from&lt;span style="color:#ff6ac1">:&lt;/span> location }} &lt;span style="color:#57c7ff">replace&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> (requiredRole &lt;span style="color:#ff6ac1">&amp;amp;&amp;amp;&lt;/span> user.role &lt;span style="color:#ff6ac1">!==&lt;/span> requiredRole) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// 权限不足
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> &lt;span style="color:#ff6ac1">return&lt;/span> &amp;lt;&lt;span style="color:#ff6ac1">Navigate&lt;/span> &lt;span style="color:#57c7ff">to&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/unauthorized&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">replace&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> children
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-使用保护路由">2. 使用保护路由&lt;a class="anchor" href="#2-%e4%bd%bf%e7%94%a8%e4%bf%9d%e6%8a%a4%e8%b7%af%e7%94%b1">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// App.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&amp;lt;&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/admin&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">ProtectedRoute&lt;/span> &lt;span style="color:#57c7ff">requiredRole&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;admin&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">AdminLayout&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">ProtectedRoute&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">index&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">AdminDashboard&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;users&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">UserManagement&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">Route&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/profile&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">ProtectedRoute&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">UserProfile&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">ProtectedRoute&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-高级功能">📚 高级功能&lt;a class="anchor" href="#-%e9%ab%98%e7%ba%a7%e5%8a%9f%e8%83%bd">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-懒加载路由">1. 懒加载路由&lt;a class="anchor" href="#1-%e6%87%92%e5%8a%a0%e8%bd%bd%e8%b7%af%e7%94%b1">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> { lazy, Suspense } from &lt;span style="color:#5af78e">&amp;#39;react&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">const&lt;/span> LazyDashboard &lt;span style="color:#ff6ac1">=&lt;/span> lazy(() =&amp;gt; &lt;span style="color:#ff6ac1">import&lt;/span>(&lt;span style="color:#5af78e">&amp;#39;./pages/Dashboard&amp;#39;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">const&lt;/span> LazyAdmin &lt;span style="color:#ff6ac1">=&lt;/span> lazy(() =&amp;gt; &lt;span style="color:#ff6ac1">import&lt;/span>(&lt;span style="color:#5af78e">&amp;#39;./pages/Admin&amp;#39;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> App() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/dashboard&amp;#34;&lt;/span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Suspense&lt;/span> &lt;span style="color:#57c7ff">fallback&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;加载中...&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;}&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">LazyDashboard&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">Suspense&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-404-页面处理">2. 404 页面处理&lt;a class="anchor" href="#2-404-%e9%a1%b5%e9%9d%a2%e5%a4%84%e7%90%86">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">Home&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;/about&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">About&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">Route&lt;/span> &lt;span style="color:#57c7ff">path&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;*&amp;#34;&lt;/span> &lt;span style="color:#57c7ff">element&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{&amp;lt;&lt;span style="color:#ff6ac1">NotFound&lt;/span> /&amp;gt;} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">Routes&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-路由配置对象v64-数据路由">3. 路由配置对象（v6.4+ 数据路由）&lt;a class="anchor" href="#3-%e8%b7%af%e7%94%b1%e9%85%8d%e7%bd%ae%e5%af%b9%e8%b1%a1v64-%e6%95%b0%e6%8d%ae%e8%b7%af%e7%94%b1">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> { createBrowserRouter, RouterProvider } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">const&lt;/span> router &lt;span style="color:#ff6ac1">=&lt;/span> createBrowserRouter([
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> path&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#39;/&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> element&lt;span style="color:#ff6ac1">:&lt;/span> &amp;lt;&lt;span style="color:#ff6ac1">RootLayout&lt;/span> /&amp;gt;,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> children&lt;span style="color:#ff6ac1">:&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> { index&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">true&lt;/span>, element&lt;span style="color:#ff6ac1">:&lt;/span> &amp;lt;&lt;span style="color:#ff6ac1">Home&lt;/span> /&amp;gt; },
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> { 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> path&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#39;users&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> element&lt;span style="color:#ff6ac1">:&lt;/span> &amp;lt;&lt;span style="color:#ff6ac1">Users&lt;/span> /&amp;gt;,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> loader&lt;span style="color:#ff6ac1">:&lt;/span> usersLoader, &lt;span style="color:#78787e">// 数据加载器
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> action&lt;span style="color:#ff6ac1">:&lt;/span> userAction &lt;span style="color:#78787e">// 数据操作
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// 在 main.jsx 中使用
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>ReactDOM.createRoot(&lt;span style="color:#ff5c57">document&lt;/span>.getElementById(&lt;span style="color:#5af78e">&amp;#39;root&amp;#39;&lt;/span>)).render(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">React.StrictMode&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">RouterProvider&lt;/span> &lt;span style="color:#57c7ff">router&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>{router} /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#ff6ac1">React.StrictMode&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>)&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="-最佳实践">💡 最佳实践&lt;a class="anchor" href="#-%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5">#&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>&lt;strong>文件组织&lt;/strong>：&lt;/li>
+&lt;/ol>
+&lt;pre tabindex="0">&lt;code>src/
+ components/
+ pages/
+ Home.jsx
+ About.jsx
+ users/
+ UserList.jsx
+ UserProfile.jsx
+ layouts/
+ MainLayout.jsx
+ DashboardLayout.jsx
+ routes/
+ index.jsx&lt;/code>&lt;/pre>&lt;ol start="2">
+&lt;li>&lt;strong>路由集中管理&lt;/strong>：&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// routes/index.jsx
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">import&lt;/span> { useRoutes } from &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">import&lt;/span> routesConfig from &lt;span style="color:#5af78e">&amp;#39;./routesConfig&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> Router() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> useRoutes(routesConfig)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">export&lt;/span> &lt;span style="color:#ff6ac1">default&lt;/span> Router&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="3">
+&lt;li>&lt;strong>类型安全&lt;/strong>（使用 TypeScript）：&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-typescript" data-lang="typescript">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// types/router.d.ts
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">declare&lt;/span> module &lt;span style="color:#5af78e">&amp;#39;react-router-dom&amp;#39;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">interface&lt;/span> ParamKeys {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> userId: &lt;span style="color:#9aedfe">string&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> productId: &lt;span style="color:#9aedfe">string&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>React Router 提供了强大而灵活的路由解决方案，从简单的 SPA 导航到复杂的企业级应用路由管理都能胜任。掌握这些核心概念后，你可以根据项目需求选择合适的路由模式和组织方式。&lt;/p></description></item><item><title>Prisma 和 Drizzle 对比</title><link>https://yindongliang.com/posts/Prisma-%E5%92%8C-Drizzle-%E5%AF%B9%E6%AF%94/</link><pubDate>Wed, 24 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/Prisma-%E5%92%8C-Drizzle-%E5%AF%B9%E6%AF%94/</guid><description>&lt;p>Prisma 和 Drizzle 确实是同类工具，它们都属于 &lt;strong>现代 TypeScript/JavaScript ORM（对象关系映射）&lt;/strong>，但在设计哲学、功能特性和使用方式上有显著差异。&lt;/p>
+&lt;h2 id="核心定位对比">核心定位对比&lt;a class="anchor" href="#%e6%a0%b8%e5%bf%83%e5%ae%9a%e4%bd%8d%e5%af%b9%e6%af%94">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>特性&lt;/th>
+ &lt;th>Prisma&lt;/th>
+ &lt;th>Drizzle&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>类型安全&lt;/strong>&lt;/td>
+ &lt;td>🔥 强类型，自动生成 TypeScript 类型&lt;/td>
+ &lt;td>🔥 强类型，基于 TypeScript 推断&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>查询语法&lt;/strong>&lt;/td>
+ &lt;td>声明式，类 GraphQL 风格&lt;/td>
+ &lt;td>类 SQL 的表达式语法&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>架构定义&lt;/strong>&lt;/td>
+ &lt;td>专属的 &lt;code>.prisma&lt;/code> schema 文件&lt;/td>
+ &lt;td>TypeScript 代码定义或配置文件&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>迁移管理&lt;/strong>&lt;/td>
+ &lt;td>内置完整的迁移系统&lt;/td>
+ &lt;td>支持迁移，但更灵活&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>运行时大小&lt;/strong>&lt;/td>
+ &lt;td>较大（~1.5MB）&lt;/td>
+ &lt;td>轻量（~20KB）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>学习曲线&lt;/strong>&lt;/td>
+ &lt;td>中等，需要学习 Prisma 特有语法&lt;/td>
+ &lt;td>较低，对 SQL 用户友好&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="代码示例对比">代码示例对比&lt;a class="anchor" href="#%e4%bb%a3%e7%a0%81%e7%a4%ba%e4%be%8b%e5%af%b9%e6%af%94">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-架构定义">1. 架构定义&lt;a class="anchor" href="#1-%e6%9e%b6%e6%9e%84%e5%ae%9a%e4%b9%89">#&lt;/a>&lt;/h3>
+&lt;p>&lt;strong>Prisma Schema:&lt;/strong>&lt;/p></description></item><item><title>Cookie 机制</title><link>https://yindongliang.com/posts/Cookie-%E6%9C%BA%E5%88%B6/</link><pubDate>Sun, 14 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/Cookie-%E6%9C%BA%E5%88%B6/</guid><description>&lt;p>我们来详细解析一下服务器和浏览器是如何协同管理 Cookie 的。Cookie 是维持 HTTP 无状态协议状态的关键技术，其管理机制涉及服务器创建、浏览器存储与发送、以及双方的安全约束。&lt;/p></description></item><item><title>JWT 介绍和场景示例</title><link>https://yindongliang.com/posts/jwt-api-auth/</link><pubDate>Sun, 14 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/jwt-api-auth/</guid><description>&lt;h3 id="一jwt-是什么">一、JWT 是什么？&lt;a class="anchor" href="#%e4%b8%80jwt-%e6%98%af%e4%bb%80%e4%b9%88">#&lt;/a>&lt;/h3>
+&lt;p>&lt;a href="https://www.jwt.io/">&lt;strong>JWT&lt;/strong>&lt;/a> 的英文全称是 JSON Web Token。它是一种开放的、行业标准的方法，用于在双方之间安全地传输信息作为 JSON 对象。&lt;/p>
+&lt;p>最关键的特点是：&lt;strong>这些信息是经过数字签名的，因此可以被验证和信任&lt;/strong>。&lt;/p></description></item><item><title>Chrome URLs</title><link>https://yindongliang.com/docs/Frontend/Chrome/</link><pubDate>Sun, 07 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Chrome/</guid><description>&lt;p>Chrome 浏览器提供了大量以 &lt;code>chrome://&lt;/code> 开头的特殊内部页面（有时称为 &amp;ldquo;chrome URLs&amp;rdquo; 或 &amp;ldquo;about URLs&amp;rdquo;），这些页面用于访问浏览器的各种内部信息、设置、调试和实验功能。下面是一些比较常用和实用的内部地址：&lt;/p></description></item><item><title>BOM</title><link>https://yindongliang.com/docs/Frontend/JavaScript/BOM/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/JavaScript/BOM/</guid><description>&lt;h3 id="什么是-bom">什么是 BOM？&lt;a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-bom">#&lt;/a>&lt;/h3>
+&lt;p>BOM（Browser Object Model，浏览器对象模型）不同于操作文档的 DOM（Document Object Model），它提供了独立于内容、与浏览器窗口进行交互的对象。BOM 没有正式的标准（但存在一些事实标准），因此不同浏览器在实现上可能存在细微差异，但核心对象和方法是基本一致的。&lt;/p></description></item><item><title>Capacitor</title><link>https://yindongliang.com/links/202509/Capacitor/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/Capacitor/</guid><description>&lt;p>A cross-platform native runtime for web apps.&lt;/p></description></item><item><title>DOM</title><link>https://yindongliang.com/docs/Frontend/JavaScript/DOM/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/JavaScript/DOM/</guid><description>&lt;h1 id="javascript-dom-api-全面介绍">JavaScript DOM API 全面介绍&lt;a class="anchor" href="#javascript-dom-api-%e5%85%a8%e9%9d%a2%e4%bb%8b%e7%bb%8d">#&lt;/a>&lt;/h1>
+&lt;p>DOM（文档对象模型）是HTML和XML文档的编程接口，它提供了对文档的结构化表示，并定义了一种方式使程序可以访问和操作文档的结构、样式和内容。&lt;/p></description></item><item><title>Pagefind</title><link>https://yindongliang.com/links/202509/Pagefind/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202509/Pagefind/</guid><description>&lt;p>Pagefind is a fully static search library that aims to perform well on large sites, while using as little of your users’ bandwidth as possible, and without hosting any infrastructure.&lt;/p></description></item><item><title>Buffer</title><link>https://yindongliang.com/docs/Frontend/Nodejs/Buffer/</link><pubDate>Fri, 05 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Nodejs/Buffer/</guid><description>&lt;p>&lt;code>Buffer&lt;/code> 是 Node.js 中一个非常重要且强大的全局对象，用于直接操作原始二进制数据流。它在浏览器环境中不可用，是 Node.js 的核心特性之一。&lt;/p>
+&lt;h2 id="-什么是-buffer">🎯 什么是 Buffer？&lt;a class="anchor" href="#-%e4%bb%80%e4%b9%88%e6%98%af-buffer">#&lt;/a>&lt;/h2>
+&lt;p>&lt;strong>Buffer&lt;/strong> 是一个表示固定长度的原始二进制数据块的类。你可以把它想象成一个&lt;strong>专门用来处理原始二进制数据的数组&lt;/strong>，但与普通数组不同，它在 V8 堆外分配固定大小的原始内存，效率极高。&lt;/p></description></item><item><title>reduce</title><link>https://yindongliang.com/docs/Frontend/JavaScript/reduce/</link><pubDate>Fri, 05 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/JavaScript/reduce/</guid><description>&lt;h1 id="javascript-中的-reduce-方法详解">JavaScript 中的 &lt;code>reduce&lt;/code> 方法详解&lt;a class="anchor" href="#javascript-%e4%b8%ad%e7%9a%84-reduce-%e6%96%b9%e6%b3%95%e8%af%a6%e8%a7%a3">#&lt;/a>&lt;/h1>
+&lt;p>&lt;code>reduce&lt;/code> 是 JavaScript 数组中非常强大且常用的方法，用于将数组中的所有元素通过一个函数累积为单个值。&lt;/p>
+&lt;h2 id="-基本概念">🎯 基本概念&lt;a class="anchor" href="#-%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h2>
+&lt;p>&lt;strong>&lt;code>reduce()&lt;/code>&lt;/strong> 方法对数组中的每个元素按顺序执行一个提供的 &lt;strong>reducer&lt;/strong> 函数，每一次运行 reducer 会将先前元素的计算结果作为参数传入，最后将其结果汇总为单个返回值。&lt;/p></description></item><item><title>inspector</title><link>https://yindongliang.com/docs/Frontend/Nodejs/inspector/</link><pubDate>Thu, 04 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Nodejs/inspector/</guid><description>&lt;h1 id="-深入理解-nodejs-的-inspector-模块">🔍 深入理解 Node.js 的 &lt;code>inspector&lt;/code> 模块&lt;a class="anchor" href="#-%e6%b7%b1%e5%85%a5%e7%90%86%e8%a7%a3-nodejs-%e7%9a%84-inspector-%e6%a8%a1%e5%9d%97">#&lt;/a>&lt;/h1>
+&lt;p>&lt;a href="https://nodejs.org/api/inspector.html">https://nodejs.org/api/inspector.html&lt;/a>&lt;/p>
+&lt;h2 id="1-它属于什么是-javascript-还是-typescript-的模块">1. 它属于什么？是 JavaScript 还是 TypeScript 的模块？&lt;a class="anchor" href="#1-%e5%ae%83%e5%b1%9e%e4%ba%8e%e4%bb%80%e4%b9%88%e6%98%af-javascript-%e8%bf%98%e6%98%af-typescript-%e7%9a%84%e6%a8%a1%e5%9d%97">#&lt;/a>&lt;/h2>
+&lt;p>&lt;code>inspector&lt;/code> 是 &lt;strong>Node.js 的核心内置模块&lt;/strong>，不是第三方包，也不是 TypeScript 特有的功能。&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>归属&lt;/strong>: 它是 Node.js 运行时环境的一部分，与 &lt;code>fs&lt;/code>、&lt;code>http&lt;/code>、&lt;code>path&lt;/code> 等模块同级。&lt;/li>
+&lt;li>&lt;strong>语言&lt;/strong>: 它是 JavaScript 模块，用 Node.js 的 JavaScript API 编写和使用。TypeScript 项目当然也可以导入和使用它，因为 TypeScript 最终会编译成 JavaScript 在 Node.js 中运行。&lt;/li>
+&lt;li>&lt;strong>底层技术&lt;/strong>: 它的背后是 &lt;strong>V8 引擎的 Inspector 协议&lt;/strong>，这个协议允许外部工具（如 Chrome DevTools）通过 WebSocket 与 Node.js 进程进行通信、调试和分析。&lt;/li>
+&lt;/ul>
+&lt;h2 id="2-它是用来做什么的">2. 它是用来做什么的？&lt;a class="anchor" href="#2-%e5%ae%83%e6%98%af%e7%94%a8%e6%9d%a5%e5%81%9a%e4%bb%80%e4%b9%88%e7%9a%84">#&lt;/a>&lt;/h2>
+&lt;p>&lt;code>inspector&lt;/code> 模块的主要目的是&lt;strong>开启对 Node.js 进程的调试和分析能力&lt;/strong>。它提供了以编程方式与 V8 Inspector 交互的 API。&lt;/p></description></item><item><title>async</title><link>https://yindongliang.com/docs/Frontend/TypeScript/%E5%85%B3%E9%94%AE%E5%AD%97/async/</link><pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/%E5%85%B3%E9%94%AE%E5%AD%97/async/</guid><description>&lt;h2 id="1-async-的作用">1. &lt;code>async&lt;/code> 的作用&lt;a class="anchor" href="#1-async-%e7%9a%84%e4%bd%9c%e7%94%a8">#&lt;/a>&lt;/h2>
+&lt;p>在 TypeScript（以及 JavaScript）中，&lt;code>async&lt;/code> 关键字用来 &lt;strong>声明一个异步函数&lt;/strong>。&lt;br>
+它有两个核心效果：&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>返回值会被自动封装为 &lt;code>Promise&lt;/code>&lt;/strong>&lt;/p></description></item><item><title>forEach 和 map 的区别</title><link>https://yindongliang.com/docs/Frontend/TypeScript/forEach-%E5%92%8C-map/</link><pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/forEach-%E5%92%8C-map/</guid><description>&lt;p>在 TypeScript（以及 JavaScript）中，&lt;code>forEach&lt;/code> 和 &lt;code>map&lt;/code> 都是数组方法，但它们有重要的区别。了解这些区别对于编写高效和正确的代码至关重要。&lt;/p></description></item><item><title>Promise</title><link>https://yindongliang.com/docs/Frontend/TypeScript/Promise/</link><pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/Promise/</guid><description>&lt;h2 id="1-什么是-promise">1. 什么是 Promise？&lt;a class="anchor" href="#1-%e4%bb%80%e4%b9%88%e6%98%af-promise">#&lt;/a>&lt;/h2>
+&lt;p>在 JavaScript / TypeScript 中，&lt;strong>Promise 表示一个异步操作的最终结果&lt;/strong>（成功或失败）。&lt;br>
+它有三种状态：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>pending&lt;/strong>（进行中）&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>fulfilled&lt;/strong>（成功）&lt;/p></description></item><item><title>Icon Maker by Raycast</title><link>https://yindongliang.com/links/202508/Icon-Maker-by-Raycast/</link><pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/Icon-Maker-by-Raycast/</guid><description>&lt;p>This repository contains the source code for &lt;a href="https://ray.so/">ray.so&lt;/a>, a collection of tools built by &lt;a href="https://raycast.com/#ref=ray.so">Raycast&lt;/a>. It includes:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/%28code%29">&lt;strong>Code Images&lt;/strong>&lt;/a>: Create beautiful images of your code.&lt;/li>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/icon">&lt;strong>Icon Maker&lt;/strong>&lt;/a>: Create beautiful icons for Raycast Extensions.&lt;/li>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/prompts">&lt;strong>Prompt Explorer&lt;/strong>&lt;/a>: Explore AI Prompts for Raycast.&lt;/li>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/presets">&lt;strong>Preset Explorer&lt;/strong>&lt;/a>: Explore AI Presets for Raycast.&lt;/li>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/quicklinks">&lt;strong>Quicklink Explorer&lt;/strong>&lt;/a>: Browse and import Raycast Quicklinks.&lt;/li>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/snippets">&lt;strong>Snippet Explorer&lt;/strong>&lt;/a>: Browse and import Raycast Snippets.&lt;/li>
+&lt;li>&lt;a href="https://github.com/raycast/ray-so/tree/main/app/%28navigation%29/themes">&lt;strong>Theme Explorer&lt;/strong>&lt;/a>: Browse and import Raycast Themes.&lt;/li>
+&lt;/ul>
+&lt;h2 id="项目地址">项目地址&lt;a class="anchor" href="#%e9%a1%b9%e7%9b%ae%e5%9c%b0%e5%9d%80">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="https://github.com/raycast/ray-so">https://github.com/raycast/ray-so&lt;/a>&lt;/p></description></item><item><title>Preline UI</title><link>https://yindongliang.com/links/202508/Preline-UI/</link><pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/Preline-UI/</guid><description>&lt;p>Preline UI is an open-source Tailwind CSS components library for any needs. Comes with UI examples &amp;amp; blocks, templates, plugins, Figma design system and more.&lt;/p></description></item><item><title>Radix UI</title><link>https://yindongliang.com/links/202508/Radix/</link><pubDate>Fri, 22 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/Radix/</guid><description>&lt;p>&lt;a href="https://www.radix-ui.com/">https://www.radix-ui.com/&lt;/a>&lt;/p>
+&lt;h2 id="radix-ui-和-shadcn-ui-关系">Radix UI 和 Shadcn UI 关系&lt;a class="anchor" href="#radix-ui-%e5%92%8c-shadcn-ui-%e5%85%b3%e7%b3%bb">#&lt;/a>&lt;/h2>
+&lt;p>Radix UI 和 Shadcn UI 是现代前端开发中紧密关联但定位不同的两个工具，它们共同构成了高效、可定制化的 UI 开发范式。以下是它们的关系解析：&lt;/p>
+&lt;hr>
+&lt;h3 id="-1-radix-ui底层逻辑与可访问性核心">🧩 ​&lt;strong>​1. Radix UI：底层逻辑与可访问性核心​&lt;/strong>​&lt;a class="anchor" href="#-1-radix-ui%e5%ba%95%e5%b1%82%e9%80%bb%e8%be%91%e4%b8%8e%e5%8f%af%e8%ae%bf%e9%97%ae%e6%80%a7%e6%a0%b8%e5%bf%83">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>​&lt;strong>​定位​&lt;/strong>​：Radix UI 是一个​&lt;strong>​无样式（Headless）的组件库​&lt;/strong>​，专注于提供​&lt;strong>​交互逻辑、无障碍访问（WAI-ARIA 兼容）和组件基础结构​&lt;/strong>​，但不包含任何预设样式。&lt;/p></description></item><item><title>Record</title><link>https://yindongliang.com/docs/Frontend/TypeScript/Record/</link><pubDate>Wed, 20 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/Record/</guid><description>&lt;p>&lt;code>Record&lt;/code> 是 &lt;strong>TypeScript 提供的一个工具类型（Utility Type）&lt;/strong>，它用来快速构造一个对象类型，其中的 &lt;strong>键和值的类型&lt;/strong>都可以指定。&lt;/p>
+&lt;h3 id="定义">定义&lt;a class="anchor" href="#%e5%ae%9a%e4%b9%89">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ts" data-lang="ts">&lt;span style="display:flex;">&lt;span>Record&amp;lt;&lt;span style="color:#ff6ac1">Keys&lt;/span>, &lt;span style="color:#57c7ff">Type&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>Keys&lt;/strong>: 一组属性键，可以是联合类型（string、number、symbol，或者它们的联合）。&lt;/p></description></item><item><title>type</title><link>https://yindongliang.com/docs/Frontend/TypeScript/%E5%85%B3%E9%94%AE%E5%AD%97/type/</link><pubDate>Wed, 20 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/%E5%85%B3%E9%94%AE%E5%AD%97/type/</guid><description>&lt;h2 id="type-是什么">&lt;code>type&lt;/code> 是什么？&lt;a class="anchor" href="#type-%e6%98%af%e4%bb%80%e4%b9%88">#&lt;/a>&lt;/h2>
+&lt;p>在 TypeScript 里，&lt;code>type&lt;/code> 用来 &lt;strong>定义类型别名（Type Alias）&lt;/strong>。&lt;br>
+它的作用是给某个类型起一个名字，方便复用和表达复杂的类型结构。&lt;/p>
+&lt;p>语法：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ts" data-lang="ts">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">type&lt;/span> &lt;span style="color:#ff5c57">别名&lt;/span> &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff5c57">某种类型&lt;/span>;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="基本用法">基本用法&lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e7%94%a8%e6%b3%95">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-简单别名">1. 简单别名&lt;a class="anchor" href="#1-%e7%ae%80%e5%8d%95%e5%88%ab%e5%90%8d">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ts" data-lang="ts">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">type&lt;/span> UserID &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#9aedfe">number&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">type&lt;/span> Username &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#9aedfe">string&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">let&lt;/span> id: &lt;span style="color:#9aedfe">UserID&lt;/span> &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff9f43">123&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">let&lt;/span> name: &lt;span style="color:#9aedfe">Username&lt;/span> &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#5af78e">&amp;#34;Alice&amp;#34;&lt;/span>;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这里 &lt;code>UserID&lt;/code> 和 &lt;code>Username&lt;/code> 本质上就是 &lt;code>number&lt;/code> 和 &lt;code>string&lt;/code>，只是换了个名字，更有语义化。&lt;/p></description></item><item><title>Unibee</title><link>https://yindongliang.com/links/202508/Unibee/</link><pubDate>Wed, 20 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/Unibee/</guid><description>&lt;p>Replace expensive solutions with open-source subscription billing software to optimize the finances for international business structure.&lt;/p>
+&lt;p>文档 &lt;a href="https://docs.unibee.dev/documentation/overview/introduction">https://docs.unibee.dev/documentation/overview/introduction&lt;/a>&lt;/p></description></item><item><title>Drizzle</title><link>https://yindongliang.com/links/202508/Drizzle/</link><pubDate>Tue, 19 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/Drizzle/</guid><description>&lt;p>Drizzle ORM is a headless TypeScript ORM with a head. 🐲&lt;/p></description></item><item><title>Remix</title><link>https://yindongliang.com/links/202508/Remix/</link><pubDate>Tue, 19 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/Remix/</guid><description>&lt;p>Remix是一个基于React的全栈Web开发框架，它通过将客户端和服务器紧密集成，旨在提供优秀的用户体验和快速的Web应用开发能力。下面为你详细介绍这个框架。&lt;/p></description></item><item><title>SWR</title><link>https://yindongliang.com/links/202508/SWR/</link><pubDate>Tue, 19 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202508/SWR/</guid><description>&lt;p>“SWR” 这个名字来自于 &lt;code>stale-while-revalidate&lt;/code>：一种由 &lt;a href="https://tools.ietf.org/html/rfc5861">HTTP RFC 5861(opens in a new tab)&lt;/a> 推广的 HTTP 缓存失效策略。这种策略首先从缓存中返回数据（过期的），同时发送 fetch 请求（重新验证），最后得到最新数据。&lt;/p></description></item><item><title>Hextra - 这个 Hugo 主题不错</title><link>https://yindongliang.com/links/202505/Hugo-Hextra-Theme/</link><pubDate>Mon, 12 May 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202505/Hugo-Hextra-Theme/</guid><description>&lt;p>Hextra 集成了 Tailwind CSS，“极速且全能的 Hugo 主题框架，为构建现代化的静态网站而生”，我拿来发布了 &lt;a href="https://manaio.com">manaio.com&lt;/a>。&lt;/p></description></item><item><title>零宽度空格与 CSS 换行行为</title><link>https://yindongliang.com/posts/zero-width-space-and-css-word-wrap/</link><pubDate>Fri, 22 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/zero-width-space-and-css-word-wrap/</guid><description>&lt;p>在解决 &lt;a href="https://yindongliang.com/tags">Tags&lt;/a> 页面行尾词语被迫换行的问题时，发现 &lt;code>&amp;amp;nbsp;&lt;/code> 并不能强制连接字符，于是调查发现，还有零宽度空格这一概念。在 HTML 中，如果你需要一个既不会占用额外空间，又能用作连接的字符，可以使用零宽度符号，它们也是一种 &lt;a href="https://developer.mozilla.org/zh-CN/docs/Glossary/Entity">HTML 实体&lt;/a>（HTML Entities）。&lt;/p></description></item><item><title> 好用的前端工具</title><link>https://yindongliang.com/docs/Awesome/awesome-frontend/</link><pubDate>Mon, 04 Nov 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Awesome/awesome-frontend/</guid><description>&lt;h2 id="生产力工具">生产力工具&lt;a class="anchor" href="#%e7%94%9f%e4%ba%a7%e5%8a%9b%e5%b7%a5%e5%85%b7">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>描述&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Storybook&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://storybook.js.org/">https://storybook.js.org/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="静态生成器ssg相关">静态生成器（SSG）相关&lt;a class="anchor" href="#%e9%9d%99%e6%80%81%e7%94%9f%e6%88%90%e5%99%a8ssg%e7%9b%b8%e5%85%b3">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>名称&lt;/th>
+ &lt;th>描述&lt;/th>
+ &lt;th>地址&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Docusaurus&lt;/td>
+ &lt;td>React 推荐&lt;/td>
+ &lt;td>&lt;a href="https://docusaurus.io/">https://docusaurus.io/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>docsify&lt;/td>
+ &lt;td>不推荐&lt;/td>
+ &lt;td>&lt;a href="https://github.com/docsifyjs/docsify">https://github.com/docsifyjs/docsify&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>VitePress&lt;/td>
+ &lt;td>Vue 推荐&lt;/td>
+ &lt;td>&lt;a href="https://vitepress.dev/">https://vitepress.dev/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>VuePress&lt;/td>
+ &lt;td>不推荐，可被 VitePress 替代&lt;/td>
+ &lt;td>&lt;a href="https://vuepress.vuejs.org/">https://vuepress.vuejs.org/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Nextra&lt;/td>
+ &lt;td>基于 nextjs，推荐&lt;/td>
+ &lt;td>&lt;a href="https://nextra.site">https://nextra.site&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>TypeDoc&lt;/td>
+ &lt;td>&lt;/td>
+ &lt;td>&lt;a href="https://typedoc.org/">https://typedoc.org/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Astro&lt;/td>
+ &lt;td>前端极客推荐&lt;/td>
+ &lt;td>&lt;a href="https://astro.build/">https://astro.build/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Material for MkDocs 主题&lt;/td>
+ &lt;td>推荐&lt;/td>
+ &lt;td>&lt;a href="https://squidfunk.github.io/mkdocs-material/">https://squidfunk.github.io/mkdocs-material/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>MKDoc&lt;/td>
+ &lt;td>Python 或后端推荐&lt;/td>
+ &lt;td>&lt;a href="https://www.mkdocs.org/">https://www.mkdocs.org/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Hugo&lt;/td>
+ &lt;td>推荐&lt;/td>
+ &lt;td>&lt;a href="https://gohugo.io/">https://gohugo.io/&lt;/a>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>如果有优先级的话，&lt;/p></description></item><item><title>理解和使用 CSS 自定义属性（CSS 变量）</title><link>https://yindongliang.com/posts/%E7%90%86%E8%A7%A3%E5%92%8C%E4%BD%BF%E7%94%A8-CSS-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B1%9E%E6%80%A7CSS-%E5%8F%98%E9%87%8F/</link><pubDate>Sun, 30 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E7%90%86%E8%A7%A3%E5%92%8C%E4%BD%BF%E7%94%A8-CSS-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B1%9E%E6%80%A7CSS-%E5%8F%98%E9%87%8F/</guid><description>&lt;p>在现代 Web 开发中，&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/Using_CSS_custom_properties">CSS 自定义属性&lt;/a>（也称为 CSS 变量）提供了一种强大的方式来创建易于维护和灵活的样式表。本文将探讨如何定义和使用这些变量，以及如何通过它们来实现更高效的设计。&lt;/p></description></item><item><title>HTML</title><link>https://yindongliang.com/docs/Frontend/HTML/</link><pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/HTML/</guid><description>&lt;h2 id="viewport">Viewport&lt;a class="anchor" href="#viewport">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Viewport_meta_tag">https://developer.mozilla.org/zh-CN/docs/Web/HTML/Viewport_meta_tag&lt;/a>&lt;/p>
+&lt;h2 id="aside">aside&lt;a class="anchor" href="#aside">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/aside">https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/aside&lt;/a>&lt;/p></description></item><item><title>字体的绘制原理？</title><link>https://yindongliang.com/weekly/2024/2024-W23/</link><pubDate>Mon, 03 Jun 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W23/</guid><description>&lt;h2 id="发现">发现&lt;a class="anchor" href="#%e5%8f%91%e7%8e%b0">#&lt;/a>&lt;/h2>
+&lt;p>Linear.app 是一款现代化的软件开发工具，提供直观的用户界面和高效的工作流程，帮助团队进行问题跟踪、任务管理、冲刺规划和产品路线图等，使软件开发流程更加优化和简化。&lt;br>
+&lt;a href="https://linear.app/">https://linear.app/&lt;/a>&lt;/p></description></item><item><title>position</title><link>https://yindongliang.com/docs/Frontend/CSS/CSS/</link><pubDate>Thu, 30 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/CSS/CSS/</guid><description>&lt;p>CSS 的 &lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/position">&lt;code>position&lt;/code>&lt;/a> 属性及其几个选项，可以分为两大类：相对定位（&lt;code>relative&lt;/code> 和 &lt;code>sticky&lt;/code>）和绝对定位（&lt;code>absolute&lt;/code> 和 &lt;code>fixed&lt;/code>）。&lt;/p>
+&lt;h3 id="1-position-static">1. &lt;code>position: static&lt;/code>&lt;a class="anchor" href="#1-position-static">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>默认值&lt;/strong>：所有元素的默认值。元素遵循正常的文档流，不受 &lt;code>top&lt;/code>, &lt;code>right&lt;/code>, &lt;code>bottom&lt;/code>, &lt;code>left&lt;/code> 等位置属性的影响。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：不需要显式定位时使用。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;static&amp;#34;&lt;/span>&amp;gt;Static element (default)&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">static&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">static&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightgrey&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-position-relative">2. &lt;code>position: relative&lt;/code>&lt;a class="anchor" href="#2-position-relative">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>相对定位&lt;/strong>：相对于其正常位置进行定位。&lt;code>top&lt;/code>, &lt;code>right&lt;/code>, &lt;code>bottom&lt;/code>, &lt;code>left&lt;/code> 会使元素相对于其在正常文档流中的位置进行偏移，而不会影响其他元素。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：当需要微调元素位置或作为绝对定位元素的容器时。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;relative-container&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;relative&amp;#34;&lt;/span>&amp;gt;Relative element&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">relative-container&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightgreen&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">height&lt;/span>: &lt;span style="color:#ff9f43">200&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">relative&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">relative&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">top&lt;/span>: &lt;span style="color:#ff9f43">20&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">left&lt;/span>: &lt;span style="color:#ff9f43">30&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightblue&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-position-absolute">3. &lt;code>position: absolute&lt;/code>&lt;a class="anchor" href="#3-position-absolute">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>绝对定位&lt;/strong>：相对于最近的定位祖先（不是 &lt;code>static&lt;/code> 的祖先元素）或相对于整个文档进行定位。元素脱离文档流，不会影响其他元素的位置。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：将元素精确放置在容器内的特定位置。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;absolute-container&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;absolute&amp;#34;&lt;/span>&amp;gt;Absolute element&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">absolute-container&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">relative&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightyellow&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">height&lt;/span>: &lt;span style="color:#ff9f43">200&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">absolute&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">absolute&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">top&lt;/span>: &lt;span style="color:#ff9f43">20&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">right&lt;/span>: &lt;span style="color:#ff9f43">30&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightcoral&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="4-position-fixed">4. &lt;code>position: fixed&lt;/code>&lt;a class="anchor" href="#4-position-fixed">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>固定定位&lt;/strong>：相对于浏览器窗口进行定位。元素始终保持在指定位置，不受页面滚动的影响。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：创建始终可见的导航栏或按钮等。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;fixed&amp;#34;&lt;/span>&amp;gt;Fixed element&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">fixed&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">fixed&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">bottom&lt;/span>: &lt;span style="color:#ff9f43">20&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">right&lt;/span>: &lt;span style="color:#ff9f43">30&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightsalmon&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="5-position-sticky">5. &lt;code>position: sticky&lt;/code>&lt;a class="anchor" href="#5-position-sticky">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>粘性定位&lt;/strong>：结合了相对定位和固定定位的特性。元素根据用户的滚动位置进行定位，在特定条件下固定在视口的某个位置。&lt;/li>
+&lt;li>&lt;strong>使用场景&lt;/strong>：创建在某个滚动阈值内保持固定然后随其滚动的内容。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;sticky-container&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">div&lt;/span> &lt;span style="color:#57c7ff">class&lt;/span>&lt;span style="color:#ff6ac1">=&lt;/span>&lt;span style="color:#5af78e">&amp;#34;sticky&amp;#34;&lt;/span>&amp;gt;Sticky element&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">p&lt;/span>&amp;gt;Scroll down to see the sticky element in action.&amp;lt;/&lt;span style="color:#ff6ac1">p&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff6ac1">p&lt;/span>&amp;gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vel urna elit. Donec consequat massa vel leo volutpat, eget tincidunt velit ullamcorper...&amp;lt;/&lt;span style="color:#ff6ac1">p&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">sticky-container&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">height&lt;/span>: &lt;span style="color:#ff9f43">200&lt;/span>&lt;span style="color:#9aedfe">px&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">overflow-y&lt;/span>: &lt;span style="color:#ff6ac1">scroll&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightgoldenrodyellow&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#f3f99d">sticky&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">-webkit-&lt;/span>&lt;span style="color:#ff6ac1">sticky&lt;/span>; &lt;span style="color:#78787e">/* For Safari */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">position&lt;/span>: &lt;span style="color:#ff6ac1">sticky&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">top&lt;/span>: &lt;span style="color:#ff9f43">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">lightpink&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff6ac1">style&lt;/span>&amp;gt;&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="总结">总结&lt;a class="anchor" href="#%e6%80%bb%e7%bb%93">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;code>static&lt;/code>：默认值，不进行任何特殊定位。&lt;/li>
+&lt;li>&lt;code>relative&lt;/code>：相对自身的正常位置进行定位，仍保留其在文档流中的空间。&lt;/li>
+&lt;li>&lt;code>absolute&lt;/code>：相对于最近的定位祖先进行定位，脱离文档流。&lt;/li>
+&lt;li>&lt;code>fixed&lt;/code>：相对于浏览器窗口进行定位，脱离文档流，不随页面滚动。&lt;/li>
+&lt;li>&lt;code>sticky&lt;/code>：在特定条件下相对定位和固定定位之间切换。&lt;/li>
+&lt;/ul></description></item><item><title>了解下自定义数据属性 data-*</title><link>https://yindongliang.com/posts/HTMLElement-dataset/</link><pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/HTMLElement-dataset/</guid><description>&lt;p>测试主题切换功能时，遇到了 &lt;code>data-theme&lt;/code> 这个属性，问了下 gpt， 发现 &lt;code>data-theme&lt;/code> 不是 CSS 标准中的预定义属性，而是一个自定义的属性。更准确地说，它是 HTML5 中的 &amp;ldquo;data-&amp;rdquo; &lt;a href="https://developer.mozilla.org/zh-CN/docs/Learn/HTML/Howto/Use_data_attributes">数据属性&lt;/a>的一种。&lt;/p>
+&lt;h2 id="html5-中的-data--属性">HTML5 中的 &amp;ldquo;data-&amp;rdquo; 属性&lt;a class="anchor" href="#html5-%e4%b8%ad%e7%9a%84-data--%e5%b1%9e%e6%80%a7">#&lt;/a>&lt;/h2>
+&lt;p>HTML5 引入了 &lt;code>data-&lt;/code> 属性，允许你为元素添加自定义的非标准属性。这些自定义属性必须以 &lt;code>data-&lt;/code> 开头，后面跟一个名称。例如，&lt;code>data-theme&lt;/code>、&lt;code>data-user-id&lt;/code>、&lt;code>data-state&lt;/code> 等等。这些属性的主要目的是为元素存储与页面或应用程序相关的私有数据，而这些数据不会影响元素的展示或行为。&lt;/p></description></item><item><title>使 HTML 元素居中有哪些方案？</title><link>https://yindongliang.com/posts/how-to-make-html-element-center/</link><pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/how-to-make-html-element-center/</guid><description>&lt;p>有多种方式可以实现HTML标签的居中，具体的方式会根据需要居中的元素类型（块级元素还是行内元素）以及具体应用的上下文来决定。下面将介绍几种常见的方法，涉及到的知识包括 CSS 盒模型、Flexbox 布局和 Grid 布局等。&lt;/p></description></item><item><title>CSS Modules 是什么</title><link>https://yindongliang.com/posts/CSS-Modules-%E6%98%AF%E4%BB%80%E4%B9%88/</link><pubDate>Mon, 20 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/CSS-Modules-%E6%98%AF%E4%BB%80%E4%B9%88/</guid><description>&lt;p>CSS Modules 是一种 CSS 文件的模块化和组件化的解决方案。它允许你将 CSS 样式局部化到组件中，从而避免全局命名冲突问题。每个 CSS 类名和动画名称默认都被视为局部作用域的，只有在特定模块中才会生效。这种方式非常适合在现代前端开发中使用，特别是与组件化框架（如 React、Vue 等）结合使用时。&lt;/p></description></item><item><title>VSCode 使用技巧</title><link>https://yindongliang.com/docs/Linux/VSCode/</link><pubDate>Sat, 18 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Linux/VSCode/</guid><description>&lt;h2 id="排除文件夹">排除文件夹&lt;a class="anchor" href="#%e6%8e%92%e9%99%a4%e6%96%87%e4%bb%b6%e5%a4%b9">#&lt;/a>&lt;/h2>
+&lt;p>使用 &lt;code>search.exclude&lt;/code> 在&lt;strong>搜索结果&lt;/strong>中排除特定的文件或文件夹。&lt;/p>
+&lt;p>使用 &lt;code>files.exclude&lt;/code> 在&lt;strong>文件资源管理器&lt;/strong>中隐藏特定的文件或文件夹。&lt;/p>
+&lt;p>使用 &lt;code>files.watcherExclude&lt;/code> 在&lt;strong>文件监视器&lt;/strong>排除某些文件或文件夹，以提高性能。&lt;/p>
+&lt;h2 id="目录树的颜色">目录树的颜色&lt;a class="anchor" href="#%e7%9b%ae%e5%bd%95%e6%a0%91%e7%9a%84%e9%a2%9c%e8%89%b2">#&lt;/a>&lt;/h2>
+&lt;p>&lt;img src="https://cdn.yindongliang.com/2024/du1nKE.png" alt="" />&lt;/p></description></item><item><title>TypeScript</title><link>https://yindongliang.com/docs/Frontend/TypeScript/%E8%AF%AD%E6%B3%95/</link><pubDate>Thu, 16 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/%E8%AF%AD%E6%B3%95/</guid><description>&lt;p>&lt;a href="https://www.typescriptlang.org/">https://www.typescriptlang.org/&lt;/a>&lt;/p>
+&lt;h2 id="变量">变量&lt;a class="anchor" href="#%e5%8f%98%e9%87%8f">#&lt;/a>&lt;/h2>
+&lt;h3 id="声明符号-varletconst">声明符号 var、let、const&lt;a class="anchor" href="#%e5%a3%b0%e6%98%8e%e7%ac%a6%e5%8f%b7-varletconst">#&lt;/a>&lt;/h3>
+&lt;p>ts 里面基本弃用了 var，使用场景基本只有 let 和 const，用法和 js 一样。&lt;/p>
+&lt;h3 id="问号的用法">❓问号的用法&lt;a class="anchor" href="#%e9%97%ae%e5%8f%b7%e7%9a%84%e7%94%a8%e6%b3%95">#&lt;/a>&lt;/h3>
+&lt;h2 id="类型系统">类型系统&lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e7%b3%bb%e7%bb%9f">#&lt;/a>&lt;/h2>
+&lt;h3 id="类型别名-type">类型别名 &lt;code>type&lt;/code>&lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e5%88%ab%e5%90%8d-type">#&lt;/a>&lt;/h3>
+&lt;h3 id="类型交叉-">类型交叉 &lt;code>&amp;amp;&lt;/code>&lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e4%ba%a4%e5%8f%89-">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ts" data-lang="ts">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">type&lt;/span> User &lt;span style="color:#ff6ac1">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> name: &lt;span style="color:#9aedfe">string&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> age: &lt;span style="color:#9aedfe">number&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>};
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">type&lt;/span> Employee &lt;span style="color:#ff6ac1">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> companyId: &lt;span style="color:#9aedfe">string&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>};
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// 定义一个交叉类型，包含 User 和 Employee 的所有属性
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">type&lt;/span> UserEmployee &lt;span style="color:#ff6ac1">=&lt;/span> User &lt;span style="color:#ff6ac1">&amp;amp;&lt;/span> Employee;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// 使用交叉类型
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">const&lt;/span> ue: &lt;span style="color:#9aedfe">UserEmployee&lt;/span> &lt;span style="color:#ff6ac1">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> name&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#34;Alice&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> age: &lt;span style="color:#9aedfe">28&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> companyId&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#34;1234XYZ&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>};&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="类型声明-declare">类型声明 &lt;code>declare&lt;/code>&lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e5%a3%b0%e6%98%8e-declare">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html">https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html&lt;/a>&lt;/p></description></item><item><title>使用 EditorConfig 和 Prettier 来规范代码风格</title><link>https://yindongliang.com/posts/%E4%BD%BF%E7%94%A8-EditorConfig-%E5%92%8C-Prettier-%E6%9D%A5%E8%A7%84%E8%8C%83%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/</link><pubDate>Thu, 16 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/%E4%BD%BF%E7%94%A8-EditorConfig-%E5%92%8C-Prettier-%E6%9D%A5%E8%A7%84%E8%8C%83%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/</guid><description>&lt;p>写前端代码实践下来一段时间，如果是我自己的前端项目，缩进类型一定是空格，长度必须是 2，因为 4 还是太长了，对 &lt;code>HTML&lt;/code> 类的模板以及 js 代码不友好。但是如何约束队友呢，不论是有意还是无意的差异，为了让大家保持风格统一，我发现下面工具可以解决问题。&lt;/p></description></item><item><title>包管理 - npm</title><link>https://yindongliang.com/docs/Frontend/%E5%8C%85%E7%AE%A1%E7%90%86-npm/</link><pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E5%8C%85%E7%AE%A1%E7%90%86-npm/</guid><description>&lt;h2 id="版本管理">版本管理&lt;a class="anchor" href="#%e7%89%88%e6%9c%ac%e7%ae%a1%e7%90%86">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>&lt;code>~&lt;/code>: 当安装依赖时获取到有新版本时，安装到 &lt;code>x.y.z&lt;/code> 中 &lt;code>z&lt;/code> 的最新的版本。即保持主版本号、次版本号不变的情况下，保持修订号的最新版本。&lt;/li>
+&lt;li>&lt;code>^&lt;/code>: 当安装依赖时获取到有新版本时，安装到 &lt;code>x.y.z&lt;/code> 中 &lt;code>y&lt;/code> 和 &lt;code>z&lt;/code> 都为最新版本。 即保持主版本号不变的情况下，保持次版本号、修订版本号为最新版本。&lt;/li>
+&lt;/ul>
+&lt;p>参考文档：&lt;/p></description></item><item><title>理解 useMemo、useCallback 和 memo</title><link>https://yindongliang.com/posts/useMemo-useCallback-and-memo/</link><pubDate>Wed, 15 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/useMemo-useCallback-and-memo/</guid><description>&lt;p>虽然 React 的官方文档已经写的很清楚了，但我还是想总结下。形而上地讲前两个是 Hook，而 &lt;code>memo&lt;/code> 是 API。形而下地说，&lt;code>useMemo&lt;/code>、&lt;code>useCallback&lt;/code> 和 &lt;code>React.memo&lt;/code> 是 React 中用于优化性能的工具，它们帮助你避免不必要的重新渲染。&lt;/p></description></item><item><title>CSS 中的 inherit 选项</title><link>https://yindongliang.com/posts/understand-css-inherit/</link><pubDate>Tue, 14 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/understand-css-inherit/</guid><description>&lt;p>在 CSS 中，&lt;code>inherit&lt;/code> 关键字用于明确指定一个属性应从其父元素继承其值。几乎所有的 CSS 属性都可以使用 &lt;code>inherit&lt;/code> 值，但并非所有属性默认继承自其父元素。使用 &lt;code>inherit&lt;/code> 可以确保某个特定元素的属性值与其父元素相同，即使这个属性默认是不继承的。&lt;/p></description></item><item><title>Next.js 好用！</title><link>https://yindongliang.com/weekly/2024/2024-W20/</link><pubDate>Mon, 13 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W20/</guid><description>&lt;p>本周 GPT 4o 发布，最大的感觉就是更快了，这个时候再看文字一个个蹦出来已经有些眼花缭乱了。。。&lt;/p>
+&lt;h2 id="关于-nextjs">关于 Next.js&lt;a class="anchor" href="#%e5%85%b3%e4%ba%8e-nextjs">#&lt;/a>&lt;/h2>
+&lt;p>是否可以说，Next.js 已经是目前全栈开发领域的最佳解决方案（之一），尤其是 AI 板块，随便列几个项目。&lt;/p></description></item><item><title>使用 Gin 代理静态文件</title><link>https://yindongliang.com/weekly/2024/2024-W16/</link><pubDate>Mon, 15 Apr 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2024/2024-W16/</guid><description>&lt;p>使用 Gin 自带的路由功能就可以直接代理静态文件，之前写过 Gin + Vue 的前后端组合，将代码放在同一个项目中，根目录直接转发到前端文件，时过境迁竟然忘了，可直接参考&lt;a href="https://gin-gonic.com/docs/examples/serving-static-files/">文档&lt;/a>。&lt;/p></description></item><item><title>做了个周刊</title><link>https://yindongliang.com/weekly/2022/2022-W41/</link><pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/weekly/2022/2022-W41/</guid><description>&lt;p>花了周六一天时间，在 Hugo 模版基础上新加了一个 &lt;a href="https://yindongliang.com/weekly">Weekly&lt;/a> 功能，受 &lt;a href="https://weekly.tw93.fun/">潮流周刊&lt;/a> 启发，并学到了一些新东西：&lt;/p>
+&lt;ul>
+&lt;li>现在前端好像已经不流行写 CSS 了，有一个解决方案：&lt;a href="https://tailwindcss.com/">Tailwind CSS - Rapidly build modern websites without ever leaving your HTML&lt;/a>，非常香，基本可以直接在 HTML 中使用 class 属性来替代在 CSS 文件里各种起名+声明，问题就是会覆盖一些本地原有的配置，所以它适合项目创建之初就开始使用。&lt;/li>
+&lt;li>更激进的，前端好像也不流行自己写布局、框架了，又一个解决方案：&lt;a href="https://shuffle.dev/">Shuffle — An online editor for busy developers&lt;/a>，貌似是收费的，但是非常适合 startup。&lt;/li>
+&lt;/ul>
+&lt;p>与其叫周刊，其实定位在周报。看大佬们的周刊一般是第 99 期、256 期之类的，但是我不想每次去计算周刊到第几期了，对我来说意义不大，存在的问题可能就是没有唯一索引了，其实自己起的名也基本可以避开重复，总之够用。&lt;/p></description></item><item><title>CSS 布局概览</title><link>https://yindongliang.com/posts/css-display/</link><pubDate>Sun, 10 Jul 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/css-display/</guid><description>&lt;p>越来越觉得，与其说 CSS 是编程语言，不如说它是配置文件。CSS （Cascading Style Sheets，层叠样式表）的诞生是为了图文信息展示服务的。CSS 布局机制通常就是指对 &lt;code>display&lt;/code> 属性的设置，&lt;a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_display">Display - MDN&lt;/a> 文档指明 &lt;code>display&lt;/code> 属性可以用来指示&lt;strong>六种维度&lt;/strong>的值，下面就看看 &lt;code>display&lt;/code> 设置了不同的值到底意味着什么。&lt;/p></description></item><item><title>CSS 选择器语法举例</title><link>https://yindongliang.com/posts/css-selector-syntax/</link><pubDate>Sun, 03 Jul 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/css-selector-syntax/</guid><description>&lt;h2 id="简单选择器">简单选择器&lt;a class="anchor" href="#%e7%ae%80%e5%8d%95%e9%80%89%e6%8b%a9%e5%99%a8">#&lt;/a>&lt;/h2>
+&lt;h3 id="标签选择器">标签选择器&lt;a class="anchor" href="#%e6%a0%87%e7%ad%be%e9%80%89%e6%8b%a9%e5%99%a8">#&lt;/a>&lt;/h3>
+&lt;p>标签选择器也叫元素选择器&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/*标签选择器*/&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">tag&lt;/span> {&lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">gold&lt;/span>;}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="id-选择器">ID 选择器&lt;a class="anchor" href="#id-%e9%80%89%e6%8b%a9%e5%99%a8">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/*ID 选择器*/&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>#someID {&lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">gold&lt;/span>;}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="类选择器">类选择器&lt;a class="anchor" href="#%e7%b1%bb%e9%80%89%e6%8b%a9%e5%99%a8">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-css" data-lang="css">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">/*类选择器*/&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>.&lt;span style="color:#f3f99d">someClass&lt;/span> {&lt;span style="color:#ff6ac1">background-color&lt;/span>: &lt;span style="color:#ff6ac1">gold&lt;/span>;}&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="组合使用">组合使用&lt;a class="anchor" href="#%e7%bb%84%e5%90%88%e4%bd%bf%e7%94%a8">#&lt;/a>&lt;/h3>
+&lt;p>还有一种选择器也比较常见，形如 &lt;code>tag.class&lt;/code>，但是查了一圈文档没有找到一个标准的名字，有的就归为类选择器，暂时先这么叫。它通常用来选择一个 HTML 中的带有 &lt;code>class='xxx'&lt;/code> 的标签元素。&lt;/p></description></item><item><title>AJAX 是什么？</title><link>https://yindongliang.com/posts/what-is-AJAX/</link><pubDate>Mon, 02 May 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/what-is-AJAX/</guid><description>&lt;p>这个问题既熟悉又有点陌生，先看概念。AJAX 是 &lt;em>Asynchronous Javavascript XML&lt;/em> 的缩写，即异步 JavaScript 和 XML。使用 AJAX 技术可以在无需重新加载整个网页的情况下，能够更新部分网页，从而给带来更好的用户体验。另外 AJAX 不仅使用 XML，实际上由于 JSON 结构的易读和轻量反而更受欢迎。&lt;/p></description></item><item><title>浏览器的事件机制</title><link>https://yindongliang.com/posts/browser-event/</link><pubDate>Mon, 18 Apr 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/browser-event/</guid><description>&lt;p>事件是在编程时系统内发生的动作或者发生的事情，系统响应事件后，如果需要，我们可以用事件处理器（event handler）对事件做出回应。浏览器中常见的可以触发事件的时机比如有：&lt;/p></description></item><item><title>搞懂原型链</title><link>https://yindongliang.com/posts/prototype-chain/</link><pubDate>Mon, 11 Apr 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/prototype-chain/</guid><description>&lt;p>与一般基于类的面向对象语言（C++、Java）不同，JavaScript 是基于原型的语言。&lt;/p>
+&lt;h2 id="原型-prototype">原型 &lt;code>[[Prototype]]&lt;/code>&lt;a class="anchor" href="#%e5%8e%9f%e5%9e%8b-prototype">#&lt;/a>&lt;/h2>
+&lt;p>打开浏览器的控制台，输入 &lt;code>let b = {&amp;quot;hello&amp;quot;: &amp;quot;world&amp;quot;}&lt;/code> ，然后查看 &lt;code>b&lt;/code> ，你会发现一个 &lt;code>[[Prototype]]&lt;/code> 属性。这是每个对象都有的&lt;strong>隐藏属性&lt;/strong>，它要么为 &lt;code>null&lt;/code>，要么是对另一个对象的引用，那个对象就被称为 &lt;code>b&lt;/code> 的 &lt;em>原型&lt;/em>（proto type）。&lt;/p></description></item><item><title>WebSocket 是什么？</title><link>https://yindongliang.com/posts/what-is-websocket/</link><pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/what-is-websocket/</guid><description>&lt;p>WebSocket 是 HTML5 开始提供的一种网络传输协议，可以在单个 TCP 连接上进行全双工通信，位于 OSI 参考模型的应用层。WebSocket 使得客户端和服务器之间的数据交换变得更加简单，允许服务端主动向客户端推送数据。在 WebSocket API 中，浏览器和服务器只需要完成一次握手，两者之间就直接可以创建&lt;strong>持久性&lt;/strong>的连接，并进行&lt;strong>双向&lt;/strong>数据传输。&lt;/p></description></item><item><title>内置对象</title><link>https://yindongliang.com/docs/Frontend/Global_Objects/</link><pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Global_Objects/</guid><description>&lt;p>JavaScript 没有标准库，但是有一些&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects">内置对象&lt;/a>，可以不需要导入就使用一些类似其他语言的标准库的方法。&lt;/p>
+&lt;h2 id="object">Object&lt;a class="anchor" href="#object">#&lt;/a>&lt;/h2>
+&lt;h3 id="assign">assign&lt;a class="anchor" href="#assign">#&lt;/a>&lt;/h3>
+&lt;h3 id="keys">keys&lt;a class="anchor" href="#keys">#&lt;/a>&lt;/h3>
+&lt;h3 id="hasownproperty">hasOwnProperty&lt;a class="anchor" href="#hasownproperty">#&lt;/a>&lt;/h3>
+&lt;p>判断 key 是否在对象中。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> main() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a &lt;span style="color:#ff6ac1">=&lt;/span> {hello&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#34;world&amp;#34;&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> (&lt;span style="color:#5af78e">&amp;#34;hello&amp;#34;&lt;/span> &lt;span style="color:#ff6ac1">in&lt;/span> a) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> console.log(&lt;span style="color:#5af78e">&amp;#34;has 1&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> (a.hasOwnProperty(&lt;span style="color:#5af78e">&amp;#34;hello&amp;#34;&lt;/span>)) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> console.log(&lt;span style="color:#5af78e">&amp;#34;has 2&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// output:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// has 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// has 2
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="undefined">undefined&lt;a class="anchor" href="#undefined">#&lt;/a>&lt;/h2>
+&lt;p>undefined 表示的是一个变量为初始化时没有被赋值，得到的就是 &lt;code>undefined&lt;/code>。&lt;/p></description></item><item><title>JS 加号运算符的运用</title><link>https://yindongliang.com/posts/js-plus-operator/</link><pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/js-plus-operator/</guid><description>&lt;h2 id="一元运算符">一元运算符&lt;a class="anchor" href="#%e4%b8%80%e5%85%83%e8%bf%90%e7%ae%97%e7%ac%a6">#&lt;/a>&lt;/h2>
+&lt;p>&lt;strong>语法：&lt;/strong> + Expression&lt;/p>
+&lt;p>&lt;strong>说明：&lt;/strong> &lt;code>+&lt;/code> 号运算符作为一元运算符时，Expression将进行 &lt;a href="http://www.ecma-international.org/ecma-262/6.0/#sec-tonumber">ToNumber&lt;/a> 操作。&lt;/p>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>argument类型&lt;/th>
+ &lt;th>返回值&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Undefined&lt;/td>
+ &lt;td>return NaN&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Null&lt;/td>
+ &lt;td>return +0&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Boolean&lt;/td>
+ &lt;td>true return 1; false return 0;&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Number&lt;/td>
+ &lt;td>return value&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>String&lt;/td>
+ &lt;td>若字符串为纯数字时返回转换后的数字；非纯数字返回NaN&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Symbol&lt;/td>
+ &lt;td>抛出 TypeError 异常&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Object&lt;/td>
+ &lt;td>进行以下步骤：1.先进行ToPrimitive(argument, hint Number)得到rs； 2.然后返回 ToNumber(rs)的结果。&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>示例：&lt;/p></description></item><item><title>JS 非空判断</title><link>https://yindongliang.com/posts/js-if-not-empty/</link><pubDate>Sat, 11 Sep 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/js-if-not-empty/</guid><description>&lt;p>在 js 中，有一个富有哲学意味的问题：「什么是空」？先看下面代码：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> main(a) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> (&lt;span style="color:#ff6ac1">!&lt;/span>a) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> console.log(&lt;span style="color:#5af78e">&amp;#34;空&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#ff6ac1">else&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> console.log(&lt;span style="color:#5af78e">&amp;#34;非空&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main(&lt;span style="color:#ff9f43">0&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main(&lt;span style="color:#ff6ac1">null&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main(&lt;span style="color:#5af78e">&amp;#34;&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main(&lt;span style="color:#ff6ac1">undefined&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main(&lt;span style="color:#ff6ac1">NaN&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// 以上全是“空”
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>上面这些好像很好判断，那下面这些呢？&lt;/p></description></item><item><title>跨域相关问题</title><link>https://yindongliang.com/posts/http-cross-domain-problem/</link><pubDate>Sat, 21 Aug 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/http-cross-domain-problem/</guid><description>&lt;p>本文先从 &lt;strong>CSRF&lt;/strong> 攻击的介绍开始，说明了跨域存在的问题，然后引入浏览器&lt;strong>同源策略&lt;/strong>的概念，明白了要限制跨域的原因后，再给出了标准的跨域请求方案：&lt;strong>CORS&lt;/strong>，所以总体上就三部分：CSRF、同源策略、CORS，文章有点长但不用慌，按顺序看就可以了。&lt;/p></description></item><item><title>了解下 MobX 概念</title><link>https://yindongliang.com/posts/mobx-primer/</link><pubDate>Mon, 19 Jul 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/mobx-primer/</guid><description>&lt;h2 id="基本概念">基本概念&lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>observable 函数
+&lt;ul>
+&lt;li>定义状态值&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>action 函数
+&lt;ul>
+&lt;li>用于修改状态值&lt;/li>
+&lt;li>接受一个函数，返回一个签名相同的函数，提供触发时调用。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>derivations 派生，有两种：&lt;code>autorun&lt;/code> 和 &lt;code>computed&lt;/code>
+&lt;ul>
+&lt;li>reactions - autorun()
+&lt;ul>
+&lt;li>接受一个函数&lt;/li>
+&lt;li>状态值发生改变后要执行的响应操作。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>computed value - computed()
+&lt;ul>
+&lt;li>接受一个函数，返回计算值对象。&lt;/li>
+&lt;li>状态值发生改变时，计算值对象的值会自动更新。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="observable">observable&lt;a class="anchor" href="#observable">#&lt;/a>&lt;/h2>
+&lt;p>MobX 中通过 &lt;code>observable&lt;/code> 来定义可观察状态。&lt;/p></description></item><item><title>了解下 Redux 概念</title><link>https://yindongliang.com/posts/redux-primer/</link><pubDate>Thu, 24 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/redux-primer/</guid><description>&lt;p>Redux 用来进行复杂的状态管理，Redux 的思想继承自 Flux，并进行了更加简洁的抽象。&lt;/p>
+&lt;ul>
+&lt;li>store
+&lt;ul>
+&lt;li>&lt;code>store.dispatch(action)&lt;/code> 是 View 发出 Action 的唯一方法，接受一个 Action 对象作为参数，将它发送出去。&lt;/li>
+&lt;li>store 允许使用 &lt;code>store.subscribe()&lt;/code> 方法设置监听函数，一旦 State 发生变化，就自动执行这个函数。subscribe 也返回一个函数，调用这个函数就可以解除监听。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>action
+&lt;ul>
+&lt;li>改变 state 的唯一办法，就是使用 action，它会运送数据到 Store。&lt;/li>
+&lt;li>action creator：view 要发送多少种消息，就会有多少种 action，action 有固定的格式。如果都手写，会很麻烦。可以定义一个函数来生成 action，这个函数就叫 action creator。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>state
+&lt;ul>
+&lt;li>&lt;code>Store&lt;/code> 对象包含所有数据。如果想得到某个时点的数据，就要对 Store 生成快照。这种时点的数据集合，就叫做 State，可以通过 &lt;code>store.getState()&lt;/code> 拿到。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>reducer
+&lt;ul>
+&lt;li>store 收到 action 以后，必须给出一个新的 state，这样 View 才会发生变化。这种 state 的计算过程就叫做 reducer。&lt;/li>
+&lt;li>reducer 是一个纯函数&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>，它接受 action 和当前 state 作为参数，返回一个新的 state。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="reducer">reducer&lt;a class="anchor" href="#reducer">#&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">const&lt;/span> reducer &lt;span style="color:#ff6ac1">=&lt;/span> (state &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff9f43">0&lt;/span>, action) =&amp;gt; {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">switch&lt;/span> (action.type) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">case&lt;/span> &lt;span style="color:#5af78e">&amp;#39;INCREMENT&amp;#39;&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">return&lt;/span> state &lt;span style="color:#ff6ac1">+&lt;/span> &lt;span style="color:#ff9f43">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">case&lt;/span> &lt;span style="color:#5af78e">&amp;#39;DECREMENT&amp;#39;&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">return&lt;/span> state &lt;span style="color:#ff6ac1">-&lt;/span> &lt;span style="color:#ff9f43">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">default&lt;/span>&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#ff6ac1">return&lt;/span> state;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>};&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>reducer 是一个纯函数，你可以把所有子 Reducer 放在一个文件里面，然后统一引入。&lt;/p></description></item><item><title>浏览器中的 HTTP 缓存使用策略</title><link>https://yindongliang.com/posts/http-caching-in-browser/</link><pubDate>Sat, 12 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/http-caching-in-browser/</guid><description>&lt;p>浏览器使用缓存数据有非常多的好处，很多情况下静态资源会比 js 代码更大，同时修改的频率又非常低，通过对静态资源使用缓存，可以有效减少重复请求，从而节省网络带宽、降低服务器的请求压力。&lt;/p></description></item><item><title>基础概念</title><link>https://yindongliang.com/docs/Frontend/React/react/</link><pubDate>Tue, 01 Jun 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/React/react/</guid><description>&lt;h2 id="jsx">JSX&lt;a class="anchor" href="#jsx">#&lt;/a>&lt;/h2>
+&lt;h3 id="classname">className&lt;a class="anchor" href="#classname">#&lt;/a>&lt;/h3>
+&lt;h2 id="props">props&lt;a class="anchor" href="#props">#&lt;/a>&lt;/h2>
+&lt;p>组件无论是使用函数声明还是通过 class 声明，都决不能修改自身的 props。所有 React 组件都必须像纯函数一样保护它们的 props 不被更改。&lt;/p>
+&lt;p>建议从组件本身的角度来命名 props 而不是它被使用的上下文环境。&lt;/p></description></item><item><title>构建工具</title><link>https://yindongliang.com/docs/Frontend/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</link><pubDate>Fri, 28 May 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</guid><description>&lt;h2 id="参考">参考&lt;a class="anchor" href="#%e5%8f%82%e8%80%83">#&lt;/a>&lt;/h2>
+&lt;p>文档 &lt;a href="https://webpack.docschina.org">https://webpack.docschina.org&lt;/a>&lt;/p>
+&lt;p>demo &lt;a href="https://github.com/ruanyf/webpack-demos">https://github.com/ruanyf/webpack-demos&lt;/a>&lt;/p>
+&lt;h2 id="构建一般做哪些事情">构建一般做哪些事情？&lt;a class="anchor" href="#%e6%9e%84%e5%bb%ba%e4%b8%80%e8%88%ac%e5%81%9a%e5%93%aa%e4%ba%9b%e4%ba%8b%e6%83%85">#&lt;/a>&lt;/h2>
+&lt;p>代码转换：将 TypeScript 编译成 JavaScript、将 SCSS 编译成 CSS 等。&lt;/p>
+&lt;p>文件优化：压缩 JavaScript、CSS、HTML 代码，压缩合并图片等。&lt;/p>
+&lt;p>代码分割：提取多个页面的公共代码，提取首屏不需要执行部分的代码让其异步加载。&lt;/p></description></item><item><title>Vue</title><link>https://yindongliang.com/docs/Frontend/vue/</link><pubDate>Fri, 21 May 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/vue/</guid><description>&lt;h2 id="模板语法">模板语法&lt;a class="anchor" href="#%e6%a8%a1%e6%9d%bf%e8%af%ad%e6%b3%95">#&lt;/a>&lt;/h2>
+&lt;p>Mustache 语法不能作用在 HTML attribute 上，遇到这种情况应该使用 &lt;a href="https://cn.vuejs.org/v2/api/#v-bind">&lt;code>v-bind&lt;/code> 指令&lt;/a>来给 attribute 赋值一个变量。&lt;/p>
+&lt;p>v-model&lt;/p>
+&lt;p>v-bind:key&lt;/p>
+&lt;h2 id="data">data&lt;a class="anchor" href="#data">#&lt;/a>&lt;/h2>
+&lt;p>以 &lt;code>$data&lt;/code> 的形式存储在组件实例中。为方便起见，该对象的任何顶级 property 也会直接通过组件实例暴露出来&lt;/p></description></item><item><title>前端的节流和防抖</title><link>https://yindongliang.com/posts/throttle-and-debounce-in-fe/</link><pubDate>Sun, 16 May 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/throttle-and-debounce-in-fe/</guid><description>&lt;p>工作中排查数据问题发现了前端按钮可能会触发两次点击的情况，这个问题除了要在后端做幂等以外，正好最近我也在做一些前端的工作，也就专门研究了下前端的解决方案。本来要解决的是防抖问题，但是查了些资料发现一般都是防抖和节流一起，它们解决方案相似但又不完全相同，下面就分别介绍下方便对比使用。&lt;/p></description></item><item><title>说说实际工作中 GraphQL 的使用体验</title><link>https://yindongliang.com/posts/talk-about-graphql/</link><pubDate>Fri, 11 Oct 2019 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/talk-about-graphql/</guid><description>&lt;h2 id="背景">背景&lt;a class="anchor" href="#%e8%83%8c%e6%99%af">#&lt;/a>&lt;/h2>
+&lt;p>接触 GraphQL 是工作中需要有一个项目，用来聚合内部很多其他微服务的接口然后统一暴露给外部使用，在这样的场景下，对项目有几点需求：&lt;/p>
+&lt;ul>
+&lt;li>能够让外部业务方对接方便，当然最好有接口文档。&lt;/li>
+&lt;li>各个业务方可以根据他们自己的需要自己选择字段集合。&lt;/li>
+&lt;li>项目提供的接口可以被不同的语言框架通过 HTTP 调用，比如前端、Python、Go 等。&lt;/li>
+&lt;/ul>
+&lt;p>基于以上的需求，在组内一位大神的提议下，顺理成章的使用了 GraphQL 作为解决方案，经过半年多的迭代维护，今天特来从后端角度说下使用体验。&lt;/p></description></item></channel></rss>

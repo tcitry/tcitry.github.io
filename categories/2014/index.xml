@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>2014 on LYon's Blog</title><link>https://yindongliang.com/categories/2014/</link><description>Recent content in 2014 on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Sat, 18 Oct 2025 13:05:57 +0800</lastBuildDate><atom:link href="https://yindongliang.com/categories/2014/index.xml" rel="self" type="application/rss+xml"/><item><title>iOS 中添加按钮和按钮监听方法</title><link>https://yindongliang.com/posts/objc-onclick-event/</link><pubDate>Mon, 01 Sep 2014 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/objc-onclick-event/</guid><description>&lt;p>代码添加按钮和按钮监听方法&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-objc" data-lang="objc">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// ViewController.m
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">#import &amp;#34;ViewController.h&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">@interface&lt;/span> &lt;span style="color:#f3f99d">ViewController&lt;/span> ()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">@end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">@implementation&lt;/span> &lt;span style="color:#f3f99d">ViewController&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- (&lt;span style="color:#9aedfe">void&lt;/span>)&lt;span style="color:#57c7ff">tapButton:&lt;/span>(UIButton &lt;span style="color:#ff6ac1">*&lt;/span>)&lt;span style="color:#ff5c57">sender&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> NSLog(&lt;span style="color:#5af78e">@&amp;#34;我是%@&amp;#34;&lt;/span>,[sender.titleLabel text]);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- (&lt;span style="color:#9aedfe">void&lt;/span>)&lt;span style="color:#57c7ff">viewDidLoad&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#ff5c57">super&lt;/span> viewDidLoad];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#78787e">// Do any additional setup after loading the view, typically from a nib.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span> UIButton &lt;span style="color:#ff6ac1">*&lt;/span>button &lt;span style="color:#ff6ac1">=&lt;/span> [UIButton &lt;span style="color:#ff5c57">buttonWithType&lt;/span>:UIButtonTypeCustom];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [button &lt;span style="color:#ff5c57">setFrame&lt;/span>:CGRectMake(&lt;span style="color:#ff9f43">100&lt;/span>, &lt;span style="color:#ff9f43">100&lt;/span>, &lt;span style="color:#ff9f43">200&lt;/span>, &lt;span style="color:#ff9f43">200&lt;/span>)];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [button &lt;span style="color:#ff5c57">setTitle&lt;/span>:&lt;span style="color:#5af78e">@&amp;#34;hello&amp;#34;&lt;/span> &lt;span style="color:#ff5c57">forState&lt;/span>:UIControlStateNormal];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [button &lt;span style="color:#ff5c57">setTitle&lt;/span>:&lt;span style="color:#5af78e">@&amp;#34;world&amp;#34;&lt;/span> &lt;span style="color:#ff5c57">forState&lt;/span>:UIControlStateHighlighted];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [button &lt;span style="color:#ff5c57">setTitleColor&lt;/span>:[UIColor greenColor] &lt;span style="color:#ff5c57">forState&lt;/span>:UIControlStateNormal];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [button &lt;span style="color:#ff5c57">setTitleColor&lt;/span>:[UIColor redColor] &lt;span style="color:#ff5c57">forState&lt;/span>:UIControlStateHighlighted];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [button &lt;span style="color:#ff5c57">addTarget&lt;/span>:&lt;span style="color:#ff5c57">self&lt;/span> &lt;span style="color:#ff5c57">action&lt;/span>:&lt;span style="color:#ff6ac1">@selector&lt;/span>(&lt;span style="color:#ff5c57">tapButton&lt;/span>:) &lt;span style="color:#ff5c57">forControlEvents&lt;/span>:UIControlEventTouchUpInside];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [button &lt;span style="color:#ff5c57">setBounds&lt;/span>:CGRectMake(&lt;span style="color:#ff9f43">200&lt;/span>, &lt;span style="color:#ff9f43">200&lt;/span>, &lt;span style="color:#ff9f43">200&lt;/span>, &lt;span style="color:#ff9f43">200&lt;/span>)];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [button &lt;span style="color:#ff5c57">setBackgroundColor&lt;/span>:[UIColor grayColor]];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> UIImage &lt;span style="color:#ff6ac1">*&lt;/span>image &lt;span style="color:#ff6ac1">=&lt;/span> [UIImage &lt;span style="color:#ff5c57">imageNamed&lt;/span>:&lt;span style="color:#5af78e">@&amp;#34;photo/12.png&amp;#34;&lt;/span>];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [button &lt;span style="color:#ff5c57">setBackgroundImage&lt;/span>:image &lt;span style="color:#ff5c57">forState&lt;/span>:UIControlStateNormal];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#ff5c57">self&lt;/span>.view &lt;span style="color:#ff5c57">addSubview&lt;/span>:button];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- (&lt;span style="color:#9aedfe">void&lt;/span>)&lt;span style="color:#57c7ff">didReceiveMemoryWarning&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#ff5c57">super&lt;/span> didReceiveMemoryWarning];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// Dispose of any resources that can be recreated.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">@end&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>iOS 中 textFieldShouldReturn 方法的使用</title><link>https://yindongliang.com/posts/ios-text-field/</link><pubDate>Sun, 31 Aug 2014 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/ios-text-field/</guid><description>&lt;p>iOS 中 textFieldShouldReturn 方法定义在 UITextFieldDelegate 协议中。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-objc" data-lang="objc">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// ViewController.m
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">#import &amp;#34;ViewController.h&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">@interface&lt;/span> &lt;span style="color:#f3f99d">ViewController&lt;/span> ()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">@end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">@implementation&lt;/span> &lt;span style="color:#f3f99d">ViewController&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- (&lt;span style="color:#9aedfe">void&lt;/span>)&lt;span style="color:#57c7ff">viewDidLoad&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#ff5c57">super&lt;/span> viewDidLoad];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#78787e">// Do any additional setup after loading the view, typically from a nib.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- (&lt;span style="color:#9aedfe">void&lt;/span>)&lt;span style="color:#57c7ff">didReceiveMemoryWarning&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#ff5c57">super&lt;/span> didReceiveMemoryWarning];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#78787e">// Dispose of any resources that can be recreated.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- (&lt;span style="color:#9aedfe">BOOL&lt;/span>)&lt;span style="color:#57c7ff">textFieldShouldReturn:&lt;/span>(UITextField &lt;span style="color:#ff6ac1">*&lt;/span>)&lt;span style="color:#ff5c57">textField&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> (textField&lt;span style="color:#ff6ac1">==&lt;/span>_name) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [_passwd becomeFirstResponder];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }&lt;span style="color:#ff6ac1">else&lt;/span> &lt;span style="color:#ff6ac1">if&lt;/span>(textField&lt;span style="color:#ff6ac1">==&lt;/span>_passwd){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#ff5c57">self&lt;/span> &lt;span style="color:#ff5c57">login&lt;/span>:&lt;span style="color:#ff5c57">nil&lt;/span>];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> &lt;span style="color:#ff5c57">YES&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- (&lt;span style="color:#9aedfe">IBAction&lt;/span>)&lt;span style="color:#57c7ff">login:&lt;/span>(&lt;span style="color:#9aedfe">id&lt;/span>)&lt;span style="color:#ff5c57">sender&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [&lt;span style="color:#ff5c57">self&lt;/span>.view &lt;span style="color:#ff5c57">endEditing&lt;/span>:&lt;span style="color:#ff5c57">NO&lt;/span>];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> NSString &lt;span style="color:#ff6ac1">*&lt;/span>name &lt;span style="color:#ff6ac1">=&lt;/span> _name.text;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> NSString &lt;span style="color:#ff6ac1">*&lt;/span>passwd &lt;span style="color:#ff6ac1">=&lt;/span> _passwd.text;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [_lable &lt;span style="color:#ff5c57">setText&lt;/span>:[NSString &lt;span style="color:#ff5c57">stringWithFormat&lt;/span>:&lt;span style="color:#5af78e">@&amp;#34;username:%@ password:%@&amp;#34;&lt;/span>,name,passwd]];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">@end&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://cdn.yindongliang.com/uPic/9rBhlF.jpg" alt="img" />&lt;/p></description></item></channel></rss>

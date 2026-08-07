@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>LYon's Blog</title><link>https://yindongliang.com/docs/Apple/</link><description>Recent content on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Apple/index.xml" rel="self" type="application/rss+xml"/><item><title>Overview</title><link>https://yindongliang.com/docs/Apple/00-overview/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/00-overview/</guid><description>&lt;h2 id="参考">参考&lt;a class="anchor" href="#%e5%8f%82%e8%80%83">#&lt;/a>&lt;/h2>
+&lt;p>Foundation&lt;br>
+&lt;a href="https://developer.apple.com/documentation/foundation">https://developer.apple.com/documentation/foundation&lt;/a>&lt;/p>
+&lt;p>App 审核指南&lt;br>
+&lt;a href="https://developer.apple.com/cn/app-store/review/guidelines/">https://developer.apple.com/cn/app-store/review/guidelines/&lt;/a>&lt;/p>
+&lt;p>中文文档&lt;br>
+&lt;a href="https://developer.apple.com/cn/documentation/">https://developer.apple.com/cn/documentation/&lt;/a>&lt;/p>
+&lt;p>SwiftGG&lt;br>
+&lt;a href="https://swiftgg.team/">https://swiftgg.team/&lt;/a>&lt;/p>
+&lt;p>这个页面可以找到更多苹果官方开发教程，以及下面几个链接&lt;br>
+&lt;a href="https://developer.apple.com/learn/">https://developer.apple.com/learn/&lt;/a>&lt;/p>
+&lt;h2 id="体系结构">体系结构&lt;a class="anchor" href="#%e4%bd%93%e7%b3%bb%e7%bb%93%e6%9e%84">#&lt;/a>&lt;/h2>
+&lt;h3 id="apple-开发技术栈分类表">&lt;strong>Apple 开发技术栈分类表&lt;/strong>&lt;a class="anchor" href="#apple-%e5%bc%80%e5%8f%91%e6%8a%80%e6%9c%af%e6%a0%88%e5%88%86%e7%b1%bb%e8%a1%a8">#&lt;/a>&lt;/h3>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>&lt;strong>分类&lt;/strong>&lt;/th>
+ &lt;th>&lt;strong>技术/框架名称&lt;/strong>&lt;/th>
+ &lt;th>&lt;strong>描述&lt;/strong>&lt;/th>
+ &lt;th>&lt;strong>适用平台&lt;/strong>&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>编程语言&lt;/strong>&lt;/td>
+ &lt;td>Swift&lt;/td>
+ &lt;td>现代、安全的编程语言，Apple 生态首选语言，支持面向协议、函数式编程。&lt;/td>
+ &lt;td>全平台（iOS/macOS等）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>Objective-C&lt;/td>
+ &lt;td>传统 Apple 开发语言，兼容 C，现逐渐被 Swift 替代，但仍用于维护旧项目。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>C/C++&lt;/td>
+ &lt;td>用于底层开发（如游戏引擎、系统级代码），通过 Objective-C 或 Swift 桥接调用。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>UI 框架&lt;/strong>&lt;/td>
+ &lt;td>SwiftUI&lt;/td>
+ &lt;td>声明式 UI 框架，统一 iOS/macOS/watchOS/tvOS 开发，支持实时预览。&lt;/td>
+ &lt;td>iOS 13+/macOS 10.15+ 等&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>UIKit&lt;/td>
+ &lt;td>传统 iOS/tvOS UI 框架，基于 MVC 模式，提供丰富的控件和交互。&lt;/td>
+ &lt;td>iOS/tvOS&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>AppKit&lt;/td>
+ &lt;td>macOS 原生 UI 框架，类似 UIKit，专为桌面应用设计。&lt;/td>
+ &lt;td>macOS&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>WatchKit&lt;/td>
+ &lt;td>用于开发 watchOS 应用的 UI 框架，功能相对简化。&lt;/td>
+ &lt;td>watchOS&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>核心框架&lt;/strong>&lt;/td>
+ &lt;td>Foundation&lt;/td>
+ &lt;td>基础框架，提供字符串、集合、文件管理、日期等基础功能。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>Core Data&lt;/td>
+ &lt;td>数据持久化框架，支持对象关系映射（ORM）和复杂数据模型管理。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>Core Animation&lt;/td>
+ &lt;td>动画和图层渲染框架，用于实现流畅的界面动画。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>图形与动画&lt;/strong>&lt;/td>
+ &lt;td>Metal&lt;/td>
+ &lt;td>高性能图形和计算 API，替代 OpenGL，支持 GPU 加速。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>Core Graphics (Quartz)&lt;/td>
+ &lt;td>2D 绘图框架，支持矢量图形、PDF 渲染等。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>SpriteKit&lt;/td>
+ &lt;td>2D 游戏开发框架，支持动画、物理引擎和粒子效果。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>SceneKit&lt;/td>
+ &lt;td>3D 图形渲染框架，支持模型加载、光照和物理模拟。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>数据与网络&lt;/strong>&lt;/td>
+ &lt;td>Combine&lt;/td>
+ &lt;td>响应式编程框架，处理异步事件流（类似 RxSwift）。&lt;/td>
+ &lt;td>iOS 13+/macOS 10.15+ 等&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>URLSession&lt;/td>
+ &lt;td>网络请求框架，支持 HTTP/HTTPS、WebSocket 等协议。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>CloudKit&lt;/td>
+ &lt;td>云端数据存储和同步服务，与 iCloud 深度集成。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>系统服务&lt;/strong>&lt;/td>
+ &lt;td>Core Location&lt;/td>
+ &lt;td>地理位置和定位服务，支持 GPS、蓝牙信标等。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>HealthKit&lt;/td>
+ &lt;td>健康和健身数据管理框架，与 Apple Health 集成。&lt;/td>
+ &lt;td>iOS/watchOS&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>ARKit&lt;/td>
+ &lt;td>增强现实开发框架，支持面部追踪、环境感知等。&lt;/td>
+ &lt;td>iOS/iPadOS&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>Core ML&lt;/td>
+ &lt;td>机器学习模型集成框架，支持设备端推理。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>SiriKit&lt;/td>
+ &lt;td>集成 Siri 语音交互功能，支持自定义意图和响应。&lt;/td>
+ &lt;td>iOS/macOS/watchOS&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>开发工具&lt;/strong>&lt;/td>
+ &lt;td>Xcode&lt;/td>
+ &lt;td>官方集成开发环境（IDE），支持代码编辑、调试、界面设计和性能分析。&lt;/td>
+ &lt;td>macOS&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>Instruments&lt;/td>
+ &lt;td>性能分析工具，用于检测内存泄漏、CPU 使用率等。&lt;/td>
+ &lt;td>macOS&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>Swift Package Manager&lt;/td>
+ &lt;td>依赖管理和代码分发工具，集成在 Xcode 中。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>TestFlight&lt;/td>
+ &lt;td>Beta 测试分发平台，用于内部和外部测试。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>跨平台技术&lt;/strong>&lt;/td>
+ &lt;td>Catalyst&lt;/td>
+ &lt;td>将 iPad 应用移植到 macOS 的技术，共享代码库。&lt;/td>
+ &lt;td>macOS (iPad 应用移植)&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>Flutter (第三方)&lt;/td>
+ &lt;td>Google 的跨平台 UI 框架，支持 iOS/macOS 开发。&lt;/td>
+ &lt;td>全平台（需 Dart 语言）&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>React Native (第三方)&lt;/td>
+ &lt;td>Meta 的跨平台框架，使用 JavaScript/TypeScript 开发原生应用。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>其他关键框架&lt;/strong>&lt;/td>
+ &lt;td>StoreKit&lt;/td>
+ &lt;td>应用内购买和订阅管理框架，支持 Apple 支付流程。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>AVFoundation&lt;/td>
+ &lt;td>音视频处理框架，支持录制、播放、编辑和流媒体。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>MapKit&lt;/td>
+ &lt;td>地图和地理位置服务集成，支持自定义标注和路线规划。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>WidgetKit&lt;/td>
+ &lt;td>开发主屏幕小组件（Widget），支持动态数据和交互。&lt;/td>
+ &lt;td>iOS 14+/macOS 11+&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>GameKit&lt;/td>
+ &lt;td>游戏社交功能集成（如排行榜、多人对战）。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>PassKit (Apple Pay)&lt;/td>
+ &lt;td>集成 Apple Pay 和电子钱包（Wallet）功能。&lt;/td>
+ &lt;td>全平台&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>WeatherKit&lt;/td>
+ &lt;td>天气数据 API，提供实时和预报天气信息。&lt;/td>
+ &lt;td>iOS 16+/macOS 13+&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>新近技术&lt;/strong>&lt;/td>
+ &lt;td>Swift Concurrency&lt;/td>
+ &lt;td>异步编程模型（async/await），简化多线程和任务管理。&lt;/td>
+ &lt;td>iOS 15+/macOS 12+&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>Swift Charts&lt;/td>
+ &lt;td>声明式图表绘制框架，集成于 SwiftUI。&lt;/td>
+ &lt;td>iOS 16+/macOS 13+&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;/td>
+ &lt;td>RealityKit&lt;/td>
+ &lt;td>AR 和 3D 内容开发框架，支持实体交互和物理效果。&lt;/td>
+ &lt;td>iOS/iPadOS&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h3 id="补充说明">&lt;strong>补充说明&lt;/strong>&lt;a class="anchor" href="#%e8%a1%a5%e5%85%85%e8%af%b4%e6%98%8e">#&lt;/a>&lt;/h3>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>平台适配&lt;/strong>：&lt;/p></description></item></channel></rss>

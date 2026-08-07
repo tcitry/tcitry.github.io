@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>PyTorch on LYon's Blog</title><link>https://yindongliang.com/docs/LLM/PyTorch/</link><description>Recent content in PyTorch on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/LLM/PyTorch/index.xml" rel="self" type="application/rss+xml"/><item><title>PyTorch 矩阵运算</title><link>https://yindongliang.com/docs/LLM/PyTorch/%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97/</link><pubDate>Mon, 27 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/LLM/PyTorch/%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97/</guid><description>&lt;h2 id="矩阵的基本概念">矩阵的基本概念&lt;a class="anchor" href="#%e7%9f%a9%e9%98%b5%e7%9a%84%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h2>
+&lt;h3 id="什么是矩阵">什么是矩阵？&lt;a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af%e7%9f%a9%e9%98%b5">#&lt;/a>&lt;/h3>
+&lt;p>&lt;strong>矩阵&lt;/strong>是一个按照矩形阵列排列的数学对象，包含&lt;strong>行&lt;/strong>和&lt;strong>列&lt;/strong>两个维度。&lt;/p>
+&lt;h3 id="矩阵的属性维度概念">矩阵的属性（维度概念）&lt;a class="anchor" href="#%e7%9f%a9%e9%98%b5%e7%9a%84%e5%b1%9e%e6%80%a7%e7%bb%b4%e5%ba%a6%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>0维张量&lt;/strong>：标量（单个数字） - &lt;code>torch.tensor(5)&lt;/code>&lt;/li>
+&lt;li>&lt;strong>1维张量&lt;/strong>：向量（只有长度） - &lt;code>torch.tensor([1, 2, 3])&lt;/code>&lt;/li>
+&lt;li>&lt;strong>2维张量&lt;/strong>：矩阵（有行和列） - &lt;code>torch.tensor([[1, 2], [3, 4]])&lt;/code>&lt;/li>
+&lt;li>&lt;strong>3维张量&lt;/strong>：立方体（有深度） - 比如多个矩阵的堆叠&lt;/li>
+&lt;li>&lt;strong>更高维度&lt;/strong>：可以继续扩展&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>注意&lt;/strong>：在深度学习中，我们通常用&lt;strong>张量&lt;/strong>这个更一般的概念，矩阵是2维张量的特例。&lt;/p></description></item></channel></rss>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Node.js on LYon's Blog</title><link>https://yindongliang.com/docs/Frontend/Nodejs/</link><description>Recent content in Node.js on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Frontend/Nodejs/index.xml" rel="self" type="application/rss+xml"/><item><title>Overview</title><link>https://yindongliang.com/docs/Frontend/Nodejs/00-overview/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Nodejs/00-overview/</guid><description>&lt;h2 id="nodejs-是什么">Node.js 是什么&lt;a class="anchor" href="#nodejs-%e6%98%af%e4%bb%80%e4%b9%88">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="http://nodejs.cn/">http://nodejs.cn/&lt;/a>&lt;/p>
+&lt;p>基于事件驱动，非阻塞I/O，&lt;/p>
+&lt;h2 id="工具箱">工具箱&lt;a class="anchor" href="#%e5%b7%a5%e5%85%b7%e7%ae%b1">#&lt;/a>&lt;/h2>
+&lt;h3 id="nodemon">nodemon&lt;a class="anchor" href="#nodemon">#&lt;/a>&lt;/h3>
+&lt;p>&lt;a href="https://github.com/remy/nodemon">https://github.com/remy/nodemon&lt;/a>&lt;/p>
+&lt;p>nodemon is a tool that helps develop node.js based applications by automatically restarting the node application when file changes in the directory are detected.&lt;/p>
+&lt;p>监控文件热加载。&lt;/p>
+&lt;h2 id="标准库">标准库&lt;a class="anchor" href="#%e6%a0%87%e5%87%86%e5%ba%93">#&lt;/a>&lt;/h2>
+&lt;p>文档 &lt;a href="http://nodejs.cn/api/">http://nodejs.cn/api/&lt;/a>&lt;/p>
+&lt;h3 id="http">http&lt;a class="anchor" href="#http">#&lt;/a>&lt;/h3>
+&lt;h3 id="net">net&lt;a class="anchor" href="#net">#&lt;/a>&lt;/h3></description></item><item><title>Buffer</title><link>https://yindongliang.com/docs/Frontend/Nodejs/Buffer/</link><pubDate>Fri, 05 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Nodejs/Buffer/</guid><description>&lt;p>&lt;code>Buffer&lt;/code> 是 Node.js 中一个非常重要且强大的全局对象，用于直接操作原始二进制数据流。它在浏览器环境中不可用，是 Node.js 的核心特性之一。&lt;/p>
+&lt;h2 id="-什么是-buffer">🎯 什么是 Buffer？&lt;a class="anchor" href="#-%e4%bb%80%e4%b9%88%e6%98%af-buffer">#&lt;/a>&lt;/h2>
+&lt;p>&lt;strong>Buffer&lt;/strong> 是一个表示固定长度的原始二进制数据块的类。你可以把它想象成一个&lt;strong>专门用来处理原始二进制数据的数组&lt;/strong>，但与普通数组不同，它在 V8 堆外分配固定大小的原始内存，效率极高。&lt;/p></description></item><item><title>inspector</title><link>https://yindongliang.com/docs/Frontend/Nodejs/inspector/</link><pubDate>Thu, 04 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Nodejs/inspector/</guid><description>&lt;h1 id="-深入理解-nodejs-的-inspector-模块">🔍 深入理解 Node.js 的 &lt;code>inspector&lt;/code> 模块&lt;a class="anchor" href="#-%e6%b7%b1%e5%85%a5%e7%90%86%e8%a7%a3-nodejs-%e7%9a%84-inspector-%e6%a8%a1%e5%9d%97">#&lt;/a>&lt;/h1>
+&lt;p>&lt;a href="https://nodejs.org/api/inspector.html">https://nodejs.org/api/inspector.html&lt;/a>&lt;/p>
+&lt;h2 id="1-它属于什么是-javascript-还是-typescript-的模块">1. 它属于什么？是 JavaScript 还是 TypeScript 的模块？&lt;a class="anchor" href="#1-%e5%ae%83%e5%b1%9e%e4%ba%8e%e4%bb%80%e4%b9%88%e6%98%af-javascript-%e8%bf%98%e6%98%af-typescript-%e7%9a%84%e6%a8%a1%e5%9d%97">#&lt;/a>&lt;/h2>
+&lt;p>&lt;code>inspector&lt;/code> 是 &lt;strong>Node.js 的核心内置模块&lt;/strong>，不是第三方包，也不是 TypeScript 特有的功能。&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>归属&lt;/strong>: 它是 Node.js 运行时环境的一部分，与 &lt;code>fs&lt;/code>、&lt;code>http&lt;/code>、&lt;code>path&lt;/code> 等模块同级。&lt;/li>
+&lt;li>&lt;strong>语言&lt;/strong>: 它是 JavaScript 模块，用 Node.js 的 JavaScript API 编写和使用。TypeScript 项目当然也可以导入和使用它，因为 TypeScript 最终会编译成 JavaScript 在 Node.js 中运行。&lt;/li>
+&lt;li>&lt;strong>底层技术&lt;/strong>: 它的背后是 &lt;strong>V8 引擎的 Inspector 协议&lt;/strong>，这个协议允许外部工具（如 Chrome DevTools）通过 WebSocket 与 Node.js 进程进行通信、调试和分析。&lt;/li>
+&lt;/ul>
+&lt;h2 id="2-它是用来做什么的">2. 它是用来做什么的？&lt;a class="anchor" href="#2-%e5%ae%83%e6%98%af%e7%94%a8%e6%9d%a5%e5%81%9a%e4%bb%80%e4%b9%88%e7%9a%84">#&lt;/a>&lt;/h2>
+&lt;p>&lt;code>inspector&lt;/code> 模块的主要目的是&lt;strong>开启对 Node.js 进程的调试和分析能力&lt;/strong>。它提供了以编程方式与 V8 Inspector 交互的 API。&lt;/p></description></item></channel></rss>

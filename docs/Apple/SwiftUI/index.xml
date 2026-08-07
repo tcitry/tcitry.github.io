@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>SwiftUI on LYon's Blog</title><link>https://yindongliang.com/docs/Apple/SwiftUI/</link><description>Recent content in SwiftUI on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Apple/SwiftUI/index.xml" rel="self" type="application/rss+xml"/><item><title>Overview</title><link>https://yindongliang.com/docs/Apple/SwiftUI/00-overview/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Apple/SwiftUI/00-overview/</guid><description>&lt;h2 id="文档">文档&lt;a class="anchor" href="#%e6%96%87%e6%a1%a3">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="https://developer.apple.com/documentation/swiftui">SwiftUI | Apple Developer Documentation&lt;/a>&lt;/p>
+&lt;h2 id="swiftui-的大分类结构概述">&lt;strong>SwiftUI 的大分类结构概述&lt;/strong>&lt;a class="anchor" href="#swiftui-%e7%9a%84%e5%a4%a7%e5%88%86%e7%b1%bb%e7%bb%93%e6%9e%84%e6%a6%82%e8%bf%b0">#&lt;/a>&lt;/h2>
+&lt;p>以下是 SwiftUI 的大分类和对应用途的整体结构表：&lt;/p>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>&lt;strong>分类&lt;/strong>&lt;/th>
+ &lt;th>&lt;strong>主要功能&lt;/strong>&lt;/th>
+ &lt;th>&lt;strong>组成模块&lt;/strong>&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>视图（View）&lt;/strong>&lt;/td>
+ &lt;td>构建 UI 的基本单元，包括文本、图片、按钮和形状等。&lt;/td>
+ &lt;td>&lt;code>Text&lt;/code>, &lt;code>Image&lt;/code>, &lt;code>Button&lt;/code>, &lt;code>Shape&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>布局系统&lt;/strong>&lt;/td>
+ &lt;td>控制视图的排列布局以及响应式处理。&lt;/td>
+ &lt;td>&lt;code>HStack&lt;/code>, &lt;code>VStack&lt;/code>, &lt;code>ZStack&lt;/code>, &lt;code>Spacer&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>数据驱动编程&lt;/strong>&lt;/td>
+ &lt;td>使用数据绑定动态更新视图，响应数据状态变化。&lt;/td>
+ &lt;td>&lt;code>State&lt;/code>, &lt;code>Binding&lt;/code>, &lt;code>ObservedObject&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>数据展示&lt;/strong>&lt;/td>
+ &lt;td>展示大数据量内容，支持懒加载与滚动显示。&lt;/td>
+ &lt;td>&lt;code>List&lt;/code>, &lt;code>ScrollView&lt;/code>, &lt;code>Lazy*&lt;/code> 系列&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>导航与容器&lt;/strong>&lt;/td>
+ &lt;td>管理界面层次和页面跳转。&lt;/td>
+ &lt;td>&lt;code>NavigationView&lt;/code>, &lt;code>TabView&lt;/code>, &lt;code>Group&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>表单与输入控件&lt;/strong>&lt;/td>
+ &lt;td>数据输入及其交互组件。&lt;/td>
+ &lt;td>&lt;code>TextField&lt;/code>, &lt;code>Toggle&lt;/code>, &lt;code>Picker&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>动画与事务&lt;/strong>&lt;/td>
+ &lt;td>提供隐式和显式动画的支持，以及视图的过渡和协调动画。&lt;/td>
+ &lt;td>&lt;code>.animation&lt;/code>, &lt;code>.transition&lt;/code>, &lt;code>matchedEffect&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>手势与交互&lt;/strong>&lt;/td>
+ &lt;td>识别和处理用户的手势、滑动、拖拽等交互行为。&lt;/td>
+ &lt;td>&lt;code>.onTapGesture&lt;/code>, &lt;code>.gesture&lt;/code>, &lt;code>.swipeActions&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>绘图与图形&lt;/strong>&lt;/td>
+ &lt;td>绘制路径、形状和渐变效果。&lt;/td>
+ &lt;td>&lt;code>Path&lt;/code>, &lt;code>Shape&lt;/code>, &lt;code>Canvas&lt;/code>, &lt;code>Gradients&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>状态和生命周期管理&lt;/strong>&lt;/td>
+ &lt;td>管理视图和应用的声明周期状态，监听生命周期事件。&lt;/td>
+ &lt;td>&lt;code>App&lt;/code>, &lt;code>Scene&lt;/code>, &lt;code>.onAppear&lt;/code>, &lt;code>.onDisappear&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>通知与事件处理&lt;/strong>&lt;/td>
+ &lt;td>监听事件和系统通知，通过 Combine 框架实现响应式事件处理。&lt;/td>
+ &lt;td>&lt;code>.onReceive&lt;/code>, &lt;code>NotificationCenter&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>可访问性支持&lt;/strong>&lt;/td>
+ &lt;td>提升应用的无障碍支持，适配 VoiceOver 等工具。&lt;/td>
+ &lt;td>&lt;code>.accessibilityLabel&lt;/code>, &lt;code>.accessibilityHint&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>资源管理&lt;/strong>&lt;/td>
+ &lt;td>持久化本地化数据以及资源文件管理。&lt;/td>
+ &lt;td>&lt;code>@AppStorage&lt;/code>, &lt;code>Image Assets&lt;/code>, &lt;code>.ignoresSafeArea&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>跨平台支持&lt;/strong>&lt;/td>
+ &lt;td>支持 iOS、macOS、watchOS 和 tvOS 跨平台开发。&lt;/td>
+ &lt;td>&lt;code>PlatformModifiers&lt;/code>, &lt;code>Universal Code&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>接下来，我们将用细分表格列出各分类内的主要细分。&lt;/p></description></item></channel></rss>

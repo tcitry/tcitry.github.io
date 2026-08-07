@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Search on LYon's Blog</title><link>https://yindongliang.com/tags/Search/</link><description>Recent content in Search on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 08 Oct 2025 13:47:52 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/Search/index.xml" rel="self" type="application/rss+xml"/><item><title>Algolia</title><link>https://yindongliang.com/links/202510/algolia/</link><pubDate>Wed, 08 Oct 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/links/202510/algolia/</guid><description>&lt;p>Algolia是一家提供&lt;strong>搜索即服务&lt;/strong> 的科技公司，旨在帮助开发者为网站和移动应用构建快速、相关的搜索体验。下面这个表格汇总了它的核心信息：&lt;/p>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th style="text-align: left">项目&lt;/th>
+ &lt;th style="text-align: left">详细信息&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td style="text-align: left">&lt;strong>公司全名&lt;/strong>&lt;/td>
+ &lt;td style="text-align: left">Algolia Inc.&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td style="text-align: left">&lt;strong>成立时间&lt;/strong>&lt;/td>
+ &lt;td style="text-align: left">2012年&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td style="text-align: left">&lt;strong>总部位置&lt;/strong>&lt;/td>
+ &lt;td style="text-align: left">美国加利福尼亚州旧金山&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td style="text-align: left">&lt;strong>核心业务&lt;/strong>&lt;/td>
+ &lt;td style="text-align: left">通过SaaS模式提供网络搜索产品，即&amp;quot;搜索即服务&amp;quot;&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td style="text-align: left">&lt;strong>核心特点&lt;/strong>&lt;/td>
+ &lt;td style="text-align: left">🔍 &lt;strong>毫秒级响应速度&lt;/strong>&lt;br>🎯 &lt;strong>高度可定制的相关性排名&lt;/strong>&lt;br>🌐 &lt;strong>全球分布式搜索网络&lt;/strong>&lt;br>🛠 &lt;strong>丰富的开发者工具与API&lt;/strong>&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h3 id="-algolia-详解">🔍 Algolia 详解&lt;a class="anchor" href="#-algolia-%e8%af%a6%e8%a7%a3">#&lt;/a>&lt;/h3>
+&lt;h4 id="基本工作模式">基本工作模式&lt;a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e5%b7%a5%e4%bd%9c%e6%a8%a1%e5%bc%8f">#&lt;/a>&lt;/h4>
+&lt;p>Algolia的运作主要分为两个阶段：&lt;strong>索引&lt;/strong>和&lt;strong>搜索&lt;/strong>。&lt;/p></description></item></channel></rss>

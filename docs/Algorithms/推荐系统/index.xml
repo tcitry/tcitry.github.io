@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>LYon's Blog</title><link>https://yindongliang.com/docs/Algorithms/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/</link><description>Recent content on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Algorithms/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/index.xml" rel="self" type="application/rss+xml"/><item><title>Overview</title><link>https://yindongliang.com/docs/Algorithms/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/00-overview/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Algorithms/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/00-overview/</guid><description>&lt;h2 id="基础概念">基础概念&lt;a class="anchor" href="#%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h2>
+&lt;p>推荐系统存在三个参与方：&lt;/p>
+&lt;p>用户、物品提供者、提供推荐系统的网站。&lt;/p>
+&lt;p>如何评估推荐系统的优劣。&lt;/p>
+&lt;p>预测准确度是推荐系统的重要指标（没有之一）。&lt;/p>
+&lt;p>但是准确的预测并不代表好的推荐（有可能用户本就打算购买，只是提供了展示的方便）。所以推荐系统需要拓展用户的视野，帮助用户发现他们可能感兴趣、却不那么容易发现的东西。&lt;/p></description></item></channel></rss>

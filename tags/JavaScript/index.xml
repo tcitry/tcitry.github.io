@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>JavaScript on LYon's Blog</title><link>https://yindongliang.com/tags/JavaScript/</link><description>Recent content in JavaScript on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 22 Oct 2025 23:22:53 +0800</lastBuildDate><atom:link href="https://yindongliang.com/tags/JavaScript/index.xml" rel="self" type="application/rss+xml"/><item><title>语法</title><link>https://yindongliang.com/docs/Frontend/JavaScript/%E8%AF%AD%E6%B3%95/</link><pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/JavaScript/%E8%AF%AD%E6%B3%95/</guid><description>&lt;h2 id="dombomwindowdocument">DOM、BOM、Window、Document&lt;a class="anchor" href="#dombomwindowdocument">#&lt;/a>&lt;/h2>
+&lt;p>DOM 是操作文档的 API，Document 是其一个对象。&lt;/p>
+&lt;p>BOM 是操作浏览器的 API，Window 是其一个对象。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> component(s) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">const&lt;/span> element &lt;span style="color:#ff6ac1">=&lt;/span> &lt;span style="color:#ff5c57">document&lt;/span>.createElement(&lt;span style="color:#5af78e">&amp;#39;div&amp;#39;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> element.innerHTML &lt;span style="color:#ff6ac1">=&lt;/span> s;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">return&lt;/span> element;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">document&lt;/span>.body.appendChild(component(&lt;span style="color:#5af78e">&amp;#34;hello&amp;#34;&lt;/span>));&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="ssr-vs-csr">SSR vs CSR&lt;a class="anchor" href="#ssr-vs-csr">#&lt;/a>&lt;/h2>
+&lt;p>服务器渲染和客户端渲染。&lt;/p></description></item><item><title>BOM</title><link>https://yindongliang.com/docs/Frontend/JavaScript/BOM/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/JavaScript/BOM/</guid><description>&lt;h3 id="什么是-bom">什么是 BOM？&lt;a class="anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-bom">#&lt;/a>&lt;/h3>
+&lt;p>BOM（Browser Object Model，浏览器对象模型）不同于操作文档的 DOM（Document Object Model），它提供了独立于内容、与浏览器窗口进行交互的对象。BOM 没有正式的标准（但存在一些事实标准），因此不同浏览器在实现上可能存在细微差异，但核心对象和方法是基本一致的。&lt;/p></description></item><item><title>DOM</title><link>https://yindongliang.com/docs/Frontend/JavaScript/DOM/</link><pubDate>Sat, 06 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/JavaScript/DOM/</guid><description>&lt;h1 id="javascript-dom-api-全面介绍">JavaScript DOM API 全面介绍&lt;a class="anchor" href="#javascript-dom-api-%e5%85%a8%e9%9d%a2%e4%bb%8b%e7%bb%8d">#&lt;/a>&lt;/h1>
+&lt;p>DOM（文档对象模型）是HTML和XML文档的编程接口，它提供了对文档的结构化表示，并定义了一种方式使程序可以访问和操作文档的结构、样式和内容。&lt;/p></description></item><item><title>Buffer</title><link>https://yindongliang.com/docs/Frontend/Nodejs/Buffer/</link><pubDate>Fri, 05 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Nodejs/Buffer/</guid><description>&lt;p>&lt;code>Buffer&lt;/code> 是 Node.js 中一个非常重要且强大的全局对象，用于直接操作原始二进制数据流。它在浏览器环境中不可用，是 Node.js 的核心特性之一。&lt;/p>
+&lt;h2 id="-什么是-buffer">🎯 什么是 Buffer？&lt;a class="anchor" href="#-%e4%bb%80%e4%b9%88%e6%98%af-buffer">#&lt;/a>&lt;/h2>
+&lt;p>&lt;strong>Buffer&lt;/strong> 是一个表示固定长度的原始二进制数据块的类。你可以把它想象成一个&lt;strong>专门用来处理原始二进制数据的数组&lt;/strong>，但与普通数组不同，它在 V8 堆外分配固定大小的原始内存，效率极高。&lt;/p></description></item><item><title>reduce</title><link>https://yindongliang.com/docs/Frontend/JavaScript/reduce/</link><pubDate>Fri, 05 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/JavaScript/reduce/</guid><description>&lt;h1 id="javascript-中的-reduce-方法详解">JavaScript 中的 &lt;code>reduce&lt;/code> 方法详解&lt;a class="anchor" href="#javascript-%e4%b8%ad%e7%9a%84-reduce-%e6%96%b9%e6%b3%95%e8%af%a6%e8%a7%a3">#&lt;/a>&lt;/h1>
+&lt;p>&lt;code>reduce&lt;/code> 是 JavaScript 数组中非常强大且常用的方法，用于将数组中的所有元素通过一个函数累积为单个值。&lt;/p>
+&lt;h2 id="-基本概念">🎯 基本概念&lt;a class="anchor" href="#-%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#&lt;/a>&lt;/h2>
+&lt;p>&lt;strong>&lt;code>reduce()&lt;/code>&lt;/strong> 方法对数组中的每个元素按顺序执行一个提供的 &lt;strong>reducer&lt;/strong> 函数，每一次运行 reducer 会将先前元素的计算结果作为参数传入，最后将其结果汇总为单个返回值。&lt;/p></description></item><item><title>无标准库</title><link>https://yindongliang.com/docs/Frontend/TypeScript/%E6%97%A0%E6%A0%87%E5%87%86%E5%BA%93/</link><pubDate>Fri, 05 Sep 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/%E6%97%A0%E6%A0%87%E5%87%86%E5%BA%93/</guid><description>&lt;p>TypeScript 本身&lt;strong>并没有独立的标准库&lt;/strong>，但它提供了对 JavaScript 标准库的完整类型定义，并且有一个丰富的类型系统来增强 JavaScript 的开发体验。&lt;/p>
+&lt;h2 id="-typescript-的标准库组成">📚 TypeScript 的&amp;quot;标准库&amp;quot;组成&lt;a class="anchor" href="#-typescript-%e7%9a%84%e6%a0%87%e5%87%86%e5%ba%93%e7%bb%84%e6%88%90">#&lt;/a>&lt;/h2>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>组成部分&lt;/th>
+ &lt;th>描述&lt;/th>
+ &lt;th>示例&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>&lt;strong>JavaScript 标准库类型&lt;/strong>&lt;/td>
+ &lt;td>TypeScript 包含了 ES5、ES6+ 所有内置对象的类型定义&lt;/td>
+ &lt;td>&lt;code>Array&amp;lt;T&amp;gt;&lt;/code>, &lt;code>Promise&amp;lt;T&amp;gt;&lt;/code>, &lt;code>Map&amp;lt;K, V&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>DOM API 类型&lt;/strong>&lt;/td>
+ &lt;td>浏览器环境下的 DOM API 类型定义&lt;/td>
+ &lt;td>&lt;code>document&lt;/code>, &lt;code>window&lt;/code>, &lt;code>HTMLElement&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>TypeScript 补充类型&lt;/strong>&lt;/td>
+ &lt;td>TypeScript 特有的类型工具&lt;/td>
+ &lt;td>&lt;code>Partial&amp;lt;T&amp;gt;&lt;/code>, &lt;code>Pick&amp;lt;T, K&amp;gt;&lt;/code>, &lt;code>Record&amp;lt;K, V&amp;gt;&lt;/code>&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>&lt;strong>@types/node&lt;/strong>&lt;/td>
+ &lt;td>Node.js 环境的标准库类型定义（需单独安装）&lt;/td>
+ &lt;td>&lt;code>fs&lt;/code>, &lt;code>path&lt;/code>, &lt;code>http&lt;/code> 等模块的类型&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="-typescript-的内置类型定义">🔧 TypeScript 的内置类型定义&lt;a class="anchor" href="#-typescript-%e7%9a%84%e5%86%85%e7%bd%ae%e7%b1%bb%e5%9e%8b%e5%ae%9a%e4%b9%89">#&lt;/a>&lt;/h2>
+&lt;p>TypeScript 自带了对 JavaScript 标准库的完整类型定义，这些定义文件位于 TypeScript 安装目录的 &lt;code>lib&lt;/code> 文件夹中。&lt;/p></description></item><item><title>forEach 和 map 的区别</title><link>https://yindongliang.com/docs/Frontend/TypeScript/forEach-%E5%92%8C-map/</link><pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/forEach-%E5%92%8C-map/</guid><description>&lt;p>在 TypeScript（以及 JavaScript）中，&lt;code>forEach&lt;/code> 和 &lt;code>map&lt;/code> 都是数组方法，但它们有重要的区别。了解这些区别对于编写高效和正确的代码至关重要。&lt;/p></description></item><item><title>TypeScript</title><link>https://yindongliang.com/docs/Frontend/TypeScript/%E8%AF%AD%E6%B3%95/</link><pubDate>Thu, 16 May 2024 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/TypeScript/%E8%AF%AD%E6%B3%95/</guid><description>&lt;p>&lt;a href="https://www.typescriptlang.org/">https://www.typescriptlang.org/&lt;/a>&lt;/p>
+&lt;h2 id="变量">变量&lt;a class="anchor" href="#%e5%8f%98%e9%87%8f">#&lt;/a>&lt;/h2>
+&lt;h3 id="声明符号-varletconst">声明符号 var、let、const&lt;a class="anchor" href="#%e5%a3%b0%e6%98%8e%e7%ac%a6%e5%8f%b7-varletconst">#&lt;/a>&lt;/h3>
+&lt;p>ts 里面基本弃用了 var，使用场景基本只有 let 和 const，用法和 js 一样。&lt;/p>
+&lt;h3 id="问号的用法">❓问号的用法&lt;a class="anchor" href="#%e9%97%ae%e5%8f%b7%e7%9a%84%e7%94%a8%e6%b3%95">#&lt;/a>&lt;/h3>
+&lt;h2 id="类型系统">类型系统&lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e7%b3%bb%e7%bb%9f">#&lt;/a>&lt;/h2>
+&lt;h3 id="类型别名-type">类型别名 &lt;code>type&lt;/code>&lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e5%88%ab%e5%90%8d-type">#&lt;/a>&lt;/h3>
+&lt;h3 id="类型交叉-">类型交叉 &lt;code>&amp;amp;&lt;/code>&lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e4%ba%a4%e5%8f%89-">#&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ts" data-lang="ts">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">type&lt;/span> User &lt;span style="color:#ff6ac1">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> name: &lt;span style="color:#9aedfe">string&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> age: &lt;span style="color:#9aedfe">number&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>};
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff6ac1">type&lt;/span> Employee &lt;span style="color:#ff6ac1">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> companyId: &lt;span style="color:#9aedfe">string&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>};
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// 定义一个交叉类型，包含 User 和 Employee 的所有属性
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">type&lt;/span> UserEmployee &lt;span style="color:#ff6ac1">=&lt;/span> User &lt;span style="color:#ff6ac1">&amp;amp;&lt;/span> Employee;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// 使用交叉类型
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">&lt;/span>&lt;span style="color:#ff6ac1">const&lt;/span> ue: &lt;span style="color:#9aedfe">UserEmployee&lt;/span> &lt;span style="color:#ff6ac1">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> name&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#34;Alice&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> age: &lt;span style="color:#9aedfe">28&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> companyId&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#34;1234XYZ&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>};&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="类型声明-declare">类型声明 &lt;code>declare&lt;/code>&lt;a class="anchor" href="#%e7%b1%bb%e5%9e%8b%e5%a3%b0%e6%98%8e-declare">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html">https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html&lt;/a>&lt;/p></description></item><item><title>AJAX 是什么？</title><link>https://yindongliang.com/posts/what-is-AJAX/</link><pubDate>Mon, 02 May 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/what-is-AJAX/</guid><description>&lt;p>这个问题既熟悉又有点陌生，先看概念。AJAX 是 &lt;em>Asynchronous Javavascript XML&lt;/em> 的缩写，即异步 JavaScript 和 XML。使用 AJAX 技术可以在无需重新加载整个网页的情况下，能够更新部分网页，从而给带来更好的用户体验。另外 AJAX 不仅使用 XML，实际上由于 JSON 结构的易读和轻量反而更受欢迎。&lt;/p></description></item><item><title>浏览器的事件机制</title><link>https://yindongliang.com/posts/browser-event/</link><pubDate>Mon, 18 Apr 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/browser-event/</guid><description>&lt;p>事件是在编程时系统内发生的动作或者发生的事情，系统响应事件后，如果需要，我们可以用事件处理器（event handler）对事件做出回应。浏览器中常见的可以触发事件的时机比如有：&lt;/p></description></item><item><title>搞懂原型链</title><link>https://yindongliang.com/posts/prototype-chain/</link><pubDate>Mon, 11 Apr 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/prototype-chain/</guid><description>&lt;p>与一般基于类的面向对象语言（C++、Java）不同，JavaScript 是基于原型的语言。&lt;/p>
+&lt;h2 id="原型-prototype">原型 &lt;code>[[Prototype]]&lt;/code>&lt;a class="anchor" href="#%e5%8e%9f%e5%9e%8b-prototype">#&lt;/a>&lt;/h2>
+&lt;p>打开浏览器的控制台，输入 &lt;code>let b = {&amp;quot;hello&amp;quot;: &amp;quot;world&amp;quot;}&lt;/code> ，然后查看 &lt;code>b&lt;/code> ，你会发现一个 &lt;code>[[Prototype]]&lt;/code> 属性。这是每个对象都有的&lt;strong>隐藏属性&lt;/strong>，它要么为 &lt;code>null&lt;/code>，要么是对另一个对象的引用，那个对象就被称为 &lt;code>b&lt;/code> 的 &lt;em>原型&lt;/em>（proto type）。&lt;/p></description></item><item><title>内置对象</title><link>https://yindongliang.com/docs/Frontend/Global_Objects/</link><pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Frontend/Global_Objects/</guid><description>&lt;p>JavaScript 没有标准库，但是有一些&lt;a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects">内置对象&lt;/a>，可以不需要导入就使用一些类似其他语言的标准库的方法。&lt;/p>
+&lt;h2 id="object">Object&lt;a class="anchor" href="#object">#&lt;/a>&lt;/h2>
+&lt;h3 id="assign">assign&lt;a class="anchor" href="#assign">#&lt;/a>&lt;/h3>
+&lt;h3 id="keys">keys&lt;a class="anchor" href="#keys">#&lt;/a>&lt;/h3>
+&lt;h3 id="hasownproperty">hasOwnProperty&lt;a class="anchor" href="#hasownproperty">#&lt;/a>&lt;/h3>
+&lt;p>判断 key 是否在对象中。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> main() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> a &lt;span style="color:#ff6ac1">=&lt;/span> {hello&lt;span style="color:#ff6ac1">:&lt;/span> &lt;span style="color:#5af78e">&amp;#34;world&amp;#34;&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> (&lt;span style="color:#5af78e">&amp;#34;hello&amp;#34;&lt;/span> &lt;span style="color:#ff6ac1">in&lt;/span> a) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> console.log(&lt;span style="color:#5af78e">&amp;#34;has 1&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> (a.hasOwnProperty(&lt;span style="color:#5af78e">&amp;#34;hello&amp;#34;&lt;/span>)) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> console.log(&lt;span style="color:#5af78e">&amp;#34;has 2&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// output:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// has 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// has 2
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="undefined">undefined&lt;a class="anchor" href="#undefined">#&lt;/a>&lt;/h2>
+&lt;p>undefined 表示的是一个变量为初始化时没有被赋值，得到的就是 &lt;code>undefined&lt;/code>。&lt;/p></description></item><item><title>JS 加号运算符的运用</title><link>https://yindongliang.com/posts/js-plus-operator/</link><pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/js-plus-operator/</guid><description>&lt;h2 id="一元运算符">一元运算符&lt;a class="anchor" href="#%e4%b8%80%e5%85%83%e8%bf%90%e7%ae%97%e7%ac%a6">#&lt;/a>&lt;/h2>
+&lt;p>&lt;strong>语法：&lt;/strong> + Expression&lt;/p>
+&lt;p>&lt;strong>说明：&lt;/strong> &lt;code>+&lt;/code> 号运算符作为一元运算符时，Expression将进行 &lt;a href="http://www.ecma-international.org/ecma-262/6.0/#sec-tonumber">ToNumber&lt;/a> 操作。&lt;/p>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th>argument类型&lt;/th>
+ &lt;th>返回值&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td>Undefined&lt;/td>
+ &lt;td>return NaN&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Null&lt;/td>
+ &lt;td>return +0&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Boolean&lt;/td>
+ &lt;td>true return 1; false return 0;&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Number&lt;/td>
+ &lt;td>return value&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>String&lt;/td>
+ &lt;td>若字符串为纯数字时返回转换后的数字；非纯数字返回NaN&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Symbol&lt;/td>
+ &lt;td>抛出 TypeError 异常&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td>Object&lt;/td>
+ &lt;td>进行以下步骤：1.先进行ToPrimitive(argument, hint Number)得到rs； 2.然后返回 ToNumber(rs)的结果。&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;p>示例：&lt;/p></description></item><item><title>JS 非空判断</title><link>https://yindongliang.com/posts/js-if-not-empty/</link><pubDate>Sat, 11 Sep 2021 00:00:00 +0000</pubDate><guid>https://yindongliang.com/posts/js-if-not-empty/</guid><description>&lt;p>在 js 中，有一个富有哲学意味的问题：「什么是空」？先看下面代码：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff5c57">function&lt;/span> main(a) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff6ac1">if&lt;/span> (&lt;span style="color:#ff6ac1">!&lt;/span>a) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> console.log(&lt;span style="color:#5af78e">&amp;#34;空&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#ff6ac1">else&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> console.log(&lt;span style="color:#5af78e">&amp;#34;非空&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main(&lt;span style="color:#ff9f43">0&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main(&lt;span style="color:#ff6ac1">null&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main(&lt;span style="color:#5af78e">&amp;#34;&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main(&lt;span style="color:#ff6ac1">undefined&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>main(&lt;span style="color:#ff6ac1">NaN&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#78787e">// 以上全是“空”
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>上面这些好像很好判断，那下面这些呢？&lt;/p></description></item></channel></rss>

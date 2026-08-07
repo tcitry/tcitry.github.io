@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>LYon's Blog</title><link>https://yindongliang.com/docs/Algorithms/</link><description>Recent content on LYon's Blog</description><generator>Hugo</generator><language>zh-cn</language><atom:link href="https://yindongliang.com/docs/Algorithms/index.xml" rel="self" type="application/rss+xml"/><item><title>Overview</title><link>https://yindongliang.com/docs/Algorithms/00-overview/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://yindongliang.com/docs/Algorithms/00-overview/</guid><description>&lt;p>这个目录主要是一些 LeetCode 的学习笔记，题目的代码和分析放在了 &lt;a href="https://github.com/tcitry/leetcode">https://github.com/tcitry/leetcode&lt;/a>&lt;/p>
+&lt;p>刷题时请关闭你的 &lt;a href="https://copilot.github.com/">GitHub Copilot&lt;/a> 插件，它会给你提示答案，通过 &lt;code>ctrl+center&lt;/code> 还可以选择不同答案 🐶&lt;/p>
+&lt;h2 id="参考资料">参考资料&lt;a class="anchor" href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#&lt;/a>&lt;/h2>
+&lt;p>&lt;a href="https://leetcode.cn/">LeetCode&lt;/a>&lt;/p>
+&lt;p>&lt;a href="https://labuladong.github.io/algo/">东哥的算法小抄&lt;/a>&lt;/p>
+&lt;p>&lt;a href="https://codetop.cc/">CodeTop 企业库&lt;/a>&lt;/p></description></item></channel></rss>
