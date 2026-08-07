@@ -766,6 +766,8 @@ a.card:visited {
   width: 90%;
   max-width: 800px;
   max-height: 80vh;
+  --search-ui-accent: #0da99c;
+  --search-ui-accent-subtle: rgba(13, 169, 156, 0.12);
   background-color: white;
   border-radius: 8px;
   overflow: auto;
@@ -778,9 +780,68 @@ a.card:visited {
   height: 100%;
 }
 
+/* Pagefind 的默认清除按钮未重置 border，容易继承浏览器原生按钮外观。 */
+#search .pagefind-ui__search-input {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#search .pagefind-ui__search-input:focus {
+  outline: none;
+  border-color: var(--search-ui-accent);
+  box-shadow: 0 0 0 3px var(--search-ui-accent-subtle);
+}
+
+#search .pagefind-ui__search-clear {
+  position: absolute;
+  top: calc(11px * var(--pagefind-ui-scale));
+  right: calc(8px * var(--pagefind-ui-scale));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: calc(50px * var(--pagefind-ui-scale));
+  height: calc(42px * var(--pagefind-ui-scale));
+  padding: 0 calc(10px * var(--pagefind-ui-scale));
+  border: 1px solid transparent;
+  border-radius: calc(var(--pagefind-ui-border-radius) - 2px);
+  background-color: transparent;
+  color: var(--pagefind-ui-text);
+  font-size: calc(15px * var(--pagefind-ui-scale));
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease, transform 0.15s ease;
+}
+
+#search .pagefind-ui__search-clear:hover {
+  background-color: var(--search-ui-accent-subtle);
+  color: var(--search-ui-accent);
+}
+
+#search .pagefind-ui__search-clear:focus-visible {
+  outline: none;
+  border-color: var(--search-ui-accent);
+  background-color: var(--search-ui-accent-subtle);
+  color: var(--search-ui-accent);
+  box-shadow: 0 0 0 3px var(--search-ui-accent-subtle);
+}
+
+#search .pagefind-ui__search-clear:active {
+  transform: scale(0.97);
+}
+
+#search .pagefind-ui__search-clear.pagefind-ui__suppressed {
+  visibility: hidden;
+}
+
 /* 使用 media 查询来支持深色模式 */
 @media (prefers-color-scheme: dark) {
   #search-dialog {
+    --search-ui-accent: #74AA9C;
+    --search-ui-accent-subtle: rgba(116, 170, 156, 0.16);
     background-color: #303030;
     color: #e0e0e0;
   }
