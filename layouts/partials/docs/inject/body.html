@@ -114,11 +114,29 @@
 </script>
 
 <script>
-  ts = document.getElementsByTagName("a");
-  for (const t of ts) {
-    if (t.href && !(t.href.startsWith("http://localhost") | t.href.startsWith("{{ .Site.BaseURL }}"))){
-      t.target = "_blank";
-      t.rel = "noopener noreferrer";
+  const internalLinkOrigins = new Set(
+    [
+      window.location.origin,
+      {{ .Site.BaseURL | jsonify | safeJS }},
+      ...{{ .Site.Params.internalLinkOrigins | jsonify | safeJS }},
+    ].map((value) => new URL(value).origin)
+  );
+
+  document.querySelectorAll("a[href]").forEach((link) => {
+    if (link.hasAttribute("target") || link.hasAttribute("download")) return;
+
+    let destination;
+    try {
+      destination = new URL(link.getAttribute("href"), window.location.href);
+    } catch {
+      return;
     }
-  }
+
+    const isHttpLink =
+      destination.protocol === "http:" || destination.protocol === "https:";
+    if (!isHttpLink || internalLinkOrigins.has(destination.origin)) return;
+
+    link.target = "_blank";
+    link.relList.add("noopener", "noreferrer");
+  });
 </script>

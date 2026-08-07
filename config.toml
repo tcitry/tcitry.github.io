@@ -78,6 +78,12 @@ path = "github.com/alex-shpak/hugo-book"
 [params]
 
 BookTheme = "auto"
+# Origins that serve this site and should keep same-tab navigation.
+internalLinkOrigins = [
+  "https://yindongliang.com",
+  "https://www.yindongliang.com",
+  "https://tcitry.github.io",
+]
 CopyrightHTML = "© 2012 - 2025 YINDONGLIANG"
 SidebarRecentLimit = 5
 TwitterUser = "tcitry"
