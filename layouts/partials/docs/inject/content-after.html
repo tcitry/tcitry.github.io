@@ -22,11 +22,11 @@
             <h2 style="color: darkgrey;">相关文章</h2>
             {{ range . }}
                 <div class="post">
-                <p><h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> » <a href="{{ .RelPermalink }}">
+                <h3><time style="color: darkgrey;">{{.Date.Format "2006-01-02"}}</time> » <a href="{{ .RelPermalink }}">
                     {{ if .Title }}
                         {{ if eq .Type "docs"}}{{ path.Base .File.Dir | title }} — {{ end }}{{ .Title }}
                     {{ end }}
-                </a></h3></p>
+                </a></h3>
                 </div>
             {{ end }}
         {{ end }}

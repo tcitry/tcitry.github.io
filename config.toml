@@ -39,7 +39,7 @@ summaryLength = 100
 ignorefiles = ["content/template/*", ".obsidian", "draft"]
 
 [frontmatter]
-lastmod = ["lastmod", ":fileModTime", ":default"]
+lastmod = ["lastmod", ":git", ":fileModTime", ":default"]
 
 [permalinks]
 posts = "/posts/:slug/"
