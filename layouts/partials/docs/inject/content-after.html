@@ -73,9 +73,10 @@
       </div>
     {{ end }}
 
+    {{/* Docs section pathnames are prefixes of descendant page pathnames. */}}
     {{ if and
         (in (slice "docs" "posts" "about" "weekly" "links") .Type)
-        (or .IsPage (and (eq .Type "docs") (eq .Kind "section")))
+        .IsPage
     }}
         <script src="https://giscus.app/client.js"
             data-repo="tcitry/tcitry.github.io"
