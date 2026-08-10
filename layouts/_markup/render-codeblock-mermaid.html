@@ -1,0 +1,45 @@
+{{- /*
+  Override Hugo Book's Mermaid hook.
+
+  The theme stores a "mermaid" flag in Page.Store to avoid emitting its loader
+  more than once. Page.Store survives Hugo's development-server fast renders,
+  so an edited page can retain <pre class="mermaid"> blocks but lose the loader.
+  A small browser-side guard avoids that stale server-side state and explicitly
+  renders all diagrams once the complete document is available.
+*/ -}}
+{{- $config := resources.Get "mermaid.json" | minify -}}
+<pre class="mermaid">{{ .Inner | htmlEscape | safeHTML -}}</pre>
+<script>
+  (() => {
+    if (window.__blogMermaidBooted) return;
+    window.__blogMermaidBooted = true;
+
+    const start = () => {
+      const render = () => {
+        mermaid.initialize(Object.assign({}, {{ $config.Content | safeJS }}, { startOnLoad: false }));
+        void mermaid.run({ querySelector: "pre.mermaid" }).catch((error) => {
+          console.error("Unable to render Mermaid.", error);
+        });
+      };
+
+      if (window.mermaid) {
+        render();
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "{{ "mermaid.min.js" | relURL }}";
+      script.addEventListener("load", render, { once: true });
+      script.addEventListener("error", () => {
+        console.error("Unable to load Mermaid.");
+      }, { once: true });
+      document.head.appendChild(script);
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", start, { once: true });
+    } else {
+      start();
+    }
+  })();
+</script>
