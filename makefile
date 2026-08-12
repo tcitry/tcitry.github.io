@@ -1,4 +1,6 @@
-CONTENT_DIR ?= content
+# Local default: the private Blog checkout beside the public site repository.
+# CI explicitly overrides this with CONTENT_DIR=content after its checkout step.
+CONTENT_DIR ?= $(abspath $(CURDIR)/../../Blog)
 PAGEFIND_VERSION ?= 1.5.2
 
 server:
