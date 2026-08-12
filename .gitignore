@@ -7,6 +7,7 @@
 **/node_modules
 dist
 package-lock.json
+!demos/**/package-lock.json
 
 # Generated from the Blog content checkout during each Hugo build.
 /static/demos/
