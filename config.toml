@@ -36,7 +36,7 @@ pagerSize = 10
 
 summaryLength = 100
 
-ignorefiles = ["content/template/*", ".obsidian", "draft"]
+ignorefiles = ["content/template/*", ".obsidian", "draft", "/static/demos/"]
 
 [frontmatter]
 lastmod = ["lastmod", ":git", ":fileModTime", ":default"]
