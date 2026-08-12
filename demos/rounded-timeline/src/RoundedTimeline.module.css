@@ -40,6 +40,17 @@
   pointer-events: none;
 }
 
+.activeRail {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: var(--active-rail-start, 0px);
+  inset-inline-start: var(--rail-x);
+  inline-size: 2px;
+  block-size: var(--active-rail-length, 0px);
+  background: var(--branch);
+  pointer-events: none;
+}
+
 .heading,
 .list,
 .item,
@@ -49,7 +60,7 @@
 
 .heading {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: inline-block;
   max-inline-size: 100%;
   margin: 0;
@@ -65,7 +76,6 @@
 
 .list {
   position: relative;
-  z-index: 1;
   display: grid;
   gap: var(--card-gap);
   margin: var(--heading-gap) 0 0 var(--card-start);
@@ -100,7 +110,7 @@
 
 .card {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   padding: clamp(20px, 2.8vw, 26px) clamp(22px, 3.5vw, 30px);
   border-radius: 20px;
   background: var(--card);

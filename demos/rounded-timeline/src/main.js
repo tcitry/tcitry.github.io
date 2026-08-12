@@ -23,6 +23,10 @@ const rail = document.createElement("span");
 rail.className = styles.rail;
 rail.setAttribute("aria-hidden", "true");
 
+const activeRail = document.createElement("span");
+activeRail.className = styles.activeRail;
+activeRail.setAttribute("aria-hidden", "true");
+
 const heading = document.createElement("h1");
 heading.className = styles.heading;
 heading.id = "rounded-timeline-title";
@@ -30,6 +34,8 @@ heading.textContent = "带圆弧连接线的时间线卡片";
 
 const list = document.createElement("ol");
 list.className = styles.list;
+
+let lastCard;
 
 for (const itemData of items) {
   const item = document.createElement("li");
@@ -49,7 +55,27 @@ for (const itemData of items) {
   card.append(title, description);
   item.append(card);
   list.append(item);
+  lastCard = card;
 }
 
-timeline.append(rail, heading, list);
+timeline.append(rail, activeRail, heading, list);
 app.append(timeline);
+
+function syncActiveRail() {
+  if (!lastCard) return;
+
+  const timelineBox = timeline.getBoundingClientRect();
+  const headingBox = heading.getBoundingClientRect();
+  const lastCardBox = lastCard.getBoundingClientRect();
+  const start = headingBox.bottom - timelineBox.top;
+  const end = lastCardBox.top - timelineBox.top + lastCardBox.height / 2;
+
+  timeline.style.setProperty("--active-rail-start", `${Math.max(0, start)}px`);
+  timeline.style.setProperty("--active-rail-length", `${Math.max(0, end - start)}px`);
+}
+
+const resizeObserver = new ResizeObserver(syncActiveRail);
+resizeObserver.observe(timeline);
+resizeObserver.observe(heading);
+resizeObserver.observe(lastCard);
+syncActiveRail();
