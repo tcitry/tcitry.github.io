@@ -174,6 +174,7 @@ jobs:
           set -euo pipefail
           test -f public/index.html
           test -d public/pagefind
+          test -f public/demos/rounded-timeline/index.html
           test -z "$(find public -type l -print -quit)" || {
             echo "::error::GitHub Pages artifacts cannot contain symbolic links."
             exit 1
