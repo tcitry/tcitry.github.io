@@ -1,0 +1,21 @@
+// Scope the generated Chroma palette so it overrides Hugo Book's pre styles.
+.highlight {
+  @import "chroma-light";
+
+  // Keep the light code surface distinct from the white page background.
+  .bg,
+  .chroma {
+    background-color: #f6f8fa;
+  }
+
+  .chroma {
+    border-color: #d0d7de;
+
+    // Some lexers classify Unicode source text (for example JSX text) as an
+    // error token. Keep those fallbacks visually consistent with normal code.
+    .err {
+      color: inherit;
+      background-color: transparent;
+    }
+  }
+}

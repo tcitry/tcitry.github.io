@@ -7,7 +7,12 @@
   A small browser-side guard avoids that stale server-side state and explicitly
   renders all diagrams once the complete document is available.
 */ -}}
-{{- $config := resources.Get "mermaid.json" | minify -}}
+{{- $config := "{}" -}}
+{{- with resources.Get "mermaid.json" -}}
+  {{- with . | minify -}}
+    {{- $config = .Content -}}
+  {{- end -}}
+{{- end -}}
 <pre class="mermaid">{{ .Inner | htmlEscape | safeHTML -}}</pre>
 <script>
   (() => {
@@ -16,7 +21,7 @@
 
     const start = () => {
       const render = () => {
-        mermaid.initialize(Object.assign({}, {{ $config.Content | safeJS }}, { startOnLoad: false }));
+        mermaid.initialize(Object.assign({}, {{ $config | safeJS }}, { startOnLoad: false }));
         void mermaid.run({ querySelector: "pre.mermaid" }).catch((error) => {
           console.error("Unable to render Mermaid.", error);
         });

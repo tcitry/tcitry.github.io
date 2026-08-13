@@ -60,8 +60,9 @@ hl_Lines = ""
 lineNoStart = 1
 lineNos = false
 lineNumbersInTable = true
-noClasses = true
-# style = "doom-one2"
+noClasses = false
+# The class-based light/dark palettes are generated with `make chroma-styles`.
+# Keep this as the fallback for any renderer that explicitly requests inline styles.
 style = 'base16-snazzy'
 tabWidth = 4
 

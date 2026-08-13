@@ -1,3 +1,8 @@
+{{- $syntaxLight := resources.Get "syntax-light.scss" | css.Sass | resources.Minify | resources.Fingerprint }}
+<link rel="stylesheet" href="{{ $syntaxLight.RelPermalink }}" integrity="{{ $syntaxLight.Data.Integrity }}" crossorigin="anonymous" media="(prefers-color-scheme: light), print">
+{{- $syntaxDark := resources.Get "syntax-dark.scss" | css.Sass | resources.Minify | resources.Fingerprint }}
+<link rel="stylesheet" href="{{ $syntaxDark.RelPermalink }}" integrity="{{ $syntaxDark.Data.Integrity }}" crossorigin="anonymous" media="screen and (prefers-color-scheme: dark)">
+
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
 <script>
@@ -14,4 +19,3 @@
   }
 </script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1305150098246428" crossorigin="anonymous"></script>
-{{/*  <script src="https://cdn.tailwindcss.com"></script>  */}}

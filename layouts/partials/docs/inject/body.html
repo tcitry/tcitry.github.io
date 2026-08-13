@@ -7,6 +7,30 @@
 </style>
 
 <script>
+  (() => {
+    const hideTimers = new WeakMap();
+
+    document.addEventListener('scroll', (event) => {
+      const scrollArea = event.target === document
+        ? document.scrollingElement
+        : event.target;
+
+      if (!(scrollArea instanceof Element)) return;
+
+      scrollArea.classList.add('is-scrolling');
+      window.clearTimeout(hideTimers.get(scrollArea));
+
+      const hideTimer = window.setTimeout(() => {
+        scrollArea.classList.remove('is-scrolling');
+        hideTimers.delete(scrollArea);
+      }, 650);
+
+      hideTimers.set(scrollArea, hideTimer);
+    }, { capture: true, passive: true });
+  })();
+</script>
+
+<script>
   document.onkeydown = function (event) {
     if (event.code === "ArrowLeft") {
       let ele = document.getElementsByClassName("nav nav-left")

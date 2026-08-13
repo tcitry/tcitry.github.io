@@ -1,0 +1,11 @@
+// Scope the generated Chroma palette so it overrides Hugo Book's pre styles.
+.highlight {
+  @import "chroma-dark";
+
+  // Match the light theme when a lexer falls back to an error token for
+  // Unicode source text.
+  .chroma .err {
+    color: inherit;
+    background-color: transparent;
+  }
+}

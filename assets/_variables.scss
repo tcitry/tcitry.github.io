@@ -1,3 +1,13 @@
-$container-max-width: 110rem;
 $menu-width: 20rem;
 $toc-width: 20rem;
+
+$page-width-step: 10rem;
+$page-column-max-width: 70rem;
+$page-column-without-toc-max-width: 90rem;
+$listing-page-column-max-width: $page-column-max-width + $page-width-step;
+$listing-page-column-without-toc-max-width: $page-column-without-toc-max-width + $page-width-step;
+
+$container-max-width: $menu-width + $page-column-max-width + $toc-width;
+$listing-container-max-width: $menu-width + $listing-page-column-max-width + $toc-width;
+
+$mobile-breakpoint: $menu-width + $body-min-width * 1.2 + $toc-width;

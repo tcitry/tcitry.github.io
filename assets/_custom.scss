@@ -1,5 +1,177 @@
+@import "code-copy";
+
 blockquote {
   font-style: italic;
+}
+
+main.container {
+  --book-container-max-width: #{$container-max-width};
+}
+
+// Give index and listing pages one wider content-width step.
+body.book-kind-home > main.container,
+body.book-kind-section > main.container,
+body.book-kind-taxonomy > main.container,
+body.book-kind-term > main.container,
+body.book-layout-list > main.container,
+body.book-layout-modified > main.container {
+  max-width: $listing-container-max-width;
+  --book-container-max-width: #{$listing-container-max-width};
+}
+
+// Preserve the wider no-TOC page shape instead of filling the missing aside.
+main.container:not(:has(> .book-toc)) > .book-page {
+  max-width: $page-column-without-toc-max-width;
+}
+
+body.book-kind-home > main.container:not(:has(> .book-toc)) > .book-page,
+body.book-kind-section > main.container:not(:has(> .book-toc)) > .book-page,
+body.book-kind-taxonomy > main.container:not(:has(> .book-toc)) > .book-page,
+body.book-kind-term > main.container:not(:has(> .book-toc)) > .book-page,
+body.book-layout-list > main.container:not(:has(> .book-toc)) > .book-page,
+body.book-layout-modified > main.container:not(:has(> .book-toc)) > .book-page {
+  max-width: $listing-page-column-without-toc-max-width;
+}
+
+// Keep the right sidebar beside the content while anchoring the desktop menu.
+@media screen and (min-width: $container-max-width) {
+  .book-menu .book-menu-content {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+    inline-size: max-content;
+    min-inline-size: $menu-width;
+    max-inline-size: clamp(
+      $menu-width,
+      calc(#{$menu-width} + (100% - var(--book-container-max-width)) / 2),
+      100%
+    );
+  }
+
+  .book-toc .book-toc-content {
+    inset-inline: auto;
+    inline-size: max-content;
+    min-inline-size: $toc-width;
+    max-inline-size: clamp(
+      $toc-width,
+      calc(#{$toc-width} + (100% - var(--book-container-max-width)) / 2),
+      100%
+    );
+  }
+
+  .book-menu a,
+  .book-menu label,
+  .book-toc a {
+    overflow-wrap: anywhere;
+  }
+
+  .book-menu .book-menu-content :where(nav, ul, li, label, a),
+  .book-menu .book-search,
+  .book-menu .search-wrapper,
+  .book-menu #book-search-input {
+    min-inline-size: 0;
+  }
+
+  .book-menu .book-search,
+  .book-menu .search-wrapper,
+  .book-menu #book-search-input {
+    max-inline-size: 100%;
+  }
+}
+
+// Keep scrollbars quiet by default until their own scroll area is active.
+:root {
+  --scrollbar-thumb-active: color-mix(
+    in srgb,
+    var(--body-font-color) 50%,
+    transparent
+  );
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.is-scrolling {
+  scrollbar-color: var(--scrollbar-thumb-active) transparent;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: $padding-8;
+}
+
+.is-scrolling::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-active);
+}
+
+// Keep table overflow local while preserving a single readable width floor.
+.book-page .markdown .table-scroll {
+  inline-size: 100%;
+  max-inline-size: 100%;
+  margin-block: $padding-16;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.book-page .markdown .table-scroll > table {
+  display: table;
+  inline-size: 100%;
+  min-inline-size: 64rem;
+  max-inline-size: none;
+  margin-block: 0;
+  overflow: visible;
+  table-layout: auto;
+}
+
+.book-page .markdown .table-scroll > table :where(th, td) {
+  min-inline-size: 12rem;
+  vertical-align: top;
+}
+
+// Horizontal scrollbars stay visible; vertical scrollbars remain activity-only.
+.book-page .markdown :where(pre, .table-scroll) {
+  scrollbar-color: var(--scrollbar-thumb-active) transparent;
+}
+
+.book-page .markdown :where(pre, .table-scroll)::-webkit-scrollbar {
+  height: $padding-8;
+}
+
+.book-page .markdown :where(pre, .table-scroll)::-webkit-scrollbar-thumb:horizontal {
+  background-color: var(--scrollbar-thumb-active);
+}
+
+@media (forced-colors: active) {
+  *,
+  .is-scrolling,
+  .book-page .markdown :where(pre, .table-scroll) {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+
+  *::-webkit-scrollbar,
+  *::-webkit-scrollbar-track,
+  *::-webkit-scrollbar-thumb,
+  .is-scrolling::-webkit-scrollbar-thumb,
+  .book-page .markdown :where(pre, .table-scroll)::-webkit-scrollbar,
+  .book-page .markdown :where(pre, .table-scroll)::-webkit-scrollbar-thumb:horizontal {
+    all: revert;
+  }
+}
+
+@media screen and (max-width: $mobile-breakpoint) {
+  .book-menu .book-menu-content {
+    max-width: 100vw;
+  }
 }
 
 li:has(> input[type="checkbox"]) {
@@ -84,13 +256,13 @@ main a[target="_blank"]::after {
   margin: 0 3px 0 5px;
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: $mobile-breakpoint) {
   #navigation {
     display: none;
   }
 }
 
-@media screen and (min-width: 900px) {
+@media screen and (min-width: $mobile-breakpoint + 0.01rem) {
   #navigation-mobile {
     display: none;
   }
@@ -118,6 +290,10 @@ main a[target="_blank"]::after {
 
 #navigation .nav-right {
   right: 0;
+}
+
+.book-footer > .giscus {
+  margin-block-start: $padding-16 * 2;
 }
 
 .fa-right:before {
