@@ -13,6 +13,10 @@ enableGitInfo = true
 
 enableRobotsTXT = true
 
+# `private/` belongs to the private Blog repository, but must never be rendered
+# into the public site. Hugo matches ignoreFiles against absolute content paths.
+ignoreFiles = ["(?i)(^|/)private(/|$)"]
+
 # Enable Disqus
 # disqusShortname = "yindongliang"
 

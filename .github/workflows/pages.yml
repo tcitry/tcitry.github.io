@@ -176,6 +176,11 @@ jobs:
           test -d public/pagefind
           test -f public/demos/2026/rounded-timeline/index.html
           test ! -e public/static/demos/2026/rounded-timeline/index.html
+          private_path="$(find public -type d -iname private -print -quit)"
+          test -z "${private_path}" || {
+            echo "::error::A directory named private must never be published."
+            exit 1
+          }
           test -z "$(find public -type l -print -quit)" || {
             echo "::error::GitHub Pages artifacts cannot contain symbolic links."
             exit 1
