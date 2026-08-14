@@ -13,9 +13,25 @@ enableGitInfo = true
 
 enableRobotsTXT = true
 
-# `private/` belongs to the private Blog repository, but must never be rendered
-# into the public site. Hugo matches ignoreFiles against absolute content paths.
-ignoreFiles = ["(?i)(^|/)private(/|$)"]
+# Content excluded from the build. Hugo matches ignoreFiles against absolute
+# content paths, so every pattern is anchored on a path separator.
+#
+# Keep these as root-level keys: anything placed after a `[table]` header below
+# is parsed as a key of that table and silently dropped.
+#
+# - `private/` belongs to the private Blog repository and must never be
+#   rendered into the public site.
+# - `draft/`, `template/` and `.obsidian/` are authoring-side directories. They
+#   must not produce pages, section list pages or sitemap entries.
+# - `static/demos/` is synced into this repository's own `static/` by
+#   `make sync-content-demos`; it must not also be treated as content.
+ignoreFiles = [
+  "(?i)(^|/)private(/|$)",
+  "(^|/)draft(/|$)",
+  "(^|/)template(/|$)",
+  "(?i)(^|/)\\.obsidian(/|$)",
+  "(^|/)static/demos(/|$)",
+]
 
 # Enable Disqus
 # disqusShortname = "yindongliang"
@@ -35,12 +51,10 @@ ignoreFiles = ["(?i)(^|/)private(/|$)"]
 #   contentDir = 'en'
 #   weight = 2
 
-[pagination]
-pagerSize = 10
-
 summaryLength = 100
 
-ignorefiles = ["content/template/*", ".obsidian", "draft", "/static/demos/"]
+[pagination]
+pagerSize = 10
 
 [frontmatter]
 lastmod = ["lastmod", ":git", ":fileModTime", ":default"]

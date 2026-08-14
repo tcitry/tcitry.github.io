@@ -20,11 +20,25 @@
     window.__blogMermaidBooted = true;
 
     const start = () => {
+      const makeMermaidDiagramsScrollable = () => {
+        document.querySelectorAll("pre.mermaid > svg").forEach((svg) => {
+          const viewBox = svg.viewBox?.baseVal;
+          if (!viewBox || viewBox.width <= 0 || viewBox.height <= 0) return;
+
+          svg.setAttribute("width", String(viewBox.width));
+          svg.setAttribute("height", String(viewBox.height));
+          svg.style.maxWidth = "none";
+        });
+      };
+
       const render = () => {
         mermaid.initialize(Object.assign({}, {{ $config | safeJS }}, { startOnLoad: false }));
-        void mermaid.run({ querySelector: "pre.mermaid" }).catch((error) => {
-          console.error("Unable to render Mermaid.", error);
-        });
+        void mermaid
+          .run({ querySelector: "pre.mermaid" })
+          .then(makeMermaidDiagramsScrollable)
+          .catch((error) => {
+            console.error("Unable to render Mermaid.", error);
+          });
       };
 
       if (window.mermaid) {
