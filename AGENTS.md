@@ -20,6 +20,7 @@
 - 全站正文宽度以 posts 文章详情页为统一基准。Archives、Tags、Categories、Timeline、Weekly、Portfolio、Links 等索引或业务页面不单独启用宽页布局；没有右侧目录时也不扩大正文列。调整后核对桌面实际宽度与移动端溢出。
 - 空正文栏目入口由 `scripts/site-pages.mjs` 维护，Blog 不再需要 `archives.md`、`ghstar.md`、`modified.md`、`portfolio.md`、`timeline.md` 占位；栏目 URL 与既有元数据继续保持兼容。
 - 修改主题或渲染后，运行站点 build、check、tests 和 verify；生产验收使用对应的 production 命令。保持旧 URL 基线和 Giscus pathname term。
+- 生产发布使用独立检出、独立依赖与缓存、独立 `dist/`，内容固定到已审查提交。不得从其他任务仍可能构建的共享工作区发布；Wrangler 上传期间不能重建或改写资产目录。发现产物被并行改写时，中止上传，确认线上版本，再从独立目录重建、复验和发布。
 - 完成脱敏、review 与验证后，可在 `main` 按合理批次 commit、push 并部署；主题改动先推送主题仓库，再更新本站固定来源与 lockfile。提交前检查 diff 与忽略规则，不提交凭据、本机绝对路径、私有内容、生成产物或安装后的商业组件源码；发布后核验线上结果。
 - Astro 的 Giscus 配置与页面适用条件位于 `src/layouts/BookLayout.astro`；以下评论规则同样约束 Astro，提及的旧 Hugo 模板路径均位于备份分支，不属于当前 `main` 的开发入口。
 
