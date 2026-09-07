@@ -51,7 +51,9 @@ npm run preview -- --port 4321
 
 ## 主题开发与功能入口
 
-主题仓库负责通用布局、导航、TOC、文章元数据与列表、Markdown/MDX、KaTeX、Mermaid、搜索界面和 Giscus 组件。主题默认使用 Expressive Code，也提供通用关闭接口供消费者替换代码展示。
+主题仓库负责通用布局、导航、TOC、文章元数据与列表、Markdown/MDX、KaTeX、Mermaid、搜索界面与索引构建，以及 Giscus 组件。主题默认使用 Expressive Code，也提供通用关闭接口供消费者替换代码展示。
+
+Pagefind 依赖和构建流程由 `astro-book` 统一维护；本站不需要单独安装 Pagefind 或运行索引命令。`astro build` 完成静态页面后，主题自动为本站生成 `dist/pagefind/`。本站仅在 `astro.config.mjs` 的 `astroBook({ search: { glob, rootSelector } })` 中配置 `docs/`、`posts/`、`weekly/` 的索引范围及 `main` 正文区域，在 `src/layouts/BookLayout.astro` 中配置中文提示；原有 `pagefind.yml` 已迁入该配置。各网站按自己的内容生成索引，不共享文章数据。普通 `astro dev` 不生成索引，搜索验收使用完整 build + preview。
 
 本站负责内容导入、旧 URL、tag/category、RSS/sitemap、页面排序与数据、站点配置和交互 demo。Weekly、Timeline、Portfolio、Links 的业务组件、展示类型和专用样式也留在本站。本站普通文章与 MDX 的代码块统一使用 HeroUI Pro CodeBlock：先输出完整可读的静态代码，接近视口后加载 React / Pro 高亮与复制；Mermaid 源复制保留主题实现。公开主题没有商业组件依赖。加载策略与成本见 [代码块说明](docs/demo-authoring.md#普通文章与-mdx-代码块)。
 

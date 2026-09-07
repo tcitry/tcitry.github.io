@@ -14,7 +14,10 @@ export default defineConfig({
   build: { format: 'directory' },
   // Keep exact static source; the site's Pro renderer adds highlighting near the viewport.
   markdown: { syntaxHighlight: false },
-  integrations: [astroBook({ markdown: { code: false, remarkPlugins: [remarkBlogCodeSource], rehypePlugins: [rehypeBlogCodeBlocks] } }), react(), svelte()],
+  integrations: [astroBook({
+    search: { glob: '{docs,posts,weekly}/**/*.html', rootSelector: 'main' },
+    markdown: { code: false, remarkPlugins: [remarkBlogCodeSource], rehypePlugins: [rehypeBlogCodeBlocks] },
+  }), react(), svelte()],
   vite: {
     plugins: [tailwindcss()],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },

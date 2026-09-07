@@ -13,7 +13,7 @@
     "prepare:content": "node scripts/prepare-content.mjs",
     "prepare:assets": "node scripts/prepare-assets.mjs",
     "dev": "npm run prepare:content && npm run prepare:assets && astro dev --host 127.0.0.1",
-    "build": "npm run prepare:content && npm run prepare:assets && astro build && node scripts/finalize-build.mjs && pagefind --site dist --glob '{docs,posts,weekly}/**/*.html'",
+    "build": "npm run prepare:content && npm run prepare:assets && astro build && node scripts/finalize-build.mjs",
     "build:production": "PUBLIC_SITE_ENV=production npm run build",
     "build:workers": "node scripts/workers-build.mjs",
     "preview": "astro preview --host 127.0.0.1",
@@ -53,7 +53,6 @@
     "@types/node": "26.4.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.7",
-    "pagefind": "1.5.2",
     "typescript": "6.0.3",
     "wrangler": "4.129.0"
   },

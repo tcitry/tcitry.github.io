@@ -22,7 +22,7 @@ npm run preview -- --port 4321
 
 可运行 `node scripts/verify-deployment.mjs --env preview` 检查本地页面；默认地址为 `http://127.0.0.1:4321`，其他端口通过 `--origin` 指定。Astro preview 不执行 Cloudflare 的 `_headers`、`_redirects`，本机检查因此跳过平台响应头、HTTP 重定向与 immutable 缓存断言；重定向和响应头配置仍由 `npm run verify` 检查，实际托管行为在生产发布后验收。
 
-开发时用 npm run dev。它会先只读导入 Blog 并复制公开资源；`BLOG_DIR` 默认是当前用户的 `~/Blog`，可显式覆盖。修改 Blog 后重新准备内容或重启 dev。Pagefind 由完整 build 生成，验收搜索请使用 build + preview。
+开发时用 npm run dev。它会先只读导入 Blog 并复制公开资源；`BLOG_DIR` 默认是当前用户的 `~/Blog`，可显式覆盖。修改 Blog 后重新准备内容或重启 dev。Pagefind 由 astro-book 在 Astro 构建完成时自动生成，本站仅配置索引范围，不再单独安装或执行 Pagefind；验收搜索请使用 build + preview。
 
 `setup` 仅使用 Node 内置模块启动：读取 `astro-book.source.json` 中的公开仓库和完整 commit，独立检出该提交，按照主题自己的 lockfile 执行 `npm ci`，再通过 `npm pack` 构建主题。打包结果必须匹配本站 lockfile 中的 SHA-512，最后才执行本站 `npm ci`。它不会使用本机碰巧存在的主题源码、跟随远端 main 更新或修改 lockfile。`.artifacts/` 中的临时源码和 tarball 均不入 Git；临时源码在打包后自动清理。
 
@@ -171,6 +171,12 @@ HTTP 检查记录在 `.generated/cloudflare-verification.json`。Cloudflare 对 
 ## Hugo 布局对齐与 Kumo 清理验收（2026-09-07，历史）
 
 本轮使用公开主题 `f5066d2f0bd591800dcd7433357a60e77b7b38da`，从 Blog `main` 已提交版本 `f405f1beaeaac13fe84f3a17bc55d5a5673471d7` 的干净副本构建。
+
+### 搜索能力归入主题（2026-09-07）
+
+主题升级到 `0207160353e44a81146ec2159e15cc8b8afd508d`：Pagefind 依赖、索引构建和搜索界面统一由 astro-book 维护，本站仅保留范围与中文配置。原 `pagefind.yml` 的 `glob` 和 `root_selector` 已迁入 `astro.config.mjs`。
+
+继续使用上述内容提交构建生产产物。新旧索引的 968 条记录逐项比较完全一致，包括地址、正文和元数据；本地中文搜索可正常跳转原文章地址。本站 check、26 项 tests 和 verify:production 通过，保留全部 1208 个原有 URL，并通过 Giscus、公式、Mermaid、代码块及生产收录策略检查。主题独立文档站的 33 项测试、打包安装和 GitHub Pages 搜索也已通过。
 
 - 构建 1,226 个页面，保留全部 1,208 个旧 URL；951 个 Giscus 页面、25 个公式页面、65 个 Mermaid 页面、623 个代码页面通过检查。24 项测试通过，31 个文件的类型检查零错误、零警告。
 - 同一浏览器在 390、1920、2560px 视口对比 Archives、Weekly、Timeline、Portfolio，根滚动条及容器、侧栏的宽度、位置、内边距、overflow 测量与 Hugo 一致。Weekly 卡片仍为 320px、封面 320×192px；13 个 Portfolio 卡片在桌面与手机端的高度均与原站一致。
