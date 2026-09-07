@@ -2,6 +2,7 @@ import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promi
 import path from 'node:path';
 import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
+import { copyPublicDownloads } from './public-downloads.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const blog = path.resolve(process.env.BLOG_DIR || path.join(homedir(), 'Blog'));
@@ -42,6 +43,7 @@ for (const entry of await readdir(blogStatic, { withFileTypes: true })) {
   }
 }
 const attachments = JSON.parse(await readFile(path.join(root, '.generated/public-assets.json'), 'utf8'));
+await copyPublicDownloads(blog, output);
 for (const asset of attachments) {
   const source = path.resolve(blog, asset.source), target = path.resolve(output, asset.target);
   if (!source.startsWith(blog + path.sep) || !target.startsWith(output + path.sep)) throw new Error('Asset escapes its public root');

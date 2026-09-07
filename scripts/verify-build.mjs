@@ -4,12 +4,14 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { parseArgs } from 'node:util';
 import { assertCanonical, assertGiscus, assertHeaderIndexing, assertHtmlIndexing, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects } from './verify-deployment.mjs';
+import { auditContentLinks } from './internal-links.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), output = path.join(root, 'dist');
 const { values } = parseArgs({ options: { env: { type: 'string' }, help: { type: 'boolean' } } });
 if (values.help) { console.log('Usage: node scripts/verify-build.mjs [--env production|preview]\nDefaults to PUBLIC_SITE_ENV, then preview.'); process.exit(0); }
 const environment = values.env || process.env.PUBLIC_SITE_ENV || 'preview';
 assert.ok(['production', 'preview'].includes(environment), 'Verification environment must be production or preview');
 const content = JSON.parse(await readFile(path.join(root, '.generated/content.json'), 'utf8'));
+assert.deepEqual(content.diagnostics.warnings.filter(warning => warning.startsWith('Unresolved relref')), [], 'Every prose relref must resolve before publishing');
 const routes = JSON.parse(await readFile(path.join(root, '.generated/routes.json'), 'utf8'));
 const legacy = JSON.parse(await readFile(path.join(root, 'scripts/legacy-routes.json'), 'utf8'));
 const htmlPath = url => path.join(output, decodeURIComponent(url), 'index.html');
@@ -90,6 +92,8 @@ for (const url of feeds) {
   assert.match(xml, /<rss\b[^>]*version="2\.0"/); assertXMLSiteURLs(xml, url);
 }
 const redirects = parseRedirects(await readFile(path.join(output, '_redirects'), 'utf8'));
+const links = await auditContentLinks({ pages: content.pages, output, redirects, site: 'https://yindongliang.com' });
+assert.deepEqual(links.errors, [], 'Every internal article link and fragment must have a published destination');
 assert.ok(redirects.some(rule => rule.from === '/page/1/' && rule.to === '/'), 'First-page redirect missing');
 for (const rule of redirects) { assert.ok(!urls.has(rule.from), `Redirect shadows a canonical route: ${rule.from}`); assert.ok(urls.has(rule.to), `Redirect has no destination: ${rule.from}`); }
 for (const page of content.pages) for (const alias of page.aliases) {
@@ -138,5 +142,5 @@ async function inspect(directory) {
   }
 }
 await inspect(output); assert.deepEqual(errors, [], 'Only public generated artifacts can be deployed');
-await writeFile(path.join(root, '.generated/verification.json'), JSON.stringify({ environment, ...counts, feeds: feeds.size, redirects: redirects.length, assets: assets.size, indexedPages, checkedAt: new Date().toISOString() }, null, 2));
-console.log(`Verified ${counts.routes} rendered routes; all ${counts.originalRoutes} original URLs retained; ${counts.comments} Giscus pages, ${counts.math} math pages, ${counts.mermaid} Mermaid pages, ${counts.code} code pages. ${feeds.size} feeds, ${redirects.length} redirects, ${assets.size} assets, search, existing demos, MDX/React/Svelte and ${environment} indexing policy passed.`);
+await writeFile(path.join(root, '.generated/verification.json'), JSON.stringify({ environment, ...counts, contentLinks: links.checkedLinks, feeds: feeds.size, redirects: redirects.length, assets: assets.size, indexedPages, checkedAt: new Date().toISOString() }, null, 2));
+console.log(`Verified ${counts.routes} rendered routes; all ${counts.originalRoutes} original URLs retained; ${counts.comments} Giscus pages, ${counts.math} math pages, ${counts.mermaid} Mermaid pages, ${counts.code} code pages. ${links.checkedLinks} internal article links, ${feeds.size} feeds, ${redirects.length} redirects, ${assets.size} assets, search, existing demos, MDX/React/Svelte and ${environment} indexing policy passed.`);

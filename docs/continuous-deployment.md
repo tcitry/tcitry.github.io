@@ -48,6 +48,8 @@ npm run preview -- --port 4321
 
 review 覆盖本次改动涉及的页面，以及有变化的布局、导航、搜索、代码复制、数学公式、Mermaid、移动菜单与 Giscus。保留旧 URL 基线与评论 pathname term。通过后提交站点改动；若更新了主题，同时提交固定来源与 lockfile，确保其他环境能构建相同版本。
 
+`verify` 同时检查正文站内链接的页面、下载文件和锚点，并拒绝未解析的 `relref`。文章配套下载通过 `scripts/public-downloads.mjs` 中的显式清单发布；当前仅包含 `scripts/upload-r2-image.py`，不会整体复制 Blog 的工具目录。
+
 ## 手动生产发布
 
 在独立的站点检出中，从要发布的 `main` 提交生成生产产物。该检出使用自己的依赖、缓存和 `dist/`；`BLOG_DIR` 指向固定到已审查提交、保留完整 Git 历史的内容检出。不要直接使用其他任务仍可能写入的共享开发目录。
