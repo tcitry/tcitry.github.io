@@ -10,10 +10,14 @@ const production = process.env.PUBLIC_SITE_ENV === 'production';
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 const denied = /^(?:\.|private$|node_modules$)/i;
+// These former Vite artifacts are now built from src/pages/demos by Astro.
+// Skip stale copies from either public asset tree without changing Blog content.
+const astroDemos = new Set(['demos/2026/cloudflare-product-map', 'demos/2026/rounded-timeline']);
 async function copyTree(source, target) {
   for (const entry of await readdir(source, { withFileTypes: true })) {
     if (denied.test(entry.name) || entry.isSymbolicLink() || /^(?:CNAME|_index\.md)$/i.test(entry.name)) continue;
     const from = path.join(source, entry.name), to = path.join(target, entry.name);
+    if (astroDemos.has(path.relative(output, to).split(path.sep).join('/'))) continue;
     if (entry.isDirectory()) { await mkdir(to, { recursive: true }); await copyTree(from, to); }
     else if (entry.isFile()) await cp(from, to);
   }

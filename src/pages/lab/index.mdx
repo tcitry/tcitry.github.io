@@ -98,6 +98,15 @@ import AgentReplay from '../../components/demos/AgentReplay';
 
 以后可以按实验需要继续加入 Vue、Three.js 或其他方案，复用这里的阅读布局和文档入口。
 
+## 已有演示，统一构建
+
+这两个演示已迁入本站的 Astro 页面，保留文章中原有的嵌入地址，也可以直接打开：
+
+- [圆弧时间线](/demos/2026/rounded-timeline/)：Astro 静态卡片与 Tailwind v4，小脚本在尺寸变化时更新连接线。
+- [Cloudflare 文档学习地图](/demos/2026/cloudflare-product-map/)：React 与 Cloudflare Kumo 组件在构建时输出完整内容，点击链接即可访问站内文档。
+
+它们与博客共用开发、构建和部署命令，组件代码保存在本站。
+
 ## 使用与定制
 
 本站由 Astro <code>{packageJson.dependencies.astro}</code> 静态生成页面，使用 `@tcitry/astro-book` 提供阅读布局；新增界面优先采用 Tailwind CSS <code>{packageJson.dependencies.tailwindcss}</code>，需要局部样式时再使用 CSS Modules。

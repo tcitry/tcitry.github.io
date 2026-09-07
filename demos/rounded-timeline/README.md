@@ -1,14 +1,22 @@
 # Rounded timeline demo
 
-This Vite + Tailwind CSS v4 project produces the public demo embedded in the
-Blog article. It intentionally imports Tailwind's theme and utility layers but
-omits Preflight, because the demo is displayed in an isolated iframe. The build
-artifact belongs in the Blog content repository so a content update publishes
-both the article and its preview.
+This demo is an Astro page in the blog application. Its existing public URL,
+`/demos/2026/rounded-timeline/`, also remains the article's iframe URL.
+
+- Component: [`src/components/demos/RoundedTimeline.astro`](../../src/components/demos/RoundedTimeline.astro)
+- Route: [`src/pages/demos/2026/rounded-timeline/index.astro`](../../src/pages/demos/2026/rounded-timeline/index.astro)
+- Page layout: [`src/layouts/DemoLayout.astro`](../../src/layouts/DemoLayout.astro)
+
+The page renders all four cards into static HTML, uses the site's Tailwind
+utilities for the original visual design, and observes layout changes to keep
+the active rail aligned with the heading and final card. The full-page demo
+layout keeps the embedded preview separate from the Book sidebar.
+
+Run from the repository root:
 
 ```sh
-npm ci
-DEMO_OUT_DIR=/absolute/path/to/Blog/static/demos/2026/rounded-timeline npm run build
+npm run dev
 ```
 
-With no `DEMO_OUT_DIR`, Vite writes to this directory's ignored `dist/` folder.
+Open `/demos/2026/rounded-timeline/` on the development server. The root
+`npm run build` generates the published page together with the blog.

@@ -15,16 +15,26 @@ const timeline = page.kind === 'page' && page.layout !== 'list' && dateText(page
 const listing = page.kind !== 'page' || ['list', 'modified'].includes(page.layout);
 const isCategory = page.section === 'categories' || page.url.startsWith('/categories/');
 const isTags = page.section === 'tags' || page.url.startsWith('/tags/');
+const isArchive = page.url === '/archives/';
 const showCategories = isCategory || page.kind === 'taxonomy' || page.url === '/archives/' || page.url === '/posts/';
 const countPages = regular.filter((item) => ['docs', 'posts', 'weekly'].includes(item.type) && dateText(item.date));
 const pagesById = new Map(allPages.map((item) => [item.id, item]));
 const termDate = (term: TaxonomyTerm) => Math.max(0, ...term.pageIds.map((id) => Date.parse(pagesById.get(id)?.date || '') || 0));
 const terms = [...(showCategories ? categories : tags)].sort((a, b) => termDate(b) - termDate(a) || compareLegacyTitles(a.name, b.name));
+const archiveIds = new Set(countPages.map((item) => item.id));
+// The blog's archive categories are year anchors in its chronological list.
+// Standalone taxonomy pages keep their normal category/tag destinations.
+const termItems = terms.map((term) => ({
+  href: isArchive ? `#${term.name}` : term.url,
+  label: term.name,
+  count: isArchive ? term.pageIds.filter((id) => archiveIds.has(id)).length : term.pageIds.length,
+  active: page.url === term.url,
+}));
 ---
 {page.type === 'timeline' || page.section === 'timeline' ? <nav><LinkRows items={timelineBlocks(timeline).map((block) => ({ href: `#${block.id}`, label: block.title }))} dateLinks /></nav>
   : page.type === 'weekly' && page.kind === 'page' ? <nav><LinkRows items={weeklies.map((item) => ({ href: item.url, label: item.title, dateLabel: displayDate(item, 'month'), active: item.id === page.id }))} /></nav>
   : page.type === 'links' && listing ? <nav><p class="text-[dimgray]">共 {view.entries.length} 篇转载，通过 <a href="/links/index.xml">RSS</a> 订阅</p><TermList items={groups(view.entries, 'month').map((group) => ({ href: `#${group.key}`, label: group.key, count: group.pages.length }))} /></nav>
-  : listing || isTags || isCategory ? <nav>
+  : listing || isTags || isCategory ? <nav data-blog-archive-toc={isArchive || undefined}>
     {showCategories && <p class="text-[dimgray]">共 {countPages.length} 篇，{countPages.reduce((sum, item) => sum + item.wordCount, 0)} 字</p>}
-    <TermList title={!showCategories ? 'Tags' : undefined} total={!showCategories ? tags.length : undefined} items={terms.map((term) => ({ href: term.url, label: term.name, count: term.pageIds.length, active: page.url === term.url }))} />
+    <TermList title={!showCategories ? 'Tags' : undefined} total={!showCategories ? tags.length : undefined} items={termItems} />
   </nav> : <nav id="TableOfContents"><HeadingTree nodes={headingTree(page.headings)} /></nav>}

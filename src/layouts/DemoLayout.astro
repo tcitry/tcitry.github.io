@@ -1,0 +1,29 @@
+---
+import SEO from '@tcitry/astro-book/components/SEO';
+import '../styles/tailwind.css';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  bodyClass?: string;
+}
+const { title, description, path, bodyClass } = Astro.props;
+const production = import.meta.env.PUBLIC_SITE_ENV === 'production';
+---
+<!doctype html>
+<html lang="zh-CN" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="data:," />
+    <SEO title={title} description={description} siteName="LYon's Blog"
+      canonical={new URL(path, 'https://yindongliang.com').href}
+      robots={production ? undefined : 'noindex, nofollow'} />
+    <slot name="head" />
+  </head>
+  <body class:list={['m-0 min-w-0 [color-scheme:light]', bodyClass]} data-astro-demo={path}>
+    <slot />
+  </body>
+</html>

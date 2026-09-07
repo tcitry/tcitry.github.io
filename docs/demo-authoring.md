@@ -121,6 +121,17 @@ Cloudflare 只托管构建后的静态产物时不需要运行时授权 token；
 
 官方说明：[HeroUI Pro 安装与 CI/CD](https://heroui.pro/docs/react/getting-started/installation)。
 
+## 已迁入 Astro 的独立演示
+
+| 地址 | 组件 | 运行方式 |
+| --- | --- | --- |
+| `/demos/2026/rounded-timeline/` | `src/components/demos/RoundedTimeline.astro` | 四张卡片静态生成，小脚本通过 ResizeObserver 更新连接线 |
+| `/demos/2026/cloudflare-product-map/` | `src/components/demos/CloudflareProductMap.tsx` | React + Kumo 在构建时输出 HTML，文档链接无需 hydration |
+
+入口位于 `src/pages/demos/2026/`，共用轻量 `DemoLayout`。它们保持原 iframe 地址和全屏布局，随根项目 `npm run dev` / `npm run build` 一起运行。预览环境使用 noindex，canonical 指向生产域名。
+
+这两个演示不再使用单独的 Vite 工程或把产物写到 Blog。`prepare-assets` 会忽略 Blog/static 中对应的旧目录，让 Astro 产物成为唯一发布来源；其他已有静态演示继续正常复制。修改展示逻辑时编辑组件及其 CSS Module，保留文章中的既有地址。
+
 ## 验证
 
 ```sh

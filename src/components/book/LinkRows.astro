@@ -3,4 +3,4 @@ import type { SidebarRow } from './special-pages';
 interface Props { items: SidebarRow[]; dateLinks?: boolean; }
 const { items, dateLinks = false } = Astro.props;
 ---
-<div class="book-section-flat">{items.map((item) => <div class="flex py-[.3rem]">{dateLinks ? <time class="secondary-info"><a href={item.href}>{item.label}</a></time> : <><time class="secondary-info">{item.dateLabel}</time>&nbsp;»&nbsp;<a href={item.href} class:list={{ 'text-[#8250df]!': item.active }} aria-current={item.active ? 'page' : undefined}>{item.label}</a></>}</div>)}</div>
+<div class="my-4">{items.map((item) => <div class="flex py-[.3rem]">{dateLinks ? <time class="text-[dimgray] [font-size:small]"><a href={item.href}>{item.label}</a></time> : <><time class="text-[dimgray] [font-size:small]">{item.dateLabel}</time>&nbsp;»&nbsp;<a href={item.href} class:list={{ 'text-[#8250df]!': item.active }} aria-current={item.active ? 'page' : undefined}>{item.label}</a></>}</div>)}</div>

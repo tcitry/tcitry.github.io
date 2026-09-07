@@ -1,0 +1,88 @@
+@reference "../../styles/tailwind.css";
+
+.map {
+  @apply px-[clamp(1rem,2.8vw,2.25rem)] pt-[clamp(1rem,2.8vw,2.25rem)] pb-3 text-[#1a1a18] bg-[#f7f7f4];
+  color-scheme: light;
+  font-family: "Avenir Next", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  font-synthesis: none;
+  background-image: radial-gradient(circle, rgb(33 33 30 / 15%) 1px, transparent 1.15px);
+  background-size: 22px 22px;
+}
+
+.eyebrow {
+  @apply m-0 text-[.68rem] font-[760] tracking-[.095em] leading-[1.2] text-[#696760];
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.title {
+  @apply m-0 text-[clamp(1.75rem,3.4vw,3.15rem)] font-[650] tracking-[-.055em] leading-[1.04];
+  font-family: "Iowan Old Style", "Songti SC", "STSong", Georgia, serif;
+}
+
+.canvas {
+  @apply relative mx-auto grid max-w-[1180px] grid-cols-[minmax(0,.94fr)_minmax(250px,1.16fr)_minmax(0,.94fr)] gap-[.9rem] overflow-hidden rounded-[1.1rem] border border-solid border-[#d4d2cc] bg-[rgb(247_247_244_/_82%)] p-[.8rem] shadow-[0_1rem_3rem_rgb(29_28_24_/_7%)];
+  grid-template-areas: "foundations core durable" "decisions decisions decisions";
+}
+.canvas::before {
+  @apply pointer-events-none absolute inset-[.8rem] rounded-xl border border-solid border-[rgb(98_94_84_/_12%)] content-[''];
+}
+
+.flowLine {
+  @apply absolute top-[43%] right-[15%] left-[15%] z-0 h-px;
+  background: linear-gradient(90deg, transparent, rgb(240 119 34 / 55%) 18% 82%, transparent);
+}
+.flowLine::before, .flowLine::after {
+  @apply absolute -top-1 size-2 rotate-45 border-t border-r border-solid border-[#ef7722] content-[''];
+}
+.flowLine::before { @apply left-[31%]; }
+.flowLine::after { @apply right-[31%]; }
+
+.stage { @apply relative z-1 min-w-0; }
+.foundations { grid-area: foundations; }
+.core { grid-area: core; }
+.durable { grid-area: durable; }
+.decisions { grid-area: decisions; }
+
+.card {
+  @apply h-full overflow-hidden border! border-solid! border-[#cfcdc6]! bg-[rgb(255_255_255_/_94%)]! shadow-[0_3px_0_rgb(27_27_24_/_4%)]!;
+}
+.coreCard {
+  @apply border-[#bcb8ad]! shadow-[0_.75rem_1.7rem_rgb(240_119_34_/_13%),0_3px_0_rgb(27_27_24_/_5%)]!;
+  background: linear-gradient(145deg, #fff, #fff8f1) !important;
+}
+.cardHeader, .coreHeader {
+  @apply flex min-h-[2.45rem] items-center justify-between gap-2 border-b border-solid border-[#e3e1dc] bg-[rgb(249_249_247_/_94%)] px-[.7rem] py-2;
+}
+.cardHeader :global([class*="badge"]) { @apply grow-0 shrink-0 basis-auto text-[.67rem] text-[#68655e]; }
+.coreHeader { @apply min-h-[4.15rem] bg-[rgb(255_248_241_/_92%)] px-[.8rem] py-[.65rem]; }
+.mark {
+  @apply grid size-10 place-items-center rounded-[.65rem] bg-[#ffeadc] text-[1.45rem] font-bold text-[#ef7722];
+  font-family: "Iowan Old Style", Georgia, serif;
+}
+.status { @apply size-[.76rem] rounded-full border-[3px] border-solid border-[#dbe6ff] bg-[#2563eb] shadow-[0_0_0_1px_#2563eb]; }
+.cardBody { @apply p-[.78rem]!; }
+.sideBody { @apply flex min-h-[22rem] items-center; }
+
+.links { @apply m-0 grid w-full list-none gap-[.45rem] p-0; }
+.links a {
+  @apply flex min-h-[2.6rem] items-center justify-between gap-[.4rem] rounded-lg border border-solid border-[#dfddd7] bg-[rgb(255_255_255_/_82%)] px-[.58rem] py-[.45rem] text-[.79rem] font-bold leading-[1.18] text-[#282722] no-underline;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.links a:hover { @apply -translate-y-px border-[#ef7722] shadow-[0_2px_0_rgb(240_119_34_/_16%)]; }
+.links a:focus-visible { @apply outline-[3px] outline-solid outline-[#ef7722] outline-offset-[3px]; }
+.links a > span:last-child { @apply grow-0 shrink-0 basis-auto text-base text-[#a09c92]; }
+.coreSection { @apply p-[.78rem]; }
+.coreSection + .coreSection { @apply border-t border-solid border-[#e2ded6]; }
+.decisionLinks { @apply grid-cols-3; }
+.decisionLinks a { @apply min-h-[2.45rem] text-[.74rem]; }
+
+@media (max-width: 700px) {
+  .map { @apply p-[.8rem]; background-size: 19px 19px; }
+  .canvas {
+    @apply grid-cols-[minmax(0,1fr)] gap-[.72rem] p-[.7rem];
+    grid-template-areas: "foundations" "core" "durable" "decisions";
+  }
+  .flowLine { @apply hidden; }
+  .sideBody { @apply min-h-0; }
+  .decisionLinks { @apply grid-cols-1; }
+}

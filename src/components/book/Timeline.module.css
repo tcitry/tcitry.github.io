@@ -87,15 +87,17 @@
   @apply h-auto max-w-full rounded-[4px] shadow-[0_1px_3px_rgb(0_0_0_/_0.1)];
 }
 
-.content pre {
+/* Authored content retains the original timeline styles; embedded demos and
+   code renderers own their descendants. */
+.content pre:not(:where([data-book-island] *, [data-demo] *, [data-blog-code] *, :global(.expressive-code) *)) {
   @apply my-2.5 max-w-full overflow-x-auto rounded-md bg-[var(--timeline-pre)] p-4 text-sm leading-normal [color:var(--timeline-code-color)];
 }
 
-.content code {
+.content code:not(:where([data-book-island] *, [data-demo] *, [data-blog-code] *, :global(.expressive-code) *)) {
   @apply rounded-[3px] bg-[var(--timeline-code)] px-1 py-0.5 font-['Courier_New',Courier,monospace] text-[.9em] [color:var(--timeline-code-color)];
 }
 
-.content pre code {
+.content pre code:not(:where([data-book-island] *, [data-demo] *, [data-blog-code] *, :global(.expressive-code) *)) {
   @apply rounded-none bg-transparent p-0;
 }
 
@@ -103,11 +105,11 @@
   @apply mb-4 text-[var(--timeline-text)];
 }
 
-.text img {
+.text img:not(:where([data-book-island] *, [data-demo] *)) {
   @apply my-2.5 h-auto max-w-full rounded-[4px];
 }
 
-.text ul {
+.text ul:not(:where([data-book-island] *, [data-demo] *)) {
   @apply my-2.5 pl-5;
 }
 

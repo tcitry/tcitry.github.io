@@ -50,6 +50,10 @@ npm run preview -- --port 4321
 
 本站负责内容导入、旧 URL、tag/category、RSS/sitemap、页面排序与数据、站点配置和交互 demo。Weekly、Timeline、Portfolio、Links 的业务组件、展示类型和专用样式也留在本站。本站普通文章与 MDX 的代码块统一使用 HeroUI Pro CodeBlock：先输出完整可读的静态代码，接近视口后加载 React / Pro 高亮与复制；Mermaid 源复制保留主题实现。公开主题没有商业组件依赖。加载策略与成本见 [代码块说明](docs/demo-authoring.md#普通文章与-mdx-代码块)。
 
+主题的旧 Hugo SCSS/Sass 构建层已替换为 Tailwind CSS v4 和 CSS Modules，公开尺寸变量与插槽继续保留。Archives 的年份分类使用当前页锚点；这项博客定制由本站的 `PageToc` 维护。
+
+原 `demos/` 中的圆弧时间线和 Cloudflare 学习地图已迁入 `src/components/demos/` 与 `src/pages/demos/2026/`，保留 `/demos/2026/rounded-timeline/` 和 `/demos/2026/cloudflare-product-map/`。它们随根项目统一构建，不再单独运行 Vite 或向 Blog 写入构建产物。
+
 本地修改独立主题后，可显式同步并重新验收：
 
 ```sh

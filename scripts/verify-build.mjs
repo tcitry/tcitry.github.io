@@ -30,7 +30,32 @@ for (const route of routes) {
   }
 }
 assert.ok(counts.code > 0, 'Article code blocks must retain static source for the blog Pro renderer');
+const archives = await readFile(htmlPath('/archives/'), 'utf8');
+const archiveTOCs = [...archives.matchAll(/<nav\b[^>]*\bdata-blog-archive-toc(?=[\s=>])[^>]*>([\s\S]*?)<\/nav>/g)];
+assert.ok(archiveTOCs.length > 0, 'Archives must render its local year navigation');
+const archiveHeadings = new Set([...archives.matchAll(/<h1\b[^>]*\bid="([^"]+)"/g)].map((match) => match[1]));
+for (const [, navigation] of archiveTOCs) {
+  const links = [...navigation.matchAll(/<a\b[^>]*\bhref="([^"]+)"/g)].map((match) => match[1]);
+  assert.equal(links.length, content.categories.length, 'Archives must retain every category in its year navigation');
+  for (const term of content.categories) {
+    assert.ok(links.includes(`#${term.name}`), `Archives category must scroll within the page: ${term.name}`);
+    assert.ok(archiveHeadings.has(term.name), `Archives category has no matching heading ID: ${term.name}`);
+  }
+}
 for (const url of ['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/sitemap.xml', '/robots.txt', '/404.html', '/pagefind/pagefind.js', '/demos/2026/rounded-timeline/index.html', '/demos/2026/cloudflare-product-map/index.html', '/lab/index.html', '/lab/agent-replay/index.html']) await access(path.join(output, url));
+for (const name of ['rounded-timeline', 'cloudflare-product-map']) {
+  const url = `/demos/2026/${name}/`;
+  const html = await readFile(htmlPath(url), 'utf8');
+  assert.ok(html.includes(`data-astro-demo="${url}"`), `Demo must come from its Astro route, not an old copied artifact: ${url}`);
+  assert.ok(html.includes(`href="https://yindongliang.com${url}"`), `Demo canonical mismatch: ${url}`);
+  if (!production) assert.match(html, /name="robots" content="noindex, nofollow"/, `Preview demo indexable: ${url}`);
+  if (name === 'rounded-timeline') {
+    for (const title of ['确认范围', '完成设计', '实现功能', '验收验证']) assert.ok(html.includes(title), `Timeline card must be present before JavaScript: ${title}`);
+  } else {
+    const links = [...html.matchAll(/<a\b[^>]*\bhref="(\/docs\/Cloudflare\/[^\"]+)"[^>]*\btarget="_top"/g)];
+    assert.equal(links.length, 13, 'The static learning map must retain its 13 top-level document links');
+  }
+}
 for (const term of [...content.tags, ...content.categories]) await access(path.join(output, decodeURIComponent(term.url), 'index.xml'));
 const lab = await readFile(path.join(output, 'lab/index.html'), 'utf8');
 assert.match(lab, /astro-island/); assert.match(lab, /AgentReplay/); assert.match(lab, /SvelteCounter/); assert.match(lab, /katex/);

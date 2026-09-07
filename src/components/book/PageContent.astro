@@ -50,7 +50,7 @@ const cloudSize = (count: number) => {
   <YearSelect items={timelines.map((item) => ({ value: item.url, label: dateText(item.date).slice(0, 4) }))} selected={timelinePage?.url} label="时间线年份" />
   <Timeline items={timelineBlocks(timelinePage).map((block) => ({ id: block.id, label: block.title, html: block.html }))} />
 </article> : isPortfolio ? <Portfolio items={portfolio.map((item) => ({ period: item.title, label: item.cardTitle, href: item.url, target: '_blank' as const, imageHTML: item.imageURL, tags: item.tagList, detailsHTML: item.cardDetailedText }))} /> : isWeeklyList ? <>
-  <p class="secondary-info">目前共 <a href={tags.find((term) => term.name === 'Weekly')?.url || '/tags/Weekly/'}>{regular.filter((item) => item.type === 'weekly' && dateText(item.date)).length}</a> 期周刊，可通过 <a href="/weekly/index.xml">RSS</a> 订阅</p>
+  <p class="text-[dimgray] [font-size:small]">目前共 <a href={tags.find((term) => term.name === 'Weekly')?.url || '/tags/Weekly/'}>{regular.filter((item) => item.type === 'weekly' && dateText(item.date)).length}</a> 期周刊，可通过 <a href="/weekly/index.xml">RSS</a> 订阅</p>
   <WeeklyCards items={entries.map((item) => ({ href: item.url, label: item.title, image: { src: item.image || '/logo.gif', alt: item.title }, dateLabel: displayDate(item, 'dots'), description: item.description }))} />
 </> : page.kind === 'taxonomy' ? <>
   <h1>{page.title}<sup>{taxonomy.length}</sup></h1><TagCloud items={taxonomy.map((term) => ({ href: term.url, label: term.name, count: term.pageIds.length, size: cloudSize(term.pageIds.length) }))} />
@@ -65,10 +65,10 @@ const cloudSize = (count: number) => {
 </> : <>
   {page.type === 'docs' && <h1>{bookTitle(page)}</h1>}
   {page.type === 'docs' && page.tags.includes('ByAI') && <div class="my-4 flex items-center rounded border-l-4 border-l-[#fa8072] bg-[#fa8072]/10 px-4 py-3 text-[#9e4b44]"><span class="font-medium">This article is extracted from the chat log with AI. Please identify it with caution.</span></div>}
-  <article class:list={{ markdown: true, 'book-post': ['posts', 'links'].includes(page.type), 'book-article': !['posts', 'links'].includes(page.type) }} data-pagefind-body>
+  <article class:list={{ markdown: true, 'book-post': ['posts', 'links'].includes(page.type), 'mb-16': ['posts', 'links'].includes(page.type), 'book-article': !['posts', 'links'].includes(page.type) }} data-pagefind-body>
     {['posts', 'weekly', 'links'].includes(page.type) && <><h1><a href={page.url}>{bookTitle(page)}</a></h1><PostMeta page={page} tags={tags} /></>}
     {page.type === 'posts' && dateText(page.lastmod) && Date.now() - new Date(page.lastmod).getTime() >= 365 * 86400000 && <Notice variant="danger">注意：此文章已超过 1 年未更新，部分信息可能已经过时。</Notice>}
-    {page.type === 'weekly' && page.description && <blockquote class="secondary-info">{page.description}</blockquote>}
+    {page.type === 'weekly' && page.description && <blockquote class="text-[dimgray] [font-size:small]">{page.description}</blockquote>}
     {page.type === 'links' && page.link && <div class="links-source"><Notice variant="info"><p>此内容为转载文章，原文链接：<a href={page.link} target="_blank" rel="noopener">{page.link}</a></p></Notice></div>}
     <Fragment set:html={page.html} />
     {!page.html && page.kind === 'section' && <ul>{entries.map((item) => <li><a href={item.url}>{bookTitle(item)}</a></li>)}</ul>}
@@ -81,10 +81,10 @@ const cloudSize = (count: number) => {
   {page.type === 'posts' && <h5 class="post-after">本文共 {page.wordCount} 字，{param(page, 'lastmod') && <>上次修改于 {dateText(page.lastmod, 'long')}，</>}以 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh">CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5>}
   {page.type === 'docs' && <><h5 class="post-after">本文共 {page.wordCount} 字{dateText(page.date) && <>，创建于 {dateText(page.date, 'long')}</>}</h5>{page.tags.length > 0 && <div class="mb-5"><p>相关标签：{page.tags.map((tag, index) => <>{index > 0 && ', '}<a href={tags.find((term) => term.name === tag)?.url || `/tags/${encodeURIComponent(tag)}/`}>{tag}</a></>)}</p></div>}</>}
   {page.type === 'weekly' && dateText(page.lastmod) !== dateText(page.date) && <h5 class="post-after">Last Modified at {dateText(page.lastmod, 'long')}</h5>}
-  <div id="navigation">
-    {previous && <a class="nav nav-left" href={previous.url} title={`上一${navLabel}：${previous.title}`} aria-label={`上一${navLabel}：${previous.title}`}><i class="fa-left" /></a>}
-    {next && <a class="nav nav-right" href={next.url} title={`下一${navLabel}：${next.title}`} aria-label={`下一${navLabel}：${next.title}`}><i class="fa-right" /></a>}
+  <div id="navigation" class="hidden">
+    {previous && <a href={previous.url} title={`上一${navLabel}：${previous.title}`} aria-label={`上一${navLabel}：${previous.title}`}>〈</a>}
+    {next && <a href={next.url} title={`下一${navLabel}：${next.title}`} aria-label={`下一${navLabel}：${next.title}`}>〉</a>}
   </div>
-  <div id="navigation-mobile"><p>{previous && <>上一{navLabel}：<a href={previous.url}>{previous.title}</a></>}</p><p>{next && <>下一{navLabel}：<a href={next.url}>{next.title}</a></>}</p></div>
+  <div id="navigation-mobile" class="min-[64.01rem]:hidden"><p>{previous && <>上一{navLabel}：<a href={previous.url}>{previous.title}</a></>}</p><p>{next && <>下一{navLabel}：<a href={next.url}>{next.title}</a></>}</p></div>
   {related.length > 0 && <><h2 class="text-[darkgrey]">相关文章</h2>{related.map((item) => <PostRow page={item} tags={tags} />)}</>}
 </div>}
