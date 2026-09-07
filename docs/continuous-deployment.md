@@ -1,14 +1,14 @@
 # Astro 持续部署方案
 
-2026-09-07 决策建议：使用 **GitHub Actions 构建和校验，Wrangler 发布到 Cloudflare Workers Static Assets**。Workers Builds 同样可行，下面保留其接入条件；应用构建和部署命令不绑定 CI 平台。
+2026-09-07 决策建议：优先使用 **Cloudflare Workers Builds 构建、校验并通过 Wrangler 发布到 Workers Static Assets**。GitHub Actions 保留为备用 CD 方案及独立检查工具；应用构建和部署命令不绑定 CI 平台。
 
 本文是后续 CD 接入方案，尚未启用自动部署。当前 `astro` 推送只运行公开主题打包 CI；预览站由已验收的本地构建通过 Wrangler 发布。现有 Hugo 生产工作流继续保留到生产切换。
 
-## 为什么推荐 GitHub Actions
+## 为什么推荐 Workers Builds
 
-站点由三个来源组成：公开站点代码、固定提交的公开主题、独立私有 Blog 内容。当前 Blog 更新已经通过 `blog-content-updated` 通知站点仓库；已有工作流也处理了私有内容访问和完整历史检出。在此基础上替换构建和发布步骤，改动更少，也能集中执行 URL、评论、收录策略等迁移检查。
+博客最终部署在 Cloudflare，使用 Workers Builds 能把构建日志、分支发布和部署管理集中在同一平台，也符合继续学习 Cloudflare 的方向。当前免费计划包含每月 3,000 分钟构建时间、1 个并发构建，单次构建最长 20 分钟。可以先使用该额度，首次云端验收再记录冷启动构建耗时；本地构建耗时不能代替云端实测。见 [官方额度与限制](https://developers.cloudflare.com/workers/ci-cd/builds/limits-and-pricing/)。
 
-GitHub Actions 只负责构建任务，最终静态文件由 Cloudflare 托管；迁移完成后，博客不再使用 Hugo、Go 或 `deploy-pages`。Cloudflare 官方支持这种 [GitHub Actions + Wrangler](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/) 部署方式。
+站点由公开站点代码、固定提交的公开主题、独立私有 Blog 内容组成。先前推荐 GitHub Actions，是因为现有工作流已经处理私有内容访问和更新通知，能少改一些配置；这些差异属于一次性接线工作，不是 Workers Builds 的能力限制。私有仓库检出、Pro 授权和完整构建校验都能放到 Workers Builds，内容变化通过 Deploy Hook 触发，不需要维护额外后端。
 
 ## 分支与环境
 
@@ -46,15 +46,7 @@ npx wrangler deploy --config wrangler.preview.jsonc
 
 主题保持固定 commit，主题仓库推送不会隐式升级博客；更新 `astro-book.source.json` 和 lockfile 后由站点提交触发构建。
 
-## GitHub Actions 接入步骤
-
-- 预览先接 `push: astro`，配置 HeroUI Pro 与 Cloudflare CI secrets 后运行完整安装、构建、校验和部署。`workflow_dispatch` 的入口文件需要存在于默认分支；当前只有 `astro` 上的新工作流不能被描述为已经支持手动入口。
-- 内容变化继续使用现有 `blog-content-updated`。但 `repository_dispatch` 只从默认分支上的工作流触发；仅在 `astro` 新增文件不会接到当前内容更新事件。预览阶段若需自动跟随内容，要在默认分支增加显式检出 `astro` 的桥接任务，或调整 Blog 的通知方式。这两处本轮尚未修改。规则见 [GitHub 工作流触发文档](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#repository_dispatch)。
-- 最终推广到默认分支时，把内容通知接收任务改为 Astro 构建，替换 Hugo/Pages 部署步骤；保持预览独立。生产部署前增加允许收录、robots、canonical、统计策略的正向检查，不能只依赖当前 preview 检查。
-
-当前仓库已有内容访问所需的 secret 名称；尚未配置 HeroUI Pro 和 Cloudflare CI token。因此现有公开主题 CI 成功，不等于完整博客 CD 已接通。
-
-## 如果改用 Workers Builds
+## Workers Builds 接入步骤
 
 Workers Builds 支持连接 GitHub、分支控制和自定义构建/部署命令，满足静态 Astro 部署需求。接入时使用两个独立 Worker：预览 Worker 的主构建分支选 `astro`，生产 Worker 以后选最终默认分支。这里的“production branch”是每个 Worker 自己的主部署分支；预览 Worker 仍然只绑定 preview 域名。
 
@@ -66,6 +58,16 @@ Workers Builds 支持连接 GitHub、分支控制和自定义构建/部署命令
 - 在构建命令前增加私有 Blog 的完整历史检出步骤，保持现有私有元数据日志处理；连接公开站点仓库并不会自动提供另一个私有仓库的访问能力。
 - 预览部署命令明确设置为 `npx wrangler deploy --config wrangler.preview.jsonc`；控制台 Worker 名称与配置一致。
 - Blog 单独更新不会触发只连接站点代码仓库的构建。需要从 Blog 通知工作流调用对应分支的 [Deploy Hook](https://developers.cloudflare.com/workers/ci-cd/builds/deploy-hooks/)。Hook URL 本身就是凭据，应保存为 secret；这会额外保留一个小型通知工作流。
-- 如果改由 Workers Builds 负责 CD，GitHub Actions 可以继续保留公开主题检查，但不同时向相同 Worker 自动部署。
+- Workers Builds 负责 CD，GitHub Actions 可以继续保留公开主题检查和内容更新通知，但不同时向相同 Worker 自动部署。
 
-这些差异是本项目选择 GitHub Actions 的主要依据；后续需要把构建日志和发布管理集中到 Cloudflare 时，可复用相同构建命令切换。
+接入顺序为：连接现有 preview Worker 和 `astro` 分支，配置上述构建变量及 secrets，完成一次全新云端构建并验证固定 preview 域名，再接通 Blog 内容更新的 Deploy Hook。最后才在生产迁移阶段启用独立生产 Worker。生产发布前增加允许收录、robots、canonical、统计策略的正向检查，不能只依赖当前 preview 检查。
+
+## 备用方案：GitHub Actions
+
+只有 Workers Builds 的实测耗时、额度或平台能力不满足需要时，再把相同命令迁移到 GitHub Actions。Cloudflare 官方支持 [GitHub Actions + Wrangler](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/) 部署。
+
+- 预览接 `push: astro`，配置 HeroUI Pro 与 Cloudflare CI secrets 后运行完整安装、构建、校验和部署。`workflow_dispatch` 的入口文件需要存在于默认分支；当前只有 `astro` 上的新工作流不能被描述为已经支持手动入口。
+- 内容变化可复用现有 `blog-content-updated`。但 `repository_dispatch` 只从默认分支上的工作流触发；仅在 `astro` 新增文件不会接到当前内容更新事件。预览阶段若需自动跟随内容，要在默认分支增加显式检出 `astro` 的桥接任务，或调整 Blog 的通知方式。这两处本轮尚未修改。规则见 [GitHub 工作流触发文档](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#repository_dispatch)。
+- 最终推广到默认分支时，把内容通知接收任务改为 Astro 构建，替换 Hugo/Pages 部署步骤；保持预览独立。
+
+当前 GitHub 仓库已有内容访问所需的 secret 名称；尚未配置完整博客自动构建所需的 Pro 和部署授权。Workers Builds 也尚未连接仓库和配置构建 secrets。因此现有公开主题 CI 成功，不等于完整博客 CD 已接通。
