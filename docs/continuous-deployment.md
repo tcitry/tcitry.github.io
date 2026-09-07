@@ -2,7 +2,7 @@
 
 2026-09-07 决策建议：优先使用 **Cloudflare Workers Builds 构建、校验并通过 Wrangler 发布到 Workers Static Assets**。GitHub Actions 保留为备用 CD 方案及独立检查工具；应用构建和部署命令不绑定 CI 平台。
 
-本文是后续 CD 接入方案，尚未启用自动部署。当前 `astro` 推送只运行公开主题打包 CI；预览站由已验收的本地构建通过 Wrangler 发布。现有 Hugo 生产工作流继续保留到生产切换。
+仓库已提供可供 Workers Builds 使用的 `npm run build:workers` 入口，自动部署尚未接通。当前 `astro` 推送只运行公开主题打包 CI；预览站由已验收的本地构建通过 Wrangler 发布。现有 Hugo 生产工作流继续保留到生产切换。
 
 ## 为什么推荐 Workers Builds
 
@@ -48,6 +48,38 @@ npx wrangler deploy --config wrangler.preview.jsonc
 
 ## Workers Builds 接入步骤
 
+### 首次控制台配置
+
+在 Cloudflare 的 **iuv → Workers & Pages → tcitry-astro-preview → Settings → Builds** 中连接现有 Worker 的 Git 仓库。首次连接如果出现 GitHub App 授权，由账户所有者确认，仅选择需要部署的站点仓库。不要为此创建另一个 Pages 项目。
+
+| 控制台字段 | 值 |
+| --- | --- |
+| Git repository | `tcitry/tcitry.github.io` |
+| Production branch | `astro`（仅指这个 preview Worker 的主构建分支） |
+| Root directory | 仓库根目录 `/` |
+| Build command | `npm run build:workers` |
+| Deploy command | `npx wrangler deploy --config wrangler.preview.jsonc` |
+| Builds for non-production branches | 首次关闭 |
+
+在 **Build variables and secrets** 设置以下值；它们是构建变量，不是 Worker 运行时的 Variables & Secrets：
+
+| 名称 | 类型 | 值 / 来源 |
+| --- | --- | --- |
+| `SKIP_DEPENDENCY_INSTALL` | Text | `1`，先生成固定主题包再安装依赖 |
+| `NODE_VERSION` | Text | `24` |
+| `PUBLIC_SITE_ENV` | Text | `preview` |
+| `BLOG_CONTENT_REPOSITORY` | Secret | 现有私有内容仓库的 `owner/repo`，不带 URL |
+| `BLOG_READ_TOKEN` | Secret | 有权读取该私有仓库 Contents 的只读 GitHub token |
+| `HEROUI_AUTH_TOKEN` | Secret | HeroUI Pro Dashboard → Overview / Settings 中的 **CI/CD Token** |
+
+HeroUI 应使用 CI/CD Token，不能用个人编辑器/MCP 的 Personal Token 代替；详见 [HeroUI Pro 自动安装](https://heroui.pro/docs/react/getting-started/installation)。GitHub 已保存的 Actions secret 无法读回明文，需使用你保留的相同值，或自行配置新的受限凭据。不要把 Token 发到聊天、提交到 Git，或放进 `PUBLIC_*` 变量。
+
+`build:workers` 会先验证配置，获取私有内容的完整 main 历史，然后执行 `setup → build → check → test → verify`；内容读取凭据仅传给 Git，Pro 凭据仅传给安装步骤。它不会自行部署，成功后由控制台的 Deploy command 发布同一份 `dist/`。当前入口只允许 preview，生产推广另行启用。
+
+配置齐全后再启动首次构建，记录总耗时并检查部署后的固定 preview 域名。缺少 secrets 的构建会在安装前明确失败，不会覆盖现有预览。当前已通过离线测试验证命令顺序、凭据隔离、失败中止和临时内容清理，尚未将这项结果表述为真实云端构建成功。
+
+### 构建与内容触发
+
 Workers Builds 支持连接 GitHub、分支控制和自定义构建/部署命令，满足静态 Astro 部署需求。接入时使用两个独立 Worker：预览 Worker 的主构建分支选 `astro`，生产 Worker 以后选最终默认分支。这里的“production branch”是每个 Worker 自己的主部署分支；预览 Worker 仍然只绑定 preview 域名。
 
 不要把生产 Worker 的普通分支构建直接当作固定 preview 域名部署：其默认命令是 `wrangler versions upload`，上传预览版本，并不替换活动部署。见 [分支控制](https://developers.cloudflare.com/workers/ci-cd/builds/build-branches/) 和 [构建配置](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)。
@@ -71,3 +103,11 @@ Workers Builds 支持连接 GitHub、分支控制和自定义构建/部署命令
 - 最终推广到默认分支时，把内容通知接收任务改为 Astro 构建，替换 Hugo/Pages 部署步骤；保持预览独立。
 
 当前 GitHub 仓库已有内容访问所需的 secret 名称；尚未配置完整博客自动构建所需的 Pro 和部署授权。Workers Builds 也尚未连接仓库和配置构建 secrets。因此现有公开主题 CI 成功，不等于完整博客 CD 已接通。
+
+## 部署结果通知
+
+Workers Builds 的 GitHub 集成会给提交提供 check run，显示运行中、成功或失败，并链接到 Cloudflare 构建详情；在 PR 中还会发布构建状态评论。这些能力随 Git 集成提供，不需要额外通知 Worker。见 [GitHub 集成说明](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/github-integration/)。GitHub 是否给你发送邮件取决于个人订阅设置，不能把状态检查当作“每次部署成功自动发邮件”。
+
+若要成功、失败都主动推送邮件、飞书、Slack 或其他 Webhook，Cloudflare 提供 `build.succeeded`、`build.failed`、`build.canceled` 等 [Event Subscriptions](https://developers.cloudflare.com/workers/ci-cd/builds/event-subscriptions/)。官方方式通过 Queue 和消费者发送消息，需要通知目的地与对应授权；并非只打开一个默认成功邮件开关。当前没有新增通知后端或配置消息接收地址。
+
+在本项目的部署命令为 `wrangler deploy` 时，成功表示构建和活动部署命令都完成；若以后改用 `versions upload`，其成功只代表预览版本上传。配置通知时应保留这个区别。

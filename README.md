@@ -69,6 +69,8 @@ npm run verify
 
 ## Cloudflare 预览
 
+Workers Builds 的构建命令使用 `npm run build:workers`，部署命令使用 `npx wrangler deploy --config wrangler.preview.jsonc`。首次连接需要配置构建变量及私有内容/Pro secrets，具体值和通知方式见 [控制台配置步骤](docs/continuous-deployment.md#首次控制台配置)。自动 CD 尚未接通；下面的命令用于显式本地部署。
+
 ```sh
 npx wrangler whoami
 BLOG_DIR=/path/to/Blog npm run deploy:preview
