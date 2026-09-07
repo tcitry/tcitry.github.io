@@ -1,0 +1,32 @@
+name: Astro theme reproducibility
+
+on:
+  push:
+    branches: [astro]
+  pull_request:
+    branches: [astro]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  theme:
+    name: Packed theme (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+      - name: Build and verify the pinned public theme
+        run: npm run theme:prepare
+      - name: Verify that preparation preserved the source pin and lockfile
+        run: git diff --exit-code -- astro-book.source.json package-lock.json

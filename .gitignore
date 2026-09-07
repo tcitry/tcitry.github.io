@@ -8,6 +8,17 @@
 dist
 package-lock.json
 !demos/**/package-lock.json
+!/package-lock.json
+/.astro/
+/.generated/
+/.wrangler/
+/astro-public/
+/.dev.vars
+/.env*
+/test-results/
 
 # Generated from the Blog content checkout during each Hugo build.
 /static/demos/
+
+# Local prepublication theme artifact, regenerated with npm run theme:sync.
+.artifacts/
