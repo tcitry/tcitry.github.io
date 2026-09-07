@@ -1,3 +1,4 @@
 1. 与我用中文交流
-2. 这是一个 hugo 项目，使用了 themes/hugo-book 作为模板，并且在 layouts 和 assets 文件夹中覆写了很多逻辑
-3. 项目启动入口是 makefile
+2. 这是一个 Astro 项目，使用独立的 @tcitry/astro-book 主题，业务定制维护在 src 中；旧 Hugo 开发规则继续有效，具体以 AGENTS.md 为准。
+3. 项目入口是 package.json：首次运行 npm run setup，开发使用 npm run dev，构建与发布遵循 AGENTS.md 中的生产检查要求。
+4. 日常工作目录是 /Users/yindongliang/code/tcitry.github.io，当前主分支是 main；迁移前的主分支是 master，旧架构备份在 hugo-book 分支。
