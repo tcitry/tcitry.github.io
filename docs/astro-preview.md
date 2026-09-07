@@ -144,3 +144,5 @@ HTTP 检查记录在 `.generated/cloudflare-verification.json`。Cloudflare 对 
 独立主题文档示例位于 `astro-book` 的 `examples/basic/`，可在主题仓库运行 `npm run build`、`npm run preview -w @astro-book/basic`。本次本地验收地址为 `http://127.0.0.1:4322/astro-book/`，已验证带 base 路径的搜索、移动导航、EC 复制与明暗主题，以及 Mermaid 展示和原始源码复制。
 
 目标公开地址是 `https://tcitry.github.io/astro-book/`，目前尚未发布：GitHub Pages 会继承用户站点当前绑定的 `yindongliang.com`，原生地址实际 301 跳转到该域名。文档工作流已完成构建并上传产物，通过域名检查跳过发布，避免将独立演示站发布到博客域名下。待生产博客完成 Cloudflare 迁移、解除用户 Pages 自定义域名后，再运行主题 Pages 工作流；本轮未更改生产域名。规则见 [GitHub Pages 自定义域名文档](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages)。
+
+本轮预览已部署到 `preview.yindongliang.com`，Cloudflare 版本为 `9bda6e8a-d93a-424d-90e4-e4a9a0ee134f`，对应实现提交 `dc1f7ed7b`。20 项 HTTP 检查通过，包括菜单顺序、旧文章静态代码、Giscus pathname、noindex、robots、RSS/search、404/尾斜线与不可变资源缓存。公网浏览器验证 Pro 组件激活、回放/暂停、完整结果与代码原文复制，未出现控制台错误。该部署仍是显式 Wrangler 发布，自动 CD 的后续安排见 [持续部署方案](continuous-deployment.md)。
