@@ -25,11 +25,9 @@
   "dependencies": {
     "@astrojs/react": "6.0.5",
     "@astrojs/svelte": "9.0.1",
-    "@cloudflare/kumo": "2.10.0",
     "@heroui-pro/react": "1.0.0-beta.8",
     "@heroui/react": "3.2.4",
     "@heroui/styles": "3.2.4",
-    "@phosphor-icons/react": "2.1.10",
     "@react-aria/utils": "^3.34.1",
     "@tailwindcss/vite": "4.3.3",
     "@tcitry/astro-book": "file:.artifacts/tcitry-astro-book.tgz",

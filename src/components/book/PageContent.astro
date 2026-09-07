@@ -75,7 +75,7 @@ const cloudSize = (count: number) => {
   </article>
   {page.type === 'links' && page.redirect && page.link && <span hidden data-external-redirect={page.link} />}
 </>}
-{pagination && <Pagination current={pagination.current} urls={pagination.urls} label="分页" previousLabel="上一页" nextLabel="下一页" />}
+{pagination && <Pagination current={pagination.current} urls={pagination.urls} label="分页" previousLabel="上一页" nextLabel="下一页" firstLabel="首页" lastLabel="末页" />}
 {page.kind === 'home' && <><br /><footer><div class="text-center">© 2012 - 2025 YINDONGLIANG</div></footer></>}
 {showPageAfter && <div data-pagefind-ignore>
   {page.type === 'posts' && <h5 class="post-after">本文共 {page.wordCount} 字，{param(page, 'lastmod') && <>上次修改于 {dateText(page.lastmod, 'long')}，</>}以 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh">CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5>}

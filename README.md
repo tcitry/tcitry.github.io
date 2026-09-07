@@ -4,6 +4,8 @@
 
 本站正在从 Hugo + hugo-book 迁移到 Astro + `@tcitry/astro-book`。文章继续静态生成，交互实验按需使用 React、HeroUI、HeroUI Pro、Tailwind CSS v4 和 Svelte。原有 Hugo 文件保留，生产站仍使用 Hugo。
 
+主题 UI 仅使用 Tailwind CSS v4 和必要的 CSS Modules，不接入 React、HeroUI 或 HeroUI Pro。HeroUI 与 HeroUI Pro 是本站的业务依赖；Weekly、Timeline、Portfolio 和交互演示也由本站维护。
+
 ## 分支约定
 
 仓库当前默认分支名为 **`master`**，尚无 `main` 分支。
@@ -52,7 +54,7 @@ npm run preview -- --port 4321
 
 主题的旧 Hugo SCSS/Sass 构建层已替换为 Tailwind CSS v4 和 CSS Modules，公开尺寸变量与插槽继续保留。Archives 的年份分类使用当前页锚点；这项博客定制由本站的 `PageToc` 维护。
 
-原 `demos/` 中的圆弧时间线和 Cloudflare 学习地图已迁入 `src/components/demos/` 与 `src/pages/demos/2026/`，保留 `/demos/2026/rounded-timeline/` 和 `/demos/2026/cloudflare-product-map/`。它们随根项目统一构建，不再单独运行 Vite 或向 Blog 写入构建产物。
+原 `demos/` 中的圆弧时间线已迁入 `src/components/demos/` 与 `src/pages/demos/2026/`，保留 `/demos/2026/rounded-timeline/`。它随根项目统一构建，不再单独运行 Vite 或向 Blog 写入构建产物。
 
 本地修改独立主题后，可显式同步并重新验收：
 

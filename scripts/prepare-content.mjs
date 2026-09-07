@@ -4,7 +4,7 @@ import { homedir } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import { createRendererFingerprint } from './renderer-cache.mjs';
-import { collectSources, publicSources, asList, lowerKeys, gitDates, isoDate, defaultRoute, routeSignature, encodeRoute, routePart } from './legacy-content.mjs';
+import { collectSources, publicSources, matchLegacySources, asList, lowerKeys, gitDates, isoDate, resolveLegacyRoute, encodeRoute, routePart } from './legacy-content.mjs';
 import { createLegacyMarkdownRenderer, createReferenceResolver, transformLegacyMarkdown, plainText } from '../src/lib/markdown.mjs';
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url));
@@ -19,7 +19,9 @@ const sources = new Map(records.map((record) => [record.source, record]));
 const modificationDates = gitDates(blogRoot);
 let legacy = { pages: [] };
 try { legacy = JSON.parse(await readFile(new URL('./legacy-routes.json', import.meta.url), 'utf8')); } catch { /* Fresh sites use the equivalent route rules below. */ }
-const legacyBySource = new Map(legacy.pages.filter((page) => page.source).map((page) => [page.source, page]));
+// Include unpublished candidates when checking ambiguity: another source must
+// never inherit their legacy route just because a colliding spelling is hidden.
+const legacyBySource = matchLegacySources(candidates, legacy.pages);
 const warnings = [];
 const collisions = [];
 const skippedCount = candidates.length - records.length;
@@ -30,14 +32,13 @@ function makePage(record, legacyPage = {}) {
   const kind = isHome ? 'home' : isSection ? 'section' : 'page';
   const section = isHome ? '' : record.source.includes('/') ? record.source.split('/')[0] : '';
   const title = String(data.title || legacyPage.title || path.posix.basename(isSection ? path.posix.dirname(record.source) : record.source, path.posix.extname(record.source)));
-  const sameRoute = legacyPage.routeSignature === routeSignature(record);
-  const url = sameRoute ? legacyPage.url : defaultRoute(record);
+  const { url, parent } = resolveLegacyRoute(record, legacyPage);
   const date = isoDate(data.date, legacyPage.date?.startsWith('0001') ? '' : isoDate(legacyPage.date));
   const lastmod = isoDate(data.lastmod, modificationDates.get(record.source) || record.mtime || date);
   return { id: record.source, source: record.source, url, title, kind, section, type: String(data.type || section || 'page'), layout: String(data.layout || ''), date, lastmod,
     description: String(data.description || ''), summary: '', html: '', headings: [], tags: asList(data.tags), categories: asList(data.categories), aliases: asList(data.aliases).map(encodeRoute),
     weight: Number(data.weight ?? 0), hidden: data.bookhidden === true, collapse: data.bookcollapsesection === true, toc: data.booktoc !== false,
-    image: String(data.image || data.cover || ''), link: String(data.link || ''), redirect: data.redirect === true, parent: sameRoute ? legacyPage.parent : '', wordCount: 0, params: { ...data, legacySortTitle: String(data.linktitle ?? data.title ?? legacyPage.title ?? title) } };
+    image: String(data.image || data.cover || ''), link: String(data.link || ''), redirect: data.redirect === true, parent, wordCount: 0, params: { ...data, legacySortTitle: String(data.linktitle ?? data.title ?? legacyPage.title ?? title) } };
 }
 const pages = records.map((record) => makePage(record, legacyBySource.get(record.source)));
 // Hugo creates top-level sections; deeper directories require an explicit _index file.

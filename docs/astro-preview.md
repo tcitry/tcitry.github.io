@@ -35,18 +35,28 @@ npm run preview -- --port 4321
 - /timeline/、/weekly/、/portfolio/、/links/：既有独立页面。
 - /lab/：顶部菜单 About 之后的 Astro-book 演示与文档页，MDX 同时运行 React、HeroUI OSS、真实 HeroUI Pro、Tailwind v4、Svelte；包含公式与 Mermaid。
 - /lab/agent-replay/：复用同一 React 组件的独立页面，回放预置 Agent 步骤，不调用模型或后端。
-- /demos/2026/rounded-timeline/、/demos/2026/cloudflare-product-map/：原有静态 demo。
+- /demos/2026/rounded-timeline/：圆弧时间线 demo。
 - /index.xml、/posts/index.xml、/weekly/index.xml、各标签与分类的 index.xml：RSS。
 
 侧栏已移除最近修改列表；`/modified/` 的文章列表与入口继续保留。Giscus 按原有文章类型及 kind=page 注入，维持 pathname 映射、仓库、分类、URL 大小写和编码；目录页不注入。没有修改 GitHub Discussions。
 
 ## 内容与样式边界
 
-BLOG_DIR 始终只读。构建层兼容 relref、前言字段、旧 URL、HTML、公式、代码和 Mermaid。路由基线在 scripts/legacy-routes.json，审计生成到 .generated/，不会发布。
+BLOG_DIR 始终只读。构建层兼容 relref、前言字段、旧 URL、HTML、公式、代码和 Mermaid。路由基线在 scripts/legacy-routes.json，审计生成到 .generated/，不会发布。 历史 source 路径优先精确匹配；只有旧基线与当前源文件两侧均无大小写歧义时，才允许忽略大小写匹配。这样 Git 干净检出与本机文件名大小写不同时仍保留原 URL；显式修改 slug/url 仍按新配置生效。
 
 现有 Blog 没有 MDX。新增交互文章目前放本站 src/pages/*.mdx，通过 Astro 原生编译；独立页面放 src/pages/，组件放 src/components/。在 Blog 添加 .mdx 会得到明确提示，避免错误地按普通 Markdown 发布。外部 Blog MDX 导入留待下一阶段，示例见 docs/demo-authoring.md。
 
 新 UI 优先 Tailwind，其次 CSS Modules。通用 Book 外观兼容层、图标、公式字体和阅读脚本归主题包所有，本站专属页面与徽标配色的样式留在博客。主题保留 Hugo Book MIT 许可与来源。HeroUI 样式在博客局部加载，不向阅读布局引入全局 Tailwind preflight。
+
+## Hugo 外观对齐约定
+
+迁移验证阶段以原 `master` / `hugo-book` 的实际页面为布局基准。除已明确要求的标签间距、Astro-book 演示入口及组件替换外，不自行调整既有页面的尺寸或交互。对照必须使用相同浏览器与视口，并检查生成页面，不能只比较 CSS 源码。
+
+- 页面、左右侧栏保留原滚动容器，根页面使用细滚动条与稳定占位；滚动时显示，停止 650ms 后隐藏。不要改为始终可见的默认滚动条，也不要用额外容器重做整页滚动。
+- 左侧菜单保留 20rem 最小宽度和原 `max-content` / `clamp()` 上限。列表页容器最大 120rem；无右侧目录的列表页正文最大 100rem。
+- Weekly 卡片保持 320px 宽、封面 320×192px、间距 16px；Timeline 与 Portfolio 保留原轨道、圆点、内边距、列表缩进和断点。
+- 筛选栏、右侧目录、年份选择器和分页保留原行高、间距与控件。使用 Tailwind 字号工具时注意其附带行高，必要时只设置 `text-[length:…]`。
+- Archives 年份链接滚动到当前页对应 ID；主题的通用标签、分类路由继续独立可用。检查桌面、超宽屏和手机端，并确认宽表格、代码块的滚动仍限制在自身区域。
 
 ## 两个仓库的协作方式
 
@@ -130,7 +140,7 @@ Wrangler 在登录时自动加入刷新授权所需的 offline_access，不要�
 
 HTTP 检查记录在 `.generated/cloudflare-verification.json`。Cloudflare 对 Python urllib 默认客户端返回 1010；上述检查使用 curl，并用真实浏览器交叉验证，未调整账户的安全规则。
 
-## 当前集成验收（2026-09-07）
+## Pro 接入与首次集成验收（2026-09-07，历史）
 
 本轮使用公开主题提交 `c9f83e2f8ce43d8d9ab95f64a9b10a8f3dbf9d4f`，未设置 `ASTRO_BOOK_DIR`，从远端固定来源重新打包并同步 lockfile。
 
@@ -146,3 +156,15 @@ HTTP 检查记录在 `.generated/cloudflare-verification.json`。Cloudflare 对 
 目标公开地址是 `https://tcitry.github.io/astro-book/`，目前尚未发布：GitHub Pages 会继承用户站点当前绑定的 `yindongliang.com`，原生地址实际 301 跳转到该域名。文档工作流已完成构建并上传产物，通过域名检查跳过发布，避免将独立演示站发布到博客域名下。待生产博客完成 Cloudflare 迁移、解除用户 Pages 自定义域名后，再运行主题 Pages 工作流；本轮未更改生产域名。规则见 [GitHub Pages 自定义域名文档](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages)。
 
 本轮预览已部署到 `preview.yindongliang.com`，Cloudflare 版本为 `9bda6e8a-d93a-424d-90e4-e4a9a0ee134f`，对应实现提交 `dc1f7ed7b`。20 项 HTTP 检查通过，包括菜单顺序、旧文章静态代码、Giscus pathname、noindex、robots、RSS/search、404/尾斜线与不可变资源缓存。公网浏览器验证 Pro 组件激活、回放/暂停、完整结果与代码原文复制，未出现控制台错误。该部署仍是显式 Wrangler 发布，自动 CD 的后续安排见 [持续部署方案](continuous-deployment.md)。
+
+
+## Hugo 布局对齐与 Kumo 清理验收（2026-09-07）
+
+本轮使用公开主题 `f5066d2f0bd591800dcd7433357a60e77b7b38da`，从 Blog `main` 已提交版本 `f405f1beaeaac13fe84f3a17bc55d5a5673471d7` 的干净副本构建。
+
+- 构建 1,226 个页面，保留全部 1,208 个旧 URL；951 个 Giscus 页面、25 个公式页面、65 个 Mermaid 页面、623 个代码页面通过检查。24 项测试通过，31 个文件的类型检查零错误、零警告。
+- 同一浏览器在 390、1920、2560px 视口对比 Archives、Weekly、Timeline、Portfolio，根滚动条及容器、侧栏的宽度、位置、内边距、overflow 测量与 Hugo 一致。Weekly 卡片仍为 320px、封面 320×192px；13 个 Portfolio 卡片在桌面与手机端的高度均与原站一致。
+- 根滚动条恢复细线、透明默认状态、滚动中显色和 650ms 隐藏。Archives 桌面/手机年份锚点、亚像素位置、页末年份与文章嵌套目录高亮通过实际操作检查；恢复原分页窗口和首末页控件。
+- 删除 Kumo 演示源码、路由、依赖，以及 Blog 导航中的演示区块和静态文件。旧静态目录有发布排除和产物缺失断言，圆弧时间线保留。HeroUI 表单、Pro 回放与代码复制实测通过。
+- 主题 UI 继续使用 Tailwind CSS v4 / CSS Modules，无 React、HeroUI、HeroUI Pro 或 Kumo 运行依赖。React 与商业组件只存在于博客消费方；独立主题示例不使用这些依赖。
+- 干净检出发现并修复 6 处文件名大小写差异导致的 URL 漂移，使用双侧唯一的历史 source 匹配；保留显式路由变更和歧义保护，并覆盖回归测试。

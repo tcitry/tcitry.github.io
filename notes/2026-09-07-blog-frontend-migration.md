@@ -152,7 +152,7 @@ Fumadocs 也需要接入 Mermaid 实现；它当前并没有内置 Mermaid wrapp
 
 一个完整 demo 对应一个独立交互单元：React demo 具有自己的根组件和 Provider，Svelte/Vue demo 使用各自组件，原生 Three.js demo 可由 Astro/JavaScript 容器管理浏览器挂载与清理。Three.js 也可按实验目标使用某个框架封装，站点不强制统一。文章中的嵌入展示与 `/demos/.../` 独立页面引用同一实现，只改变外围阅读布局。
 
-现有 `rounded-timeline` 已用 Vite/Tailwind，`cloudflare-product-map` 已用 React 19/Vite/Kumo；可以先保留现有公开 demo URL，再逐个接入共享组件。保留 iframe 作为旧 demo 或特殊依赖的兼容手段，新的一般交互采用直接组件嵌入。
+现有 `rounded-timeline` 已迁入 Astro/Tailwind，保留公开 demo URL。保留 iframe 作为特殊依赖的兼容手段，新的一般交互采用直接组件嵌入。
 
 Astro 的独立 islands 之间不能靠包在外面的 React Context 自动共享状态；需要共享的 UI 放在同一个 React 根组件中，确有跨岛需要时用独立 store 或明确事件。交互组件进入视口再 hydration，关键入口可立即加载；浏览器专属依赖才采用仅客户端加载。[跨 islands 状态](https://docs.astro.build/en/recipes/sharing-state-islands/)
 

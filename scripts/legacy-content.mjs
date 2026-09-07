@@ -74,6 +74,29 @@ export function publicSources(records) {
     return [{ ...record, data }];
   });
 }
+export function matchLegacySources(records, legacyPages) {
+  const exact = new Map();
+  const legacyByFold = new Map();
+  const currentCounts = new Map();
+  for (const page of legacyPages) {
+    if (!page.source) continue;
+    exact.set(page.source, page);
+    const key = page.source.toLowerCase();
+    // A null entry marks an ambiguous legacy spelling, including duplicates.
+    legacyByFold.set(key, legacyByFold.has(key) ? null : page);
+  }
+  for (const record of records) {
+    const key = record.source.toLowerCase();
+    currentCounts.set(key, (currentCounts.get(key) ?? 0) + 1);
+  }
+  const matches = new Map();
+  for (const record of records) {
+    const key = record.source.toLowerCase();
+    const page = exact.get(record.source) ?? (currentCounts.get(key) === 1 ? legacyByFold.get(key) : undefined);
+    if (page) matches.set(record.source, page);
+  }
+  return matches;
+}
 export function gitDates(root) {
   const dates = new Map();
   try {
@@ -107,4 +130,8 @@ export function defaultRoute(record) {
 }
 export function routeSignature(record) {
   return JSON.stringify({ url: record.data.url ?? null, slug: record.data.slug ?? null });
+}
+export function resolveLegacyRoute(record, legacyPage = {}) {
+  const sameRoute = legacyPage.routeSignature === routeSignature(record);
+  return { url: sameRoute ? legacyPage.url : defaultRoute(record), parent: sameRoute ? legacyPage.parent : '' };
 }
