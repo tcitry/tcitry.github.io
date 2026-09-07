@@ -1,27 +1,27 @@
 # LYon's Blog
 
-[生产站](https://yindongliang.com) · [Astro 预览站](https://preview.yindongliang.com) · [Astro-book 演示与文档](https://yindongliang.com/lab/) · [astro-book 主题](https://github.com/tcitry/astro-book)
+[生产站](https://yindongliang.com) · [Astro-book 演示与文档](https://yindongliang.com/lab/) · [astro-book 主题](https://github.com/tcitry/astro-book)
 
-本站使用 Astro + `@tcitry/astro-book`。文章静态生成，交互实验按需使用 React、HeroUI、HeroUI Pro、Tailwind CSS v4 和 Svelte。生产和预览分别部署到 Cloudflare Workers Static Assets，无需维护独立后端。
+本站使用 Astro + `@tcitry/astro-book`。文章静态生成，交互实验按需使用 React、HeroUI、HeroUI Pro、Tailwind CSS v4 和 Svelte。博客只使用一个 Cloudflare Worker `tcitry-blog` 托管生产静态资源，无需维护独立后端。
 
-2026-09-07：生产切换已获确认，生产配置和校验入口已准备；正式域名发布及默认分支切换以本次发布结果为准。Workers Builds 自动 CD 尚未接通，当前通过显式 Wrangler 命令部署。
+2026-09-07：Astro 已上线 `yindongliang.com`，GitHub 默认分支已切换为 `main`。日常在本地预览、review 和验证，通过后手动使用 Wrangler 发布。当前不启用自动部署。
 
 主题 UI 仅使用 Tailwind CSS v4 和必要的 CSS Modules，不接入 React、HeroUI 或 HeroUI Pro。HeroUI 与 HeroUI Pro 是本站的业务依赖；Weekly、Timeline、Portfolio 和交互演示也由本站维护。
 
 ## 分支约定
 
-生产切换后的分支约定如下；旧默认分支实际名为 `master`。
+当前默认分支为 `main`；旧默认分支实际名为 `master`。
 
 | 分支 | 用途 |
 | --- | --- |
-| `main` | Astro 生产分支及新的默认分支，部署到 `yindongliang.com`。 |
-| `astro` | 功能验证与预览分支，部署到 `preview.yindongliang.com`。 |
+| `main` | Astro 生产及默认分支，本地验收后手动发布到 `yindongliang.com`。 |
+| `astro` | 保留迁移和功能验证历史，可用于本地开发验证。 |
 | `hugo-book` | Hugo + hugo-book 的可恢复备份。 |
 | `master` | 保留的旧 Hugo 分支，不再作为 Astro 部署入口。 |
 
 2026-09-07 的远端 Hugo 备份为 `ce25b344d48e561f6420f727f43509c4f478e8d9`，包含旧生产提交 `d02f8b83854f7eff39b32b00c1d585d4f3567d7c` 和之后已提交的 Hugo 工作。它保留已有分支历史，不包含其他工作区的未提交文件，也不包含独立 Blog 仓库中的内容。
 
-后续在 `astro` 验证，通过后合并到 `main` 发布生产。主题 CI 覆盖 `main` 和 `astro`，在 Ubuntu 和 macOS 上检查固定来源的主题打包与 lockfile 一致性，不访问 Blog 内容、不安装商业组件、不部署站点。生产切换时停用旧 Hugo Pages 工作流；GitHub Pages 的自定义域名还需按[手动解绑步骤](docs/continuous-deployment.md#github-pages-自定义域名解绑)移除。
+后续修改先在本地 review 和验证，再提交到 `main` 并手动发布。主题 CI 覆盖 `main` 和 `astro`，在 Ubuntu 和 macOS 上检查固定来源的主题打包与 lockfile 一致性，不访问 Blog 内容、不安装商业组件、不部署站点。旧 Hugo Pages 工作流已停用；GitHub Pages 的自定义域名还需按[手动解绑步骤](docs/continuous-deployment.md#github-pages-自定义域名解绑)移除。
 
 ## 安装与本地验证
 
@@ -47,7 +47,7 @@ npm run verify
 npm run preview -- --port 4321
 ```
 
-需要验证阶段代码时检出 `astro` 分支。开发模式使用 `BLOG_DIR=/path/to/Blog npm run dev`；Pagefind 搜索的完整验收使用 build + preview。普通 `build` 默认生成预览产物，生产使用 `build:production` 和 `verify:production`。
+在浏览器打开 `http://127.0.0.1:4321` 进行本地 review。开发模式使用 `BLOG_DIR=/path/to/Blog npm run dev`；Pagefind 搜索的完整验收使用 build + preview。普通 `build` 默认生成本地预览产物，生产使用 `build:production` 和 `verify:production`。
 
 ## 主题开发与功能入口
 
@@ -71,30 +71,27 @@ npm run verify
 
 - [预览与迁移验收](docs/astro-preview.md)：安装细节、主题升级、URL/评论兼容与已完成的检查。
 - [Demo 编写指南](docs/demo-authoring.md)：在 MDX 或独立页面中复用交互组件。
-- [持续部署方案](docs/continuous-deployment.md)：Astro 预览/生产分支、GitHub Actions 与 Workers Builds 的接入条件。
+- [构建与发布说明](docs/continuous-deployment.md)：本地 review、单生产 Worker 手动发布，以及未来可选的 Workers Builds。
 - [主题使用指南（英文）](https://github.com/tcitry/astro-book/blob/main/README.md)：主题安装、公开 API、插槽与样式定制。
 
 验收入口包括 `/tags/`、`/categories/`、`/timeline/`、`/weekly/`、`/portfolio/`、`/links/`、`/lab/` 和 `/lab/agent-replay/`。顶部菜单中的 **Astro-book** 位于 **About** 之后，地址仍是 `/lab/`。侧栏不再显示最近修改列表，`/modified/` 页面继续保留。Giscus 保留原始 pathname 映射。
 
-## Cloudflare 部署
+## 手动发布到 Cloudflare
 
-生产与预览使用独立 Worker 和配置，命令会先构建、校验，再部署对应产物：
+生产目标固定为 `tcitry-blog`，配置文件为 `wrangler.production.jsonc`，域名为 `yindongliang.com`。本地 review 完成后生成并验证生产产物：
 
-| 环境 | 分支 | Worker | 配置 |
-| --- | --- | --- | --- |
-| 生产 | `main` | `tcitry-blog` | `wrangler.production.jsonc` |
-| 预览 | `astro` | `tcitry-astro-preview` | `wrangler.preview.jsonc` |
+```sh
+BLOG_DIR=/path/to/Blog npm run build:production
+npm run verify:production
+```
 
-先确认 Wrangler 登录，再按目标环境选择一条部署命令：
+确认生产产物后，发布同一份 `dist/`：
 
 ```sh
 npx wrangler whoami
-# 生产
-BLOG_DIR=/path/to/Blog npm run deploy:production
-# 预览
-BLOG_DIR=/path/to/Blog npm run deploy:preview
+npx wrangler deploy --config wrangler.production.jsonc
 ```
 
-生产命令显式使用 `PUBLIC_SITE_ENV=production`，检查可收录的 robots、canonical 和生产统计；预览启用 noindex、禁止抓取并停用生产统计，canonical 仍指向生产站。
+也可使用 `BLOG_DIR=/path/to/Blog npm run deploy:production` 重新构建、验证并发布。生产命令显式使用 `PUBLIC_SITE_ENV=production`，检查可收录的 robots、canonical 和生产统计；本地预览默认 noindex 并停用生产统计。
 
-Workers Builds 两个环境均使用 `npm run build:workers`，分别配置环境变量和对应的 Wrangler 部署命令。首次连接仍需 Git 集成及私有内容/Pro secrets，具体值和通知方式见[控制台配置步骤](docs/continuous-deployment.md#首次控制台配置)。这些接线尚未完成，公开主题 CI 成功不代表博客自动 CD 已启用。
+`www.yindongliang.com` 通过 Cloudflare Redirect Rule 301 跳转到主域，保留路径和查询参数，不需要额外 Worker。Workers Builds 仅作为未来可选方案；若以后启用，只连接 `main` 和现有生产 Worker。当前站点、Blog 或主题仓库推送均不会自动发布博客。

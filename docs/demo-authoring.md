@@ -1,11 +1,11 @@
 # Astro-book 演示与交互式文章
 
-当前验证入口：
+当前生产演示入口：
 
-- `/lab/`：[Astro-book 展示页](https://preview.yindongliang.com/lab/)，从顶部菜单 **About** 之后的 **Astro-book** 进入，汇集主题说明、使用文档及 MDX 中的 Astro、React 与 Svelte 组件演示。
+- `/lab/`：[Astro-book 展示页](https://yindongliang.com/lab/)，从顶部菜单 **About** 之后的 **Astro-book** 进入，汇集主题说明、使用文档及 MDX 中的 Astro、React 与 Svelte 组件演示。
 - `/lab/agent-replay/`：复用同一个 React 组件的独立页面。
 
-第一阶段的演示文件都在站点仓库内，`Blog` 内容保持只读。Agent 演示仅播放本地预设数据，不调用模型或后端，也不收集输入。
+演示文件都在站点仓库内，`Blog` 内容保持只读。修改后先在本地 review，再随主站发布到唯一的生产 Worker；旧迁移预览域名已下线，流程见 [本地验收与生产发布](astro-preview.md)。Agent 演示仅播放本地预设数据，不调用模型或后端，也不收集输入。
 
 本站采用 Astro + `@tcitry/astro-book` + Tailwind CSS v4，并在 React 交互组件中使用 HeroUI。HeroUI Pro 是本站额外接入的商业组件；独立的公开主题不依赖 React、HeroUI 或 HeroUI Pro。主题本身的使用方式见 [英文 README](https://github.com/tcitry/astro-book/blob/main/README.md)、[入门指南](https://github.com/tcitry/astro-book/blob/main/docs/getting-started.md) 与 [公开 API](https://github.com/tcitry/astro-book/blob/main/docs/architecture.md)。
 
@@ -117,7 +117,7 @@ npx heroui-pro@1.0.0-beta.12 install react --yes
 
 在 CI 构建时，通过 CI 平台的 secret 注入官方仪表盘提供的 **CI/CD token**，变量名为 `HEROUI_AUTH_TOKEN`。`npm ci` 的 postinstall 会读取它并下载授权产物。应使用专门的 CI/CD token，不复制个人登录凭证。该变量没有 `PUBLIC_` 前缀，不进入客户端源码、构建参数或日志。
 
-Cloudflare 只托管构建后的静态产物时不需要运行时授权 token；只有负责执行 `npm ci` 的构建环境需要它。当前可以在已有授权的本机完成构建并发布预览。
+Cloudflare 只托管构建后的静态产物时不需要运行时授权 token；只有负责执行 `npm ci` 的构建环境需要它。当前在已有授权的本机完成构建、review 与生产发布。
 
 官方说明：[HeroUI Pro 安装与 CI/CD](https://heroui.pro/docs/react/getting-started/installation)。
 
@@ -127,7 +127,7 @@ Cloudflare 只托管构建后的静态产物时不需要运行时授权 token；
 | --- | --- | --- |
 | `/demos/2026/rounded-timeline/` | `src/components/demos/RoundedTimeline.astro` | 四张卡片静态生成，小脚本通过 ResizeObserver 更新连接线 |
 
-入口位于 `src/pages/demos/2026/`，使用轻量 `DemoLayout`。演示保持原 iframe 地址和全屏布局，随根项目 `npm run dev` / `npm run build` 一起运行。预览环境使用 noindex，canonical 指向生产域名。
+入口位于 `src/pages/demos/2026/`，使用轻量 `DemoLayout`。演示保持原 iframe 地址和全屏布局，随根项目 `npm run dev` / `npm run build` 一起运行。本地预览构建使用 noindex；正式发布使用 `build:production`，canonical 始终指向生产域名。
 
 圆弧时间线不再使用单独的 Vite 工程或把产物写到 Blog。`prepare-assets` 会忽略 Blog/static 中对应的旧目录，让 Astro 产物成为唯一发布来源；其他已有静态演示继续正常复制。修改展示逻辑时编辑组件，保留文章中的既有地址。
 
@@ -136,7 +136,11 @@ Cloudflare 只托管构建后的静态产物时不需要运行时授权 token；
 ```sh
 npm run check
 npm run build
+npm run verify
+npm run preview -- --port 4321
 ```
+
+在 [本地服务](http://127.0.0.1:4321/) review 以下交互，通过后按 [生产发布说明](astro-preview.md#cloudflare-生产发布) 构建并验收生产产物，再发布到 [yindongliang.com](https://yindongliang.com)。
 
 检查 `/lab/` 与 `/lab/agent-replay/`：
 

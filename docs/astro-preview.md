@@ -1,8 +1,8 @@
-# Astro 预览、部署与迁移验收
+# Astro 本地验收与生产发布
 
-当前采用 Astro 静态生成、独立的 `@tcitry/astro-book` 主题、React / Svelte islands 与原生 MDX，不依赖 Starlight。预览地址是 [preview.yindongliang.com](https://preview.yindongliang.com)，演示入口是 [Astro-book](https://preview.yindongliang.com/lab/)。线上呈现最近一次部署的产物；本地新提交须重新构建、验收并部署后才会出现。生产站 [yindongliang.com](https://yindongliang.com) 继续使用现有 Hugo 工作流。
+生产站 [yindongliang.com](https://yindongliang.com) 已采用 Astro 静态生成、独立的 `@tcitry/astro-book` 主题、React / Svelte islands 与原生 MDX，不依赖 Starlight。演示与使用文档入口是 [Astro-book](https://yindongliang.com/lab/)。主站只保留生产 Worker `tcitry-blog`，在本地 review 后直接发布；迁移期间的 `preview.yindongliang.com` 已下线，不再作为验收或发布目标。
 
-当前默认分支为 `master`，`hugo-book` 保存 Hugo 源码备份，`astro` 保存迁移验证提交；尚未改名为 `main`。分支发布约定见 [README](../README.md#分支约定)。
+当前生产及默认分支为 `main`；`master`、`hugo-book` 和 `astro` 保留迁移历史，不对应另一套在线预览。分支发布约定见 [README](../README.md#分支约定)。
 
 ## 本地运行
 
@@ -11,14 +11,16 @@
 ```sh
 # 干净检出即可运行，不需要预先安装 node_modules 或另行检出主题。
 npm run setup
-BLOG_DIR="$HOME/Blog" npm run build
+PUBLIC_SITE_ENV=preview BLOG_DIR="$HOME/Blog" npm run build
 npm run check
 npm test
 npm run verify
 npm run preview -- --port 4321
 ```
 
-打开 http://127.0.0.1:4321/ 。Astro 7 preview 作为后台进程运行，使用 npx astro preview status / logs 查看状态，npx astro preview stop 停止。
+打开 [本地预览](http://127.0.0.1:4321/)。Astro 7 preview 作为后台进程运行，使用 `npx astro preview status` / `logs` 查看状态，`npx astro preview stop` 停止。本地预览产物保留 noindex、禁止抓取并关闭生产统计；canonical 始终指向生产域名。
+
+可运行 `node scripts/verify-deployment.mjs --env preview` 检查本地页面；默认地址为 `http://127.0.0.1:4321`，其他端口通过 `--origin` 指定。Astro preview 不执行 Cloudflare 的 `_headers`、`_redirects`，本机检查因此跳过平台响应头、HTTP 重定向与 immutable 缓存断言；重定向和响应头配置仍由 `npm run verify` 检查，实际托管行为在生产发布后验收。
 
 开发时用 npm run dev。它会先只读导入 Blog 并复制公开资源；`BLOG_DIR` 默认是当前用户的 `~/Blog`，可显式覆盖。修改 Blog 后重新准备内容或重启 dev。Pagefind 由完整 build 生成，验收搜索请使用 build + preview。
 
@@ -50,7 +52,7 @@ BLOG_DIR 始终只读。构建层兼容 relref、前言字段、旧 URL、HTML�
 
 ## Hugo 外观对齐约定
 
-迁移验证阶段以原 `master` / `hugo-book` 的实际页面为布局基准。除已明确要求的标签间距、Astro-book 演示入口及组件替换外，不自行调整既有页面的尺寸或交互。对照必须使用相同浏览器与视口，并检查生成页面，不能只比较 CSS 源码。
+既有页面继续以原 `master` / `hugo-book` 的实际页面为布局基准。除已明确要求的标签间距、Astro-book 演示入口及组件替换外，不自行调整既有页面的尺寸或交互。对照必须使用相同浏览器与视口，并检查生成页面，不能只比较 CSS 源码。
 
 - 页面、左右侧栏保留原滚动容器，根页面使用细滚动条与稳定占位；滚动时显示，停止 650ms 后隐藏。不要改为始终可见的默认滚动条，也不要用额外容器重做整页滚动。
 - 左侧菜单保留 20rem 最小宽度和原 `max-content` / `clamp()` 上限。列表页容器最大 120rem；无右侧目录的列表页正文最大 100rem。
@@ -82,28 +84,36 @@ npm test
 npm run verify
 ```
 
-此模式会使用本地修改并更新 tarball 的 lockfile 完整性，供开发验收；不要把只有本机能构建的 lockfile 提交为验证分支。联调通过后先推送主题、更新本站来源 commit，再不设置 `ASTRO_BOOK_DIR` 执行 `npm run theme:sync`；或不设置该变量直接同步原有固定提交以恢复基线。`npm run setup` 始终使用提交的来源，忽略 `ASTRO_BOOK_DIR`。主题更新会参与 Markdown 缓存指纹，避免同版本本地迭代仍显示旧渲染结果。
+此模式会使用本地修改并更新 tarball 的 lockfile 完整性，供开发验收；不要把只有本机能构建的 lockfile 提交到共享分支。联调通过后先推送主题、更新本站来源 commit，再不设置 `ASTRO_BOOK_DIR` 执行 `npm run theme:sync`；或不设置该变量直接同步原有固定提交以恢复基线。`npm run setup` 始终使用提交的来源，忽略 `ASTRO_BOOK_DIR`。主题更新会参与 Markdown 缓存指纹，避免同版本本地迭代仍显示旧渲染结果。
 
 首次固定来源安装的历史验证使用没有 `node_modules`、主题源码或预存 tarball 的临时目录：固定主题先构建，再完整安装本站依赖，lockfile 字节保持不变；当时安装的 125 个主题文件与打包产物逐字节一致，主题公开入口、CSS、HeroUI Pro 与 React/Svelte integration 均可解析。本站 Node 24 生成的 lockfile 在该 Node 26 环境也通过校验。此记录对应当时的主题版本，并使用本机现有 HeroUI Pro 授权环境；更换主题提交后仍须重新验证，新的开发机器或 CI 也须配置自己的授权。
 
 既存 Python 语言基础 .md 与 _index.md 路径冲突按 Hugo 实际行为处理：保留目录页，被覆盖正文只记录审计。大小写不同且会在 macOS 文件系统相互覆盖的别名写入 Cloudflare _redirects，不覆盖真实页面。
 
-## Cloudflare 预览部署
+## Cloudflare 生产发布
 
-wrangler.preview.jsonc 通过 Workers Static Assets 托管 dist/，没有 Worker 业务代码或后端 API。仅绑定 preview.yindongliang.com，不改生产域名。
+`wrangler.production.jsonc` 通过 Workers Static Assets 将 `dist/` 发布到生产 Worker `tcitry-blog`，绑定 `yindongliang.com`。没有主站 Worker 业务代码或后端 API，也不再维护独立预览 Worker。
+
+先构建生产产物并在本地 review，再直接发布这份 `dist/`：
 
 ```sh
-# 新机器或授权过期时，先完成浏览器登录；无需启用无关产品权限。
-npx wrangler login --scopes account:read user:read workers_scripts:write workers_routes:write zone:read
-npx wrangler whoami
-npm run deploy:preview
+BLOG_DIR="$HOME/Blog" npm run build:production
+npm run check
+npm test
+npm run verify:production
+npm run preview -- --port 4321
+# 浏览器确认这份生产产物后发布；此命令不重新构建。
+npx wrangler deploy --config wrangler.production.jsonc
+node scripts/verify-deployment.mjs --env production
 ```
 
-Wrangler 在登录时自动加入刷新授权所需的 offline_access，不要将它作为 `--scopes` 参数传入。配置中的账户 ID 对应本次部署账户；更换账户时先核对 `whoami` 并更新 `wrangler.preview.jsonc`。配置的 Custom Domain 由 Cloudflare 管理 DNS 与 TLS。
+生产构建显式设置 `PUBLIC_SITE_ENV=production`，允许收录并启用原有统计；HTML、robots.txt 和响应头不得误带预览环境的 noindex。不要把普通预览构建直接上传生产。日常也可用 `npm run deploy:production` 重新构建、校验并发布；它会替换之前 review 的本地构建产物。
 
-预览默认禁用收录和生产统计：HTML noindex、robots.txt、Cloudflare X-Robots-Tag；canonical 保留生产域名。PUBLIC_SITE_ENV=production 是未来切换时显式启用的构建开关，本轮不启用。
+生产 HTTP 验收默认访问 `https://yindongliang.com`，覆盖核心页面、Giscus、RSS、搜索、旧 URL 重定向、实际 404 和资源缓存；`--all-routes` 可扩大到全部页面。发布授权、`www` 跳转及可选自动化的维护方式见 [生产发布说明](continuous-deployment.md)。
 
-首次部署版本为 `40735e8f-5301-4b9b-8ac3-a7f32839523e`，Worker 名为 `tcitry-astro-preview`，备用地址为 [tcitry-astro-preview.iuv.workers.dev](https://tcitry-astro-preview.iuv.workers.dev)。旧内容的外链、引用等编辑问题仍按约定留到架构确认以后处理。
+## 已下线的迁移预览（历史）
+
+迁移初期使用过 `preview.yindongliang.com`、Worker `tcitry-astro-preview` 及其 workers.dev 地址，首次部署版本为 `40735e8f-5301-4b9b-8ac3-a7f32839523e`。这套预览现已下线；以下验收记录只说明当时的迁移结果，不再提供预览部署操作。
 
 ## 首次迁移验收记录（历史）
 
@@ -130,7 +140,7 @@ Wrangler 在登录时自动加入刷新授权所需的 offline_access，不要�
 
 当时主题构建有 Mermaid 分块体积提示和旧代码复制兼容回退的弃用提示；后续主题默认代码组件改用 Expressive Code，博客随后选择 Pro CodeBlock。Mermaid 通过动态导入按页面需要加载。这一阶段未进行 Lighthouse 性能测量，主题也未发布 npm。
 
-## 首次 Cloudflare 公网验收（2026-09-07，历史）
+## 首次 Cloudflare 迁移预览验收（2026-09-07，已下线历史）
 
 - 自定义域名及 workers.dev 备用域名均通过 HTTPS 返回 200。
 - 23 项 HTTP 检查通过：首页、实验室、文章、标签/分类、时间线、周刊、作品、友链、RSS、sitemap、搜索脚本、CSS/JS/字体、尾斜线跳转、大小写旧别名和缺失页 404。
@@ -153,12 +163,12 @@ HTTP 检查记录在 `.generated/cloudflare-verification.json`。Cloudflare 对 
 
 独立主题文档示例位于 `astro-book` 的 `examples/basic/`，可在主题仓库运行 `npm run build`、`npm run preview -w @astro-book/basic`。本次本地验收地址为 `http://127.0.0.1:4322/astro-book/`，已验证带 base 路径的搜索、移动导航、EC 复制与明暗主题，以及 Mermaid 展示和原始源码复制。
 
-目标公开地址是 `https://tcitry.github.io/astro-book/`，目前尚未发布：GitHub Pages 会继承用户站点当前绑定的 `yindongliang.com`，原生地址实际 301 跳转到该域名。文档工作流已完成构建并上传产物，通过域名检查跳过发布，避免将独立演示站发布到博客域名下。待生产博客完成 Cloudflare 迁移、解除用户 Pages 自定义域名后，再运行主题 Pages 工作流；本轮未更改生产域名。规则见 [GitHub Pages 自定义域名文档](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages)。
+当时独立主题的目标公开地址为 `https://tcitry.github.io/astro-book/`，因 GitHub Pages 继承用户站点自定义域名而未发布，文档工作流通过域名检查跳过部署。这个历史结果不代表主题文档站的当前状态；博客现已迁入 Cloudflare，GitHub Pages 解绑步骤见 [生产发布说明](continuous-deployment.md#github-pages-自定义域名解绑)。
 
-本轮预览已部署到 `preview.yindongliang.com`，Cloudflare 版本为 `9bda6e8a-d93a-424d-90e4-e4a9a0ee134f`，对应实现提交 `dc1f7ed7b`。20 项 HTTP 检查通过，包括菜单顺序、旧文章静态代码、Giscus pathname、noindex、robots、RSS/search、404/尾斜线与不可变资源缓存。公网浏览器验证 Pro 组件激活、回放/暂停、完整结果与代码原文复制，未出现控制台错误。该部署仍是显式 Wrangler 发布，自动 CD 的后续安排见 [持续部署方案](continuous-deployment.md)。
+当时的预览部署在 `preview.yindongliang.com`（现已下线），Cloudflare 版本为 `9bda6e8a-d93a-424d-90e4-e4a9a0ee134f`，对应实现提交 `dc1f7ed7b`。20 项 HTTP 检查通过，包括菜单顺序、旧文章静态代码、Giscus pathname、noindex、robots、RSS/search、404/尾斜线与不可变资源缓存。公网浏览器验证 Pro 组件激活、回放/暂停、完整结果与代码原文复制，未出现控制台错误。该记录使用显式 Wrangler 发布；当前流程见 [生产发布说明](continuous-deployment.md)。
 
 
-## Hugo 布局对齐与 Kumo 清理验收（2026-09-07）
+## Hugo 布局对齐与 Kumo 清理验收（2026-09-07，历史）
 
 本轮使用公开主题 `f5066d2f0bd591800dcd7433357a60e77b7b38da`，从 Blog `main` 已提交版本 `f405f1beaeaac13fe84f3a17bc55d5a5673471d7` 的干净副本构建。
 
@@ -169,6 +179,6 @@ HTTP 检查记录在 `.generated/cloudflare-verification.json`。Cloudflare 对 
 - 主题 UI 继续使用 Tailwind CSS v4 / CSS Modules，无 React、HeroUI、HeroUI Pro 或 Kumo 运行依赖。React 与商业组件只存在于博客消费方；独立主题示例不使用这些依赖。
 - 干净检出发现并修复 6 处文件名大小写差异导致的 URL 漂移，使用双侧唯一的历史 source 匹配；保留显式路由变更和歧义保护，并覆盖回归测试。
 
-该产物已使用 Wrangler 发布到 [preview.yindongliang.com](https://preview.yindongliang.com/)，实现提交为 `6ac71c40fa59bdaed079fab2ecd5a03a388a4fa5`，Cloudflare 版本为 `9817d629-7081-4f58-acc4-6b8ac1e50bc5`。22 项公网 HTTP 检查通过，包括已移除 demo 的 404、Cloudflare 概览无旧 demo 引用、归档年份锚点、Giscus pathname、noindex、RSS/search、尾斜线与 immutable 缓存；公网浏览器确认根滚动条为 thin / stable，年份点击保留当前页面并正确高亮。本次直接发布已验证的 `dist/`，没有从 Blog 未提交的工作区内容重新构建。
+该产物当时使用 Wrangler 发布到 `preview.yindongliang.com`（现已下线），实现提交为 `6ac71c40fa59bdaed079fab2ecd5a03a388a4fa5`，Cloudflare 版本为 `9817d629-7081-4f58-acc4-6b8ac1e50bc5`。22 项公网 HTTP 检查通过，包括已移除 demo 的 404、Cloudflare 概览无旧 demo 引用、归档年份锚点、Giscus pathname、noindex、RSS/search、尾斜线与 immutable 缓存；公网浏览器确认根滚动条为 thin / stable，年份点击保留当前页面并正确高亮。本次直接发布已验证的 `dist/`，没有从 Blog 未提交的工作区内容重新构建。
 
-独立主题 README 已移除临时迁移预览链接，仅保留 `yindongliang.com` 作为使用方示例；该文档修改不改变本站固定主题的运行代码。Cloudflare Workers Builds 尚需完成 Git 连接与构建 Secrets 配置，本次仍为手动 Wrangler 发布，后续步骤见 [持续部署方案](continuous-deployment.md)。
+独立主题 README 已移除临时迁移预览链接，仅保留 `yindongliang.com` 作为使用方示例；该文档修改不改变本站固定主题的运行代码。当时发布为手动 Wrangler 操作，当前约定仍是本地 review 后直接发布生产，见 [生产发布说明](continuous-deployment.md)。

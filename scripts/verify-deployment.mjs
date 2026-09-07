@@ -108,14 +108,16 @@ async function main() {
     'all-routes': { type: 'boolean', default: false }, 'timeout-ms': { type: 'string', default: '30000' }, help: { type: 'boolean' },
   } });
   if (values.help) {
-    console.log('Usage: node scripts/verify-deployment.mjs --env production|preview [--origin https://host] [--all-routes] [--timeout-ms 30000] [--report path]\nPUBLIC_SITE_ENV and VERIFY_ORIGIN may supply --env and --origin. Run after building the same revision; default checks cover core routes, representative content/taxonomies, every redirect and referenced assets.');
+    console.log('Usage: node scripts/verify-deployment.mjs --env production|preview [--origin http(s)://host] [--all-routes] [--timeout-ms 30000] [--report path]\nPUBLIC_SITE_ENV and VERIFY_ORIGIN may supply --env and --origin. Production defaults to https://yindongliang.com; preview defaults to http://127.0.0.1:4321. Run after building the same revision. Loopback preview skips Cloudflare response-header, HTTP-redirect and immutable-cache checks; production checks remain strict.');
     return;
   }
   const environment = values.env || process.env.PUBLIC_SITE_ENV;
   assert.ok(modes.includes(environment), 'Specify --env production|preview or PUBLIC_SITE_ENV explicitly');
-  const originURL = new URL(values.origin || process.env.VERIFY_ORIGIN || (environment === 'production' ? canonicalOrigin : 'https://preview.yindongliang.com'));
+  const originURL = new URL(values.origin || process.env.VERIFY_ORIGIN || (environment === 'production' ? canonicalOrigin : 'http://127.0.0.1:4321'));
   assert.ok(['https:', 'http:'].includes(originURL.protocol) && !originURL.username && !originURL.password && originURL.pathname === '/' && !originURL.search && !originURL.hash, '--origin must be an HTTP(S) origin without credentials or a path');
   const origin = originURL.origin;
+  const localPreview = environment === 'preview' && ['127.0.0.1', 'localhost', '[::1]'].includes(originURL.hostname);
+  if (localPreview) console.log('Local preview: Cloudflare response headers, HTTP redirects and immutable caching require the post-deployment check.');
   const timeout = Number(values['timeout-ms']);
   assert.ok(Number.isInteger(timeout) && timeout > 0 && timeout <= 120000, '--timeout-ms must be between 1 and 120000');
   const generated = path.join(root, '.generated');
@@ -161,7 +163,7 @@ async function main() {
     assert.equal(response.status, 200, `Page status: ${route}`);
     assert.match(response.headers.get('content-type') || '', /text\/html/i, `HTML content type: ${route}`);
     assertCanonical(response.body, route); assertHtmlIndexing(response.body, environment, route);
-    assertHeaderIndexing(response.headers.get('x-robots-tag'), environment, route);
+    if (!localPreview) assertHeaderIndexing(response.headers.get('x-robots-tag'), environment, route);
     const record = routeMap.get(route);
     assertGiscus(response.body, record?.kind === 'page' && ['docs', 'posts', 'about', 'weekly', 'links'].includes(record.type), route);
     const page = content.pages.find(page => page.id === record?.id);
@@ -185,18 +187,19 @@ async function main() {
   for (const route of ['/demos/2026/cloudflare-product-map/', '/__astro-deployment-verification-missing__/']) {
     const response = await request(route); assert.equal(response.status, 404, `Must return a real HTTP 404: ${route}`);
     assert.match(response.body, /页面未找到/, `Custom 404 missing: ${route}`); assertGiscus(response.body, false, route);
-    if (environment === 'preview') { assertHtmlIndexing(response.body, environment, route); assertHeaderIndexing(response.headers.get('x-robots-tag'), environment, route); }
+    if (environment === 'preview') { assertHtmlIndexing(response.body, environment, route); if (!localPreview) assertHeaderIndexing(response.headers.get('x-robots-tag'), environment, route); }
   }
   const redirects = parseRedirects(redirectText);
   assert.ok(redirects.some(rule => rule.from === '/page/1/' && rule.to === '/'), 'Pagination redirect missing');
-  await batches(redirects, async ({ from, to, status }) => {
+  const checkedRedirects = localPreview ? [] : redirects;
+  await batches(checkedRedirects, async ({ from, to, status }) => {
     const response = await request(from); assert.equal(response.status, status, `Redirect status: ${from}`);
     assert.ok(response.headers.get('location'), `Redirect Location missing: ${from}`);
     assert.equal(new URL(response.headers.get('location'), origin).href, new URL(to, origin).href, `Redirect target: ${from}`);
     const destination = await request(to); assert.equal(destination.status, 200, `Redirect destination missing: ${to}`);
     assertCanonical(destination.body, to); assertHtmlIndexing(destination.body, environment, to); assertHeaderIndexing(destination.headers.get('x-robots-tag'), environment, to);
   }, 'Legacy redirects');
-  for (const route of ['/lab', '/archives', '/demos/2026/rounded-timeline']) {
+  for (const route of localPreview ? [] : ['/lab', '/archives', '/demos/2026/rounded-timeline']) {
     const response = await request(route); assert.equal(response.status, 307, `Trailing-slash redirect: ${route}`);
     assert.ok(response.headers.get('location'), `Trailing-slash Location missing: ${route}`);
     assert.equal(new URL(response.headers.get('location'), origin).href, `${origin}${route}/`, `Trailing-slash target: ${route}`);
@@ -221,12 +224,12 @@ async function main() {
     assert.ok(response.bytes > 0 && !/text\/html/i.test(response.headers.get('content-type') || ''), `Asset returned HTML or an empty body: ${route}`);
     if (/\.css$/.test(route)) assert.match(response.headers.get('content-type') || '', /text\/css/i, `CSS content type: ${route}`);
     if (/\.m?js$/.test(route)) assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/i, `JavaScript content type: ${route}`);
-    if (route.startsWith('/_astro/')) assert.match(response.headers.get('cache-control') || '', /immutable/i, `Hashed asset cache policy: ${route}`);
+    if (!localPreview && route.startsWith('/_astro/')) assert.match(response.headers.get('cache-control') || '', /immutable/i, `Hashed asset cache policy: ${route}`);
   }, 'Static assets and search');
   const report = path.resolve(root, values.report || `.generated/deployment-verification-${environment}.json`);
   await mkdir(path.dirname(report), { recursive: true });
-  await writeFile(report, JSON.stringify({ environment, origin, expectedThemeCommit: source.commit, checkedAt: new Date().toISOString(), exhaustiveRoutes: values['all-routes'], checks }, null, 2));
-  console.log(`Verified ${environment} at ${origin}: ${selected.size} pages, ${redirects.length} legacy redirects, ${assets.size} assets, feeds/search/Giscus/indexing and actual 404 responses. Report: ${report}`);
+  await writeFile(report, JSON.stringify({ environment, origin, hostingChecks: !localPreview, expectedThemeCommit: source.commit, checkedAt: new Date().toISOString(), exhaustiveRoutes: values['all-routes'], checks }, null, 2));
+  console.log(`Verified ${environment} at ${origin}: ${selected.size} pages, ${checkedRedirects.length} legacy HTTP redirects, ${assets.size} assets, feeds/search/Giscus/indexing and actual 404 responses. Report: ${report}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

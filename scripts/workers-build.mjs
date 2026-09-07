@@ -23,9 +23,9 @@ async function main() {
   if (process.env.SKIP_DEPENDENCY_INSTALL !== '1') {
     throw new BuildError('Set SKIP_DEPENDENCY_INSTALL=1 in Workers Builds; this command installs the pinned theme before npm ci.');
   }
-  const siteEnvironment = process.env.PUBLIC_SITE_ENV || 'preview';
-  if (!['preview', 'production'].includes(siteEnvironment)) {
-    throw new BuildError('Set PUBLIC_SITE_ENV to preview or production. Omit it to build a preview.');
+  const siteEnvironment = process.env.PUBLIC_SITE_ENV ?? 'production';
+  if (siteEnvironment !== 'production') {
+    throw new BuildError('build:workers only supports PUBLIC_SITE_ENV=production. For local noindex previews, use npm run build.');
   }
 
   const scratch = await mkdtemp(path.join(tmpdir(), 'astro-workers-content-'));
@@ -79,7 +79,7 @@ async function main() {
       await run(`Running npm ${args.join(' ')}`, process.env.npm_execpath ? process.execPath : 'npm',
         process.env.npm_execpath ? [process.env.npm_execpath, ...args] : args, commandEnv);
     }
-    console.log(`${siteEnvironment === 'production' ? 'Production' : 'Preview'} build verified. Workers Builds can now run its separate Wrangler deploy command.`);
+    console.log('Production build verified. Workers Builds can now run its separate Wrangler deploy command.');
   } finally {
     await rm(scratch, { recursive: true, force: true });
     process.removeListener('SIGINT', abort);

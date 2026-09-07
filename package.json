@@ -21,7 +21,7 @@
     "test": "node --test tests/*.test.mjs",
     "verify": "node scripts/verify-build.mjs",
     "verify:production": "PUBLIC_SITE_ENV=production npm run verify",
-    "deploy:preview": "npm run build && npm run verify && wrangler deploy --config wrangler.preview.jsonc",
+    "deploy": "npm run deploy:production",
     "deploy:production": "npm run build:production && npm run verify:production && wrangler deploy --config wrangler.production.jsonc",
     "theme:sync": "node scripts/sync-theme.mjs"
   },

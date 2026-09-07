@@ -54,8 +54,9 @@ if (process.env.FIXTURE_FAIL === script) process.exit(1);
     ...process.env, PATH: `${path.join(directory, 'bin')}${path.delimiter}${process.env.PATH}`,
     TMPDIR: path.join(directory, 'tmp'), npm_execpath: npm, FIXTURE_LOG: log,
     BLOG_CONTENT_REPOSITORY: 'test-owner/private-content', BLOG_READ_TOKEN: 'test-private-token-123',
-    HEROUI_AUTH_TOKEN: 'test-pro-token-456', SKIP_DEPENDENCY_INSTALL: '1', PUBLIC_SITE_ENV: '',
+    HEROUI_AUTH_TOKEN: 'test-pro-token-456', SKIP_DEPENDENCY_INSTALL: '1',
   };
+  delete env.PUBLIC_SITE_ENV;
   return {
     directory, env,
     async run(overrides = {}) {
@@ -80,9 +81,11 @@ test('Workers build rejects missing or unsafe configuration before any command r
     [{ BLOG_READ_TOKEN: '' }, 'BLOG_READ_TOKEN'],
     [{ HEROUI_AUTH_TOKEN: ' \n' }, 'HEROUI_AUTH_TOKEN'],
     [{ SKIP_DEPENDENCY_INSTALL: '' }, 'SKIP_DEPENDENCY_INSTALL=1'],
-    [{ PUBLIC_SITE_ENV: 'staging' }, 'PUBLIC_SITE_ENV to preview or production'],
-    [{ PUBLIC_SITE_ENV: 'Production' }, 'PUBLIC_SITE_ENV to preview or production'],
-    [{ PUBLIC_SITE_ENV: 'production\n' }, 'PUBLIC_SITE_ENV to preview or production'],
+    [{ PUBLIC_SITE_ENV: '' }, 'only supports PUBLIC_SITE_ENV=production'],
+    [{ PUBLIC_SITE_ENV: 'preview' }, 'only supports PUBLIC_SITE_ENV=production'],
+    [{ PUBLIC_SITE_ENV: 'staging' }, 'only supports PUBLIC_SITE_ENV=production'],
+    [{ PUBLIC_SITE_ENV: 'Production' }, 'only supports PUBLIC_SITE_ENV=production'],
+    [{ PUBLIC_SITE_ENV: 'production\n' }, 'only supports PUBLIC_SITE_ENV=production'],
   ]) {
     const context = await fixture(t);
     const result = await context.run(overrides);
@@ -96,10 +99,10 @@ test('Workers build rejects missing or unsafe configuration before any command r
   }
 });
 
-test('Workers build checks out full main history, scopes secrets, verifies in order and cleans its content', async t => {
+test('Workers build defaults to production, checks out full main history, scopes secrets and verifies in order', async t => {
   const context = await fixture(t);
-  // NODE_ENV must not promote the site: production requires PUBLIC_SITE_ENV.
-  const result = await context.run({ NODE_ENV: 'production' });
+  // This CI entry always prepares a production release, independently of NODE_ENV.
+  const result = await context.run({ NODE_ENV: 'development' });
   assert.equal(result.code, 0, result.output);
   assert.deepEqual(result.commands.filter(command => command.command === 'npm').map(command => command.args), [
     ['run', 'setup'], ['run', 'build'], ['run', 'check'], ['test'], ['run', 'verify'],
@@ -118,30 +121,29 @@ test('Workers build checks out full main history, scopes secrets, verifies in or
   assert.equal(remote.contentToken, false);
   assert.deepEqual(steps.map(step => step.proToken), [true, false, false, false, false]);
   assert.ok(steps.every(step => !step.contentToken && !step.repository && !step.askpassExists));
-  assert.ok(steps.every(step => step.contentExists && step.siteEnvironment === 'preview'));
+  assert.ok(result.commands.every(command => command.siteEnvironment === 'production'));
+  assert.ok(steps.every(step => step.contentExists));
   assert.equal(new Set(steps.map(step => step.blog)).size, 1);
   assert.deepEqual(await readdir(path.join(context.directory, 'tmp')), ['unrelated']);
   assert.match(result.output, /ordinary build output/);
-  assert.match(result.output, /Preview build verified/);
+  assert.match(result.output, /Production build verified/);
   for (const secret of [context.env.BLOG_READ_TOKEN, context.env.HEROUI_AUTH_TOKEN, context.env.BLOG_CONTENT_REPOSITORY, steps[0].blog, 'private-revision-abc123']) {
     assert.ok(!result.output.includes(secret), 'build logs must not contain credentials or private checkout metadata');
   }
 });
 
-for (const siteEnvironment of ['preview', 'production']) {
-  test(`Workers build preserves explicit ${siteEnvironment} through the final verification`, async t => {
-    const context = await fixture(t);
-    const result = await context.run({ PUBLIC_SITE_ENV: siteEnvironment });
-    assert.equal(result.code, 0, result.output);
-    assert.ok(result.commands.every(command => command.siteEnvironment === siteEnvironment));
-    const steps = result.commands.filter(command => command.command === 'npm');
-    assert.deepEqual(steps.map(step => step.args.at(-1)), ['setup', 'build', 'check', 'test', 'verify']);
-    assert.deepEqual(steps.map(step => step.proToken), [true, false, false, false, false]);
-    assert.ok(steps.every(step => !step.contentToken && !step.repository));
-    assert.match(result.output, new RegExp(`${siteEnvironment === 'production' ? 'Production' : 'Preview'} build verified`));
-    assert.deepEqual(await readdir(path.join(context.directory, 'tmp')), ['unrelated']);
-  });
-}
+test('Workers build preserves explicit production through the final verification', async t => {
+  const context = await fixture(t);
+  const result = await context.run({ PUBLIC_SITE_ENV: 'production' });
+  assert.equal(result.code, 0, result.output);
+  assert.ok(result.commands.every(command => command.siteEnvironment === 'production'));
+  const steps = result.commands.filter(command => command.command === 'npm');
+  assert.deepEqual(steps.map(step => step.args.at(-1)), ['setup', 'build', 'check', 'test', 'verify']);
+  assert.deepEqual(steps.map(step => step.proToken), [true, false, false, false, false]);
+  assert.ok(steps.every(step => !step.contentToken && !step.repository));
+  assert.match(result.output, /Production build verified/);
+  assert.deepEqual(await readdir(path.join(context.directory, 'tmp')), ['unrelated']);
+});
 
 for (const [failingStep, expectedSteps] of [
   ['clone', []],
@@ -151,7 +153,7 @@ for (const [failingStep, expectedSteps] of [
 ]) {
   test(`Workers build stops after ${failingStep} failure and cleans only its temporary files`, async t => {
     const context = await fixture(t);
-    const result = await context.run({ FIXTURE_FAIL: failingStep, PUBLIC_SITE_ENV: failingStep === 'verify' ? 'production' : 'preview' });
+    const result = await context.run({ FIXTURE_FAIL: failingStep });
     assert.equal(result.code, 1);
     assert.doesNotMatch(result.output, /(?:Preview|Production) build verified/);
     const npmSteps = result.commands.filter(command => command.command === 'npm').map(command => command.args.at(-1));
