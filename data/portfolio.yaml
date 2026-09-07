@@ -4,7 +4,7 @@ items:
     url: "/timeline"
     tagList: ["timeline"]
     cardDetailedText:
-      - "一个基于 Hugo 模版的时间线，用于记录自己的工作和学习日志，并且后续根据需要生成 Weekly 和 Links 页面。"
+      - "用于记录工作、学习日志和零散链接的时间线，最初基于 Hugo 模版，2026 年 9 月迁入 Astro；Weekly 和 Links 分别承载周刊与独立链接页面。"
       - "之前 Weekly 的问题是每次都需要手动写，比较麻烦。"
       - "Links 的问题是，简单的一个产品链接不太适合放在索引列表里面，因为这个东西目测太多了。"
 
@@ -19,10 +19,10 @@ items:
   - title: "March 2023"
     cardTitle: "博客源码"
     url: "https://github.com/tcitry/tcitry.github.io"
-    tagList: ["Hugo", "Blog", "GitHub"]
+    tagList: ["Astro", "Blog", "Cloudflare"]
     # imageURL: '<img src="https://github-readme-stats.vercel.app/api/pin/?username=tcitry&repo=tcitry.github.io&hide_border=true&theme=ambient_gradient" height="120" />'
     cardDetailedText:
-      - "目前博客的结构、功能目前我认为都到了一个相对稳定的阶段，应该可以不折腾地使用相当长一段时间了。"
+      - "持续维护的 tcitry-blog 站点工程。2026 年 9 月改用 Astro 与独立的 astro-book 主题，内容通过 BLOG_DIR 只读导入，在本地验证后手动发布到 Cloudflare Workers Static Assets。"
 
   - title: "October 2022"
     cardTitle: "做了个周刊"

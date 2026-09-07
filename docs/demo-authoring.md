@@ -1,9 +1,9 @@
-# Astro-book 演示与交互式文章
+# Labs 演示与交互式文章
 
 当前生产演示入口：
 
-- `/lab/`：[Astro-book 展示页](https://yindongliang.com/lab/)，从顶部菜单 **About** 之后的 **Astro-book** 进入，汇集主题说明、使用文档及 MDX 中的 Astro、React 与 Svelte 组件演示。
-- `/lab/agent-replay/`：复用同一个 React 组件的独立页面。
+- `/labs/`：[Labs](https://yindongliang.com/labs/)，从顶部菜单 **About** 之后的 **Labs** 进入，以 HeroUI Pro 的选择、评价和消息组件为主，另有 HeroUI、Svelte 与 Astro 示例；右侧目录对应真实章节锚点。
+- `/labs/agent-replay/`：复用同一个 React 组件的独立页面。
 
 演示文件都在站点仓库内，`Blog` 内容保持只读。修改后先在本地 review，再随主站发布到唯一的生产 Worker；旧迁移预览域名已下线，流程见 [本地验收与生产发布](astro-preview.md)。Agent 演示仅播放本地预设数据，不调用模型或后端，也不收集输入。
 
@@ -13,7 +13,7 @@
 
 `astro-book` 聚焦 Hugo Book 的通用阅读能力：布局、导航、TOC、文章元数据与列表、提示、标签展示、分页、Markdown/MDX 渲染、搜索与评论展示。通用 `GroupedArticleList` 只接收已分组的文章，不处理博客的专题类型或分组规则。
 
-Weekly、Timeline、Portfolio、Links 和本页 demo 属于 `tcitry.github.io`。它们的路由、数据规则、组件和专用样式都留在本站，可以独立改为 React / HeroUI 实现，不需要向主题添加博客业务约定：
+Weekly、Timeline、Portfolio、Links 和本页 demo 属于 `tcitry-blog`。它们的路由、数据规则、组件和专用样式都留在本站，可以独立改为 React / HeroUI 实现，不需要向主题添加博客业务约定：
 
 ```text
 src/components/book/
@@ -33,20 +33,25 @@ src/styles/blog.module.css    本站徽标配色与文章附注
 
 ```text
 src/components/demos/
+  HeroUIProShowcase.tsx       HeroUI Pro InlineSelect 与 Rating 的即时反馈
   HeroUIShowcase.tsx          HeroUI 编辑/预览、按钮状态、标签与折叠面板
   AgentReplay.tsx             React 状态、HeroUI 控件、HeroUI Pro 消息/步骤
   SvelteCounter.svelte        Svelte 状态、派生值与双向绑定
   DemoSurface.module.css     将 Book 主题变量传给 demo 的 HeroUI tokens
-src/pages/lab/
-  index.mdx                  主题说明、文档入口与 MDX 多框架演示
+src/pages/labs/
+  index.mdx                  按组件库与框架组织的 Labs 展示入口
   agent-replay.astro          独立页面复用 AgentReplay
-src/layouts/LabLayout.astro   为 MDX 适配现有 Book 布局
+src/layouts/LabsLayout.astro   为 MDX 适配现有 Book 布局
 src/styles/
   tailwind.css               Tailwind v4 utilities，不导入全局 preflight
   demos.css                  仅导入当前用到的 HeroUI / Pro 组件样式
 ```
 
 交互组件管理自己的状态，不依赖外层 Astro 模板的运行时。复杂演示应放在一棵完整的框架组件树内；跨框架传递初始数据时使用可序列化 props。
+
+新增 Vue 或更多 Svelte 实验时，沿用独立组件和章节入口；只有实际接入后才展示可操作示例。Labs 页面不启用 Giscus，路径迁移不会改变既有文章的评论映射。
+
+Select 与 InlineSelect 的 Popover 通过 portal 渲染，必须单独应用 `DemoSurface.module.css` 的颜色与派生 tokens。该公共 surface 不设置 `min-width: 0`，以免覆盖选择器按 `--trigger-width` 计算的浮层宽度；`min-w-0` 只放在演示容器等布局节点上。局部 tokens 同时提供浮层圆角、阴影和前景色，避免离开文章容器后失去样式。
 
 ## MDX 中嵌入
 
@@ -80,13 +85,13 @@ Agent 演示初始显示完整结果：3 个步骤、4 段回答，以及来源�
 
 Agent 中的交互式代码示例使用 `@heroui-pro/react/code-block` 的 `CodeBlock.Code` 与 `CodeBlock.CopyButton`，直接复用高亮、复制和成功图标。Shiki 在交互示例中由这个现成组件按需使用，SSR 初始代码仍可读。
 
-普通 Markdown、MDX 和 Lab 页的 Markdown 代码示例也使用本站的 Pro CodeBlock 适配。新增示例直接使用 Markdown 围栏，已有 demo 组件中的 Pro 代码块由组件自己管理，不会再次包装。
+普通 Markdown、MDX 和 Labs 页的 Markdown 代码示例也使用本站的 Pro CodeBlock 适配。新增示例直接使用 Markdown 围栏，已有 demo 组件中的 Pro 代码块由组件自己管理，不会再次包装。
 
 消息操作使用 `ChatMessageActions.Copy` 和 `Regenerate`。`Copy` 提供按钮与图标，但实际文本仍由调用方写入 Clipboard；本站只在写入成功后设置 `isCopied`，失败时显示可选中文字的提示。`CodeBlock.CopyButton` 则已经自带复制行为，不重复绑定。
 
 ## 普通文章与 MDX 代码块
 
-主题默认的 Expressive Code 保持可用，本站通过 `astroBook({ markdown: { code: false } })` 与 `BookLayout code={false}` 选择自己的渲染器。仅博客依赖 HeroUI Pro，主题没有商业包或商业代码。Mermaid 继续使用主题的图表渲染与 EC 源复制。
+主题默认使用 Astro / Shiki 静态高亮与轻量复制，已移除 Expressive Code。本站通过 `astroBook({ markdown: { code: false } })` 与 `BookLayout code={false}` 继续使用自己的 Pro CodeBlock 渲染器。仅博客依赖 HeroUI Pro，主题没有商业包或商业代码。Mermaid 使用主题的图表渲染与轻量源码复制。
 
 `src/lib/markdown.mjs` 中的 `remarkBlogCodeSource` 保留代码内容、注释、空白及实际末尾换行；`rehypeBlogCodeBlocks` 为普通代码生成 `data-blog-code` 容器。它同时用于传统 Blog 的 `set:html` 输出和 Astro 原生 MDX，不能只靠 MDX `components.pre` 替换。`data-demo` / `data-book-island` 中的代码由其组件管理。
 
@@ -142,8 +147,10 @@ npm run preview -- --port 4321
 
 在 [本地服务](http://127.0.0.1:4321/) review 以下交互，通过后按 [生产发布说明](astro-preview.md#cloudflare-生产发布) 构建并验收生产产物，再发布到 [yindongliang.com](https://yindongliang.com)。
 
-检查 `/lab/` 与 `/lab/agent-replay/`：
+检查 `/labs/` 与 `/labs/agent-replay/`：
 
+- Pro InlineSelect 改变关注点后更新说明，Rating 与重置按钮更新反馈；两种选择器的浮层在明暗主题与窄屏均有正确宽度、圆角、阴影和可读文本。
+- Labs 右侧目录与移动端目录中的每条链接均能定位真实章节。
 - HeroUI 的标题、分类和标签开关即时更新预览；收藏、恢复示例、Tabs、按钮反馈和 Accordion 可操作，Select 浮层不会被裁切。
 - Agent 初始完整结果包含 3 个步骤、4 段回答、来源与代码；7 帧回放的开始、暂停、恢复、完成、重放和重置均可用，修改速度立即作用于下一帧。
 - Pro 代码复制按钮和消息复制按钮实际写入对应内容，不能仅检查图标状态；普通 Markdown 代码复制也继续可用。

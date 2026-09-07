@@ -12,7 +12,7 @@
 | 功能验证分支 | `astro` 保留迁移与验证历史，可用于本地开发 |
 | 生产 Worker | `tcitry-blog` |
 | 生产域名 | `yindongliang.com` |
-| Wrangler 配置 | `wrangler.production.jsonc` |
+| Wrangler 配置 | `wrangler.jsonc` |
 | 本地预览 | `npm run preview -- --port 4321`，打开 `http://127.0.0.1:4321` |
 | 普通构建 / 验证 | `npm run build` / `npm run verify`，默认本地预览模式 |
 | 生产构建 / 验证 | `npm run build:production` / `npm run verify:production` |
@@ -21,6 +21,16 @@
 旧默认分支实际名为 `master`，保留为历史 Hugo 分支。远端 `hugo-book` 备份 `ce25b344d48e561f6420f727f43509c4f478e8d9` 包含旧生产提交 `d02f8b83854f7eff39b32b00c1d585d4f3567d7c` 和之后已提交的 Hugo 工作。备份不包含其他工作区的未提交文件或独立 Blog 仓库的内容。
 
 主题 CI 覆盖 `main` 和 `astro`，只检查公开主题来源、打包与 lockfile，不获取私有 Blog 或商业组件。`astro-book` 独立主题的 GitHub Pages 文档站单独维护，不参与博客发布。站点、Blog 和主题仓库推送均不会自动触发博客部署。
+
+### 2026-09-07 自动发布链路核查
+
+本次同时核对了 GitHub 远端工作流、运行记录和已登录的 Cloudflare 控制台，时间均为北京时间：
+
+- Blog 的 `Notify public site` 工作流仍监听 `main` push，并发送 `repository_dispatch` 事件 `blog-content-updated`；23:10 的通知运行成功，只表示 GitHub 接收了通知。
+- 站点默认分支 `main` 只有 `Astro theme reproducibility` 工作流，没有接收该事件的任务，也没有部署步骤。最后一次由该事件触发的[旧 Hugo 发布运行](https://github.com/tcitry/tcitry.github.io/actions/runs/34105161080)发生于 17:17，分支为 `master`；它的成功不代表当前 Cloudflare Worker 已部署。
+- Cloudflare 的 **Workers & Pages → tcitry-blog → Settings → Builds** 中，**Git repository** 仍只显示 **Connect**，尚未连接仓库，Workers Builds 自动发布链路未接通。
+
+因此，当前推送 Blog 后仍需按下文手动构建、验证并发布。本次仅核查现状，没有启用自动部署或新增凭据；未来如需恢复，需明确接通后文的 Git 集成、构建配置与内容 Deploy Hook。
 
 ## 本地预览与 review
 
@@ -53,7 +63,7 @@ npm run verify:production
 
 ```sh
 npx wrangler whoami
-npx wrangler deploy --config wrangler.production.jsonc
+npx wrangler deploy
 ```
 
 便捷命令 `BLOG_DIR=/path/to/Blog npm run deploy:production` 会重新构建、验证并发布；它不会代替此前的本地 review、`check` 和 tests。希望发布刚验收过的同一份 `dist/` 时，使用上面的直接 Wrangler 命令。
@@ -98,7 +108,7 @@ node scripts/verify-deployment.mjs --env production
 | Production branch | `main` |
 | Root directory | 仓库根目录 `/` |
 | Build command | `npm run build:workers` |
-| Deploy command | `npx wrangler deploy --config wrangler.production.jsonc` |
+| Deploy command | `npx wrangler deploy` |
 | Builds for non-production branches | 关闭 |
 
 以下值属于 **Build variables and secrets**，不是 Worker 运行时配置：

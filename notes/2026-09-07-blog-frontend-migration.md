@@ -1,6 +1,6 @@
 **Blog 前端迁移评估与技术方案**
 
-评估日期：2026-09-07。范围：当前站点源码、Blog 工作区公开内容候选、线上首页与当前官方文档。本次只形成方案，没有迁移框架、部署或修改域名。
+评估日期：2026-09-07。以下保留迁移前的评估快照，当时只形成方案，没有迁移框架、部署或修改域名。迁移与上线现已完成，当前方案见 [README](../README.md) 和 [构建与发布](../docs/continuous-deployment.md)；下表中的 Hugo 源码链接指向 `hugo-book` 备份分支。
 
 **最终决定：选择 Astro**
 
@@ -35,15 +35,15 @@ timeline、weekly、portfolio、links 保留为独立页面类型：timeline 按
 
 | 现有实现 | 迁移时需要保留 |
 | --- | --- |
-| [配置](../config.toml) | 自定义域名、路径大小写、posts permalink、内容排除、lastmod 回退 |
-| [内容构建入口](../makefile) | 外部 Blog 内容源，独立于站点源码 |
-| [部署工作流](../.github/workflows/pages.yml) | 固定内容修订、Git 修改时间、内容更新触发、公开产物检查 |
-| [正文脚本](../layouts/partials/docs/inject/body.html) | Pagefind 搜索、快捷键、KaTeX、目录高亮、外链行为 |
-| [评论注入](../layouts/partials/docs/inject/footer.html) | Giscus pathname 匹配、评论顺序、仅文章页启用 |
-| [Mermaid 渲染](../layouts/_markup/render-codeblock-mermaid.html) | 按需加载、防止重复初始化、宽图局部滚动 |
-| [版面变量](../assets/_variables.scss) | 三栏宽度、列表页差异、移动端断点 |
+| [配置](https://github.com/tcitry/tcitry.github.io/blob/hugo-book/config.toml) | 自定义域名、路径大小写、posts permalink、内容排除、lastmod 回退 |
+| [内容构建入口](https://github.com/tcitry/tcitry.github.io/blob/hugo-book/makefile) | 外部 Blog 内容源，独立于站点源码 |
+| [部署工作流](https://github.com/tcitry/tcitry.github.io/blob/hugo-book/.github/workflows/pages.yml) | 固定内容修订、Git 修改时间、内容更新触发、公开产物检查 |
+| [正文脚本](https://github.com/tcitry/tcitry.github.io/blob/hugo-book/layouts/partials/docs/inject/body.html) | Pagefind 搜索、快捷键、KaTeX、目录高亮、外链行为 |
+| [评论注入](https://github.com/tcitry/tcitry.github.io/blob/hugo-book/layouts/partials/docs/inject/footer.html) | Giscus pathname 匹配、评论顺序、仅文章页启用 |
+| [Mermaid 渲染](https://github.com/tcitry/tcitry.github.io/blob/hugo-book/layouts/_markup/render-codeblock-mermaid.html) | 按需加载、防止重复初始化、宽图局部滚动 |
+| [版面变量](https://github.com/tcitry/tcitry.github.io/blob/hugo-book/assets/_variables.scss) | 三栏宽度、列表页差异、移动端断点 |
 
-真实内容来自独立 Blog 检出目录（构建时通过 `BLOG_DIR` 指定）；站点仓库中的 `en/` 只是少量示例，不能代表迁移规模。
+真实内容来自独立 Blog 检出目录（构建时通过 `BLOG_DIR` 指定）；当时站点仓库中的 `en/` 只是少量示例，不能代表迁移规模；这些未使用的 Hugo 示例现已从 `main` 移除。
 
 | Blog 公开候选内容统计 | 数量 |
 | --- | ---: |

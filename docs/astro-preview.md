@@ -1,8 +1,10 @@
 # Astro 本地验收与生产发布
 
-生产站 [yindongliang.com](https://yindongliang.com) 已采用 Astro 静态生成、独立的 `@tcitry/astro-book` 主题、React / Svelte islands 与原生 MDX，不依赖 Starlight。演示与使用文档入口是 [Astro-book](https://yindongliang.com/lab/)。主站只保留生产 Worker `tcitry-blog`，在本地 review 后直接发布；迁移期间的 `preview.yindongliang.com` 已下线，不再作为验收或发布目标。
+生产站 [yindongliang.com](https://yindongliang.com) 已采用 Astro 静态生成、独立的 `@tcitry/astro-book` 主题、React / Svelte islands 与原生 MDX，不依赖 Starlight。演示与使用文档入口是 [Labs](https://yindongliang.com/labs/)。主站只保留生产 Worker `tcitry-blog`，在本地 review 后直接发布；迁移期间的 `preview.yindongliang.com` 已下线，不再作为验收或发布目标。
 
-当前生产及默认分支为 `main`；`master`、`hugo-book` 和 `astro` 保留迁移历史，不对应另一套在线预览。分支发布约定见 [README](../README.md#分支约定)。
+当前 `main` 只保留 Astro 入口，命令以 `package.json` 为准。旧 `makefile`、`deploy.sh`、`config.toml`、`go.mod` / `go.sum`、Hugo `layouts/` 与 `assets/`、未使用的 `en/` 示例均已移出当前分支；历史源码保留在 `hugo-book` / `master`。`scripts/legacy-routes.json`、内容兼容层及相关 tests 仍用于保护已发布 URL 与评论映射，不能作为遗留产物删除。
+
+当前生产及默认分支为 `main`；`master`、`hugo-book` 和 `astro` 保留迁移历史，不对应另一套在线预览。分支发布约定见[构建与发布](continuous-deployment.md#分支与运行方式)。
 
 ## 本地运行
 
@@ -24,6 +26,8 @@ npm run preview -- --port 4321
 
 开发时用 npm run dev。它会先只读导入 Blog 并复制公开资源；`BLOG_DIR` 默认是当前用户的 `~/Blog`，可显式覆盖。修改 Blog 后重新准备内容或重启 dev。Pagefind 由 astro-book 在 Astro 构建完成时自动生成，本站仅配置索引范围，不再单独安装或执行 Pagefind；验收搜索请使用 build + preview。
 
+代码块与图表需要同时验收开发模式：启动 dev 后运行 `npm run test:browser`，检查无 React island 的真实文章中 Pro 代码块、Mermaid SVG 和原文复制。构建预览可设置 `BLOG_TEST_URL` 复用同一检查。博客显式初始化 Pro 挂载所需的 React 开发运行时；主题 integration 在 dev 预构建 Mermaid 及其 CommonJS 子依赖。同步主题包后重启开发服务，同一检出不要同时启动多个 dev 进程共享 Vite 缓存。
+
 `setup` 仅使用 Node 内置模块启动：读取 `astro-book.source.json` 中的公开仓库和完整 commit，独立检出该提交，按照主题自己的 lockfile 执行 `npm ci`，再通过 `npm pack` 构建主题。打包结果必须匹配本站 lockfile 中的 SHA-512，最后才执行本站 `npm ci`。它不会使用本机碰巧存在的主题源码、跟随远端 main 更新或修改 lockfile。`.artifacts/` 中的临时源码和 tarball 均不入 Git；临时源码在打包后自动清理。
 
 打包脚本保留 npm 生成的 tar 条目，再统一 gzip 为不压缩的存储块并规范平台标记。这样不会因 Node 内含的 zlib 压缩算法版本不同而产生不同的 lockfile 完整性；本地包略大，但不上传、不影响网站资源大小。
@@ -35,8 +39,8 @@ npm run preview -- --port 4321
 - / 与 /docs/：Book 导航、三栏、移动菜单、文章目录、键盘快捷键。
 - /tags/、/categories/、/archives/、/modified/：分类、标签、归档、最近修改。
 - /timeline/、/weekly/、/portfolio/、/links/：既有独立页面。
-- /lab/：顶部菜单 About 之后的 Astro-book 演示与文档页，MDX 同时运行 React、HeroUI OSS、真实 HeroUI Pro、Tailwind v4、Svelte；包含公式与 Mermaid。
-- /lab/agent-replay/：复用同一 React 组件的独立页面，回放预置 Agent 步骤，不调用模型或后端。
+- /labs/：顶部菜单 About 之后的 Labs 前端实验页，MDX 同时运行 React、HeroUI OSS、真实 HeroUI Pro、Tailwind v4、Svelte；包含公式与 Mermaid。
+- /labs/agent-replay/：复用同一 React 组件的独立页面，回放预置 Agent 步骤，不调用模型或后端。
 - /demos/2026/rounded-timeline/：圆弧时间线 demo。
 - /index.xml、/posts/index.xml、/weekly/index.xml、各标签与分类的 index.xml：RSS。
 
@@ -50,23 +54,23 @@ BLOG_DIR 始终只读。构建层兼容 relref、前言字段、旧 URL、HTML�
 
 新 UI 优先 Tailwind，其次 CSS Modules。通用 Book 外观兼容层、图标、公式字体和阅读脚本归主题包所有，本站专属页面与徽标配色的样式留在博客。主题保留 Hugo Book MIT 许可与来源。HeroUI 样式在博客局部加载，不向阅读布局引入全局 Tailwind preflight。
 
-## Hugo 外观对齐约定
+## 布局与响应式约定
 
-既有页面继续以原 `master` / `hugo-book` 的实际页面为布局基准。除已明确要求的标签间距、Astro-book 演示入口及组件替换外，不自行调整既有页面的尺寸或交互。对照必须使用相同浏览器与视口，并检查生成页面，不能只比较 CSS 源码。
+既有页面沿用 Book 阅读布局、侧栏和交互。根据最新要求，所有栏目统一采用 Posts 文章详情的正文宽度；该要求取代旧 Hugo 列表宽页策略。对照必须使用相同浏览器与视口，并检查生成页面，不能只比较 CSS 源码。
 
 - 页面、左右侧栏保留原滚动容器，根页面使用细滚动条与稳定占位；滚动时显示，停止 650ms 后隐藏。不要改为始终可见的默认滚动条，也不要用额外容器重做整页滚动。
-- 左侧菜单保留 20rem 最小宽度和原 `max-content` / `clamp()` 上限。列表页容器最大 120rem；无右侧目录的列表页正文最大 100rem。
-- Weekly 卡片保持 320px 宽、封面 320×192px、间距 16px；Timeline 与 Portfolio 保留原轨道、圆点、内边距、列表缩进和断点。
-- 筛选栏、右侧目录、年份选择器和分页保留原行高、间距与控件。使用 Tailwind 字号工具时注意其附带行高，必要时只设置 `text-[length:…]`。
+- 左侧菜单保留 20rem 最小宽度和原 `max-content` / `clamp()` 上限。首页、Archives、标签、分类、Timeline、Weekly、Portfolio、Links 和 Labs 均使用 Posts 详情的正文列：最大 70rem，完整三栏容器最大 110rem。无右侧 TOC 的页面也保留相同的正文列宽，不再额外扩展正文；移动端正文随可用宽度缩放。
+- Weekly、Timeline 与 Portfolio 使用本站的 HeroUI / Pro 组件；卡片、筛选栏与内容列随容器缩放，小屏保持单列可读，Timeline 保留日期锚点及右侧目录。历史卡片尺寸不再作为固定宽度约束。
+- 筛选栏、右侧目录、年份选择器和分页保留原行高与控件；手机端分页缩小横向留白，并允许必要的换行。使用 Tailwind 字号工具时注意其附带行高，必要时只设置 `text-[length:…]`。
 - Archives 年份链接滚动到当前页对应 ID；主题的通用标签、分类路由继续独立可用。检查桌面、超宽屏和手机端，并确认宽表格、代码块的滚动仍限制在自身区域。
 
 ## 两个仓库的协作方式
 
-`astro-book` 独立维护通用布局、导航/TOC、文章元数据与列表、搜索界面、图片查看、Giscus 展示，以及 Markdown/MDX 的 KaTeX、Mermaid 和默认的 Expressive Code。主题提供 `markdown.code: false` 与布局 `code={false}`，允许消费者替换普通代码渲染。主题使用合成示例内容，安装、构建、测试不需要商业组件或账号；组件和 integration 都通过公开包入口使用。
+`astro-book` 独立维护通用布局、导航/TOC、文章元数据与列表、搜索界面、图片查看、Giscus 展示，以及 Markdown/MDX 的 KaTeX、Mermaid 和默认的 Astro / Shiki 静态高亮与轻量复制。主题已移除 Expressive Code，仍提供 `markdown.code: false` 与布局 `code={false}`，允许消费者替换普通代码渲染。主题使用合成示例内容，安装、构建、测试不需要商业组件或账号；组件和 integration 都通过公开包入口使用。
 
 本站保留 Blog 导入、Hugo 兼容、旧 URL、标签/分类关系、排序和分页、RSS/sitemap、站点菜单、SEO 策略、Giscus 参数与资格判断，以及 React/HeroUI/HeroUI Pro/Svelte demo。Weekly、Timeline、Portfolio、Links 的路由、数据、业务组件、展示类型和专用样式也全部留在本站，后续可以独立迭代。HeroUI Pro 是博客自己的依赖，用于普通文章/MDX 的代码块以及交互 demo；主题保持无商业依赖。`src/layouts/BookLayout.astro` 是站点到主题的适配层。
 
-博客关闭普通代码块的 EC 包装及 Astro 静态高亮，完整原文仍在构建 HTML 的 `pre/code` 中。阅读到代码附近后，共享 React root 按帧挂载 Pro CodeBlock，使用现成的高亮与复制按钮；禁用 JavaScript 或组件加载失败时保留可读原文。普通文章只加载 CodeBlock / Button 所需样式。Mermaid 图表仍使用主题的 EC 源复制，所以页面仍包含该部分 EC 资源；普通代码不会出现双框或双复制按钮。此选择增加了阅读代码时的 React、Pro、Motion 与 Shiki 客户端成本，具体策略见 [Demo 编写指南](demo-authoring.md#普通文章与-mdx-代码块)。
+博客关闭主题的普通代码块展示及 Astro 静态高亮，完整原文仍在构建 HTML 的 `pre/code` 中。阅读到代码附近后，共享 React root 按帧挂载 Pro CodeBlock，使用现成的高亮与复制按钮；禁用 JavaScript 或组件加载失败时保留可读原文。普通文章只加载 CodeBlock / Button 所需样式。Mermaid 图表使用主题的轻量源码复制；普通代码不会出现双框或双复制按钮。此选择增加了阅读代码时的 React、Pro、Motion 与 Shiki 客户端成本，具体策略见 [Demo 编写指南](demo-authoring.md#普通文章与-mdx-代码块)。
 
 `package.json` 和 lockfile 当前锁定 `.artifacts/tcitry-astro-book.tgz`，主题来源锁在 `astro-book.source.json`。主题尚未发布 npm，因此干净检出先运行 `npm run setup`，不要直接运行 `npm ci`。以后发布主题版本时再改为准确的 registry 版本号。
 
@@ -92,7 +96,7 @@ npm run verify
 
 ## Cloudflare 生产发布
 
-`wrangler.production.jsonc` 通过 Workers Static Assets 将 `dist/` 发布到生产 Worker `tcitry-blog`，绑定 `yindongliang.com`。没有主站 Worker 业务代码或后端 API，也不再维护独立预览 Worker。
+`wrangler.jsonc` 通过 Workers Static Assets 将 `dist/` 发布到生产 Worker `tcitry-blog`，绑定 `yindongliang.com`。没有主站 Worker 业务代码或后端 API，也不再维护独立预览 Worker。
 
 先构建生产产物并在本地 review，再直接发布这份 `dist/`：
 
@@ -103,7 +107,7 @@ npm test
 npm run verify:production
 npm run preview -- --port 4321
 # 浏览器确认这份生产产物后发布；此命令不重新构建。
-npx wrangler deploy --config wrangler.production.jsonc
+npx wrangler deploy
 node scripts/verify-deployment.mjs --env production
 ```
 
@@ -117,16 +121,26 @@ node scripts/verify-deployment.mjs --env production
 
 ## 首次迁移验收记录（历史）
 
-以下保留首次迁移、主题提取和公网发布时的检查结果。后续主题引入 Expressive Code、博客采用 Pro CodeBlock、业务组件迁回博客及侧栏/demo 调整，均须按当前提交重新验收；这里的数字不代表后续提交已通过全量检查。当前机器检查产物位于 `.generated/`，需要核对其生成时间和构建来源。
+以下保留首次迁移、主题提取和公网发布时的检查结果。后续主题引入 Expressive Code、博客采用 Pro CodeBlock、业务组件迁回博客及侧栏/demo 调整，均须按当前提交重新验收；这里的数字不代表后续提交已通过全量检查。主题当前已切换到 Astro / Shiki 静态高亮与轻量复制，以下 EC 验收记录仅描述当时状态。当前机器检查产物位于 `.generated/`，需要核对其生成时间和构建来源。
 
 - 全部 1,208 个原有公开 URL 在新构建中保留；包含旧目录大小写、中文编码与文章 permalink。
 - 102 个可见导航分组与受控 Hugo 输出逐组比较，顺序一致。
 - CUA 对比首页与同篇 Docs，桌面三栏尺寸一致；390px 宽度下菜单、目录与实验页无横向溢出。
 - 搜索、代码复制、Giscus iframe、Timeline 年份切换、59 期 Weekly、13 项 Portfolio，以及 React/Svelte 的真实交互已验收。
-- 集中渲染现有 103 个 Mermaid 图表：102 个成功。唯一失败来自 Kubernetes《节点组件详解：角色、职责与交互》的既存 sequenceDiagram；线上 Hugo 同页也会报渲染错误。按本轮不改内容的约定，保留源码并显示降级提示，待内容更新阶段修正。
+- 当时集中渲染 103 个 Mermaid 图表：102 个成功。唯一失败来自 Kubernetes《节点组件详解：角色、职责与交互》的既存 sequenceDiagram，当时保留源码降级。该激活/停用语法错误已在 2026-09-07 的内容更新中修正；更新后的内容审计通过 106 个 Mermaid 图表和 497 个公式节点。
 - LaTeX 保留旧定界符，金额不会跨粗体边界误吞正文；构建产物中没有 KaTeX 错误。
 
 机器检查结果在 .generated/verification.json；内容兼容诊断在 .generated/content-diagnostics.json。原有外链与引用的编辑问题未修改。
+
+## 当前本地架构与渲染验收（2026-09-07）
+
+- `build:production`、`verify:production`、35 个文件的 Astro 检查和 28 项测试通过；1,229 个页面路由保留全部 1,208 个旧 URL，954 个 Giscus 页面继续按原 pathname 映射。
+- 开发模式逐页验证 67 个 Mermaid 页面、106 个实际 SVG，未出现渲染失败。内容语法审计另通过 497 个公式节点。
+- `test:browser` 在 dev 和生产产物 preview 均通过：无 React island 的两篇文章中，6 个 HeroUI Pro 代码块、3 个图表及原文复制正常，没有重复复制按钮或客户端模块错误。
+- Labs 的 Pro/OSS 下拉选择、真实右侧 TOC，以及 Timeline、Portfolio、Weekly 在 320px、375px 和桌面视口的布局与交互通过浏览器检查。
+- 统一正文宽度后，对 Posts 详情、首页、栏目与标签/分类详情等 17 个页面完成 4 种视口共 68 次测量：1920px / 1440px 下正文分别为 1088px / 768px，375px / 320px 下分别为 343px / 288px。有无 TOC 的页面均与 Posts 详情同宽、同一起点，整页无横向溢出；Labs 和 Links 的移动目录及原有阅读浏览器回归继续通过。
+
+以上浏览器检查先在本地主题开发包完成。生产发布时先推送主题提交，再更新本站固定来源与 lockfile，从该来源重建并复验；线上状态以 Wrangler 发布结果和生产 HTTP 验收为准。
 
 ## 首次独立主题接入验收（2026-09-07，历史）
 

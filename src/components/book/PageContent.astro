@@ -6,7 +6,6 @@ import GroupedArticleList from '@tcitry/astro-book/components/GroupedArticleList
 import WeeklyCards from './WeeklyCards.astro';
 import TagCloud from '@tcitry/astro-book/components/TagCloud';
 import Timeline from './Timeline.astro';
-import YearSelect from './YearSelect.astro';
 import Portfolio from './Portfolio.astro';
 import Pagination from '@tcitry/astro-book/components/Pagination';
 import Notice from '@tcitry/astro-book/components/Notice';
@@ -47,8 +46,7 @@ const cloudSize = (count: number) => {
 {page.kind === 'home' ? <>
   <ArticleList items={entries.map((item) => articleItem(item, tags, { detailed: false, showSummary: true, showBreadcrumb: false }))} />
 </> : isTimeline ? <article class="markdown book-article" data-pagefind-body>
-  <YearSelect items={timelines.map((item) => ({ value: item.url, label: dateText(item.date).slice(0, 4) }))} selected={timelinePage?.url} label="时间线年份" />
-  <Timeline items={timelineBlocks(timelinePage).map((block) => ({ id: block.id, label: block.title, html: block.html }))} />
+  <Timeline years={timelines.map((item) => ({ value: item.url, label: dateText(item.date).slice(0, 4) }))} selected={timelinePage?.url} items={timelineBlocks(timelinePage).map((block) => ({ id: block.id, label: block.title, html: block.html }))} />
 </article> : isPortfolio ? <Portfolio items={portfolio.map((item) => ({ period: item.title, label: item.cardTitle, href: item.url, target: '_blank' as const, imageHTML: item.imageURL, tags: item.tagList, detailsHTML: item.cardDetailedText }))} /> : isWeeklyList ? <>
   <p class="text-[dimgray] [font-size:small]">目前共 <a href={tags.find((term) => term.name === 'Weekly')?.url || '/tags/Weekly/'}>{regular.filter((item) => item.type === 'weekly' && dateText(item.date)).length}</a> 期周刊，可通过 <a href="/weekly/index.xml">RSS</a> 订阅</p>
   <WeeklyCards items={entries.map((item) => ({ href: item.url, label: item.title, image: { src: item.image || '/logo.gif', alt: item.title }, dateLabel: displayDate(item, 'dots'), description: item.description }))} />

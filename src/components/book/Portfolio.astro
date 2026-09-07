@@ -1,17 +1,31 @@
 ---
 import type { PortfolioItem } from './special-pages';
-import styles from './Timeline.module.css';
+import PortfolioView from './PortfolioView';
 interface Props { items: PortfolioItem[]; }
 const { items } = Astro.props;
 ---
-<div class="timeline-container max-w-[1200px]" data-pagefind-body><div class:list={['timeline', styles.timeline]}>{items.map((item) =>
-  <div class:list={['timeline-item', styles.item]}>
-    <div class:list={['timeline-date', styles.date]}>{item.period}</div>
-    <div class:list={['timeline-content', styles.content]}>
-      {item.imageHTML && <div class:list={['timeline-image', styles.image]} set:html={item.imageHTML} />}
-      <h3 class:list={['timeline-title', styles.title]}><a href={item.href} target={item.target} rel={item.target === '_blank' ? 'noopener' : undefined}>{item.label}</a></h3>
-      {item.tags && <div class="timeline-tags mb-4 flex flex-wrap gap-2">{item.tags.map((tag, index) => <span class:list={['timeline-tag', `tag-${index % 3}`, styles.tag, styles[`tag${index % 3}`]]}>{tag}</span>)}</div>}
-      {(item.detailsHTML || []).map((html) => <div class:list={['timeline-text', styles.text]} set:html={html} />)}
-    </div>
-  </div>
-)}</div></div>
+<PortfolioView items={items} />
+<script>
+  document.querySelectorAll<HTMLElement>('[data-content-collection="portfolio"]').forEach((collection) => {
+    const select = collection.querySelector<HTMLSelectElement>('[data-portfolio-filter]');
+    const projects = Array.from(collection.querySelectorAll<HTMLElement>('[data-portfolio-tags]'));
+    const count = collection.querySelector<HTMLElement>('[data-portfolio-count]');
+    const clear = collection.querySelector<HTMLButtonElement>('[data-portfolio-clear]');
+    const clearWrapper = collection.querySelector<HTMLElement>('[data-portfolio-clear-wrapper]');
+    if (!select || !count || !clear || !clearWrapper) return;
+
+    const filter = () => {
+      let visible = 0;
+      projects.forEach((project) => {
+        const tags: string[] = JSON.parse(project.dataset.portfolioTags || '[]');
+        project.hidden = !!select.value && !tags.includes(select.value);
+        if (!project.hidden) visible += 1;
+      });
+      count.textContent = `显示 ${visible} / ${projects.length} 个项目`;
+      clearWrapper.hidden = !select.value;
+    };
+    select.addEventListener('change', filter);
+    clear.addEventListener('click', () => { select.value = ''; filter(); select.focus(); });
+    filter();
+  });
+</script>

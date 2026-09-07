@@ -31,7 +31,7 @@ const articleSchema = page.kind === 'page' ? {
   ...(dateText(page.lastmod) ? { dateModified: page.lastmod } : {}),
   ...(page.image ? { image: new URL(page.image, 'https://yindongliang.com').href } : {}),
 } : undefined;
-const menu = [['/archives/', '✔️ Archives'], ['/tags/', '🏷️ Tags'], ['/weekly/', '🔥 Weekly'], ['/timeline/', '⏳ Timeline'], ['/links/', '🔗 Links'], ['/portfolio/', '📱 Portfolio'], ['/about/', '👨‍💻 About'], ['/lab/', '📘 Astro-book']];
+const menu = [['/archives/', '✔️ Archives'], ['/tags/', '🏷️ Tags'], ['/weekly/', '🔥 Weekly'], ['/timeline/', '⏳ Timeline'], ['/links/', '🔗 Links'], ['/portfolio/', '📱 Portfolio'], ['/about/', '👨‍💻 About'], ['/labs/', '🧪 Labs']];
 const toNavigation = (nodes: NavigationNode[]): NavigationItem[] => nodes
   .filter(({ page }) => !page.hidden && (page.kind !== 'page' || Boolean(page.html)))
   .map((node) => ({
@@ -42,11 +42,10 @@ const toNavigation = (nodes: NavigationNode[]): NavigationItem[] => nodes
     collapsible: node.page.collapse, flat: Boolean(param(node.page, 'bookFlatSection')),
     external: Boolean(param(node.page, 'bookHref')), children: toNavigation(node.children),
   }));
-const wide = ['home', 'section', 'taxonomy', 'term'].includes(page.kind) || ['list', 'modified'].includes(page.layout);
 const site = {
   title: "LYon's Blog", home: '/', logo: '/logo.gif', favicon: '/favicon.png', lang: 'zh-CN',
   menu: [
-    ...menu.map(([href, label]) => ({ id: href, href, label, active: page.url === href || (href === '/lab/' && page.url.startsWith(href)) })),
+    ...menu.map(([href, label]) => ({ id: href, href, label, active: page.url === href || (href === '/labs/' && page.url.startsWith(href)) })),
     { id: 'github', href: 'https://github.com/tcitry', label: 'Github', external: true },
     { id: 'rss', href: '/posts/index.xml', label: 'RSS', external: true },
   ],
@@ -54,7 +53,7 @@ const site = {
 ---
 <ThemeLayout site={site}
   code={false}
-  page={{ title, url: page.url, headings: page.headings, toc: page.toc, bodyClass: `${blogStyles.site} ${codeStyles.scope} book-kind-${page.kind} book-type-${page.type}${page.layout ? ` book-layout-${page.layout}` : ''}${wide ? ' book-page-wide' : ''}` }}
+  page={{ title, url: page.url, headings: page.headings, toc: page.toc, bodyClass: `${blogStyles.site} ${codeStyles.scope} book-kind-${page.kind} book-type-${page.type}${page.layout ? ` book-layout-${page.layout}` : ''}` }}
   navigation={toNavigation(navigation)} previous={previous} next={next}
   seo={{ title, openGraphTitle: bookTitle(page), description, canonical, robots: production ? undefined : 'noindex, nofollow', siteName: site.title, locale: 'zh_CN', type: page.kind === 'page' ? 'article' : 'website', image: page.image ? new URL(page.image, 'https://yindongliang.com').href : undefined, twitterSite: '@tcitry', feeds: [{ title: site.title, href: '/index.xml' }], structuredData: articleSchema }}
   search={{ placeholder: '搜索', loadingMessage: '输入关键词搜索博客', errorMessage: '搜索索引暂时未能加载，请关闭后重试。开发环境需先运行完整构建以生成索引。', translations: { placeholder: '搜索博客', zero_results: '没有找到 “[SEARCH_TERM]”', searching: '正在搜索…', clear_search: '清除', load_more: '加载更多', search_label: '搜索博客' } }}

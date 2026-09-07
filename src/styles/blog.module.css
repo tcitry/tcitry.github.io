@@ -1,5 +1,22 @@
 @reference "./tailwind.css";
 
+.site {
+  --book-content-without-toc-max-width: var(--book-content-max-width);
+}
+
+/* Every Book page uses the article column, including pages without a TOC. */
+@media screen and (width > 64rem) {
+  .site > main > :global(.book-page) {
+    flex-grow: 0;
+    flex-basis: calc(100% - var(--book-menu-width) - var(--book-toc-width));
+  }
+}
+
+@media screen and (max-width: 26rem) {
+  .site :global(.pagination) { flex-wrap: wrap; row-gap: 1rem; }
+  .site :global(.pagination .page-link) { padding-inline: 0.5rem; }
+}
+
 /* Site-specific badges and article annotations; generic Badge layout stays in the theme. */
 .site :global(.docs-title) { @apply border border-solid border-[dimgray] [font-size:small] font-bold text-[dimgray]; }
 .site :global(.danger-title) { @apply border border-solid border-[#ff7e67] bg-[#ff7e67] [font-size:small] text-white; }

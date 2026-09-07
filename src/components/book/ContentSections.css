@@ -1,0 +1,14 @@
+/* Only the components used by the blog's content collections, without a global reset. */
+@reference "../../styles/tailwind.css";
+@import "@heroui/styles/components/button.css" layer(components);
+@import "@heroui/styles/components/card.css" layer(components);
+@import "@heroui/styles/components/chip.css" layer(components);
+@import "@heroui/styles/components/label.css" layer(components);
+@import "@heroui/styles/components/input.css" layer(components);
+@import "@heroui/styles/components/input-group.css" layer(components);
+@import "@heroui/styles/components/search-field.css" layer(components);
+@import "@heroui/styles/components/close-button.css" layer(components);
+@import "@heroui-pro/react/css/components/timeline.css" layer(components);
+@import "@heroui-pro/react/css/components/native-select.css" layer(components);
+@import "@heroui-pro/react/css/components/item-card.css" layer(components);
+@import "@heroui-pro/react/css/components/empty-state.css" layer(components);

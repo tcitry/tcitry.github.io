@@ -1,0 +1,21 @@
+---
+import AgentReplay from '../../components/demos/AgentReplay';
+import LabsLayout from '../../layouts/LabsLayout.astro';
+const headings = [
+  {depth: 2, slug: 'replay', text: '消息回放'},
+  {depth: 2, slug: 'try-it', text: '试试这些操作'},
+];
+---
+
+<LabsLayout title="Agent 消息回放" description="使用 React、HeroUI 与 HeroUI Pro 构建的本地交互演示。" headings={headings}>
+  <p>这与 <a href="/labs/">Labs</a> 中嵌入的是同一个 React 组件。此页在加载后即可操作。</p>
+  <h2 id="replay">消息回放</h2>
+  <AgentReplay client:load />
+  <h2 id="try-it">试试这些操作</h2>
+  <ul>
+    <li>点击「重新回放」，观察步骤、回答和来源依次出现。</li>
+    <li>播放中暂停、修改速度，或跳到完整结果。</li>
+    <li>复制示例代码或回答，展开与收起步骤和来源。</li>
+  </ul>
+  <p>演示播放本地预设数据，没有调用 AI 模型或后端服务。</p>
+</LabsLayout>

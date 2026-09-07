@@ -1,12 +1,13 @@
 ---
-import type { TimelineItem } from './special-pages';
-import styles from './Timeline.module.css';
-interface Props { items: TimelineItem[]; }
-const { items } = Astro.props;
+import TimelineView, {type TimelineViewProps} from './TimelineView';
+interface Props extends TimelineViewProps {}
 ---
-<div class="timeline-container max-w-[1200px]"><div class:list={['timeline', styles.timeline]}>{items.map((item) =>
-  <div class:list={['timeline-item', styles.item]} id={item.id}>
-    <div class:list={['timeline-date', styles.date]}>{item.label}</div>
-    <div class:list={['timeline-content', styles.content]} set:html={item.html} />
-  </div>
-)}</div></div>
+<TimelineView {...Astro.props} />
+<script>
+  document.querySelectorAll<HTMLSelectElement>('[data-timeline-year-select]').forEach((select) => {
+    select.addEventListener('change', () => {
+      const destination = new URL(select.value, location.href);
+      if (destination.origin === location.origin) location.assign(destination.href);
+    });
+  });
+</script>

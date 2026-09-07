@@ -27,8 +27,11 @@
 
 /* HeroUI design-token bridge, local to each demo; layout is expressed with Tailwind. */
 .surface {
-  @apply min-w-0 [overflow-wrap:anywhere];
+  /* Portals reuse these tokens; do not override their trigger-sized min-width. */
+  @apply [overflow-wrap:anywhere];
+  color: var(--foreground);
   --radius: 0.5rem;
+  --radius-3xl: calc(var(--radius) * 3);
   --field-radius: 0.625rem;
   --border-width: 1px;
   --border-width-field: 1px;
@@ -76,6 +79,9 @@
   --success-foreground: white;
   --warning: oklch(0.67 0.14 70);
   --warning-foreground: #241a07;
+  /* Pro's precompiled Rating CSS reads these aliases at runtime. */
+  --color-warning: var(--warning);
+  --color-surface-tertiary: var(--surface-tertiary);
   --danger: oklch(0.62 0.19 25);
   --danger-foreground: white;
   --success-soft: color-mix(in srgb, var(--success) 12%, transparent);
@@ -88,6 +94,9 @@
   --surface-shadow: 0 1px 3px #0000000a;
   --overlay-shadow: 0 8px 30px #00000024, 0 0 0 1px var(--border);
   --field-shadow: 0 1px 2px #00000005;
+  --shadow-surface: var(--surface-shadow);
+  --shadow-overlay: var(--overlay-shadow);
+  --shadow-field: var(--field-shadow);
   --scrollbar-thumb: var(--border);
   --scrollbar-track: transparent;
   --scrollbar-width: thin;

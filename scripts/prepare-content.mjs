@@ -4,6 +4,7 @@ import { homedir } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import { createRendererFingerprint } from './renderer-cache.mjs';
+import { addSitePages } from './site-pages.mjs';
 import { collectSources, publicSources, matchLegacySources, asList, lowerKeys, gitDates, isoDate, resolveLegacyRoute, encodeRoute, routePart } from './legacy-content.mjs';
 import { createLegacyMarkdownRenderer, createReferenceResolver, transformLegacyMarkdown, plainText } from '../src/lib/markdown.mjs';
 
@@ -14,7 +15,7 @@ await access(blogRoot);
 await mkdir(generated, { recursive: true });
 const candidates = await collectSources(blogRoot);
 const records = publicSources(candidates);
-if (records.some((record) => /\.mdx$/i.test(record.source))) throw new Error('Blog MDX ingestion is not enabled yet. Put interactive MDX demos in src/pages/lab/ so Astro compiles their components; Blog remains read-only.');
+if (records.some((record) => /\.mdx$/i.test(record.source))) throw new Error('Blog MDX ingestion is not enabled yet. Put interactive MDX demos in src/pages/labs/ so Astro compiles their components; Blog remains read-only.');
 const sources = new Map(records.map((record) => [record.source, record]));
 const modificationDates = gitDates(blogRoot);
 let legacy = { pages: [] };
@@ -40,7 +41,8 @@ function makePage(record, legacyPage = {}) {
     weight: Number(data.weight ?? 0), hidden: data.bookhidden === true, collapse: data.bookcollapsesection === true, toc: data.booktoc !== false,
     image: String(data.image || data.cover || ''), link: String(data.link || ''), redirect: data.redirect === true, parent, wordCount: 0, params: { ...data, legacySortTitle: String(data.linktitle ?? data.title ?? legacyPage.title ?? title) } };
 }
-const pages = records.map((record) => makePage(record, legacyBySource.get(record.source)));
+// Add site-owned routes before synthesizing sections, especially /timeline/.
+const pages = addSitePages(records.map((record) => makePage(record, legacyBySource.get(record.source))));
 // Hugo creates top-level sections; deeper directories require an explicit _index file.
 const explicitDirectories = new Set(records.filter((record) => /(?:^|\/)_index\.mdx?$/.test(record.source)).map((record) => path.posix.dirname(record.source)));
 const syntheticDirectories = new Set();

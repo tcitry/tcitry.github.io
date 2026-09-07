@@ -1,24 +1,52 @@
+# Operating system and local editor state.
 .DS_Store
-.vscode
-/public
-/resources
-/content/
-.hugo_build.lock
-**/node_modules
-dist
-package-lock.json
-!demos/**/package-lock.json
-!/package-lock.json
+/.vscode/
+
+# Dependencies, Astro output and build caches; public/ remains a source directory.
+node_modules/
+/dist/
 /.astro/
 /.generated/
-/.wrangler/
 /astro-public/
-/.dev.vars
-/.env*
-/test-results/
+/.vite/
+/.vite-temp/
+/.cache/
+/.npm/
+*.tsbuildinfo
 
-# Generated from the Blog content checkout during each Hugo build.
-/static/demos/
+# Local Wrangler state and credentials; keep sanitized example templates usable.
+/.wrangler/
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+!.env.example
+!.env.*.example
+!.env.sample
+!.env.*.sample
+!.env.template
+!.env.*.template
+!.dev.vars.example
+!.dev.vars.*.example
+!.dev.vars.sample
+!.dev.vars.*.sample
+!.dev.vars.template
+!.dev.vars.*.template
+
+# Test coverage, browser reports and local process/package-manager logs.
+/coverage/
+/.nyc_output/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+/logs/
+*.log
+*.log.[0-9]*
+
+# Optional private content checkout; never commit it to the public site.
+/content/
 
 # Local prepublication theme artifact, regenerated with npm run theme:sync.
-.artifacts/
+/.artifacts/

@@ -67,7 +67,7 @@ for (const [, navigation] of archiveTOCs) {
     assert.ok(archiveHeadings.has(term.name), `Archives category has no matching heading ID: ${term.name}`);
   }
 }
-for (const url of ['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/links/index.xml', '/sitemap.xml', '/robots.txt', '/404.html', '/pagefind/pagefind.js', '/pagefind/pagefind-entry.json', '/pagefind/pagefind-worker.js', '/demos/2026/rounded-timeline/index.html', '/lab/index.html', '/lab/agent-replay/index.html']) await access(path.join(output, url));
+for (const url of ['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/links/index.xml', '/sitemap.xml', '/robots.txt', '/404.html', '/pagefind/pagefind.js', '/pagefind/pagefind-entry.json', '/pagefind/pagefind-worker.js', '/demos/2026/rounded-timeline/index.html', '/labs/index.html', '/labs/agent-replay/index.html']) await access(path.join(output, url));
 assertRobotsPolicy(await readFile(path.join(output, 'robots.txt'), 'utf8'), environment);
 const sitemap = await readFile(path.join(output, 'sitemap.xml'), 'utf8');
 assert.match(sitemap, /<urlset\b/); assertXMLSiteURLs(sitemap, 'sitemap.xml');
@@ -104,14 +104,26 @@ for (const language of Object.values(searchEntry.languages)) {
   await access(path.join(output, `pagefind/wasm.${language.wasm || 'unknown'}.pagefind`));
 }
 for (const directory of ['index', 'fragment']) assert.ok((await readdir(path.join(output, 'pagefind', directory))).length > 0, `Pagefind ${directory} files missing`);
-const lab = await readFile(path.join(output, 'lab/index.html'), 'utf8');
-checkPage(lab, '/lab/');
-const replay = await readFile(path.join(output, 'lab/agent-replay/index.html'), 'utf8');
-checkPage(replay, '/lab/agent-replay/'); assertGiscus(replay, false, '/lab/agent-replay/');
+const lab = await readFile(path.join(output, 'labs/index.html'), 'utf8');
+checkPage(lab, '/labs/');
+const replay = await readFile(path.join(output, 'labs/agent-replay/index.html'), 'utf8');
+checkPage(replay, '/labs/agent-replay/'); assertGiscus(replay, false, '/labs/agent-replay/');
 assert.match(lab, /astro-island/); assert.match(lab, /AgentReplay/); assert.match(lab, /SvelteCounter/); assert.match(lab, /katex/);
+assert.match(lab, /data-demo="heroui-pro-showcase"/, 'Labs must render the Pro component showcase');
+assert.match(lab, /<h1[^>]*>Labs<\/h1>/, 'Labs title must match its navigation entry');
+const labsTOC = lab.match(/<nav id="TableOfContents">([\s\S]*?)<\/nav>/)?.[1];
+assert.ok(labsTOC, 'Labs must retain its section table of contents');
+const labsAnchors = [...labsTOC.matchAll(/href="#([^"]+)"/g)];
+assert.ok(labsAnchors.length > 0, 'Labs TOC must contain section links');
+for (const [, anchor] of labsAnchors) {
+  assert.ok(lab.includes(`id="${decodeURIComponent(anchor)}"`), `Labs TOC target missing: ${anchor}`);
+}
+for (const anchor of ['replay', 'try-it']) {
+  assert.ok(replay.includes(`href="#${anchor}"`) && replay.includes(`id="${anchor}"`), `Replay TOC target missing: ${anchor}`);
+}
 assert.match(lab, /data-blog-code-language=/, 'Native MDX must use the same progressive code renderer');
 assert.match(lab, /data-book-code-disabled/, 'The theme must not add a second ordinary code frame');
-assert.ok(!lab.includes('giscus.app/client.js'), 'Lab must not create legacy comment mappings');
+assert.ok(!lab.includes('giscus.app/client.js'), 'Labs must not create legacy comment mappings');
 for (const url of assets) {
   const target = path.resolve(output, `.${decodeURIComponent(url)}`);
   assert.ok(target.startsWith(output + path.sep), `Asset reference escapes dist: ${url}`);

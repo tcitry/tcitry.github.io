@@ -19,10 +19,11 @@
     "preview": "astro preview --host 127.0.0.1",
     "check": "astro check",
     "test": "node --test tests/*.test.mjs",
+    "test:browser": "node tests/browser/reading.mjs",
     "verify": "node scripts/verify-build.mjs",
     "verify:production": "PUBLIC_SITE_ENV=production npm run verify",
     "deploy": "npm run deploy:production",
-    "deploy:production": "npm run build:production && npm run verify:production && wrangler deploy --config wrangler.production.jsonc",
+    "deploy:production": "npm run build:production && npm run verify:production && wrangler deploy",
     "theme:sync": "node scripts/sync-theme.mjs"
   },
   "dependencies": {
@@ -53,6 +54,8 @@
     "@types/node": "26.4.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.7",
+    "@vitejs/plugin-react": "5.2.0",
+    "playwright": "1.62.1",
     "typescript": "6.0.3",
     "wrangler": "4.129.0"
   },

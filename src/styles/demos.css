@@ -24,3 +24,5 @@
 @import "@heroui-pro/react/css/components/chat-source.css" layer(components);
 @import "@heroui-pro/react/css/components/chat-message-actions.css" layer(components);
 @import "@heroui-pro/react/css/components/code-block.css" layer(components);
+@import "@heroui-pro/react/css/components/inline-select.css" layer(components);
+@import "@heroui-pro/react/css/components/rating.css" layer(components);

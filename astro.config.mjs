@@ -20,6 +20,8 @@ export default defineConfig({
   }), react(), svelte()],
   vite: {
     plugins: [tailwindcss()],
+    // This renderer is imported only when a code block approaches the viewport.
+    optimizeDeps: { include: ['@heroui-pro/react/code-block'] },
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   },
 });
