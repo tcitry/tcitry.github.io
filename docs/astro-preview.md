@@ -172,12 +172,6 @@ HTTP 检查记录在 `.generated/cloudflare-verification.json`。Cloudflare 对 
 
 本轮使用公开主题 `f5066d2f0bd591800dcd7433357a60e77b7b38da`，从 Blog `main` 已提交版本 `f405f1beaeaac13fe84f3a17bc55d5a5673471d7` 的干净副本构建。
 
-### 搜索能力归入主题（2026-09-07）
-
-主题升级到 `0207160353e44a81146ec2159e15cc8b8afd508d`：Pagefind 依赖、索引构建和搜索界面统一由 astro-book 维护，本站仅保留范围与中文配置。原 `pagefind.yml` 的 `glob` 和 `root_selector` 已迁入 `astro.config.mjs`。
-
-继续使用上述内容提交构建生产产物。新旧索引的 968 条记录逐项比较完全一致，包括地址、正文和元数据；本地中文搜索可正常跳转原文章地址。本站 check、26 项 tests 和 verify:production 通过，保留全部 1208 个原有 URL，并通过 Giscus、公式、Mermaid、代码块及生产收录策略检查。主题独立文档站的 33 项测试、打包安装和 GitHub Pages 搜索也已通过。
-
 - 构建 1,226 个页面，保留全部 1,208 个旧 URL；951 个 Giscus 页面、25 个公式页面、65 个 Mermaid 页面、623 个代码页面通过检查。24 项测试通过，31 个文件的类型检查零错误、零警告。
 - 同一浏览器在 390、1920、2560px 视口对比 Archives、Weekly、Timeline、Portfolio，根滚动条及容器、侧栏的宽度、位置、内边距、overflow 测量与 Hugo 一致。Weekly 卡片仍为 320px、封面 320×192px；13 个 Portfolio 卡片在桌面与手机端的高度均与原站一致。
 - 根滚动条恢复细线、透明默认状态、滚动中显色和 650ms 隐藏。Archives 桌面/手机年份锚点、亚像素位置、页末年份与文章嵌套目录高亮通过实际操作检查；恢复原分页窗口和首末页控件。
@@ -188,3 +182,9 @@ HTTP 检查记录在 `.generated/cloudflare-verification.json`。Cloudflare 对 
 该产物当时使用 Wrangler 发布到 `preview.yindongliang.com`（现已下线），实现提交为 `6ac71c40fa59bdaed079fab2ecd5a03a388a4fa5`，Cloudflare 版本为 `9817d629-7081-4f58-acc4-6b8ac1e50bc5`。22 项公网 HTTP 检查通过，包括已移除 demo 的 404、Cloudflare 概览无旧 demo 引用、归档年份锚点、Giscus pathname、noindex、RSS/search、尾斜线与 immutable 缓存；公网浏览器确认根滚动条为 thin / stable，年份点击保留当前页面并正确高亮。本次直接发布已验证的 `dist/`，没有从 Blog 未提交的工作区内容重新构建。
 
 独立主题 README 已移除临时迁移预览链接，仅保留 `yindongliang.com` 作为使用方示例；该文档修改不改变本站固定主题的运行代码。当时发布为手动 Wrangler 操作，当前约定仍是本地 review 后直接发布生产，见 [生产发布说明](continuous-deployment.md)。
+
+## 搜索能力归入主题（2026-09-07）
+
+主题升级到 `0207160353e44a81146ec2159e15cc8b8afd508d`：Pagefind 依赖、索引构建和搜索界面统一由 astro-book 维护，本站仅保留范围与中文配置。原 `pagefind.yml` 的 `glob` 和 `root_selector` 已迁入 `astro.config.mjs`。
+
+使用 Blog 内容提交 `f405f1beaeaac13fe84f3a17bc55d5a5673471d7` 的干净副本构建生产产物。新旧索引的 968 条记录逐项比较完全一致，包括地址、正文和元数据；本地中文搜索可正常跳转原文章地址。本站 check、26 项 tests 和 verify:production 通过，保留全部 1208 个原有 URL，并通过 Giscus、公式、Mermaid、代码块及生产收录策略检查。主题独立文档站的 33 项测试、打包安装和 GitHub Pages 搜索也已通过。
