@@ -1,31 +1,34 @@
-# LYon's Blog · Astro 验证分支
+# LYon's Blog
 
-[生产站](https://yindongliang.com) · [Astro 预览站](https://preview.yindongliang.com) · [Astro-book 演示与文档](https://preview.yindongliang.com/lab/) · [astro-book 主题](https://github.com/tcitry/astro-book)
+[生产站](https://yindongliang.com) · [Astro 预览站](https://preview.yindongliang.com) · [Astro-book 演示与文档](https://yindongliang.com/lab/) · [astro-book 主题](https://github.com/tcitry/astro-book)
 
-本站正在从 Hugo + hugo-book 迁移到 Astro + `@tcitry/astro-book`。文章继续静态生成，交互实验按需使用 React、HeroUI、HeroUI Pro、Tailwind CSS v4 和 Svelte。原有 Hugo 文件保留，生产站仍使用 Hugo。
+本站使用 Astro + `@tcitry/astro-book`。文章静态生成，交互实验按需使用 React、HeroUI、HeroUI Pro、Tailwind CSS v4 和 Svelte。生产和预览分别部署到 Cloudflare Workers Static Assets，无需维护独立后端。
+
+2026-09-07：生产切换已获确认，生产配置和校验入口已准备；正式域名发布及默认分支切换以本次发布结果为准。Workers Builds 自动 CD 尚未接通，当前通过显式 Wrangler 命令部署。
 
 主题 UI 仅使用 Tailwind CSS v4 和必要的 CSS Modules，不接入 React、HeroUI 或 HeroUI Pro。HeroUI 与 HeroUI Pro 是本站的业务依赖；Weekly、Timeline、Portfolio 和交互演示也由本站维护。
 
 ## 分支约定
 
-仓库当前默认分支名为 **`master`**，尚无 `main` 分支。
+生产切换后的分支约定如下；旧默认分支实际名为 `master`。
 
 | 分支 | 用途 |
 | --- | --- |
-| `master` | 现有 Hugo 生产版本；继续由既有 GitHub Pages 工作流部署。 |
-| `hugo-book` | Hugo + hugo-book 的可恢复备份，迁移验证期间保留。 |
-| `astro` | Astro 接入、功能验收和 Cloudflare 预览阶段的提交。 |
+| `main` | Astro 生产分支及新的默认分支，部署到 `yindongliang.com`。 |
+| `astro` | 功能验证与预览分支，部署到 `preview.yindongliang.com`。 |
+| `hugo-book` | Hugo + hugo-book 的可恢复备份。 |
+| `master` | 保留的旧 Hugo 分支，不再作为 Astro 部署入口。 |
 
-2026-09-07 的 Hugo 备份对应 `64b8fc92d`，保留此前 `hugo-book` 分支历史。它是已提交源码的快照，不包含其他工作区的未提交文件，也不包含独立 Blog 仓库中的内容。
+2026-09-07 的远端 Hugo 备份为 `ce25b344d48e561f6420f727f43509c4f478e8d9`，包含旧生产提交 `d02f8b83854f7eff39b32b00c1d585d4f3567d7c` 和之后已提交的 Hugo 工作。它保留已有分支历史，不包含其他工作区的未提交文件，也不包含独立 Blog 仓库中的内容。
 
-验证完成后再审阅 `astro` 到默认分支的合并，并单独切换生产构建、域名和收录策略。如果以后将默认分支改名为 `main`，同步更新工作流的分支条件。创建或推送 `astro` / `hugo-book` 不会触发现有 Hugo 生产部署。`astro` 的主题 CI 在 Ubuntu 和 macOS 上检查固定来源的主题打包与 lockfile 一致性，不访问 Blog 内容、不安装商业组件、不部署站点。
+后续在 `astro` 验证，通过后合并到 `main` 发布生产。主题 CI 覆盖 `main` 和 `astro`，在 Ubuntu 和 macOS 上检查固定来源的主题打包与 lockfile 一致性，不访问 Blog 内容、不安装商业组件、不部署站点。生产切换时停用旧 Hugo Pages 工作流；GitHub Pages 的自定义域名还需按[手动解绑步骤](docs/continuous-deployment.md#github-pages-自定义域名解绑)移除。
 
 ## 安装与本地验证
 
 使用 Node.js 22.12+、npm 和 Git，本项目使用 Node.js 24 验证。首次检出：
 
 ```sh
-git clone --branch astro https://github.com/tcitry/tcitry.github.io.git
+git clone --branch main https://github.com/tcitry/tcitry.github.io.git
 cd tcitry.github.io
 npm run setup
 ```
@@ -44,7 +47,7 @@ npm run verify
 npm run preview -- --port 4321
 ```
 
-开发模式使用 `BLOG_DIR=/path/to/Blog npm run dev`；Pagefind 搜索的完整验收使用 build + preview。
+需要验证阶段代码时检出 `astro` 分支。开发模式使用 `BLOG_DIR=/path/to/Blog npm run dev`；Pagefind 搜索的完整验收使用 build + preview。普通 `build` 默认生成预览产物，生产使用 `build:production` 和 `verify:production`。
 
 ## 主题开发与功能入口
 
@@ -73,13 +76,25 @@ npm run verify
 
 验收入口包括 `/tags/`、`/categories/`、`/timeline/`、`/weekly/`、`/portfolio/`、`/links/`、`/lab/` 和 `/lab/agent-replay/`。顶部菜单中的 **Astro-book** 位于 **About** 之后，地址仍是 `/lab/`。侧栏不再显示最近修改列表，`/modified/` 页面继续保留。Giscus 保留原始 pathname 映射。
 
-## Cloudflare 预览
+## Cloudflare 部署
 
-Workers Builds 的构建命令使用 `npm run build:workers`，部署命令使用 `npx wrangler deploy --config wrangler.preview.jsonc`。首次连接需要配置构建变量及私有内容/Pro secrets，具体值和通知方式见 [控制台配置步骤](docs/continuous-deployment.md#首次控制台配置)。自动 CD 尚未接通；下面的命令用于显式本地部署。
+生产与预览使用独立 Worker 和配置，命令会先构建、校验，再部署对应产物：
+
+| 环境 | 分支 | Worker | 配置 |
+| --- | --- | --- | --- |
+| 生产 | `main` | `tcitry-blog` | `wrangler.production.jsonc` |
+| 预览 | `astro` | `tcitry-astro-preview` | `wrangler.preview.jsonc` |
+
+先确认 Wrangler 登录，再按目标环境选择一条部署命令：
 
 ```sh
 npx wrangler whoami
+# 生产
+BLOG_DIR=/path/to/Blog npm run deploy:production
+# 预览
 BLOG_DIR=/path/to/Blog npm run deploy:preview
 ```
 
-`wrangler.preview.jsonc` 使用 Workers Static Assets 托管 `dist/`，绑定 `preview.yindongliang.com`，没有后端业务代码。预览默认启用 noindex、禁止抓取并停用生产统计；canonical 仍指向生产站。生产切换前，不启用 `PUBLIC_SITE_ENV=production`。
+生产命令显式使用 `PUBLIC_SITE_ENV=production`，检查可收录的 robots、canonical 和生产统计；预览启用 noindex、禁止抓取并停用生产统计，canonical 仍指向生产站。
+
+Workers Builds 两个环境均使用 `npm run build:workers`，分别配置环境变量和对应的 Wrangler 部署命令。首次连接仍需 Git 集成及私有内容/Pro secrets，具体值和通知方式见[控制台配置步骤](docs/continuous-deployment.md#首次控制台配置)。这些接线尚未完成，公开主题 CI 成功不代表博客自动 CD 已启用。

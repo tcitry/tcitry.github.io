@@ -2,9 +2,9 @@ name: Astro theme reproducibility
 
 on:
   push:
-    branches: [astro]
+    branches: [main, astro]
   pull_request:
-    branches: [astro]
+    branches: [main, astro]
   workflow_dispatch:
 
 permissions:

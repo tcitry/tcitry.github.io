@@ -23,8 +23,9 @@ async function main() {
   if (process.env.SKIP_DEPENDENCY_INSTALL !== '1') {
     throw new BuildError('Set SKIP_DEPENDENCY_INSTALL=1 in Workers Builds; this command installs the pinned theme before npm ci.');
   }
-  if (process.env.PUBLIC_SITE_ENV && process.env.PUBLIC_SITE_ENV !== 'preview') {
-    throw new BuildError('build:workers currently supports PUBLIC_SITE_ENV=preview only. Production promotion is a separate step.');
+  const siteEnvironment = process.env.PUBLIC_SITE_ENV || 'preview';
+  if (!['preview', 'production'].includes(siteEnvironment)) {
+    throw new BuildError('Set PUBLIC_SITE_ENV to preview or production. Omit it to build a preview.');
   }
 
   const scratch = await mkdtemp(path.join(tmpdir(), 'astro-workers-content-'));
@@ -34,7 +35,7 @@ async function main() {
   const abort = () => controller.abort();
   process.once('SIGINT', abort);
   process.once('SIGTERM', abort);
-  const env = { ...process.env, BLOG_DIR: checkout, PUBLIC_SITE_ENV: 'preview' };
+  const env = { ...process.env, BLOG_DIR: checkout, PUBLIC_SITE_ENV: siteEnvironment };
   // Keep credentials scoped to the only commands that need them.
   delete env.BLOG_READ_TOKEN;
   delete env.BLOG_CONTENT_REPOSITORY;
@@ -78,7 +79,7 @@ async function main() {
       await run(`Running npm ${args.join(' ')}`, process.env.npm_execpath ? process.execPath : 'npm',
         process.env.npm_execpath ? [process.env.npm_execpath, ...args] : args, commandEnv);
     }
-    console.log('Preview build verified. Workers Builds can now run its separate Wrangler deploy command.');
+    console.log(`${siteEnvironment === 'production' ? 'Production' : 'Preview'} build verified. Workers Builds can now run its separate Wrangler deploy command.`);
   } finally {
     await rm(scratch, { recursive: true, force: true });
     process.removeListener('SIGINT', abort);

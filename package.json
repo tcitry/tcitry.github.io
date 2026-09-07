@@ -14,12 +14,15 @@
     "prepare:assets": "node scripts/prepare-assets.mjs",
     "dev": "npm run prepare:content && npm run prepare:assets && astro dev --host 127.0.0.1",
     "build": "npm run prepare:content && npm run prepare:assets && astro build && node scripts/finalize-build.mjs && pagefind --site dist --glob '{docs,posts,weekly}/**/*.html'",
+    "build:production": "PUBLIC_SITE_ENV=production npm run build",
     "build:workers": "node scripts/workers-build.mjs",
     "preview": "astro preview --host 127.0.0.1",
     "check": "astro check",
     "test": "node --test tests/*.test.mjs",
     "verify": "node scripts/verify-build.mjs",
+    "verify:production": "PUBLIC_SITE_ENV=production npm run verify",
     "deploy:preview": "npm run build && npm run verify && wrangler deploy --config wrangler.preview.jsonc",
+    "deploy:production": "npm run build:production && npm run verify:production && wrangler deploy --config wrangler.production.jsonc",
     "theme:sync": "node scripts/sync-theme.mjs"
   },
   "dependencies": {

@@ -24,7 +24,7 @@ const fs = require('node:fs');
 const cp = require('node:child_process');
 const args = process.argv.slice(2);
 const clone = args.includes('clone');
-const record = { command: 'git', args, contentToken: !!process.env.BLOG_READ_TOKEN, proToken: !!process.env.HEROUI_AUTH_TOKEN };
+const record = { command: 'git', args, contentToken: !!process.env.BLOG_READ_TOKEN, proToken: !!process.env.HEROUI_AUTH_TOKEN, siteEnvironment: process.env.PUBLIC_SITE_ENV };
 if (clone) {
   record.askpassUser = cp.execFileSync(process.env.GIT_ASKPASS, ['Username'], { encoding: 'utf8' }).trim();
   record.askpassMatches = cp.execFileSync(process.env.GIT_ASKPASS, ['Password'], { encoding: 'utf8' }).trim() === process.env.BLOG_READ_TOKEN;
@@ -45,7 +45,7 @@ const script = args.at(-1);
 fs.appendFileSync(process.env.FIXTURE_LOG, JSON.stringify({ command: 'npm', args,
   contentToken: !!process.env.BLOG_READ_TOKEN, proToken: !!process.env.HEROUI_AUTH_TOKEN,
   repository: !!process.env.BLOG_CONTENT_REPOSITORY, blog: process.env.BLOG_DIR,
-  preview: process.env.PUBLIC_SITE_ENV, askpassExists: fs.existsSync(process.env.BLOG_DIR + '/../askpass'),
+  siteEnvironment: process.env.PUBLIC_SITE_ENV, askpassExists: fs.existsSync(process.env.BLOG_DIR + '/../askpass'),
   contentExists: fs.existsSync(process.env.BLOG_DIR) }) + '\\n');
 console.log('ordinary build output ' + (process.env.HEROUI_AUTH_TOKEN || '') + ' ' + process.env.BLOG_DIR);
 if (process.env.FIXTURE_FAIL === script) process.exit(1);
@@ -80,7 +80,9 @@ test('Workers build rejects missing or unsafe configuration before any command r
     [{ BLOG_READ_TOKEN: '' }, 'BLOG_READ_TOKEN'],
     [{ HEROUI_AUTH_TOKEN: ' \n' }, 'HEROUI_AUTH_TOKEN'],
     [{ SKIP_DEPENDENCY_INSTALL: '' }, 'SKIP_DEPENDENCY_INSTALL=1'],
-    [{ PUBLIC_SITE_ENV: 'production' }, 'preview only'],
+    [{ PUBLIC_SITE_ENV: 'staging' }, 'PUBLIC_SITE_ENV to preview or production'],
+    [{ PUBLIC_SITE_ENV: 'Production' }, 'PUBLIC_SITE_ENV to preview or production'],
+    [{ PUBLIC_SITE_ENV: 'production\n' }, 'PUBLIC_SITE_ENV to preview or production'],
   ]) {
     const context = await fixture(t);
     const result = await context.run(overrides);
@@ -96,7 +98,8 @@ test('Workers build rejects missing or unsafe configuration before any command r
 
 test('Workers build checks out full main history, scopes secrets, verifies in order and cleans its content', async t => {
   const context = await fixture(t);
-  const result = await context.run();
+  // NODE_ENV must not promote the site: production requires PUBLIC_SITE_ENV.
+  const result = await context.run({ NODE_ENV: 'production' });
   assert.equal(result.code, 0, result.output);
   assert.deepEqual(result.commands.filter(command => command.command === 'npm').map(command => command.args), [
     ['run', 'setup'], ['run', 'build'], ['run', 'check'], ['test'], ['run', 'verify'],
@@ -115,7 +118,7 @@ test('Workers build checks out full main history, scopes secrets, verifies in or
   assert.equal(remote.contentToken, false);
   assert.deepEqual(steps.map(step => step.proToken), [true, false, false, false, false]);
   assert.ok(steps.every(step => !step.contentToken && !step.repository && !step.askpassExists));
-  assert.ok(steps.every(step => step.contentExists && step.preview === 'preview'));
+  assert.ok(steps.every(step => step.contentExists && step.siteEnvironment === 'preview'));
   assert.equal(new Set(steps.map(step => step.blog)).size, 1);
   assert.deepEqual(await readdir(path.join(context.directory, 'tmp')), ['unrelated']);
   assert.match(result.output, /ordinary build output/);
@@ -125,14 +128,34 @@ test('Workers build checks out full main history, scopes secrets, verifies in or
   }
 });
 
-for (const failingStep of ['clone', 'setup', 'build']) {
+for (const siteEnvironment of ['preview', 'production']) {
+  test(`Workers build preserves explicit ${siteEnvironment} through the final verification`, async t => {
+    const context = await fixture(t);
+    const result = await context.run({ PUBLIC_SITE_ENV: siteEnvironment });
+    assert.equal(result.code, 0, result.output);
+    assert.ok(result.commands.every(command => command.siteEnvironment === siteEnvironment));
+    const steps = result.commands.filter(command => command.command === 'npm');
+    assert.deepEqual(steps.map(step => step.args.at(-1)), ['setup', 'build', 'check', 'test', 'verify']);
+    assert.deepEqual(steps.map(step => step.proToken), [true, false, false, false, false]);
+    assert.ok(steps.every(step => !step.contentToken && !step.repository));
+    assert.match(result.output, new RegExp(`${siteEnvironment === 'production' ? 'Production' : 'Preview'} build verified`));
+    assert.deepEqual(await readdir(path.join(context.directory, 'tmp')), ['unrelated']);
+  });
+}
+
+for (const [failingStep, expectedSteps] of [
+  ['clone', []],
+  ['setup', ['setup']],
+  ['build', ['setup', 'build']],
+  ['verify', ['setup', 'build', 'check', 'test', 'verify']],
+]) {
   test(`Workers build stops after ${failingStep} failure and cleans only its temporary files`, async t => {
     const context = await fixture(t);
-    const result = await context.run({ FIXTURE_FAIL: failingStep });
+    const result = await context.run({ FIXTURE_FAIL: failingStep, PUBLIC_SITE_ENV: failingStep === 'verify' ? 'production' : 'preview' });
     assert.equal(result.code, 1);
-    assert.ok(!result.output.includes('Preview build verified'));
+    assert.doesNotMatch(result.output, /(?:Preview|Production) build verified/);
     const npmSteps = result.commands.filter(command => command.command === 'npm').map(command => command.args.at(-1));
-    assert.deepEqual(npmSteps, failingStep === 'clone' ? [] : failingStep === 'setup' ? ['setup'] : ['setup', 'build']);
+    assert.deepEqual(npmSteps, expectedSteps);
     assert.deepEqual(await readdir(path.join(context.directory, 'tmp')), ['unrelated']);
     for (const secret of [context.env.BLOG_READ_TOKEN, context.env.HEROUI_AUTH_TOKEN, context.env.BLOG_CONTENT_REPOSITORY, 'private-revision-abc123']) {
       assert.ok(!result.output.includes(secret));
