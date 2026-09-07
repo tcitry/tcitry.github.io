@@ -12,9 +12,10 @@ import Notice from '@tcitry/astro-book/components/Notice';
 import { articleItem } from './presentation';
 import PostMeta from './PostMeta.astro';
 import PostRow from './PostRow.astro';
+import RelatedPosts from './RelatedPosts.astro';
 import { bookTitle, byDate, dateText, displayDate, groups, param, timelineBlocks } from './helpers';
-interface Props { view: PageView; allPages: ContentPage[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[]; portfolio: any[] }
-const { view, allPages, tags, categories, portfolio } = Astro.props;
+interface Props { view: PageView; allPages: ContentPage[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[]; portfolio: any[]; related: ContentPage[]; relatedAnchor: string }
+const { view, allPages, tags, categories, portfolio, related, relatedAnchor } = Astro.props;
 const { page, entries, pagination } = view;
 const regular = allPages.filter((item) => item.kind === 'page');
 const isTimeline = page.type === 'timeline' || page.section === 'timeline';
@@ -35,7 +36,6 @@ const previous = siblingIndex < 0 ? undefined : siblingPages[siblingIndex + (pag
 const next = siblingIndex < 0 ? undefined : siblingPages[siblingIndex + (page.type === 'docs' ? 1 : -1)];
 const navLabel = page.type === 'weekly' ? '期' : '篇';
 const showPageAfter = page.kind === 'page' && ['docs', 'posts', 'weekly'].includes(page.type);
-const related = page.type === 'posts' ? regular.filter((item) => item.id !== page.id && item.type === 'posts').map((item) => ({ item, score: item.tags.filter((tag) => page.tags.includes(tag)).length * 2 + item.categories.filter((tag) => page.categories.includes(tag)).length })).filter((item) => item.score > 0).sort((a, b) => b.score - a.score || b.item.date.localeCompare(a.item.date)).slice(0, 5).map(({ item }) => item) : [];
 const cloudSize = (count: number) => {
   const total = regular.filter((item) => ['docs', 'posts', 'weekly'].includes(item.type) && dateText(item.date)).length;
   let size = Math.floor(12 + (page.url.startsWith('/categories/') ? 48 : 58) * count / Math.max(total - count, 1) * 6);
@@ -84,5 +84,5 @@ const cloudSize = (count: number) => {
     {next && <a href={next.url} title={`下一${navLabel}：${next.title}`} aria-label={`下一${navLabel}：${next.title}`}>〉</a>}
   </div>
   <div id="navigation-mobile" class="min-[64.01rem]:hidden"><p>{previous && <>上一{navLabel}：<a href={previous.url}>{previous.title}</a></>}</p><p>{next && <>下一{navLabel}：<a href={next.url}>{next.title}</a></>}</p></div>
-  {related.length > 0 && <><h2 class="text-[darkgrey]">相关文章</h2>{related.map((item) => <PostRow page={item} tags={tags} />)}</>}
+  <RelatedPosts items={related} anchorId={relatedAnchor} />
 </div>}

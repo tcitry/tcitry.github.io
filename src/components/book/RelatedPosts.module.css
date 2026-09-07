@@ -1,0 +1,49 @@
+.related {
+  margin-block-start: 2.5rem;
+  padding-block-start: 1.5rem;
+  border-block-start: 1px solid var(--gray-200);
+  scroll-margin-block-start: 1rem;
+}
+
+.related .heading {
+  margin: 0 0 1rem;
+}
+
+.related .list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.related .item {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.75rem;
+  margin: 0;
+  padding-block: 0.5rem;
+}
+
+.date {
+  color: color-mix(in srgb, var(--body-font-color) 65%, var(--body-background));
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.link {
+  grid-column: 2;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media screen and (max-width: 30rem) {
+  .related .item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.125rem;
+  }
+
+  .link {
+    grid-column: 1;
+  }
+}

@@ -28,6 +28,10 @@ npm run preview -- --port 4321
 
 代码块与图表需要同时验收开发模式：启动 dev 后运行 `npm run test:browser`，检查无 React island 的真实文章中 Pro 代码块、Mermaid SVG 和原文复制。构建预览可设置 `BLOG_TEST_URL` 复用同一检查。博客显式初始化 Pro 挂载所需的 React 开发运行时；主题 integration 在 dev 预构建 Mermaid 及其 CommonJS 子依赖。同步主题包后重启开发服务，同一检出不要同时启动多个 dev 进程共享 Vite 缓存。
 
+Posts 页尾的“相关阅读”由 `src/lib/related-posts.ts` 在构建时从公开文章元数据中选出，`RelatedPosts.astro` 输出静态列表。共同主题标签越多越靠前；重合数量相同时，优先使用频率较低的主题标签，再按发布时间从新到旧排列，避免宽泛标签盖过具体主题。不把 `Recommended`、`ByAI`、`Weekly`、`Links` 状态标签或年份分类当作相关主题。最多显示 5 篇，排除自身、重复 URL、草稿、隐藏页和跳转页；无匹配时不显示。旧文章可以推荐后来发布的同主题文章。
+
+该区块位于正文及版权、前后篇导航之后，Giscus 之前；桌面和移动目录提供“相关阅读”锚点，沿用页面的目录开关。推荐列表不进入 Pagefind 正文索引。`npm test` 检查推荐规则，`npm run test:browser` 同时检查禁用 JavaScript 时的文章链接、目录跳转、评论位置及 1440px / 375px / 320px 布局。
+
 `setup` 仅使用 Node 内置模块启动：读取 `astro-book.source.json` 中的公开仓库和完整 commit，独立检出该提交，按照主题自己的 lockfile 执行 `npm ci`，再通过 `npm pack` 构建主题。打包结果必须匹配本站 lockfile 中的 SHA-512，最后才执行本站 `npm ci`。它不会使用本机碰巧存在的主题源码、跟随远端 main 更新或修改 lockfile。`.artifacts/` 中的临时源码和 tarball 均不入 Git；临时源码在打包后自动清理。
 
 打包脚本保留 npm 生成的 tar 条目，再统一 gzip 为不压缩的存储块并规范平台标记。这样不会因 Node 内含的 zlib 压缩算法版本不同而产生不同的 lockfile 完整性；本地包略大，但不上传、不影响网站资源大小。

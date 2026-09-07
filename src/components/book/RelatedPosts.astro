@@ -1,0 +1,36 @@
+---
+import type { ContentPage } from '../../lib/types';
+import { bookTitle, displayDate } from './helpers';
+import styles from './RelatedPosts.module.css';
+
+interface Props {
+  items: ContentPage[];
+  anchorId: string;
+}
+
+const { items, anchorId } = Astro.props;
+const headingId = `${anchorId}-heading`;
+---
+
+{items.length > 0 && (
+  <section
+    id={anchorId}
+    class={styles.related}
+    data-related-posts
+    data-pagefind-ignore
+    aria-labelledby={headingId}
+  >
+    <h2 id={headingId} class={styles.heading}>相关阅读</h2>
+    <ul class={styles.list} role="list">
+      {items.map((item) => {
+        const dateLabel = displayDate(item);
+        return (
+          <li class={styles.item}>
+            {dateLabel && <time class={styles.date} datetime={item.date}>{dateLabel}</time>}
+            <a class={styles.link} href={item.url} data-related-post-link>{bookTitle(item)}</a>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+)}

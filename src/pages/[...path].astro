@@ -3,6 +3,7 @@ import BookLayout from '../layouts/BookLayout.astro';
 import PageContent from '../components/book/PageContent.astro';
 import PageToc from '../components/book/PageToc.astro';
 import { content, navigation, buildViews } from '../lib/site';
+import { getRelatedPosts, getRelatedPostsAnchor } from '../lib/related-posts';
 import type { PageView } from '../lib/types';
 import { parse } from 'yaml';
 import portfolioSource from '../../data/portfolio.yaml?raw';
@@ -19,7 +20,10 @@ export function getStaticPaths() {
 interface Props { view: PageView }
 const { view } = Astro.props;
 const portfolio = parse(portfolioSource).items;
-const common = { view, allPages: content.pages, tags: content.tags, categories: content.categories, portfolio };
+const common = {
+  view, allPages: content.pages, tags: content.tags, categories: content.categories, portfolio,
+  related: getRelatedPosts(view.page, content.pages), relatedAnchor: getRelatedPostsAnchor(view.page),
+};
 ---
 <BookLayout page={view.page} navigation={navigation} tags={content.tags} categories={content.categories}>
   <PageContent {...common} />
