@@ -168,3 +168,7 @@ HTTP 检查记录在 `.generated/cloudflare-verification.json`。Cloudflare 对 
 - 删除 Kumo 演示源码、路由、依赖，以及 Blog 导航中的演示区块和静态文件。旧静态目录有发布排除和产物缺失断言，圆弧时间线保留。HeroUI 表单、Pro 回放与代码复制实测通过。
 - 主题 UI 继续使用 Tailwind CSS v4 / CSS Modules，无 React、HeroUI、HeroUI Pro 或 Kumo 运行依赖。React 与商业组件只存在于博客消费方；独立主题示例不使用这些依赖。
 - 干净检出发现并修复 6 处文件名大小写差异导致的 URL 漂移，使用双侧唯一的历史 source 匹配；保留显式路由变更和歧义保护，并覆盖回归测试。
+
+该产物已使用 Wrangler 发布到 [preview.yindongliang.com](https://preview.yindongliang.com/)，实现提交为 `6ac71c40fa59bdaed079fab2ecd5a03a388a4fa5`，Cloudflare 版本为 `9817d629-7081-4f58-acc4-6b8ac1e50bc5`。22 项公网 HTTP 检查通过，包括已移除 demo 的 404、Cloudflare 概览无旧 demo 引用、归档年份锚点、Giscus pathname、noindex、RSS/search、尾斜线与 immutable 缓存；公网浏览器确认根滚动条为 thin / stable，年份点击保留当前页面并正确高亮。本次直接发布已验证的 `dist/`，没有从 Blog 未提交的工作区内容重新构建。
+
+独立主题 README 已移除临时迁移预览链接，仅保留 `yindongliang.com` 作为使用方示例；该文档修改不改变本站固定主题的运行代码。Cloudflare Workers Builds 尚需完成 Git 连接与构建 Secrets 配置，本次仍为手动 Wrangler 发布，后续步骤见 [持续部署方案](continuous-deployment.md)。
