@@ -1,0 +1,134 @@
+@reference "../../styles/tailwind.css";
+
+/* Blog timeline/portfolio appearance. The shared theme owns no business-page styles. */
+.timeline {
+  @apply relative;
+  --timeline-line: #75aa9d;
+  --timeline-node: #0da99c;
+  --timeline-node-hover: white;
+  --timeline-date: #0da99c;
+  --timeline-surface: #f1faee;
+  --timeline-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
+  --timeline-title: black;
+  --timeline-link: var(--color-link);
+  --timeline-link-hover: var(--color-link);
+  --timeline-text: dimgray;
+  --timeline-pre: #f6f8fa;
+  --timeline-code: #f6f8fa;
+  --timeline-code-color: inherit;
+  --timeline-tag-text: #696969;
+  --timeline-tag-0: linear-gradient(135deg, #d8e2dc 0%, #ffe5d9 100%);
+  --timeline-tag-1: linear-gradient(135deg, #d5c3c6 0%, #e3d5da 100%);
+  --timeline-tag-2: linear-gradient(135deg, #cad2c5 0%, #e0e5e7 100%);
+}
+
+/* Book's runtime keeps html.dark in sync with manual and system appearance. */
+:global(html.dark) .timeline {
+  --timeline-line: #3d7c72;
+  --timeline-node: #007c70;
+  --timeline-node-hover: #f5f4f4;
+  --timeline-date: #0f9e92;
+  --timeline-surface: #292929;
+  --timeline-shadow: 0 2px 6px rgb(0 0 0 / 0.4);
+  --timeline-title: #f0f0f0;
+  --timeline-link: #0f9e92;
+  --timeline-link-hover: #7cdfd5;
+  --timeline-text: #ccc;
+  --timeline-pre: #1e1e1e;
+  --timeline-code: #2d2d2d;
+  --timeline-code-color: #d4d4d4;
+  --timeline-tag-text: #e0e0e0;
+  --timeline-tag-0: linear-gradient(135deg, #4a5759 0%, #5b6e70 100%);
+  --timeline-tag-1: linear-gradient(135deg, #595062 0%, #6e6a7c 100%);
+  --timeline-tag-2: linear-gradient(135deg, #4d5e56 0%, #607069 100%);
+}
+
+.timeline::before {
+  @apply absolute left-[180px] h-full w-1 rounded-[2px] bg-[var(--timeline-line)] content-[''];
+}
+
+.item {
+  @apply relative flex items-start py-6;
+}
+
+.item::after {
+  @apply absolute top-[42px] left-[182px] z-1 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-solid border-[var(--timeline-node)] bg-[var(--timeline-node)] content-[''];
+}
+
+.item:hover::after {
+  @apply bg-[var(--timeline-node-hover)] transition-all duration-300 ease-in-out;
+}
+
+.date {
+  @apply w-[140px] py-2 text-right text-[1.1em] font-bold text-[var(--timeline-date)];
+}
+
+.content {
+  @apply -mt-2.5 ml-20 max-w-full flex-1 overflow-x-auto rounded-lg bg-[var(--timeline-surface)] px-6 py-0 [line-height:normal] wrap-break-word [word-break:break-word] [box-shadow:var(--timeline-shadow)];
+}
+
+.title {
+  @apply text-[1.2em] text-[var(--timeline-title)];
+}
+
+.title a {
+  @apply text-[var(--timeline-link)] no-underline hover:text-[var(--timeline-link-hover)] hover:underline;
+}
+
+.content :global(.timeline-subtitle) {
+  @apply mb-[15px] text-[var(--timeline-title)];
+}
+
+.image {
+  @apply my-4 text-center;
+}
+
+.image img {
+  @apply h-auto max-w-full rounded-[4px] shadow-[0_1px_3px_rgb(0_0_0_/_0.1)];
+}
+
+.content pre {
+  @apply my-2.5 max-w-full overflow-x-auto rounded-md bg-[var(--timeline-pre)] p-4 text-sm leading-normal [color:var(--timeline-code-color)];
+}
+
+.content code {
+  @apply rounded-[3px] bg-[var(--timeline-code)] px-1 py-0.5 font-['Courier_New',Courier,monospace] text-[.9em] [color:var(--timeline-code-color)];
+}
+
+.content pre code {
+  @apply rounded-none bg-transparent p-0;
+}
+
+.text {
+  @apply mb-4 text-[var(--timeline-text)];
+}
+
+.text img {
+  @apply my-2.5 h-auto max-w-full rounded-[4px];
+}
+
+.text ul {
+  @apply my-2.5 pl-5;
+}
+
+.tag {
+  @apply inline-block rounded-[.3rem] border-none px-[.8rem] py-[.3rem] text-xs font-bold whitespace-nowrap text-[var(--timeline-tag-text)] shadow-[0_1px_2px_rgb(0_0_0_/_0.05)] transition-all duration-300 ease-in-out;
+}
+.tag0 { background: var(--timeline-tag-0); }
+.tag1 { background: var(--timeline-tag-1); }
+.tag2 { background: var(--timeline-tag-2); }
+
+.yearSelect {
+  @apply cursor-pointer appearance-none rounded-[4px] border border-solid border-[#0da99c] bg-white py-2 pr-8 pl-4 text-base font-medium text-[#0da99c] outline-none transition-all duration-300 hover:border-[#0a8a7d] hover:bg-[#e8f5f4] focus:border-[#0da99c] focus:shadow-[0_0_0_3px_rgb(13_169_156_/_0.1)];
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230da99c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  @apply bg-size-[1.2rem] bg-position-[right_.5rem_center] bg-no-repeat;
+}
+.yearSelect option { @apply bg-white p-2 text-[#333]; }
+
+@media (max-width: 768px) {
+  .timeline::before { @apply left-[30px]; }
+  .item { @apply flex-col pl-[50px]; }
+  .item::after { @apply left-8; }
+  .date { @apply mb-[30px] w-auto p-0 text-left; }
+  .content { @apply ml-0 w-full; }
+}

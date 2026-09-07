@@ -1,0 +1,12 @@
+---
+import type { WeeklyCardItem } from './special-pages';
+interface Props { items: WeeklyCardItem[]; }
+const { items } = Astro.props;
+---
+<div class="card-list grid grid-cols-[repeat(auto-fill,minmax(20rem,20rem))] gap-4" data-pagefind-body>{items.map((item) =>
+  <a href={item.href} class="weekly-card rounded-b-md text-inherit! no-underline! shadow-[0_10px_15px_-3px_rgb(0_0_0_/_0.1),0_4px_6px_-4px_rgb(0_0_0_/_0.1)]">
+    <img src={item.image.src} alt={item.image.alt} loading="lazy" class="h-48 w-80 rounded-t-md bg-[linear-gradient(rgb(236,233,230),rgb(255,255,255))] object-cover" />
+    <div class="card-title mx-3 mt-3 flex justify-between"><div>{item.label}</div><div><time class="text-[darkgrey]">{item.dateLabel}</time></div></div>
+    <div class="card-content mx-3 mt-0 mb-2 h-14 overflow-hidden text-sm leading-5 text-ellipsis text-[darkgray]"><p>{item.description}</p></div>
+  </a>
+)}</div>

@@ -1,0 +1,15 @@
+---
+import Tabs from '@tcitry/astro-book/components/Tabs';
+import type { TaxonomyTerm } from '../../lib/types';
+interface Props { url: string; tags: TaxonomyTerm[] }
+const { url, tags } = Astro.props;
+const termURL = (name: string) => tags.find((tag) => tag.name === name)?.url || `/tags/${encodeURIComponent(name)}/`;
+const items = [
+  { label: 'All', href: '/archives/' }, { label: 'Posts', href: '/posts/' },
+  { label: 'Links', href: '/links/', badge: { label: 'L', class: 'links-title' } },
+  { label: 'Weekly', href: termURL('Weekly'), badge: { label: 'W', class: 'weekly-title' } },
+  { label: 'Recommended', href: termURL('Recommended'), badge: { label: 'R', class: 'recommended-title' } },
+  { label: 'Reading', href: termURL('读书笔记') }, { label: 'LastModified', href: '/modified/' },
+];
+---
+<Tabs items={items} current={url} />

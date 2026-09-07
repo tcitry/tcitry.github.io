@@ -1,0 +1,90 @@
+---
+import type { PageView, ContentPage, TaxonomyTerm } from '../../lib/types';
+import TagsNavbar from './TagsNavbar.astro';
+import ArticleList from '@tcitry/astro-book/components/ArticleList';
+import GroupedArticleList from '@tcitry/astro-book/components/GroupedArticleList';
+import WeeklyCards from './WeeklyCards.astro';
+import TagCloud from '@tcitry/astro-book/components/TagCloud';
+import Timeline from './Timeline.astro';
+import YearSelect from './YearSelect.astro';
+import Portfolio from './Portfolio.astro';
+import Pagination from '@tcitry/astro-book/components/Pagination';
+import Notice from '@tcitry/astro-book/components/Notice';
+import { articleItem } from './presentation';
+import PostMeta from './PostMeta.astro';
+import PostRow from './PostRow.astro';
+import { bookTitle, byDate, dateText, displayDate, groups, param, timelineBlocks } from './helpers';
+interface Props { view: PageView; allPages: ContentPage[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[]; portfolio: any[] }
+const { view, allPages, tags, categories, portfolio } = Astro.props;
+const { page, entries, pagination } = view;
+const regular = allPages.filter((item) => item.kind === 'page');
+const isTimeline = page.type === 'timeline' || page.section === 'timeline';
+const isPortfolio = page.type === 'portfolio' || page.section === 'portfolio';
+const isModified = page.layout === 'modified' || page.url === '/modified/';
+const isArchive = page.type === 'archives' || page.section === 'archives';
+const isWeeklyList = (page.type === 'weekly' || page.section === 'weekly') && page.kind !== 'page';
+const isLinksList = (page.type === 'links' || page.section === 'links') && page.kind !== 'page';
+const isPostList = page.kind !== 'page' && (page.type === 'posts' || page.section === 'posts');
+const taxonomy = [...(page.url.startsWith('/categories/') ? categories : tags)].sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : a.name.toLowerCase() > b.name.toLowerCase() ? 1 : 0);
+const timelines = byDate(regular.filter((item) => item.type === 'timeline' && dateText(item.date) >= '2000'));
+const timelinePage = page.kind === 'page' && page.layout !== 'list' && dateText(page.date) >= '2000' ? page : timelines[0];
+const siblingPages = page.type === 'docs'
+  ? regular.filter((item) => item.parent === page.parent).sort((a, b) => (a.weight || Number.MAX_SAFE_INTEGER) - (b.weight || Number.MAX_SAFE_INTEGER) || b.date.localeCompare(a.date) || a.title.localeCompare(b.title, 'zh-CN'))
+  : byDate(regular.filter((item) => item.parent === page.parent));
+const siblingIndex = siblingPages.findIndex((item) => item.id === page.id);
+const previous = siblingIndex < 0 ? undefined : siblingPages[siblingIndex + (page.type === 'docs' ? -1 : 1)];
+const next = siblingIndex < 0 ? undefined : siblingPages[siblingIndex + (page.type === 'docs' ? 1 : -1)];
+const navLabel = page.type === 'weekly' ? '期' : '篇';
+const showPageAfter = page.kind === 'page' && ['docs', 'posts', 'weekly'].includes(page.type);
+const related = page.type === 'posts' ? regular.filter((item) => item.id !== page.id && item.type === 'posts').map((item) => ({ item, score: item.tags.filter((tag) => page.tags.includes(tag)).length * 2 + item.categories.filter((tag) => page.categories.includes(tag)).length })).filter((item) => item.score > 0).sort((a, b) => b.score - a.score || b.item.date.localeCompare(a.item.date)).slice(0, 5).map(({ item }) => item) : [];
+const cloudSize = (count: number) => {
+  const total = regular.filter((item) => ['docs', 'posts', 'weekly'].includes(item.type) && dateText(item.date)).length;
+  let size = Math.floor(12 + (page.url.startsWith('/categories/') ? 48 : 58) * count / Math.max(total - count, 1) * 6);
+  if (page.url.startsWith('/tags/')) { if (size > 40) size = Math.floor(40 + (size - 40) * .5); if (size > 50) size = Math.floor(50 + (size - 50) * .1); if (size > 60) size = Math.floor(60 + (size - 60) * .05); }
+  return Math.min(page.url.startsWith('/categories/') ? 60 : 70, Math.max(12, size));
+};
+---
+{page.kind === 'home' ? <>
+  <ArticleList items={entries.map((item) => articleItem(item, tags, { detailed: false, showSummary: true, showBreadcrumb: false }))} />
+</> : isTimeline ? <article class="markdown book-article" data-pagefind-body>
+  <YearSelect items={timelines.map((item) => ({ value: item.url, label: dateText(item.date).slice(0, 4) }))} selected={timelinePage?.url} label="时间线年份" />
+  <Timeline items={timelineBlocks(timelinePage).map((block) => ({ id: block.id, label: block.title, html: block.html }))} />
+</article> : isPortfolio ? <Portfolio items={portfolio.map((item) => ({ period: item.title, label: item.cardTitle, href: item.url, target: '_blank' as const, imageHTML: item.imageURL, tags: item.tagList, detailsHTML: item.cardDetailedText }))} /> : isWeeklyList ? <>
+  <p class="secondary-info">目前共 <a href={tags.find((term) => term.name === 'Weekly')?.url || '/tags/Weekly/'}>{regular.filter((item) => item.type === 'weekly' && dateText(item.date)).length}</a> 期周刊，可通过 <a href="/weekly/index.xml">RSS</a> 订阅</p>
+  <WeeklyCards items={entries.map((item) => ({ href: item.url, label: item.title, image: { src: item.image || '/logo.gif', alt: item.title }, dateLabel: displayDate(item, 'dots'), description: item.description }))} />
+</> : page.kind === 'taxonomy' ? <>
+  <h1>{page.title}<sup>{taxonomy.length}</sup></h1><TagCloud items={taxonomy.map((term) => ({ href: term.url, label: term.name, count: term.pageIds.length, size: cloudSize(term.pageIds.length) }))} />
+</> : page.kind === 'term' ? <>
+  <TagsNavbar url={page.url} tags={tags} /><h1 class="text-[dimgray]">{page.title}&nbsp;<sup>{view.term?.pageIds.length || entries.length}</sup></h1>
+  <div data-pagefind-body>{entries.map((item) => <PostRow page={item} tags={tags} />)}</div>
+</> : isModified ? <>
+  <TagsNavbar url={page.url} tags={tags} /><section><div class="posts" data-pagefind-body>{entries.map((item) => <PostRow page={item} tags={tags} modified />)}</div></section>
+</> : isArchive || isPostList || isLinksList ? <>
+  <TagsNavbar url={page.url} tags={tags} />
+  <GroupedArticleList groups={groups(entries, isLinksList ? 'month' : 'year').map((group) => ({ id: group.key, label: group.key, items: group.pages.map((item) => articleItem(item, tags, { showSummary: isLinksList, showBreadcrumb: !isPostList && !isLinksList })) }))} />
+</> : <>
+  {page.type === 'docs' && <h1>{bookTitle(page)}</h1>}
+  {page.type === 'docs' && page.tags.includes('ByAI') && <div class="my-4 flex items-center rounded border-l-4 border-l-[#fa8072] bg-[#fa8072]/10 px-4 py-3 text-[#9e4b44]"><span class="font-medium">This article is extracted from the chat log with AI. Please identify it with caution.</span></div>}
+  <article class:list={{ markdown: true, 'book-post': ['posts', 'links'].includes(page.type), 'book-article': !['posts', 'links'].includes(page.type) }} data-pagefind-body>
+    {['posts', 'weekly', 'links'].includes(page.type) && <><h1><a href={page.url}>{bookTitle(page)}</a></h1><PostMeta page={page} tags={tags} /></>}
+    {page.type === 'posts' && dateText(page.lastmod) && Date.now() - new Date(page.lastmod).getTime() >= 365 * 86400000 && <Notice variant="danger">注意：此文章已超过 1 年未更新，部分信息可能已经过时。</Notice>}
+    {page.type === 'weekly' && page.description && <blockquote class="secondary-info">{page.description}</blockquote>}
+    {page.type === 'links' && page.link && <div class="links-source"><Notice variant="info"><p>此内容为转载文章，原文链接：<a href={page.link} target="_blank" rel="noopener">{page.link}</a></p></Notice></div>}
+    <Fragment set:html={page.html} />
+    {!page.html && page.kind === 'section' && <ul>{entries.map((item) => <li><a href={item.url}>{bookTitle(item)}</a></li>)}</ul>}
+  </article>
+  {page.type === 'links' && page.redirect && page.link && <span hidden data-external-redirect={page.link} />}
+</>}
+{pagination && <Pagination current={pagination.current} urls={pagination.urls} label="分页" previousLabel="上一页" nextLabel="下一页" />}
+{page.kind === 'home' && <><br /><footer><div class="text-center">© 2012 - 2025 YINDONGLIANG</div></footer></>}
+{showPageAfter && <div data-pagefind-ignore>
+  {page.type === 'posts' && <h5 class="post-after">本文共 {page.wordCount} 字，{param(page, 'lastmod') && <>上次修改于 {dateText(page.lastmod, 'long')}，</>}以 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh">CC 署名-非商业性使用-禁止演绎 4.0 国际</a> 协议进行许可。</h5>}
+  {page.type === 'docs' && <><h5 class="post-after">本文共 {page.wordCount} 字{dateText(page.date) && <>，创建于 {dateText(page.date, 'long')}</>}</h5>{page.tags.length > 0 && <div class="mb-5"><p>相关标签：{page.tags.map((tag, index) => <>{index > 0 && ', '}<a href={tags.find((term) => term.name === tag)?.url || `/tags/${encodeURIComponent(tag)}/`}>{tag}</a></>)}</p></div>}</>}
+  {page.type === 'weekly' && dateText(page.lastmod) !== dateText(page.date) && <h5 class="post-after">Last Modified at {dateText(page.lastmod, 'long')}</h5>}
+  <div id="navigation">
+    {previous && <a class="nav nav-left" href={previous.url} title={`上一${navLabel}：${previous.title}`} aria-label={`上一${navLabel}：${previous.title}`}><i class="fa-left" /></a>}
+    {next && <a class="nav nav-right" href={next.url} title={`下一${navLabel}：${next.title}`} aria-label={`下一${navLabel}：${next.title}`}><i class="fa-right" /></a>}
+  </div>
+  <div id="navigation-mobile"><p>{previous && <>上一{navLabel}：<a href={previous.url}>{previous.title}</a></>}</p><p>{next && <>下一{navLabel}：<a href={next.url}>{next.title}</a></>}</p></div>
+  {related.length > 0 && <><h2 class="text-[darkgrey]">相关文章</h2>{related.map((item) => <PostRow page={item} tags={tags} />)}</>}
+</div>}

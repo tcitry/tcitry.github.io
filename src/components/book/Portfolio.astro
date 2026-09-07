@@ -1,0 +1,17 @@
+---
+import type { PortfolioItem } from './special-pages';
+import styles from './Timeline.module.css';
+interface Props { items: PortfolioItem[]; }
+const { items } = Astro.props;
+---
+<div class="timeline-container max-w-[1200px]" data-pagefind-body><div class:list={['timeline', styles.timeline]}>{items.map((item) =>
+  <div class:list={['timeline-item', styles.item]}>
+    <div class:list={['timeline-date', styles.date]}>{item.period}</div>
+    <div class:list={['timeline-content', styles.content]}>
+      {item.imageHTML && <div class:list={['timeline-image', styles.image]} set:html={item.imageHTML} />}
+      <h3 class:list={['timeline-title', styles.title]}><a href={item.href} target={item.target} rel={item.target === '_blank' ? 'noopener' : undefined}>{item.label}</a></h3>
+      {item.tags && <div class="timeline-tags mb-4 flex flex-wrap gap-2">{item.tags.map((tag, index) => <span class:list={['timeline-tag', `tag-${index % 3}`, styles.tag, styles[`tag${index % 3}`]]}>{tag}</span>)}</div>}
+      {(item.detailsHTML || []).map((html) => <div class:list={['timeline-text', styles.text]} set:html={html} />)}
+    </div>
+  </div>
+)}</div></div>

@@ -1,0 +1,27 @@
+---
+import BookLayout from '../layouts/BookLayout.astro';
+import PageContent from '../components/book/PageContent.astro';
+import PageToc from '../components/book/PageToc.astro';
+import { content, navigation, buildViews } from '../lib/site';
+import type { PageView } from '../lib/types';
+import { parse } from 'yaml';
+import portfolioSource from '../../data/portfolio.yaml?raw';
+import { writeFileSync } from 'node:fs';
+
+export function getStaticPaths() {
+  const views = buildViews();
+  writeFileSync('.generated/routes.json', JSON.stringify(views.map(({ page, entries }) => ({ url: page.url, kind: page.kind, type: page.type, id: page.id, entryIds: entries.map(entry => entry.id) }))));
+  return views.map(view => ({
+    params: { path: view.page.url === '/' ? undefined : decodeURI(view.page.url).replace(/^\/+|\/+$/g, '') },
+    props: { view },
+  }));
+}
+interface Props { view: PageView }
+const { view } = Astro.props;
+const portfolio = parse(portfolioSource).items;
+const common = { view, allPages: content.pages, tags: content.tags, categories: content.categories, portfolio };
+---
+<BookLayout page={view.page} navigation={navigation} tags={content.tags} categories={content.categories}>
+  <PageContent {...common} />
+  <Fragment slot="toc"><PageToc {...common} /></Fragment>
+</BookLayout>

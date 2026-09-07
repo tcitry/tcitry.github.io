@@ -1,0 +1,14 @@
+@reference "./tailwind.css";
+
+/* Site-specific badges and article annotations; generic Badge layout stays in the theme. */
+.site :global(.docs-title) { @apply border border-solid border-[dimgray] [font-size:small] font-bold text-[dimgray]; }
+.site :global(.danger-title) { @apply border border-solid border-[#ff7e67] bg-[#ff7e67] [font-size:small] text-white; }
+.site :global(.byAI-title) { @apply border border-solid border-[#fa8072] [font-size:small] font-bold text-[#fa8072]; }
+.site :global(.recommended-title) { @apply bg-[#9b59b6] [font-size:small] font-bold text-white; }
+.site :global(.links-title) { @apply bg-[#3498db] [font-size:small] font-bold text-white; }
+.site :global(.tags-title) { @apply border border-solid border-[#74aa9c] [font-size:small] font-bold text-[#74aa9c]; }
+.site :global(.weekly-title) { @apply border border-solid border-[#20b2aa] bg-[#20b2aa] [font-size:small] font-bold text-[#ffffe0]; }
+:global(html.dark) .site :global(.weekly-title) { @apply border-[#008080] bg-[#008080]; }
+.site :global(.post-after) { @apply [font-size:small] leading-[1.4em] text-[dimgray]; }
+.site :global(.links-source) { @apply mb-8; }
+.site :global(.links-source) blockquote { @apply mx-0; }

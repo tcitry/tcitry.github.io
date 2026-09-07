@@ -1,0 +1,12 @@
+/* Preserve Book's established reset and typography. New UI uses Tailwind utilities. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "@heroui/styles/themes/shared/theme.css";
+@import "@heroui/styles/utilities";
+@import "@heroui/styles/variants";
+@import "tailwindcss/utilities.css" layer(utilities);
+@source "../";
+
+@layer theme {
+  :root { --radius: 0.5rem; }
+}

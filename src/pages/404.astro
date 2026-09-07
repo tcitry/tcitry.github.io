@@ -1,0 +1,12 @@
+---
+import BookLayout from '../layouts/BookLayout.astro';
+import { content, navigation, createPage } from '../lib/site';
+const page = createPage({ url: '/404.html', title: '页面未找到', toc: false });
+---
+<BookLayout page={page} navigation={navigation} tags={content.tags} categories={content.categories}>
+  <article class="markdown">
+    <h1>页面未找到</h1>
+    <p>这个地址暂时没有对应的页面。可以使用左侧目录或搜索查找内容。</p>
+    <p><a href="/">返回首页</a></p>
+  </article>
+</BookLayout>

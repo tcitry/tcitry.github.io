@@ -1,0 +1,26 @@
+/* Vendor component styles only. The full HeroUI entry also imports a global reset. */
+@reference "./tailwind.css";
+@import "tw-animate-css";
+@import "@heroui/styles/components/button.css" layer(components);
+@import "@heroui/styles/components/chip.css" layer(components);
+@import "@heroui/styles/components/label.css" layer(components);
+@import "@heroui/styles/components/slider.css" layer(components);
+@import "@heroui/styles/components/avatar.css" layer(components);
+@import "@heroui/styles/components/disclosure.css" layer(components);
+@import "@heroui/styles/components/card.css" layer(components);
+@import "@heroui/styles/components/textfield.css" layer(components);
+@import "@heroui/styles/components/input.css" layer(components);
+@import "@heroui/styles/components/description.css" layer(components);
+@import "@heroui/styles/components/select.css" layer(components);
+@import "@heroui/styles/components/list-box.css" layer(components);
+@import "@heroui/styles/components/list-box-item.css" layer(components);
+@import "@heroui/styles/components/switch.css" layer(components);
+@import "@heroui/styles/components/tabs.css" layer(components);
+@import "@heroui/styles/components/scroll-shadow.css" layer(components);
+@import "@heroui/styles/components/accordion.css" layer(components);
+@import "@heroui-pro/react/css/components/chat-message.css" layer(components);
+@import "@heroui-pro/react/css/components/chain-of-thought.css" layer(components);
+@import "@heroui-pro/react/css/components/text-shimmer.css" layer(components);
+@import "@heroui-pro/react/css/components/chat-source.css" layer(components);
+@import "@heroui-pro/react/css/components/chat-message-actions.css" layer(components);
+@import "@heroui-pro/react/css/components/code-block.css" layer(components);

@@ -1,0 +1,8 @@
+---
+import ArticleMeta from '@tcitry/astro-book/components/ArticleMeta';
+import type { ContentPage, TaxonomyTerm } from '../../lib/types';
+import { articleMetadata } from './presentation';
+interface Props { page: ContentPage; tags: TaxonomyTerm[] }
+const { page, tags } = Astro.props;
+---
+<ArticleMeta {...articleMetadata(page, tags)} />

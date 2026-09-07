@@ -1,0 +1,12 @@
+---
+import styles from './Timeline.module.css';
+interface Props { items: { label: string; value: string }[]; selected?: string; label?: string; }
+const { items, selected, label = '时间线年份' } = Astro.props;
+---
+<nav class="timeline-year-nav mb-4 flex items-center gap-4"><select id="timeline-year-select" class:list={['timeline-year-select', styles.yearSelect]} aria-label={label} data-timeline-year-select>{items.map((item) => <option value={item.value} selected={item.value === selected}>{item.label}</option>)}</select></nav>
+<script>
+  document.querySelectorAll<HTMLSelectElement>('[data-timeline-year-select]').forEach((select) => select.addEventListener('change', () => {
+    const destination = new URL(select.value, location.href);
+    if (['http:', 'https:'].includes(destination.protocol)) location.href = destination.href;
+  }));
+</script>

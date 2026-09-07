@@ -1,0 +1,32 @@
+---
+import BookLayout from './BookLayout.astro';
+import {content, createPage, navigation} from '../lib/site';
+import type {Heading} from '../lib/types';
+
+interface Props {
+  frontmatter?: {title?: string; description?: string};
+  title?: string;
+  description?: string;
+  headings?: Heading[];
+}
+
+const {frontmatter = {}, headings = []} = Astro.props;
+const title = Astro.props.title || frontmatter.title || 'Astro-book';
+const page = createPage({
+  id: Astro.url.pathname,
+  url: Astro.url.pathname,
+  title,
+  description: Astro.props.description || frontmatter.description || '',
+  section: 'lab',
+  type: 'lab',
+  headings,
+  params: {comments: false},
+});
+---
+
+<BookLayout page={page} navigation={navigation} tags={content.tags} categories={content.categories}>
+  <article class="markdown book-article">
+    <h1>{title}</h1>
+    <slot />
+  </article>
+</BookLayout>

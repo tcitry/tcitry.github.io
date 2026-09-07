@@ -1,0 +1,95 @@
+@reference "../../styles/tailwind.css";
+
+/* Only demo descendants receive the reset that HeroUI expects. */
+@layer base {
+  .surface,
+  .surface :where(*, ::before, ::after) {
+    @apply box-border border-0 border-solid;
+  }
+
+  .surface :where(button, input, select, textarea) {
+    @apply m-0 [font:inherit] appearance-none;
+  }
+
+  .surface :where(button) {
+    @apply bg-transparent;
+  }
+}
+
+/* Book's article heading rule must not restyle the disclosure's internal heading. */
+.surface :global(.accordion__heading) {
+  @apply m-0 p-0 text-sm font-normal;
+}
+
+.surface :global(.accordion__heading)::before {
+  @apply content-none;
+}
+
+/* HeroUI design-token bridge, local to each demo; layout is expressed with Tailwind. */
+.surface {
+  @apply min-w-0 [overflow-wrap:anywhere];
+  --radius: 0.5rem;
+  --field-radius: 0.625rem;
+  --border-width: 1px;
+  --border-width-field: 1px;
+  --spacing: 0.25rem;
+  --disabled-opacity: 0.5;
+  --cursor-interactive: pointer;
+  --cursor-disabled: not-allowed;
+  --ring-offset-width: 2px;
+  --background: var(--body-background, white);
+  --foreground: var(--body-font-color, #343a40);
+  --surface: var(--background);
+  --surface-foreground: var(--foreground);
+  --surface-secondary: var(--gray-100, #f8f9fa);
+  --surface-secondary-foreground: var(--foreground);
+  --surface-tertiary: color-mix(in srgb, var(--foreground) 8%, var(--background));
+  --surface-tertiary-foreground: var(--foreground);
+  --surface-hover: color-mix(in srgb, var(--foreground) 4%, var(--surface));
+  --overlay: var(--background);
+  --overlay-foreground: var(--foreground);
+  --default: var(--gray-200, #e9ecef);
+  --default-foreground: var(--foreground);
+  --muted: color-mix(in srgb, var(--foreground) 70%, var(--background));
+  --accent: var(--color-link, #0055bb);
+  --accent-foreground: var(--background);
+  --accent-hover: color-mix(in srgb, var(--accent) 85%, var(--foreground));
+  --default-hover: color-mix(in srgb, var(--default) 85%, var(--foreground));
+  --default-soft: color-mix(in srgb, var(--default) 50%, transparent);
+  --default-soft-foreground: var(--default-foreground);
+  --default-soft-hover: color-mix(in srgb, var(--default) 70%, transparent);
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --accent-soft-foreground: var(--accent);
+  --accent-soft-hover: color-mix(in srgb, var(--accent) 18%, transparent);
+  --border: color-mix(in srgb, var(--foreground) 18%, var(--background));
+  --separator: var(--gray-200, #e9ecef);
+  --focus: var(--accent);
+  --field-background: var(--surface);
+  --field-foreground: var(--foreground);
+  --field-placeholder: var(--muted);
+  --field-border: var(--border);
+  --field-hover: var(--surface-hover);
+  --field-focus: var(--surface);
+  --field-border-hover: color-mix(in srgb, var(--foreground) 30%, var(--background));
+  --field-border-focus: var(--accent);
+  --success: oklch(0.62 0.14 155);
+  --success-foreground: white;
+  --warning: oklch(0.67 0.14 70);
+  --warning-foreground: #241a07;
+  --danger: oklch(0.62 0.19 25);
+  --danger-foreground: white;
+  --success-soft: color-mix(in srgb, var(--success) 12%, transparent);
+  --success-soft-foreground: color-mix(in srgb, var(--success) 60%, var(--foreground));
+  --warning-soft: color-mix(in srgb, var(--warning) 12%, transparent);
+  --warning-soft-foreground: color-mix(in srgb, var(--warning) 60%, var(--foreground));
+  --danger-soft: color-mix(in srgb, var(--danger) 12%, transparent);
+  --danger-soft-foreground: color-mix(in srgb, var(--danger) 65%, var(--foreground));
+  --danger-soft-hover: color-mix(in srgb, var(--danger) 18%, transparent);
+  --surface-shadow: 0 1px 3px #0000000a;
+  --overlay-shadow: 0 8px 30px #00000024, 0 0 0 1px var(--border);
+  --field-shadow: 0 1px 2px #00000005;
+  --scrollbar-thumb: var(--border);
+  --scrollbar-track: transparent;
+  --scrollbar-width: thin;
+  --scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}

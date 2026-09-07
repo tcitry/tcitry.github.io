@@ -1,0 +1,10 @@
+---
+import AgentReplay from '../../components/demos/AgentReplay';
+import LabLayout from '../../layouts/LabLayout.astro';
+---
+
+<LabLayout title="Agent 消息回放" description="使用 React、HeroUI 与 HeroUI Pro 构建的本地交互演示。">
+  <p>这与 <a href="/lab/">Astro-book 演示页</a> 中嵌入的是同一个 React 组件。此页在加载后即可操作。</p>
+  <AgentReplay client:load />
+  <p>演示播放本地预设数据，没有调用 AI 模型或后端服务。</p>
+</LabLayout>

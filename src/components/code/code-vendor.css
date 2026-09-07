@@ -1,0 +1,4 @@
+/* Loaded with the shared code island, without HeroUI's global preflight. */
+@reference "../../styles/tailwind.css";
+@import "@heroui/styles/components/button.css" layer(components);
+@import "@heroui-pro/react/css/components/code-block.css" layer(components);

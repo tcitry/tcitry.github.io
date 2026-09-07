@@ -1,0 +1,30 @@
+---
+import type { PageView, ContentPage, TaxonomyTerm } from '../../lib/types';
+import HeadingTree from '@tcitry/astro-book/components/HeadingTree';
+import TermList from '@tcitry/astro-book/components/TermList';
+import LinkRows from './LinkRows.astro';
+import { byDate, dateText, displayDate, groups, headingTree, timelineBlocks } from './helpers';
+import { compareLegacyTitles } from '../../lib/site';
+interface Props { view: PageView; allPages: ContentPage[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[]; portfolio?: any[] }
+const { view, allPages, tags, categories } = Astro.props;
+const page = view.page;
+const regular = allPages.filter((item) => item.kind === 'page');
+const weeklies = byDate(regular.filter((item) => item.type === 'weekly' && dateText(item.date)));
+const timelines = byDate(regular.filter((item) => item.type === 'timeline' && dateText(item.date) >= '2000'));
+const timeline = page.kind === 'page' && page.layout !== 'list' && dateText(page.date) >= '2000' ? page : timelines[0];
+const listing = page.kind !== 'page' || ['list', 'modified'].includes(page.layout);
+const isCategory = page.section === 'categories' || page.url.startsWith('/categories/');
+const isTags = page.section === 'tags' || page.url.startsWith('/tags/');
+const showCategories = isCategory || page.kind === 'taxonomy' || page.url === '/archives/' || page.url === '/posts/';
+const countPages = regular.filter((item) => ['docs', 'posts', 'weekly'].includes(item.type) && dateText(item.date));
+const pagesById = new Map(allPages.map((item) => [item.id, item]));
+const termDate = (term: TaxonomyTerm) => Math.max(0, ...term.pageIds.map((id) => Date.parse(pagesById.get(id)?.date || '') || 0));
+const terms = [...(showCategories ? categories : tags)].sort((a, b) => termDate(b) - termDate(a) || compareLegacyTitles(a.name, b.name));
+---
+{page.type === 'timeline' || page.section === 'timeline' ? <nav><LinkRows items={timelineBlocks(timeline).map((block) => ({ href: `#${block.id}`, label: block.title }))} dateLinks /></nav>
+  : page.type === 'weekly' && page.kind === 'page' ? <nav><LinkRows items={weeklies.map((item) => ({ href: item.url, label: item.title, dateLabel: displayDate(item, 'month'), active: item.id === page.id }))} /></nav>
+  : page.type === 'links' && listing ? <nav><p class="text-[dimgray]">共 {view.entries.length} 篇转载，通过 <a href="/links/index.xml">RSS</a> 订阅</p><TermList items={groups(view.entries, 'month').map((group) => ({ href: `#${group.key}`, label: group.key, count: group.pages.length }))} /></nav>
+  : listing || isTags || isCategory ? <nav>
+    {showCategories && <p class="text-[dimgray]">共 {countPages.length} 篇，{countPages.reduce((sum, item) => sum + item.wordCount, 0)} 字</p>}
+    <TermList title={!showCategories ? 'Tags' : undefined} total={!showCategories ? tags.length : undefined} items={terms.map((term) => ({ href: term.url, label: term.name, count: term.pageIds.length, active: page.url === term.url }))} />
+  </nav> : <nav id="TableOfContents"><HeadingTree nodes={headingTree(page.headings)} /></nav>}

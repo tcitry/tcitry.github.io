@@ -1,0 +1,8 @@
+---
+import ThemePostRow from '@tcitry/astro-book/components/PostRow';
+import type { ContentPage, TaxonomyTerm } from '../../lib/types';
+import { articleItem } from './presentation';
+interface Props { page: ContentPage; tags: TaxonomyTerm[]; modified?: boolean; showSummary?: boolean; showBreadcrumb?: boolean }
+const { page, tags, ...options } = Astro.props;
+---
+<ThemePostRow item={articleItem(page, tags, options)} />

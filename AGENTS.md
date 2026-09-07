@@ -1,5 +1,13 @@
 # Repository Notes
 
+## Astro validation branch
+
+- `astro` contains the Astro migration. The current production/default branch is `master`; `hugo-book` preserves the committed Hugo source. Production promotion is a separate migration step.
+- Use `npm run setup` for a clean checkout to prepare the pinned `@tcitry/astro-book` package before installing the site's locked dependencies. The theme is maintained in its independent public repository; use its public exports rather than copying its implementation into this site.
+- `BLOG_DIR` is a read-only content source. Keep private content, generated files, credentials and installed commercial component code out of Git. React/HeroUI Pro demo wrappers belong to this site, not the public theme.
+- After theme or rendering changes, run the site's build, check, tests and verify commands. Preserve the legacy route baseline and Giscus pathname terms.
+- Astro Giscus configuration and page eligibility live in `src/layouts/BookLayout.astro`; the theme renders comments after footer navigation. The Hugo-specific paths below continue to apply to the Hugo implementation.
+
 ## Giscus comments
 
 - Inject Giscus from `layouts/partials/docs/inject/footer.html` so the footer's previous/next navigation stays above the comments. Keep `data-mapping="pathname"` unless an audited migration explicitly changes it.

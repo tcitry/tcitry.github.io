@@ -1,0 +1,45 @@
+import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { homedir } from 'node:os';
+import { fileURLToPath } from 'node:url';
+
+const root = fileURLToPath(new URL('../', import.meta.url));
+const blog = path.resolve(process.env.BLOG_DIR || path.join(homedir(), 'Blog'));
+const output = path.join(root, 'astro-public');
+const production = process.env.PUBLIC_SITE_ENV === 'production';
+await rm(output, { recursive: true, force: true });
+await mkdir(output, { recursive: true });
+const denied = /^(?:\.|private$|node_modules$)/i;
+async function copyTree(source, target) {
+  for (const entry of await readdir(source, { withFileTypes: true })) {
+    if (denied.test(entry.name) || entry.isSymbolicLink() || /^(?:CNAME|_index\.md)$/i.test(entry.name)) continue;
+    const from = path.join(source, entry.name), to = path.join(target, entry.name);
+    if (entry.isDirectory()) { await mkdir(to, { recursive: true }); await copyTree(from, to); }
+    else if (entry.isFile()) await cp(from, to);
+  }
+}
+await copyTree(path.join(root, 'static'), output);
+await mkdir(path.join(output, 'book-icons'), { recursive: true });
+const themeIcons = path.dirname(fileURLToPath(import.meta.resolve('@tcitry/astro-book/assets/menu.svg')));
+await copyTree(themeIcons, path.join(output, 'book-icons'));
+// Only explicitly publishable assets; never copy the private content checkout wholesale.
+const blogStatic = path.join(blog, 'static');
+for (const entry of await readdir(blogStatic, { withFileTypes: true })) {
+  if (entry.isSymbolicLink()) continue;
+  if (entry.isDirectory() && entry.name === 'demos') {
+    await mkdir(path.join(output, 'demos'), { recursive: true });
+    await copyTree(path.join(blogStatic, 'demos'), path.join(output, 'demos'));
+  } else if (entry.isFile() && /\.(?:avif|gif|ico|jpe?g|png|svg|webp|mp4|webm|mp3|ogg|pdf)$/i.test(entry.name)) {
+    await cp(path.join(blogStatic, entry.name), path.join(output, entry.name));
+  }
+}
+const attachments = JSON.parse(await readFile(path.join(root, '.generated/public-assets.json'), 'utf8'));
+for (const asset of attachments) {
+  const source = path.resolve(blog, asset.source), target = path.resolve(output, asset.target);
+  if (!source.startsWith(blog + path.sep) || !target.startsWith(output + path.sep)) throw new Error('Asset escapes its public root');
+  if (!(await stat(source)).isFile()) throw new Error('Public asset is not a regular file');
+  await mkdir(path.dirname(target), { recursive: true }); await cp(source, target);
+}
+await writeFile(path.join(output, 'robots.txt'), production ? 'User-agent: *\nAllow: /\nSitemap: https://yindongliang.com/sitemap.xml\n' : 'User-agent: *\nDisallow: /\n');
+await writeFile(path.join(output, '_headers'), `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n${production ? '' : '  X-Robots-Tag: noindex, nofollow\n'}\n/_astro/*\n  Cache-Control: public, max-age=31536000, immutable\n`);
+console.log('Prepared public assets, Book icons, existing demos and preview indexing policy.');
