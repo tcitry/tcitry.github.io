@@ -67,7 +67,7 @@ npm run verify
 - [预览与迁移验收](docs/astro-preview.md)：安装细节、主题升级、URL/评论兼容与已完成的检查。
 - [Demo 编写指南](docs/demo-authoring.md)：在 MDX 或独立页面中复用交互组件。
 - [持续部署方案](docs/continuous-deployment.md)：Astro 预览/生产分支、GitHub Actions 与 Workers Builds 的接入条件。
-- [主题使用指南](https://github.com/tcitry/astro-book/blob/main/README.zh-CN.md)：主题安装、公开 API、插槽与样式定制。
+- [主题使用指南（英文）](https://github.com/tcitry/astro-book/blob/main/README.md)：主题安装、公开 API、插槽与样式定制。
 
 验收入口包括 `/tags/`、`/categories/`、`/timeline/`、`/weekly/`、`/portfolio/`、`/links/`、`/lab/` 和 `/lab/agent-replay/`。顶部菜单中的 **Astro-book** 位于 **About** 之后，地址仍是 `/lab/`。侧栏不再显示最近修改列表，`/modified/` 页面继续保留。Giscus 保留原始 pathname 映射。
 

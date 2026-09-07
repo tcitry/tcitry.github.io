@@ -7,7 +7,7 @@
 
 第一阶段的演示文件都在站点仓库内，`Blog` 内容保持只读。Agent 演示仅播放本地预设数据，不调用模型或后端，也不收集输入。
 
-本站采用 Astro + `@tcitry/astro-book` + Tailwind CSS v4，并在 React 交互组件中使用 HeroUI。HeroUI Pro 是本站额外接入的商业组件；独立的公开主题不依赖 React、HeroUI 或 HeroUI Pro。主题本身的使用方式见 [中文 README](https://github.com/tcitry/astro-book/blob/main/README.zh-CN.md)、[入门指南](https://github.com/tcitry/astro-book/blob/main/docs/getting-started.md) 与 [公开 API](https://github.com/tcitry/astro-book/blob/main/docs/architecture.md)。
+本站采用 Astro + `@tcitry/astro-book` + Tailwind CSS v4，并在 React 交互组件中使用 HeroUI。HeroUI Pro 是本站额外接入的商业组件；独立的公开主题不依赖 React、HeroUI 或 HeroUI Pro。主题本身的使用方式见 [英文 README](https://github.com/tcitry/astro-book/blob/main/README.md)、[入门指南](https://github.com/tcitry/astro-book/blob/main/docs/getting-started.md) 与 [公开 API](https://github.com/tcitry/astro-book/blob/main/docs/architecture.md)。
 
 ## 主题与自定义页面
 
