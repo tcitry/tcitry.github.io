@@ -4,8 +4,8 @@ let library: Promise<typeof import('../components/search/SearchCommand')> | unde
 function initializeSearch() {
   cleanup?.();
   const host = document.querySelector<HTMLElement>('[data-blog-search-root]');
-  const triggers = [...document.querySelectorAll<HTMLButtonElement>('[data-blog-search-trigger]')];
-  if (!host || !triggers.length) return;
+  const triggers = () => [...document.querySelectorAll<HTMLButtonElement>('[data-blog-search-trigger]')];
+  if (!host) return;
   const mountHost = host;
   const events = new AbortController();
   let mount: ReturnType<typeof import('../components/search/SearchCommand')['mountSearchCommand']> | undefined;
@@ -19,7 +19,7 @@ function initializeSearch() {
     opened = false;
     const request = generation;
     const target = previousFocus !== document.body && previousFocus?.isConnected && previousFocus.getClientRects().length
-      ? previousFocus : triggers.find((trigger) => trigger.getClientRects().length);
+      ? previousFocus : triggers().find((trigger) => trigger.getClientRects().length);
     cancelAnimationFrame(focusFrame);
     focusFrame = requestAnimationFrame(() => {
       if (!events.signal.aborted && !opened && generation === request) target?.focus({preventScroll: true});
@@ -29,7 +29,7 @@ function initializeSearch() {
   function close() {
     generation++;
     opened = false;
-    triggers.forEach((trigger) => trigger.removeAttribute('aria-busy'));
+    triggers().forEach((trigger) => trigger.removeAttribute('aria-busy'));
     if (mount) mount.close();
     else restoreFocus();
   }
@@ -41,7 +41,7 @@ function initializeSearch() {
     previousFocus = trigger ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     const request = ++generation;
     errors.forEach((error) => { error.hidden = true; });
-    triggers.forEach((button) => button.setAttribute('aria-busy', 'true'));
+    triggers().forEach((button) => button.setAttribute('aria-busy', 'true'));
     try {
       if (import.meta.env.DEV) await import('@vitejs/plugin-react/preamble');
       library ??= import('../components/search/SearchCommand');
@@ -56,11 +56,20 @@ function initializeSearch() {
       errors.forEach((message) => { message.hidden = false; });
       if (import.meta.env.DEV) console.error('[blog-search] Could not open search.', error);
     } finally {
-      if (request === generation) triggers.forEach((button) => button.removeAttribute('aria-busy'));
+      if (request === generation) triggers().forEach((button) => button.removeAttribute('aria-busy'));
     }
   }
 
-  triggers.forEach((trigger) => trigger.addEventListener('click', () => void open(trigger), {signal: events.signal}));
+  // Resolve the live trigger before React Aria consumes its bubbling click.
+  document.addEventListener('click', (event) => {
+    const trigger = event.target instanceof Element ? event.target.closest<HTMLElement>('[data-blog-search-trigger]') : null;
+    if (trigger) void open(trigger);
+  }, {signal: events.signal, capture: true});
+  // React Aria normalizes keyboard presses (including Space) without a native click.
+  document.addEventListener('blog:open-search', (event) => {
+    const trigger = event instanceof CustomEvent && event.detail instanceof HTMLElement ? event.detail : undefined;
+    void open(trigger);
+  }, {signal: events.signal});
   document.addEventListener('keydown', (event) => {
     if (event.isComposing || event.keyCode === 229 || event.defaultPrevented
       || (event.target instanceof Element && event.target.closest('[data-search-composing="true"]'))) return;
@@ -78,7 +87,7 @@ function initializeSearch() {
 
   cleanup = () => {
     events.abort(); generation++; cancelAnimationFrame(focusFrame); mount?.destroy();
-    triggers.forEach((trigger) => trigger.removeAttribute('aria-busy'));
+    triggers().forEach((trigger) => trigger.removeAttribute('aria-busy'));
   };
 }
 

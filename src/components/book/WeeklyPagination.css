@@ -1,0 +1,39 @@
+@reference "../../styles/tailwind.css";
+
+/* The theme's home pager also uses .pagination; keep HeroUI's CSS inside Weekly. */
+@scope ([data-weekly-pagination]) {
+  @import "@heroui/styles/components/pagination.css";
+}
+
+[data-weekly-pagination] {
+  --spacing: 0.25rem;
+  --default: var(--gray-200);
+  --default-foreground: var(--body-font-color);
+  --default-hover: color-mix(in srgb, var(--body-font-color) 13%, var(--body-background));
+  --muted: color-mix(in srgb, var(--body-font-color) 60%, var(--body-background));
+  --focus: var(--color-link);
+  --disabled-opacity: 0.4;
+  --cursor-interactive: pointer;
+  --cursor-disabled: not-allowed;
+  --ring-offset-width: 2px;
+  margin-block: 2rem;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-weekly-pagination] .pagination__content {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-self: center;
+}
+
+/* Book's unlayered link color and the browser button border need a local reset. */
+[data-weekly-pagination] .pagination__link {
+  flex: none;
+  border: 0;
+  color: var(--pagination-link-fg);
+  text-decoration: none;
+}

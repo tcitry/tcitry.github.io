@@ -62,7 +62,8 @@ async function renderFrames(page) {
 }
 
 async function openCommand(page, trigger, state = 'recent') {
-  assert.equal(await trigger.locator('span').innerText(), 'Search');
+  assert.equal(await trigger.getAttribute('aria-label'), '搜索博客');
+  assert.match(await trigger.innerText(), /Search/);
   await trigger.click();
   await page.locator(selectors.command).waitFor({ state: 'visible' });
   assert.equal(await page.locator(selectors.command).getAttribute('aria-label'), '搜索博客');

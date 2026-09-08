@@ -1,22 +1,28 @@
 .search { margin-block: 0.5rem 1rem; }
-.trigger {
+.tools[data-sidebar-tools] {
   display: flex;
-  width: 100%;
-  min-height: 2.75rem;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.625rem 0.75rem;
-  border: 1px solid var(--gray-200);
-  border-radius: 0.5rem;
-  background: var(--gray-100);
-  color: var(--body-font-color);
-  font: inherit;
-  cursor: pointer;
+  gap: 0.25rem;
+  --radius-3xl: 0.5rem;
 }
-.trigger:hover { border-color: var(--color-link); }
-.trigger:focus-visible { outline: 2px solid var(--color-link); outline-offset: 2px; }
+.trigger {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
+  padding-inline: 0.25rem;
+}
+.trigger, .appearance { transition: none; }
+.appearance { flex-shrink: 0; }
 .trigger[aria-busy="true"] { cursor: progress; }
-.trigger kbd { font: inherit; font-size: 0.6875rem; white-space: nowrap; opacity: 0.7; }
+.shortcut { margin-inline-start: auto; padding: 0; font-size: 0.75rem; }
+.themeMenu[data-blog-theme-popover] {
+  min-width: 10rem;
+  max-width: calc(100vw - 2rem);
+  --radius-3xl: 0.75rem;
+  --radius-2xl: 0.5rem;
+  z-index: 1100;
+}
+.tooltip { z-index: 1100; }
+@media (hover: none) { .shortcut { display: none; } }
 .error, .hint { font-size: 0.75rem; line-height: 1.5; }
 .error { color: var(--body-font-color); }

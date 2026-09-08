@@ -1,15 +1,14 @@
 ---
 import type {SearchConfig} from '@tcitry/astro-book/types';
 import styles from './BlogSearch.module.css';
+import SidebarTools from './SidebarTools';
 
 interface Props { config?: SearchConfig; part?: 'trigger' | 'dialog'; label?: string }
 const {part = 'trigger', label = '搜索博客'} = Astro.props;
 ---
 
 {part === 'trigger' ? <div class={styles.search} data-pagefind-ignore>
-  <button type="button" class={styles.trigger} data-blog-search-trigger aria-haspopup="dialog" aria-label={label} aria-keyshortcuts="Meta+K Control+K">
-    <span>Search</span><kbd aria-hidden="true">⌘ / Ctrl K</kbd>
-  </button>
+  <SidebarTools label={label} client:load />
   <p class={styles.error} data-blog-search-error role="alert" hidden>搜索暂时无法打开，请再次点击重试。</p>
   <noscript><p class={styles.hint}>搜索需要启用 JavaScript。也可以<a href="/archives/">浏览归档</a>。</p></noscript>
 </div> : <div data-blog-search-root data-pagefind-ignore></div>}

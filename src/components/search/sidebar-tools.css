@@ -1,0 +1,7 @@
+@reference "../../styles/tailwind.css";
+@import "tw-animate-css";
+@import "@heroui/styles/components/button.css" layer(components);
+@import "@heroui/styles/components/dropdown.css" layer(components);
+@import "@heroui/styles/components/menu-item.css" layer(components);
+@import "@heroui/styles/components/tooltip.css" layer(components);
+@import "@heroui/styles/components/kbd.css" layer(components);
