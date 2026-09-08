@@ -111,9 +111,17 @@ function initializeChat() {
     if (element.closest('[data-chat-retry]')) void loadChat();
   }, {signal});
   panel.addEventListener('cancel', (event) => { event.preventDefault(); close(); }, {signal});
+  // A tooltip inside the assistant must not consume the first Escape. Preserve
+  // the normal overlay priority when keyboard focus is elsewhere on the page.
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !event.isComposing && panel.open && event.target instanceof Node && panel.contains(event.target)) {
+      event.preventDefault();
+      close();
+    }
+  }, {capture: true, signal});
   // The native dialog keeps content mounted when closed, and contains focus on mobile.
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && panel.open && !event.defaultPrevented) {
+    if (event.key === 'Escape' && !event.isComposing && panel.open && !event.defaultPrevented) {
       event.preventDefault();
       close();
     }

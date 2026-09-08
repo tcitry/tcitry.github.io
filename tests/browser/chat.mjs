@@ -158,7 +158,16 @@ async function assertMobilePanel(page) {
       const dialog = document.getElementById('blog-chat-panel');
       return dialog?.contains(document.activeElement)
         || (!document.hasFocus() && document.activeElement === document.body);
-    }, undefined, {timeout: 1000, polling: 25});
+    }, undefined, {timeout: 1000, polling: 25}).catch(async (error) => {
+      console.error('Mobile focus state:', await page.evaluate(() => ({
+        tag: document.activeElement?.tagName,
+        role: document.activeElement?.getAttribute('role'),
+        label: document.activeElement?.getAttribute('aria-label'),
+        focused: document.hasFocus(),
+        modal: document.querySelector('#blog-chat-panel')?.matches(':modal'),
+      })));
+      throw error;
+    });
   }
   await close.focus();
   await assertFits(page, '375px modal');
@@ -178,14 +187,15 @@ try {
   assert.equal(await launcher(page).count(), 1, 'The page has one native chat launcher');
   assert.equal(await launcher(page).getAttribute('aria-expanded'), 'false');
   assert.notEqual(await panel(page).getAttribute('data-chat-loaded'), 'true', 'Chat module has not loaded before the first open');
-  assert.equal(await page.locator('astro-island').count(), 0, 'The guide page has no eager React island');
+  const existingIslands = await page.locator('astro-island').count();
+  assert.equal(await page.locator('astro-island[component-url*="chat"]').count(), 0, 'Chat has no eager island alongside the site navigation');
   assert.equal(await page.locator('[data-chat-hydrated]').count(), 0, 'Chat is not mounted before the first open');
-  assert.equal(await page.evaluate(() => window.__chatReactRenderers), 0, 'React is not initialized before the first open');
+  assert.equal(await page.evaluate(() => performance.getEntriesByType('resource').some(({name}) => /\/(?:_astro\/mount-chat\.[^/]+\.js|src\/components\/chat\/mount-chat\.tsx)$/.test(new URL(name).pathname))), false, 'Chat code stays unloaded even when navigation already uses React');
   assert.equal(await page.locator('aside a[href], nav a[href]').evaluateAll((links) => links.filter((link) => new URL(link.getAttribute('href'), location.href).pathname === '/chat/').length), 0, 'Chat has no sidebar navigation link');
   const originalReadingWidth = (await page.locator('body > main').boundingBox()).width;
   const root = await openChat(page);
-  assert.ok(await page.evaluate(() => window.__chatReactRenderers > 0), 'Opening lazily initializes the React renderer');
-  assert.equal(await page.locator('astro-island').count(), 0, 'Chat mounts directly without an Astro island');
+  assert.ok(await page.evaluate(() => window.__chatReactRenderers > 0), 'Opening has a React renderer available for chat');
+  assert.equal(await page.locator('astro-island').count(), existingIslands, 'Chat mounts directly without adding an Astro island');
   const desktopBounds = await panel(page).boundingBox();
   assert.ok(desktopBounds && Math.abs(desktopBounds.width - 440) <= 2, 'Wide desktop sidebar is 440px wide');
   await assertSidebarLayout(page, originalReadingWidth);

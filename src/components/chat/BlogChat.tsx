@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useRef, useState} from 'react';
 import type {Components} from 'react-markdown';
-import {Button} from '@heroui/react';
+import {Button, Tooltip} from '@heroui/react';
 import {ChatConversation} from '@heroui-pro/react/chat-conversation';
 import {ChatLoader} from '@heroui-pro/react/chat-loader';
 import {ChatMessage} from '@heroui-pro/react/chat-message';
@@ -117,7 +117,7 @@ function Answer({message}: {message: Message}) {
   return (
     <ChatMessage.Assistant className="blog-chat__assistant" data-message-state={message.state}>
       <ChatMessage.Body className="blog-chat__body">
-        <div className="blog-chat__author">博客助手</div>
+        <div className="blog-chat__sr-only">博客助手</div>
         {message.content && <ChatMessage.Content>
           <Markdown id={message.id} components={components} className="blog-chat__answer">{message.content}</Markdown>
         </ChatMessage.Content>}
@@ -156,7 +156,9 @@ export default function BlogChat({onClose, onReady}: {onClose: () => void; onRea
   const [announcement, setAnnouncement] = useState('输入问题，开始查阅博客。');
   const controller = useRef<AbortController | null>(null);
   const input = useRef<HTMLTextAreaElement>(null);
+  const chatRoot = useRef<HTMLElement>(null);
   const busy = status === 'submitted' || status === 'streaming';
+  const conversationTitle = messages.find((message) => message.role === 'user')?.content.replace(/\s+/g, ' ') || '博客助手';
 
   useEffect(() => {
     setHydrated(true);
@@ -281,14 +283,22 @@ export default function BlogChat({onClose, onReady}: {onClose: () => void; onRea
   }
 
   return (
-    <section className={`${surface.surface} blog-chat not-prose`} aria-label="与博客助手对话" data-chat-hydrated={hydrated} data-chat-status={status}>
+    <section ref={chatRoot} className={`${surface.surface} blog-chat not-prose`} aria-label="与博客助手对话" data-chat-hydrated={hydrated} data-chat-status={status}>
       <div className="blog-chat__header">
-        <div className="blog-chat__identity"><strong>博客助手</strong><span>公开文章 · 附原文出处</span></div>
+        <div className="blog-chat__identity" title={conversationTitle}>{conversationTitle}</div>
         <div className="blog-chat__header-actions">
-          <Button variant="ghost" size="sm" onPress={reset} isDisabled={!hydrated || busy || !messages.length}>新对话</Button>
-          <Button variant="ghost" isIconOnly onPress={onClose} aria-label="关闭博客助手">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
-          </Button>
+          <Tooltip delay={400}>
+            <Button variant="ghost" size="sm" isIconOnly onPress={reset} isDisabled={!hydrated || busy || !messages.length} aria-label="新对话">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+            </Button>
+            <Tooltip.Content className="blog-chat__tooltip" placement="bottom" UNSTABLE_portalContainer={chatRoot.current ?? undefined}>新对话</Tooltip.Content>
+          </Tooltip>
+          <Tooltip delay={400}>
+            <Button variant="ghost" size="sm" isIconOnly onPress={onClose} aria-label="关闭博客助手">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
+            </Button>
+            <Tooltip.Content className="blog-chat__tooltip" placement="bottom" UNSTABLE_portalContainer={chatRoot.current ?? undefined}>关闭博客助手</Tooltip.Content>
+          </Tooltip>
         </div>
       </div>
       <ChatConversation className="blog-chat__conversation" role="region" aria-label="对话记录" tabIndex={0}>
@@ -309,15 +319,20 @@ export default function BlogChat({onClose, onReady}: {onClose: () => void; onRea
         <ChatConversation.ScrollButton aria-label="回到最新回答" tooltip={false} />
       </ChatConversation>
       <div className="blog-chat__composer">
-        <div className="blog-chat__status" role="status" aria-live="polite" aria-atomic="true">{announcement}</div>
+        <div className="blog-chat__sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</div>
         <PromptInput value={value} onValueChange={setValue} status={status} onSubmit={submit} onStop={() => controller.current?.abort()} isDisabled={!hydrated} maxHeight={160}>
           <PromptInput.Shell>
             <PromptInput.Content>
-              <PromptInput.TextArea ref={input} aria-label="向博客助手提问" placeholder="关于博客内容，你想了解什么？" maxLength={MAX_INPUT} aria-describedby="blog-chat-input-help" />
+              <PromptInput.TextArea ref={input} aria-label="向博客助手提问" placeholder="向博客助手提问…" maxLength={MAX_INPUT} aria-describedby="blog-chat-input-help" />
             </PromptInput.Content>
             <PromptInput.Toolbar>
-              <PromptInput.ToolbarStart><span className="blog-chat__input-help" id="blog-chat-input-help">{retryAfter ? `${retryAfter} 秒后可以重试` : `${value.length} / ${MAX_INPUT}`}</span></PromptInput.ToolbarStart>
-              <PromptInput.ToolbarEnd><PromptInput.Send aria-label={busy ? '停止生成' : '发送问题'} isDisabled={!busy && (retryAfter > 0 || !value.trim())} /></PromptInput.ToolbarEnd>
+              <PromptInput.ToolbarStart><span className="blog-chat__input-help" id="blog-chat-input-help">{retryAfter ? `${retryAfter} 秒后可以重试` : value.length ? `${value.length} / ${MAX_INPUT}` : '搜索博客文章'}</span></PromptInput.ToolbarStart>
+              <PromptInput.ToolbarEnd>
+                <Tooltip delay={400}>
+                  <PromptInput.Send aria-label={busy ? '停止生成' : '发送问题'} isDisabled={!busy && (retryAfter > 0 || !value.trim())} />
+                  <Tooltip.Content className="blog-chat__tooltip" placement="top" UNSTABLE_portalContainer={chatRoot.current ?? undefined}>{busy ? '停止生成' : '发送问题'}</Tooltip.Content>
+                </Tooltip>
+              </PromptInput.ToolbarEnd>
             </PromptInput.Toolbar>
           </PromptInput.Shell>
           <PromptInput.Footer>回答请以原文为准 · 对话仅保留在当前页面</PromptInput.Footer>

@@ -65,7 +65,7 @@
   border: 0;
   border-left: 1px solid color-mix(in srgb, var(--chat-fg) 14%, transparent);
   border-radius: 0;
-  background: var(--chat-bg);
+  background: color-mix(in srgb, var(--chat-fg) 4%, var(--chat-bg));
   color: var(--chat-fg);
   overflow: hidden;
   overscroll-behavior: contain;
@@ -73,11 +73,12 @@
 .blog-chat-widget__panel[open] { display: flex; animation: blog-chat-sidebar-enter 220ms ease-out; }
 @keyframes blog-chat-sidebar-enter { from { transform: translateX(100%); } to { transform: translateX(0); } }
 .blog-chat-widget__mount { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 0; }
-.blog-chat-widget__loading-header { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1rem; }
+.blog-chat-widget__loading-header { display: flex; align-items: center; justify-content: space-between; min-height: 3.5rem; padding: .25rem .75rem .25rem 1.25rem; font-size: .875rem; }
+.blog-chat-widget__loading-header strong { font-weight: 500; }
 .blog-chat-widget__close { width: 2.75rem; height: 2.75rem; border: 0; border-radius: .625rem; color: inherit; background: transparent; font-size: 1.5rem; cursor: pointer; }
 .blog-chat-widget__loading { margin: auto; padding: 1.5rem; text-align: center; font-size: .875rem; }
 .blog-chat-widget__loading button { margin-top: 1rem; min-height: 2.75rem; padding: .5rem 1rem; background: var(--chat-accent); color: var(--chat-bg); border: 0; border-radius: .625rem; cursor: pointer; }
-html.blog-chat-modal-open { overflow: hidden; }
+html.blog-chat-modal-open { overflow: hidden; scrollbar-gutter: auto; }
 
 /* Reserve real reading space beside the docked panel. Public theme classes and
    width tokens remain the integration boundary; article max widths stay shared. */

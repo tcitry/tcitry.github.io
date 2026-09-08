@@ -23,6 +23,7 @@
 - Posts 的“相关阅读”属于文末推荐，不加入桌面或移动端文章 TOC；文章目录只展示正文结构。
 - Weekly 列表每页显示 40 期，桌面 4 列时每页 10 行，使用 HeroUI Pagination，保留可在无 JavaScript 时导航的真实页面链接；首页为 `/weekly/`，后续页使用 `/weekly/page/<页码>/`，各页继续按日期倒序排列。
 - 侧栏搜索使用明确的 Command 触发按钮，与外观菜单并排放在品牌下方。按 HeroUI design taste 与站点中性色统一尺寸、对齐和交互；外观保留跟随系统、浅色和深色三种模式，图标按钮提供 Tooltip、可访问名称与当前选中状态。
+- 博客助手的 AI Chat 侧边栏样式参考用户提供的 HeroUI Agents demos，使用现有 HeroUI Pro 聊天组件，保持紧凑的单行顶部栏、中性背景与用户气泡、底部圆角输入框和清楚的文章出处。操作入口只展示已实现的能力，不因参考图包含附件、模型选择或语音控件就添加无效按钮。
 - 空正文栏目入口由 `scripts/site-pages.mjs` 维护，Blog 不再需要 `archives.md`、`ghstar.md`、`modified.md`、`portfolio.md`、`timeline.md` 占位；栏目 URL 与既有元数据继续保持兼容。
 - 修改主题或渲染后，运行站点 build、check、tests 和 verify；生产验收使用对应的 production 命令。保持旧 URL 基线和 Giscus pathname term。
 - 生产发布使用独立检出、独立依赖与缓存、独立 `dist/`，内容固定到已审查提交。不得从其他任务仍可能构建的共享工作区发布；`verify:release` 校验生产产物并记录来源与哈希，`deploy:verified` 只上传该份已验收产物；Wrangler 上传期间不能重建或改写资产目录。发现产物被并行改写时，中止上传，确认线上版本，再从独立目录重建、复验和发布。
