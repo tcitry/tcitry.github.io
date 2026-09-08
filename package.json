@@ -17,6 +17,7 @@
     "build:production": "PUBLIC_SITE_ENV=production npm run build",
     "build:workers": "node scripts/workers-build.mjs",
     "preview": "astro preview --host 127.0.0.1",
+    "preview:chat": "node scripts/preview-chat.mjs",
     "check": "astro check",
     "test": "node --test tests/*.test.mjs",
     "test:browser": "node tests/browser/reading.mjs && node tests/browser/related-posts.mjs && node tests/browser/search.mjs",
