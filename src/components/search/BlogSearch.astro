@@ -8,7 +8,7 @@ const {part = 'trigger', label = '搜索博客'} = Astro.props;
 
 {part === 'trigger' ? <div class={styles.search} data-pagefind-ignore>
   <button type="button" class={styles.trigger} data-blog-search-trigger aria-haspopup="dialog" aria-label={label} aria-keyshortcuts="Meta+K Control+K">
-    <span>search</span><kbd aria-hidden="true">⌘ / Ctrl K</kbd>
+    <span>Search</span><kbd aria-hidden="true">⌘ / Ctrl K</kbd>
   </button>
   <p class={styles.error} data-blog-search-error role="alert" hidden>搜索暂时无法打开，请再次点击重试。</p>
   <noscript><p class={styles.hint}>搜索需要启用 JavaScript。也可以<a href="/archives/">浏览归档</a>。</p></noscript>

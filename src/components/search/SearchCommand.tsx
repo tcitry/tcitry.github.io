@@ -160,7 +160,7 @@ function SearchCommand({onClose}: Props) {
             </Command.InputGroup.Prefix>
             <Command.InputGroup.Input
               aria-label="搜索博客"
-              placeholder="search"
+              placeholder="Search"
               enterKeyHint="search"
               autoComplete="off"
               className={styles.input}
