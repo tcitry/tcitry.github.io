@@ -40,7 +40,7 @@ export default function SidebarTools({label = '搜索博客'}: {label?: string})
   const themeLabel = `外观：${themes.find(({id}) => id === theme)!.label}`;
 
   return <div className={`${surfaceStyles.surface} ${styles.tools}`} data-sidebar-tools data-book-island>
-    <Button variant="ghost" className={styles.trigger} data-blog-search-trigger
+    <Button variant="tertiary" className={styles.trigger} data-blog-search-trigger
       aria-haspopup="dialog" aria-label={label}
       onPress={({target}) => document.dispatchEvent(new CustomEvent('blog:open-search', {detail: target}))}
       render={(props) => <button {...props} aria-keyshortcuts="Meta+K Control+K" />}>
@@ -48,7 +48,7 @@ export default function SidebarTools({label = '搜索博客'}: {label?: string})
         <circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" />
       </svg>
       <span>Search</span>
-      <Kbd variant="light" className={styles.shortcut} aria-hidden="true">
+      <Kbd className={styles.shortcut} aria-hidden="true">
         <Kbd.Abbr keyValue={modifier} /><Kbd.Content>K</Kbd.Content>
       </Kbd>
     </Button>
