@@ -308,6 +308,37 @@ try {
     await stableCanvas(canvas, `${width}px resize`);
     if (screenshots) await page.screenshot({ path: join(screenshots, `threejs-basics-${width}.png`), fullPage: true });
   }
+  await page.goto(new URL('/docs/Frontend/Tooling/threejs-and-blender-guide/', base).href);
+  const embed = page.locator('iframe[src="/demos/2026/threejs-basics/"]');
+  await embed.scrollIntoViewIfNeeded();
+  const embedded = page.frameLocator('iframe[src="/demos/2026/threejs-basics/"]');
+  await embedded.locator('[data-state="ready"]').waitFor();
+  async function assertEmbedFits(label) {
+    await page.waitForFunction(() => {
+      const frame = document.querySelector('iframe[src="/demos/2026/threejs-basics/"]');
+      const main = frame?.contentDocument?.querySelector('main');
+      return main && Math.abs(frame.clientHeight - main.getBoundingClientRect().height) <= 1;
+    });
+    assert.ok(await embedded.locator('html').evaluate((html) => html.scrollWidth <= innerWidth + 1), `${label}: embed has no horizontal overflow`);
+    assert.equal(await embedded.locator('astro-dev-toolbar').isVisible(), false, `${label}: embedded dev toolbar is hidden`);
+  }
+  for (const width of [1920, 1440, 375]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await assertEmbedFits(`${width}px collapsed`);
+    const collapsed = await embed.evaluate((frame) => frame.clientHeight);
+    const toggle = embedded.getByRole('button', { name: '查看对应代码', exact: true });
+    await toggle.click();
+    await embedded.locator('pre code').waitFor();
+    await assertEmbedFits(`${width}px expanded`);
+    assert.ok(await embed.evaluate((frame) => frame.clientHeight) > collapsed, 'Expanded code grows the iframe');
+    await toggle.click();
+    await page.waitForFunction((height) => {
+      const frame = document.querySelector('iframe[src="/demos/2026/threejs-basics/"]');
+      return Math.abs(frame.clientHeight - height) <= 1;
+    }, collapsed);
+    await assertEmbedFits(`${width}px collapsed again`);
+    if (screenshots) await embed.screenshot({ path: join(screenshots, `threejs-embed-${width}.png`) });
+  }
   await context.close();
 
   const fallbackContext = await createContext();

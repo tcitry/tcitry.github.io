@@ -3,3 +3,29 @@ import ThreeBasicsView from './ThreeBasicsView';
 ---
 
 <ThreeBasicsView client:load />
+
+<script>
+  // Same-origin article embeds follow the content, including disclosure animations.
+  // Measure main, not document scrollHeight: the latter cannot shrink below the
+  // iframe viewport and would preserve the article's fallback height forever.
+  // frameElement belongs to the parent realm, so child-window instanceof fails.
+  const frame = window.frameElement as HTMLIFrameElement | null;
+  const main = document.querySelector<HTMLElement>('[data-demo="threejs-basics"] main');
+  if (frame?.tagName === 'IFRAME' && main) {
+    document.documentElement.dataset.embeddedDemo = 'true';
+    const resize = () => {
+      const style = getComputedStyle(frame);
+      const borders = style.boxSizing === 'border-box'
+        ? parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth) : 0;
+      frame.style.height = `${Math.ceil(main.getBoundingClientRect().height + borders)}px`;
+    };
+    const observer = new ResizeObserver(resize);
+    observer.observe(main);
+    resize();
+    window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
+  }
+</script>
+
+<style is:global>
+  html[data-embedded-demo="true"] astro-dev-toolbar { display: none; }
+</style>
