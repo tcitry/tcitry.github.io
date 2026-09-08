@@ -4,11 +4,21 @@
   --book-content-without-toc-max-width: var(--book-content-max-width);
 }
 
-/* Every Book page uses the article column, including pages without a TOC. */
+/* Weekly indexes use the space that their disabled TOC would otherwise reserve. */
+.site:global(.book-kind-section.book-type-weekly) {
+  --book-content-without-toc-max-width: calc(var(--book-content-max-width) + var(--book-toc-width));
+}
+
+/* Other Book pages keep the article column, including pages without a TOC. */
 @media screen and (width > 64rem) {
   .site > main > :global(.book-page) {
     flex-grow: 0;
     flex-basis: calc(100% - var(--book-menu-width) - var(--book-toc-width));
+  }
+
+  .site:global(.book-kind-section.book-type-weekly) > main > :global(.book-page) {
+    flex-grow: 1;
+    flex-basis: calc(100% - var(--book-menu-width));
   }
 }
 

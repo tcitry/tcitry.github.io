@@ -18,7 +18,7 @@
 - 首次检出使用 `npm run setup`，先准备固定提交的 `@tcitry/astro-book` 包，再安装站点锁定依赖。主题在独立公开仓库维护，使用公开导出，不把主题实现复制到本站。
 - `BLOG_DIR` 是只读内容源。私有内容、生成文件、凭据和安装后的商业组件源码不得进入 Git。React / HeroUI Pro demo 包装组件属于本站，不属于公开主题。
 - 主题默认使用 Astro 自带的 Shiki 与小型复制功能；本站继续通过关闭与替换接口使用 HeroUI Pro CodeBlock。不得因主题简化而把本站代码块改回主题默认展示。
-- 全站正文宽度以 posts 文章详情页为统一基准。Archives、Tags、Categories、Timeline、Weekly、Portfolio、Links 等索引或业务页面不单独启用宽页布局；没有右侧目录时也不扩大正文列。调整后核对桌面实际宽度与移动端溢出。
+- 全站正文宽度以 posts 文章详情页为统一基准。Archives、Tags、Categories、Timeline、Portfolio、Links 等索引或业务页面不单独启用宽页布局；没有右侧目录时也不扩大正文列。Weekly 列表及分页是用户明确指定的例外：不保留右侧 TOC 空白，卡片在足够宽的桌面内容区域显示 4 列，较窄区域依次为 2 列、1 列；单篇 Weekly 正文继续使用统一文章宽度。调整后核对桌面实际宽度与移动端溢出。
 - Posts 的“相关阅读”属于文末推荐，不加入桌面或移动端文章 TOC；文章目录只展示正文结构。
 - 空正文栏目入口由 `scripts/site-pages.mjs` 维护，Blog 不再需要 `archives.md`、`ghstar.md`、`modified.md`、`portfolio.md`、`timeline.md` 占位；栏目 URL 与既有元数据继续保持兼容。
 - 修改主题或渲染后，运行站点 build、check、tests 和 verify；生产验收使用对应的 production 命令。保持旧 URL 基线和 Giscus pathname term。
