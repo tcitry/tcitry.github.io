@@ -35,21 +35,73 @@ async function assertGeometry(page, width) {
     const rect = (node) => {const box = node.getBoundingClientRect(); return {left: box.left, right: box.right, top: box.top, bottom: box.bottom, width: box.width, height: box.height, centerX: box.left + box.width / 2};};
     return {
       pageOverflow: document.documentElement.scrollWidth - innerWidth,
+      article: rect(root.closest('.book-article')),
+      collection: rect(root.closest('[data-content-collection="timeline"]')),
       root: rect(root),
       items: [...root.querySelectorAll(':scope > .timeline__item')].map((item) => {
         const marker = item.querySelector('.timeline__marker');
         const connector = item.querySelector('.timeline__connector');
-        return {marker: rect(marker), date: rect(item.querySelector('h2')), connector: connector && getComputedStyle(connector).display !== 'none' ? rect(connector) : null};
+        const meta = item.querySelector('[data-timeline-meta]');
+        const body = item.querySelector('[data-timeline-body]');
+        const date = meta.querySelector('h2');
+        const linksOnly = item.getAttribute('data-timeline-links-only') === 'true';
+        return {
+          id: item.id,
+          event: rect(item),
+          linksOnly,
+          links: linksOnly ? [...body.querySelectorAll('a[href]')]
+            .filter((anchor) => /^https?:\/\//i.test(anchor.getAttribute('href')))
+            .map((anchor) => ({...rect(anchor), pointerEvents: getComputedStyle(anchor).pointerEvents})) : [],
+          marker: rect(marker),
+          icon: rect(marker.querySelector('svg')),
+          meta: rect(meta),
+          metaText: meta.innerText.trim(),
+          dateText: date.innerText.trim(),
+          metaChipCount: meta.querySelectorAll('.chip').length,
+          body: rect(body),
+          bodyCardCount: body.querySelectorAll('.card').length,
+          date: rect(date),
+          dateLineHeight: parseFloat(getComputedStyle(date).lineHeight),
+          connector: connector && getComputedStyle(connector).display !== 'none' ? rect(connector) : null,
+        };
       }),
     };
   });
   assert.ok(layout.pageOverflow <= 1, `${width}px: page has no horizontal overflow`);
+  aligned(layout.collection.width, layout.article.width, 'Timeline preserves the full article width');
+  aligned(layout.collection.left, layout.article.left, 'Timeline begins at the article edge');
+  aligned(layout.root.width, layout.collection.width, 'Split Content does not inherit the narrow demo width');
+  assert.ok(layout.items.some((item) => item.linksOnly), 'The newest Timeline exercises the compact link-only layout');
+  const split = layout.collection.width >= 576;
   for (const [index, item] of layout.items.entries()) {
-    assert.ok(item.marker.width >= 20 && item.marker.width <= 36, 'The native Timeline marker remains visible at a readable size');
+    aligned(item.marker.width, 22, 'Small native Timeline markers stay 22px wide');
     aligned(item.marker.width, item.marker.height, 'Timeline markers stay circular');
+    assert.ok(item.icon.width > 0 && item.icon.height > 0, 'Every Timeline marker has a visible SVG icon');
+    assert.ok(item.icon.width < item.marker.width && item.icon.height < item.marker.height, 'Icons fit inside their markers');
     aligned(item.marker.centerX, layout.items[0].marker.centerX, 'The chronology rail stays on one axis');
     aligned(item.marker.top + item.marker.height / 2, item.date.top + item.date.height / 2, 'Date and marker share a visual center');
+    assert.ok(item.date.height <= item.dateLineHeight + 1, 'The date stays on one line');
     assert.ok(item.marker.left >= layout.root.left - 1 && item.marker.right <= layout.root.right + 1, 'The marker is not clipped on narrow screens');
+    aligned(item.body.right, layout.root.right, 'Event content uses the full available content column');
+    if (split) {
+      assert.ok(item.meta.right <= item.marker.left, 'Desktop metadata sits to the left of the rail');
+      assert.ok(item.marker.right < item.body.left, 'Desktop content sits to the right of the rail');
+      assert.ok(item.body.top <= item.meta.bottom && item.meta.top <= item.body.bottom, 'Desktop metadata and content share a row');
+    } else {
+      aligned(item.meta.left, item.body.left, 'Mobile metadata and content use the same column');
+      assert.ok(item.meta.bottom <= item.body.top + 1, 'Mobile content follows its date and metadata');
+      assert.ok(item.marker.right < item.meta.left, 'Mobile metadata and content stay beside the rail');
+    }
+    if (item.linksOnly) {
+      assert.equal(item.metaText, item.dateText, 'Link-only event metadata shows only its date');
+      assert.equal(item.metaChipCount, 0, 'Link-only events omit the redundant type chip');
+      assert.equal(item.bodyCardCount, 1, 'Link-only events use the same single panel as GitHub Star events');
+      assert.ok(item.links.length > 0, 'Link-only events retain their original HTTP links');
+      for (const link of item.links) {
+        assert.ok(link.left >= item.body.left - 1 && link.right <= item.body.right + 1, 'Link rows stay inside their content column');
+        assert.notEqual(link.pointerEvents, 'none', 'Link rows remain clickable');
+      }
+    }
     if (index === layout.items.length - 1) {
       assert.equal(item.connector, null, 'The final event has no dangling connector');
     } else {
@@ -67,6 +119,7 @@ try {
   // image enhancement runs. The existing h2-based parser excludes a preface.
   const staticContext = await makeContext({javaScriptEnabled: false});
   const staticPage = await makePage(staticContext);
+  const markerIcons = new Set();
   for (const year of years.slice(0, 2)) {
     await staticPage.goto(new URL(year.url, base).href);
     const collection = staticPage.locator('[data-content-collection="timeline"]');
@@ -90,11 +143,40 @@ try {
     assert.deepEqual(fidelity.actual, fidelity.expected, `${year.url}: authored text, links, media and exact code survive the Timeline layout`);
     assert.deepEqual(fidelity.renderedIds, fidelity.ids, `${year.url}: original ordering, Top entry and date IDs survive`);
     assert.equal(await collection.locator('select').count(), 1, 'Only one year selector is shown');
+    assert.equal(await collection.locator('select').getAttribute('aria-label'), '时间线年份', 'The year selector keeps its accessible name');
+    assert.equal(await collection.getByText('时间线年份', {exact: true}).count(), 0, 'The redundant visible year label is removed');
     assert.equal(await collection.getByText('浏览所有年份', {exact: true}).count(), 0, 'The duplicate year disclosure is removed');
-    assert.equal(await collection.locator('.timeline .card').count(), 0, 'The chronology is not wrapped in a stack of event cards');
+    const events = await collection.locator('.timeline > .timeline__item').evaluateAll((items) => items.map((item) => {
+      const body = item.querySelector('[data-timeline-body]');
+      const entry = body?.querySelector('[data-timeline-entry]');
+      const panels = [...(body?.querySelectorAll('.card') ?? [])].filter((panel) => !panel.closest('[data-timeline-entry]'));
+      const icons = item.querySelectorAll('.timeline__marker svg');
+      return {
+        kind: item.getAttribute('data-timeline-kind'),
+        metaCount: item.querySelectorAll('[data-timeline-meta]').length,
+        bodyCount: item.querySelectorAll('[data-timeline-body]').length,
+        entryCount: item.querySelectorAll('[data-timeline-entry]').length,
+        panelCount: panels.length,
+        directPanel: panels[0]?.parentElement === body,
+        panelContainsEntry: panels[0]?.contains(entry),
+        iconCount: icons.length,
+        icon: icons[0]?.innerHTML,
+      };
+    }));
+    for (const event of events) {
+      assert.ok(event.kind, 'Every event identifies its content kind');
+      assert.equal(event.metaCount, 1, 'Each event has one metadata region');
+      assert.equal(event.bodyCount, 1, 'Each event has one content region');
+      assert.equal(event.entryCount, 1, 'Authored event content stays together');
+      assert.equal(event.panelCount, 1, 'Every event receives one shared panel');
+      assert.ok(event.directPanel && event.panelContainsEntry, 'The panel directly wraps the complete event, not individual paragraphs');
+      assert.equal(event.iconCount, 1, 'Each marker contains one SVG icon');
+      markerIcons.add(event.icon);
+    }
     assert.equal(await collection.locator('astro-island').count(), 0, 'Timeline content remains server-rendered without a React hydration boundary');
     console.log(`${year.url}: ${fidelity.ids.length} original groups and all authored content preserved in static HTML.`);
   }
+  assert.ok(markerIcons.size >= 3, 'Published Timeline events use at least three distinct marker icons');
   await staticContext.close();
 
   const context = await makeContext({permissions: ['clipboard-read', 'clipboard-write']});
@@ -112,7 +194,7 @@ try {
     await page.locator('[data-timeline-year-select]').selectOption(years[0].url);
     await page.waitForURL(new URL(years[0].url, base).href);
   }
-  for (const width of [1440, 390, 320]) {
+  for (const width of [1440, 1280, 390, 320]) {
     await page.setViewportSize({width, height: 1000});
     await page.goto(new URL(years[0].url, base).href);
     await assertGeometry(page, width);
@@ -132,7 +214,23 @@ try {
       await page.locator('[data-timeline-year-select]').focus();
       await page.keyboard.press('Tab');
       assert.ok(await page.locator('[data-content-collection="timeline"] h2 a:focus-visible').count() > 0, 'Date links have keyboard focus');
-      if (screenshots) await page.screenshot({path: path.join(screenshots, `timeline-${width}-${colorScheme}.png`), animations: 'disabled'});
+      if (screenshots) {
+        await page.screenshot({path: path.join(screenshots, `timeline-${width}-${colorScheme}.png`), animations: 'disabled'});
+        const linkEvents = page.locator('[data-content-collection="timeline"] [data-timeline-links-only="true"]');
+        assert.ok(await linkEvents.count() > 0, 'The newest Timeline includes link-only events for visual review');
+        await linkEvents.first().evaluate((item) => item.scrollIntoView({block: 'start'}));
+        await page.screenshot({path: path.join(screenshots, `timeline-links-${width}-${colorScheme}.png`), animations: 'disabled'});
+        const samples = await linkEvents.evaluateAll((events) => {
+          const counts = events.map((item) => [...item.querySelectorAll('[data-timeline-entry] a[href]')]
+            .filter((anchor) => /^https?:\/\//i.test(anchor.getAttribute('href'))).length);
+          return {single: counts.findIndex((count) => count === 1), multiple: counts.findIndex((count) => count > 1)};
+        });
+        for (const [kind, index] of Object.entries(samples)) {
+          if (index <= 0) continue;
+          await linkEvents.nth(index).evaluate((item) => item.scrollIntoView({block: 'start'}));
+          await page.screenshot({path: path.join(screenshots, `timeline-links-${kind}-${width}-${colorScheme}.png`), animations: 'disabled'});
+        }
+      }
     }
     console.log(`${width}px: default Timeline rail, connectors, date anchors and both themes fit.`);
   }

@@ -6,3 +6,6 @@
 .reader-shell [role='alert'] { color: var(--danger); }
 .reader-shell :where(button, a, textarea):focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
 @media (max-width: 480px) { .reader-shell { padding: 0.75rem; } .reader-account-actions { gap: 0.5rem; } }
+
+.reader-inline-signin { margin-top: 1rem; }
+.reader-inline-signin :is(.cl-rootBox, .cl-cardBox, .cl-card) { width: 100%; max-width: 100%; min-width: 0; }

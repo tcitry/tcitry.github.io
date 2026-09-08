@@ -95,16 +95,60 @@
 .section .empty :is(h3, p) { margin: 0; }
 
 .section .timeline {
+  --timeline-item-gap: 2rem;
   margin: 0;
   padding: 0;
+  width: 100%;
   list-style: none;
 }
-.section .event { min-width: 0; margin: 0; scroll-margin-top: 5rem; }
-.section .eventContent { gap: 0.75rem; }
-.section .eventDate { margin: 0; font-size: 0.875rem; font-weight: 600; line-height: 1.75rem; }
+.section .event {
+  --event-tone: var(--muted);
+  min-width: 0;
+  margin: 0;
+  grid-template-columns: var(--timeline-rail-width) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  scroll-margin-top: 5rem;
+}
+.section .event[data-timeline-kind="pinned"],
+.section .event[data-timeline-kind="link"] { --event-tone: var(--accent); }
+.section .event[data-timeline-kind="star"] { --event-tone: light-dark(#956110, #e8b65c); }
+.section .event[data-timeline-kind="repository"],
+.section .event[data-timeline-kind="code"] { --event-tone: light-dark(#30745a, #84c5a6); }
+.section .event[data-timeline-kind="image"],
+.section .event[data-timeline-kind="media"] { --event-tone: light-dark(#8454a2, #cba4e3); }
+.section .event :global(.timeline__rail) { grid-column: 1; grid-row: 1 / span 2; }
+.section .eventMarker {
+  color: var(--event-tone);
+  border-color: color-mix(in srgb, var(--event-tone) 38%, var(--background));
+  background: color-mix(in srgb, var(--event-tone) 7%, var(--background));
+}
+.section .eventMeta {
+  grid-column: 2;
+  grid-row: 1;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-self: stretch;
+  gap: 0.4rem 0.65rem;
+  padding-bottom: 0.75rem;
+  text-align: start;
+}
+.section .eventContent {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: stretch;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+}
+.section .eventDate { margin: 0; font-size: 0.8125rem; font-weight: 600; line-height: var(--timeline-marker-size); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .section .eventDate a { color: var(--foreground); text-decoration: none; }
 .section .eventDate a:hover { color: var(--accent); text-decoration: underline; }
 .section .eventDate a:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
+.section .eventWeekday,
+.section .eventLinks { color: var(--muted); font-size: 0.6875rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.section .eventKind { flex: none; width: fit-content; color: var(--event-tone); background: color-mix(in srgb, var(--event-tone) 8%, var(--background)); }
+.section .eventPanel { width: 100%; min-width: 0; padding: 1rem; gap: 0; border: 1px solid var(--border); border-radius: 1rem; box-shadow: none; }
 .section .authored { min-width: 0; max-width: 100%; overflow-wrap: anywhere; line-height: 1.8; }
 .section .authored > :first-child { margin-top: 0; }
 .section .authored > :last-child { margin-bottom: 0; }
@@ -112,6 +156,16 @@
 .section .authored :is(pre, .table-scroll) { max-width: 100%; overflow-x: auto; }
 .section .authored pre { white-space: pre; overflow-wrap: normal; }
 .section .yearSelect { width: 9rem; max-width: 100%; }
+
+/* Keep the shared article width; only the date lane is compact. Both layouts
+   use the same authored HTML so code, media and anchors remain singletons. */
+@container (min-width: 36rem) {
+  .section .event { grid-template-columns: 6rem var(--timeline-rail-width) minmax(0, 1fr); grid-template-rows: auto; }
+  .section .event :global(.timeline__rail) { grid-column: 2; grid-row: 1; }
+  .section .eventMeta { grid-column: 1; grid-row: 1; flex-direction: column; align-items: flex-end; gap: 0.3rem; padding-bottom: 0; text-align: end; }
+  .section .eventContent { grid-column: 3; grid-row: 1; }
+  .section .eventKind { margin-top: 0.3rem; }
+}
 
 .section .projects { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
 .section .project { min-width: 0; }

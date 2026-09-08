@@ -10,7 +10,6 @@ import '../styles/tailwind.css';
 import blogStyles from '../styles/blog.module.css';
 import codeStyles from '../components/code/BlogCode.module.css';
 import BlogSearch from '../components/search/BlogSearch.astro';
-import ReaderRoot from '../components/reader/ReaderRoot';
 import BlogChatWidget from '../components/chat/BlogChatWidget.astro';
 interface Props { page: ContentPage; navigation: NavigationNode[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[] }
 const { page, navigation, tags } = Astro.props;
@@ -35,7 +34,7 @@ const articleSchema = page.kind === 'page' && page.type !== 'reader' ? {
   ...(dateText(page.lastmod) ? { dateModified: page.lastmod } : {}),
   ...(page.image ? { image: new URL(page.image, 'https://yindongliang.com').href } : {}),
 } : undefined;
-const menu = [['/archives/', '✔️ Archives'], ['/tags/', '🏷️ Tags'], ['/weekly/', '🔥 Weekly'], ['/timeline/', '⏳ Timeline'], ['/links/', '🔗 Links'], ['/portfolio/', '📱 Portfolio'], ['/about/', '👨‍💻 About'], ['/labs/', '🧪 Labs'], ['/me/', '📚 我的阅读']];
+const menu = [['/archives/', '✔️ Archives'], ['/tags/', '🏷️ Tags'], ['/weekly/', '🔥 Weekly'], ['/timeline/', '⏳ Timeline'], ['/links/', '🔗 Links'], ['/portfolio/', '📱 Portfolio'], ['/about/', '👨‍💻 About'], ['/labs/', '🧪 Labs']];
 const toNavigation = (nodes: NavigationNode[]): NavigationItem[] => nodes
   .filter(({ page }) => !page.hidden && (page.kind !== 'page' || Boolean(page.html)))
   .map((node) => ({
@@ -73,11 +72,6 @@ const site = {
   </Fragment>
   <Fragment slot="content-before">
     {import.meta.env.DEV && page.source && <p><a href={`obsidian://open?vault=Blog&file=${encodeURIComponent(page.source)}`} class="mb-5 inline-block rounded-[5px] bg-[#4caf50] px-[15px] py-[10px] text-white! no-underline hover:bg-[#45a049]" target="_blank">在 Obsidian 打开笔记</a></p>}
-    {readerArticle && <div data-pagefind-ignore data-sentry-mask>
-      <ReaderRoot pathname={page.url} title={bookTitle(page)} client:only="react">
-        <p slot="fallback">正在加载阅读工具…</p>
-      </ReaderRoot>
-    </div>}
   </Fragment>
   <slot />
   <Fragment slot="toc">
@@ -86,5 +80,5 @@ const site = {
   <Fragment slot="comments">
     {comments && <Giscus repo="tcitry/tcitry.github.io" repoId="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" category="Announcements" categoryId="DIC_kwDOCMyx684COMlk" mapping="pathname" lang="zh-CN" theme="preferred_color_scheme" />}
   </Fragment>
-  <Fragment slot="overlays"><BlogChatWidget /><script>import '../scripts/site'; import '../scripts/blog-code';</script></Fragment>
+  <Fragment slot="overlays"><BlogChatWidget pathname={readerArticle ? page.url : undefined} title={readerArticle ? bookTitle(page) : undefined} reading={page.type === 'reader'} /><script>import '../scripts/site'; import '../scripts/blog-code';</script></Fragment>
 </ThemeLayout>

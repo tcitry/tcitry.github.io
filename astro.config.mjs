@@ -46,6 +46,9 @@ export default defineConfig({
     },
   })],
   vite: {
+    // The optimizer keeps metadata in memory. Another Astro process replacing
+    // its files leaves the running dev server serving 504s for lazy imports.
+    cacheDir: `./node_modules/.vite/astro-${process.pid}`,
     define: {
       'import.meta.env.PUBLIC_SENTRY_RELEASE': JSON.stringify(release),
       'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify(readerConfig.clerkPublishableKey),

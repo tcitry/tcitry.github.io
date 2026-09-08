@@ -1,6 +1,5 @@
 ---
 import BookLayout from '../layouts/BookLayout.astro';
-import ReaderRoot from '../components/reader/ReaderRoot';
 import {content, createPage, navigation} from '../lib/site';
 
 const page = createPage({
@@ -13,9 +12,13 @@ const page = createPage({
   <article class="markdown book-article" data-pagefind-ignore>
     <h1>我的阅读</h1>
     <p>留住值得重读的文章，接着上次的位置读下去。</p>
-    <ReaderRoot library client:only="react">
-      <p slot="fallback">正在加载阅读账户…</p>
-    </ReaderRoot>
+    <button type="button" data-open-reading>打开右侧阅读面板</button>
     <noscript><p>请启用 JavaScript 使用阅读账户。公开文章始终可以直接阅读。</p></noscript>
   </article>
 </BookLayout>
+
+<script>
+  document.querySelector('[data-open-reading]')?.addEventListener('click', () => {
+    document.querySelector<HTMLButtonElement>('[data-chat-launcher]')?.click();
+  });
+</script>

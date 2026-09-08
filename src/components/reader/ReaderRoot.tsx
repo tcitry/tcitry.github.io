@@ -1,5 +1,5 @@
 import {Component, useEffect, useState, type ReactNode} from 'react';
-import {ClerkFailed, ClerkLoaded, ClerkLoading, ClerkProvider, useAuth, useClerk} from '@clerk/react';
+import {ClerkFailed, ClerkLoaded, ClerkLoading, ClerkProvider, SignIn, useAuth, useClerk} from '@clerk/react';
 import {ConvexReactClient, useConvexAuth} from 'convex/react';
 import {ConvexProviderWithClerk} from 'convex/react-clerk';
 import {Button} from '@heroui/react';
@@ -25,6 +25,7 @@ function ReaderAccount(props: ReaderProps) {
   const {userId, sessionId} = useAuth();
   const {isAuthenticated, isLoading} = useConvexAuth();
   const [accountError, setAccountError] = useState('');
+  const [signingIn, setSigningIn] = useState(false);
   const [pending, setPending] = useState(false);
   const [slow, setSlow] = useState(false);
   useEffect(() => {
@@ -47,22 +48,24 @@ function ReaderAccount(props: ReaderProps) {
     <div className="reader-account-bar">
       <span className="reader-account-caption">{props.library ? '你的私人阅读空间' : '阅读账户'}</span>
       <div className="reader-account-actions">
-        {!props.library && <a href="/me/">我的阅读</a>}
         {userId
           ? <Button size="sm" variant="ghost" isPending={pending} onPress={signOut}>退出登录</Button>
           : <Button size="sm" variant="secondary" onPress={() => {
             setAccountError('');
-            try { clerk.openSignIn({forceRedirectUrl: window.location.href}); }
-            catch { setAccountError('登录暂时不可用，请稍后重试。'); }
+            setSigningIn(true);
           }}>登录 / 注册</Button>}
       </div>
     </div>
+    {signingIn && !userId && <div className="reader-inline-signin">
+      <SignIn routing="hash" withSignUp forceRedirectUrl={window.location.href} signUpForceRedirectUrl={window.location.href} />
+    </div>}
     {accountError && <p role="alert">{accountError}</p>}
     {isLoading
       ? <p role="status">{slow ? '连接仍在进行中，请检查网络或稍后刷新。' : '正在连接阅读账户…'}</p>
       : userId && isAuthenticated
         ? <ReaderBoundary key={`${userId}:${sessionId}`}>
-          {props.library ? <ReaderLibrary /> : <ArticleReader pathname={props.pathname!} title={props.title!} />}
+          {props.pathname && <ArticleReader pathname={props.pathname} title={props.title!} />}
+          {props.library && <ReaderLibrary />}
         </ReaderBoundary>
         : <p className="reader-account-hint">{userId
           ? '阅读数据暂时无法同步，请稍后刷新或重新登录。'

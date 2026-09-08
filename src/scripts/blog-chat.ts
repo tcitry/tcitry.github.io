@@ -59,7 +59,8 @@ function initializeChat() {
   function focusChat() {
     // Do not summon the mobile keyboard until the reader taps the input.
     const selector = mobile.matches ? '[aria-label="关闭博客助手"]' : 'textarea';
-    target!.querySelector<HTMLElement>(selector)?.focus({preventScroll: true});
+    const visible = (selector: string) => [...target!.querySelectorAll<HTMLElement>(selector)].find((element) => element.getClientRects().length);
+    (visible(selector) ?? visible('[aria-label="关闭博客助手"]'))?.focus({preventScroll: true});
   }
 
   async function loadChat() {

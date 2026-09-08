@@ -18,3 +18,5 @@ export function ClerkLoaded({children}: {children: ReactNode}) {return children;
 export function ClerkLoading() {return null;}
 export function ClerkFailed() {return null;}
 Object.assign(window, {__readerAuth: {switchSession}});
+
+export function SignIn() {return <button onClick={() => switchSession('fixture-a', 'session-a')}>完成登录</button>;}
