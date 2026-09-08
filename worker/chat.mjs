@@ -9,7 +9,7 @@ const headers = {
   'referrer-policy': 'strict-origin-when-cross-origin',
 };
 
-class ChatError extends Error {
+export class ChatError extends Error {
   constructor(message, status = 502, retryAfter = undefined) {
     super(message);
     this.status = status;
@@ -225,6 +225,8 @@ export async function handleChat(request, env, references) {
     const messages = await readMessages(request, controller.signal);
     if (request.signal.aborted) stop();
     controller.signal.throwIfAborted();
+    // Framework dev servers resolve real bindings lazily, after input validation.
+    if (typeof env === 'function') env = await abortable(Promise.resolve().then(env), controller.signal);
     // Optional, independent API protection. No binding is enabled initially;
     // enabling it later does not replace the single Gateway's own configuration.
     if (env.CHAT_RATE_LIMIT) {

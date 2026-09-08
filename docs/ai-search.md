@@ -4,13 +4,17 @@
 
 ## 聊天入口与本地体验
 
-全站右下角的圆形按钮打开博客助手，侧边栏不再提供聊天入口。交互参考 HeroUI Agents 的 floating 模式：桌面打开右下角面板，背景仍可滚动、交互，点击外部或按 Esc 收起；小于 640px 时打开全屏模态面板，锁定背景滚动并限制键盘焦点。关闭按钮和 Esc 将焦点还给入口，收起保留本页对话和草稿，导航或刷新页面后清空。[官方 Appearance 规范](https://heroui.pro/docs/agents/configure/appearance)
+全站右下角的圆形按钮打开博客助手，导航侧边栏不再提供聊天入口。交互参考 HeroUI Agents 的 sidebar 模式：桌面打开右侧整高栏，正文使用剩余空间，背景仍可滚动、交互，点击背景保持助手打开；小于 640px 时打开全屏模态面板，锁定背景滚动并限制键盘焦点。关闭按钮和 Esc 将焦点还给入口，收起保留本页对话和草稿，导航或刷新页面后清空。[官方 Appearance 规范](https://heroui.pro/docs/agents/configure/appearance)
 
-首屏只输出原生按钮和轻量控制脚本，首次点击再加载 React 与 HeroUI Pro 聊天组件。浮层使用原生 dialog，让加载失败时仍可关闭和重试，同时保留收起后的 React 状态。窄屏高度跟随可视视口，避免软键盘盖住输入区。`/chat/` 保留为使用说明页，不再渲染第二份聊天组件。
+首屏只输出原生按钮和轻量控制脚本，首次点击再加载 React 与 HeroUI Pro 聊天组件。面板使用原生 dialog，让加载失败时仍可关闭和重试，同时保留收起后的 React 状态。窄屏高度跟随可视视口，避免软键盘盖住输入区。`/chat/` 保留为使用说明页，不再渲染第二份聊天组件。
 
-HeroUI Agents SDK 是独立的托管产品；本站仅参考其交互规范，消息仍发送到自己的 `/api/chat`，沿用既有 AI Search 与单个 AI Gateway。[HeroUI Agents 概览](https://heroui.pro/docs/agents)
+HeroUI Agents SDK 是独立的托管产品；本站仅参考其交互规范，消息发送到自己的 `/api/chat/`，沿用既有 AI Search 与单个 AI Gateway。API 的规范路径带结尾斜线，与本站 `trailingSlash: 'always'` 一致。[HeroUI Agents 概览](https://heroui.pro/docs/agents)
 
-`npm run dev` 可以直接体验上述真实界面。普通 Astro dev 尚未代理 Worker API；真实回答还需要接通本地 Worker、配置远端访问权限并完成首轮索引。此入口不会生成演示回答。`npm run test:browser:chat` 的合成流只注入测试浏览器，用于验证引用、停止、错误和限流提示，不代表云端链路已验收。
+`npm run dev` 已通过 `scripts/lib/chat-dev.mjs` 的 Vite 插件处理 `/api/chat/`，复用生产的 `worker/chat.mjs`，无需另外运行 `dev:worker`。适配器在请求通过格式与来源校验后才加载云端绑定，并将回答流直接传给浏览器。`getPlatformProxy` 根据 `wrangler.jsonc` 中的 `remote: true` 配置连接唯一的 AI Search 实例 `tcitry-blog-search` 和 Workers AI；检索与生成仍共用唯一的 Gateway `tcitry-blog-chat`。[Wrangler 编程接口](https://developers.cloudflare.com/workers/wrangler/api/)、[AI Search Workers binding](https://developers.cloudflare.com/ai-search/api/search/workers-binding/)
+
+本地开发所用的 Wrangler OAuth 登录需要 `ai:write`、`ai-search:write` 和 `ai-search:run` 权限；重新登录时也要保留既有 Worker 发布所需的 scopes。开发适配器通过 Wrangler 登录取得远端绑定访问权限。文章同步 CLI 仍要求显式设置 `CLOUDFLARE_API_TOKEN`，不会自动使用 Wrangler OAuth；重新登录 Wrangler 不会自动满足同步 CLI 的 token 要求，详见下文“认证和 API”。
+
+2026-09-08 本地验收：Wrangler OAuth 权限、真实 AI Search 检索、经唯一 Gateway 的固定模型生成、流式回答和文章引用已打通。首次仅索引了下文列出的三篇公开样本，全量文章同步和生产发布尚未执行。入口不会生成演示回答；权限不足或连接失败时显示错误，检索不到有效资料时明确说明依据不足。`npm run test:browser:chat` 的合成流只注入测试浏览器，用于验证引用、停止、错误和限流提示；真实云端验收另外发送公开文章问题完成。
 
 ## 控制台配置
 
@@ -101,6 +105,24 @@ Gateway 的计数单位是模型调用，不是独立访客或提问。一次提
 | `.generated/ai-search-sync.json` | 本轮完整同步成功后的记录，失败不推进 |
 
 `id` 为正式 canonical URL 的 SHA-256，远端 key 为 `tcitry-blog/articles/<id>.md`。正文更新时覆盖同一 key；URL 变化时新增新 key，旧 key进入删除清单。内容 hash 包含公开标题、日期、来源声明和正文，不包含检出路径或同步时间，因此相同的公开内容不会因为换发布目录而重复上传。
+
+## 首次在本地体验：只导入三篇公开样本
+
+首次实例为空时，可以在不部署站点的情况下使用 `ai-search:bootstrap`。它固定选择 **Contract Testing、Git 基本使用、DataStore** 三篇，不接受任意文件或 URL 参数。
+
+```sh
+npm run ai-search:bootstrap
+npm run ai-search:bootstrap -- --apply
+npm run dev
+```
+
+第一条默认 dry-run：读取当前导出，在网上逐篇核对 HTTP 200、无跳转、canonical、显示标题、正文、ByAI 声明及 sitemap 更新时间，再验证文档字节的 SHA-256 等于本地可信引用清单。默认不会启动 Cloudflare binding。缺少导出时先运行 `npm run prepare:content`；该入口允许 preview 导出，但只有与当前公开页面完全匹配的三篇样本可以进入下一步。
+
+第二条才通过已安装 Wrangler 的 `unstable_dev()` 启动临时本地 Workers 运行时，并使用配置中的 remote binding 连接现有 `tcitry-blog-search`。本地桥仅接受带随机会话标识的有限 JSON 操作，结束后关闭，不部署任何 Worker。Wrangler 管理既有 OAuth 登录；本次三篇样本导入无需另设 `CLOUDFLARE_API_TOKEN`，脚本不读取凭据文件。它核对单 Gateway 关联、内置数据源和完整对象列表；schema 为 null 时仅补上本文约定的五字段，已有非空 schema 不同则停止。仅新增不存在的样本 key，相同 hash 已存在时等待或跳过，不覆盖不同 hash，不删除任何文章。每篇上传前再次核对线上正文和远端 key，上传后等待索引完成。
+
+该命令不执行生产构建、站点发布、全量同步，也不创建或修改生产发布回执。正式发布仍采用下一节的封存流程，生产全量同步 `ai-search:sync` 仍要求显式设置 `CLOUDFLARE_API_TOKEN`。首次导入期间不要同时从其他目录上传相同 key；绑定上传与检查不是跨请求的原子事务。
+
+当前锁定 Wrangler 没有 `ai-search items upload` 命令；这里在实际 Workers 运行时内部调用官方 `items.list()`、`items.uploadAndPoll()`，配置更新使用实例 `update()`。Node 侧通过受限 JSON 桥调用它们；不直接使用 `getPlatformProxy` 访问嵌套的 `items.*`，因为当前 Node 代理不能保留这一嵌套 RPC 路径。代码提供可注入 binding 的 `bootstrapAISearch()`，便于复用已建立的官方连接和执行离线测试。[Wrangler 编程接口](https://developers.cloudflare.com/workers/wrangler/api/)、[Items binding](https://developers.cloudflare.com/ai-search/api/items/workers-binding/)、[实例 binding](https://developers.cloudflare.com/ai-search/api/instances/workers-binding/)
 
 ## 发布与同步流程
 

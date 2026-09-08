@@ -31,7 +31,7 @@ async function mockChat(context) {
     window.__chatAborts = 0;
     window.__chatScenario = 'stream';
     window.fetch = async (input, init) => {
-      if (new URL(typeof input === 'string' ? input : input.url, location.href).pathname !== '/api/chat') return originalFetch(input, init);
+      if (new URL(typeof input === 'string' ? input : input.url, location.href).pathname.replace(/\/$/, '') !== '/api/chat') return originalFetch(input, init);
       window.__chatRequests.push(JSON.parse(init.body));
       if (window.__chatScenario === '429') return new Response(JSON.stringify({message: '当前提问较多，请稍后再试。'}), {status: 429, headers: {'Content-Type': 'application/json', 'Retry-After': '2'}});
       const encoder = new TextEncoder();
@@ -115,6 +115,27 @@ async function assertClosed(page, label, returnsFocus = true) {
   if (returnsFocus) assert.ok(await launcher(page).evaluate((element) => element === document.activeElement), `${label}: focus returns to launcher`);
 }
 
+async function assertSidebarLayout(page, originalWidth) {
+  const bounds = await panel(page).boundingBox();
+  const viewport = page.viewportSize();
+  const main = await page.locator('body > main').boundingBox();
+  const article = await page.locator('body > main > .book-page').boundingBox();
+  // The theme reserves a stable scrollbar gutter even on short pages. Its root
+  // layout rectangle is the usable CSS viewport for a fixed non-modal dialog.
+  const usableWidth = await page.evaluate(() => document.documentElement.getBoundingClientRect().width);
+  assert.equal(await panel(page).evaluate((element) => element.matches(':modal')), false, 'Desktop sidebar is non-modal');
+  assert.ok(bounds && Math.abs(bounds.y) <= 1 && Math.abs(bounds.height - viewport.height) <= 2
+    && Math.abs(bounds.x + bounds.width - usableWidth) <= 2, 'Sidebar is docked to the right edge and fills viewport height');
+  assert.ok(main && article && main.x + main.width <= bounds.x + 1 && article.x + article.width <= bounds.x + 1,
+    'The reading layout reserves space beside the sidebar');
+  if (originalWidth) assert.ok(Math.abs(originalWidth - main.width - bounds.width) <= 2, 'Opening shrinks the reading area by the sidebar width');
+  for (const toc of await page.locator('.book-toc-content:visible').all()) {
+    const tocBounds = await toc.boundingBox();
+    assert.ok(tocBounds.x + tocBounds.width <= bounds.x + 1, 'A visible article TOC never sits behind the sidebar');
+  }
+  await assertFits(page, `${viewport.width}px sidebar`);
+}
+
 async function assertMobilePanel(page) {
   assert.ok(await panel(page).evaluate((element) => element.matches(':modal')), 'Mobile panel uses a modal dialog');
   const bounds = await panel(page).boundingBox();
@@ -130,8 +151,14 @@ async function assertMobilePanel(page) {
     await page.keyboard.press(key);
     // Native dialogs permit Tab to reach browser chrome; page controls outside
     // the modal must remain inert when focus is within the document.
-    assert.ok(await panel(page).evaluate((element) => element.contains(document.activeElement)
-      || (!document.hasFocus() && document.activeElement === document.body)), 'Mobile dialog keeps document focus inside');
+    // Chromium can briefly expose BODY while its focus/blur events are still
+    // settling after Tab reaches browser chrome. Keep the same focus invariant,
+    // but wait for that native transition instead of sampling it midway through.
+    await page.waitForFunction(() => {
+      const dialog = document.getElementById('blog-chat-panel');
+      return dialog?.contains(document.activeElement)
+        || (!document.hasFocus() && document.activeElement === document.body);
+    }, undefined, {timeout: 1000, polling: 25});
   }
   await close.focus();
   await assertFits(page, '375px modal');
@@ -155,14 +182,13 @@ try {
   assert.equal(await page.locator('[data-chat-hydrated]').count(), 0, 'Chat is not mounted before the first open');
   assert.equal(await page.evaluate(() => window.__chatReactRenderers), 0, 'React is not initialized before the first open');
   assert.equal(await page.locator('aside a[href], nav a[href]').evaluateAll((links) => links.filter((link) => new URL(link.getAttribute('href'), location.href).pathname === '/chat/').length), 0, 'Chat has no sidebar navigation link');
+  const originalReadingWidth = (await page.locator('body > main').boundingBox()).width;
   const root = await openChat(page);
   assert.ok(await page.evaluate(() => window.__chatReactRenderers > 0), 'Opening lazily initializes the React renderer');
   assert.equal(await page.locator('astro-island').count(), 0, 'Chat mounts directly without an Astro island');
-  assert.equal(await panel(page).evaluate((element) => element.matches(':modal')), false, 'Desktop panel is non-modal');
   const desktopBounds = await panel(page).boundingBox();
-  assert.ok(desktopBounds && Math.abs(desktopBounds.width - 440) <= 2 && desktopBounds.x > 900
-    && desktopBounds.y >= 0 && desktopBounds.y + desktopBounds.height <= 1001, 'Desktop panel is a 440px surface at the right edge');
-  await assertFits(page, 'desktop');
+  assert.ok(desktopBounds && Math.abs(desktopBounds.width - 440) <= 2, 'Wide desktop sidebar is 440px wide');
+  await assertSidebarLayout(page, originalReadingWidth);
   const question = root.getByRole('textbox', {name: '向博客助手提问'});
   const send = root.getByRole('button', {name: '发送问题', exact: true});
   assert.ok(await send.isDisabled(), 'Empty input cannot submit');
@@ -170,16 +196,19 @@ try {
   await question.fill('关闭后继续编辑的草稿');
   await panel(page).getByRole('button', {name: '关闭博客助手', exact: true}).click();
   await assertClosed(page, 'Close button');
+  assert.ok(Math.abs((await page.locator('body > main').boundingBox()).width - originalReadingWidth) <= 1, 'Closing restores the original reading width');
   await openChat(page);
   assert.equal(await question.inputValue(), '关闭后继续编辑的草稿', 'Closing and reopening preserves the draft');
   await page.keyboard.press('Escape');
   await assertClosed(page, 'Escape');
   await openChat(page);
   await page.getByRole('heading', {level: 1, name: '博客助手'}).click();
-  await assertClosed(page, 'Desktop outside click', false);
-  await openChat(page);
-  await root.getByRole('button', {name: '博客中有哪些关于 Astro 的文章？', exact: true}).click();
-  assert.equal(await question.inputValue(), '博客中有哪些关于 Astro 的文章？');
+  assert.ok(await panel(page).isVisible(), 'Clicking the article keeps the desktop sidebar open');
+  await page.locator('#main-content').focus();
+  assert.ok(await page.locator('#main-content').evaluate((element) => element === document.activeElement), 'The reader can focus the article while chat stays open');
+  assert.equal(await launcher(page).getAttribute('aria-expanded'), 'true');
+  await root.getByRole('button', {name: '契约测试适合解决哪些问题？', exact: true}).click();
+  assert.equal(await question.inputValue(), '契约测试适合解决哪些问题？');
   assert.ok(await question.evaluate((element) => document.activeElement === element), 'Choosing a suggestion focuses the composer');
   await question.press('Shift+Enter');
   assert.match(await question.inputValue(), /\n/);
@@ -277,8 +306,52 @@ try {
   await page.goto(new URL('/archives/', base).href);
   assert.equal(await launcher(page).count(), 1, 'Launcher is also available on an existing site page');
   assert.equal(await launcher(page).getAttribute('aria-expanded'), 'false');
+  await page.setViewportSize({width: 320, height: 740});
+  await openChat(page);
+  await assertMobilePanel(page);
+  await page.keyboard.press('Escape');
+  await assertClosed(page, '320px mobile Escape');
+  await page.setViewportSize({width: 1440, height: 1000});
+  const archivesWidth = (await page.locator('body > main').boundingBox()).width;
+  await openChat(page);
+  await assertSidebarLayout(page, archivesWidth);
+  if (screenshots) await page.screenshot({path: join(screenshots, 'chat-sidebar-archives.png')});
+  for (const width of [1280, 1024, 768, 640]) {
+    await page.setViewportSize({width, height: 900});
+    await assertSidebarLayout(page);
+  }
+  await page.setViewportSize({width: 1440, height: 1000});
+  await page.keyboard.press('Escape');
+  await assertClosed(page, 'Sidebar Escape restores archives');
+  assert.ok(Math.abs((await page.locator('body > main').boundingBox()).width - archivesWidth) <= 1, 'Reading width is restored after responsive sidebar use');
+  await page.emulateMedia({colorScheme: 'light'});
+  await page.goto(new URL('/posts/this-blog/', base).href);
+  await openChat(page);
+  for (const width of [1920, 1680, 1440, 1280, 1024, 768, 640]) {
+    await page.setViewportSize({width, height: 1000});
+    await assertSidebarLayout(page);
+    if (width === 1440 && screenshots) await page.screenshot({path: join(screenshots, 'chat-sidebar-article.png')});
+    if (width === 768) {
+      await page.locator('.book-header label[for="menu-control"]').click();
+      assert.ok(await page.locator('#menu-control').isChecked(), 'The reading menu can open beside the assistant');
+      const menu = await page.locator('.book-menu-content').boundingBox();
+      const sidebar = await panel(page).boundingBox();
+      assert.ok(menu && menu.x >= 0 && menu.x + menu.width <= sidebar.x + 1, 'The reading menu remains outside the assistant');
+      await page.locator('.book-menu-overlay').click({position: {x: sidebar.x - 8, y: 80}});
+      assert.equal(await page.locator('#menu-control').isChecked(), false, 'The reading menu can close without closing chat');
+      await page.locator('.book-header label[for="toc-control"]').click();
+      assert.ok(await page.locator('.book-header > aside').isVisible(), 'The article TOC remains available in the compact reading area');
+      assert.ok(await panel(page).isVisible(), 'Article controls keep the sidebar open');
+      await page.locator('.book-header label[for="toc-control"]').click();
+    }
+  }
+  await page.setViewportSize({width: 375, height: 850});
+  await assertMobilePanel(page);
+  if (screenshots) await page.screenshot({path: join(screenshots, 'chat-sidebar-mobile-welcome.png')});
+  await page.keyboard.press('Escape');
+  await assertClosed(page, 'Mobile article close');
   assert.deepEqual(errors, [], 'No uncaught browser errors');
-  console.log('Chat browser checks passed: global lazy launcher, desktop/mobile dialogs, focus and draft retention, streaming, sources, context, stop, 429, Markdown safety, keyboard and in-memory history.');
+  console.log('Chat browser checks passed: lazy launcher, full-height docked sidebar, reserved reading space, mobile modal, focus and draft retention, streaming, sources, context, stop, 429 and Markdown safety.');
   await context.close();
 } finally {
   await browser.close();

@@ -42,8 +42,10 @@
 .blog-chat__header-actions { display: flex; align-items: center; gap: .125rem; }
 .blog-chat__header-actions .button { min-height: 2.75rem; }
 .blog-chat__conversation { min-height: 0; overscroll-behavior-y: contain; }
+.blog-chat__conversation:has(.blog-chat__welcome) .chat-conversation__scroll-button-container { display: none; }
 .blog-chat__messages { gap: 2rem; padding: 1.75rem 1.25rem; min-width: 0; }
-.blog-chat__welcome { margin-block: auto; padding-block: .5rem; gap: 1.25rem; }
+.blog-chat__messages:has(> .blog-chat__welcome) { flex: 1 0 auto; }
+.blog-chat__welcome { margin-block: auto 0; padding-block: .5rem; gap: 1.25rem; }
 .blog-chat .prompt-suggestion__title { margin: 0; font-size: 1.125rem; }
 .blog-chat .prompt-suggestion__description { max-width: 100%; margin: 0; color: var(--muted); line-height: 1.7; }
 .blog-chat__suggestions { display: grid; grid-template-columns: 1fr; gap: .625rem; margin-top: 0; }
@@ -86,7 +88,7 @@
 .blog-chat__composer { flex-shrink: 0; border-top: 1px solid var(--separator); padding: .75rem 1rem; background: var(--surface); }
 .blog-chat__status { min-height: 1.5rem; color: var(--muted); font-size: .75rem; margin-bottom: .375rem; }
 .blog-chat__input-help { color: var(--muted); font-size: .75rem; }
-.blog-chat .prompt-input__textarea { font-size: .9375rem; line-height: 1.7; }
+.blog-chat .prompt-input__textarea { font-size: .9375rem; line-height: 1.7; outline: none; box-shadow: none; }
 .blog-chat .prompt-input__toolbar { position: static; padding: 0 .75rem .75rem; }
 .blog-chat .prompt-input__footer { margin: .5rem 0 0; font-size: .6875rem; line-height: 1.6; color: var(--muted); }
 .blog-chat :is(button, a):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }

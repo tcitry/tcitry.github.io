@@ -29,9 +29,9 @@ type ChatEvent =
   | {type: 'done'};
 
 const suggestions = [
-  '博客中有哪些关于 Astro 的文章？',
-  '作者如何管理和发布博客内容？',
-  '找出关于测试实践的文章，并概括要点。',
+  '契约测试适合解决哪些问题？',
+  '如何用 Git 管理代码提交？',
+  'SwiftData 中的 DataStore 有什么作用？',
 ];
 const MAX_INPUT = 2000;
 const MAX_ANSWER = 100_000;
@@ -221,7 +221,7 @@ export default function BlogChat({onClose, onReady}: {onClose: () => void; onRea
     }
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/api/chat/', {
         method: 'POST', headers: {'Content-Type': 'application/json', Accept: 'application/x-ndjson'},
         body: JSON.stringify({messages: history}), signal: run.signal,
       });

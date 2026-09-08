@@ -15,6 +15,26 @@ function initializeChat() {
   let mount: ReturnType<typeof import('../components/chat/mount-chat')['mountChat']> | undefined;
   let stopped = false;
 
+  function syncReadingLayout() {
+    const docked = panel!.open && !mobile.matches;
+    document.documentElement.classList.toggle('blog-chat-sidebar-open', docked);
+    if (!docked) {
+      delete document.body.dataset.chatReadingLayout;
+      return;
+    }
+    // Theme breakpoints use the full viewport. Adapt its public shell classes to
+    // the actual space beside the assistant, without modifying the theme package.
+    const available = document.documentElement.getBoundingClientRect().width - panel!.offsetWidth;
+    const layout = available >= 1120 ? 'full' : available >= 800 ? 'compact' : 'narrow';
+    if (document.body.dataset.chatReadingLayout !== layout) {
+      for (const id of ['menu-control', 'toc-control']) {
+        const control = document.getElementById(id) as HTMLInputElement | null;
+        if (control) control.checked = false;
+      }
+    }
+    document.body.dataset.chatReadingLayout = layout;
+  }
+
   function syncViewport() {
     const viewport = window.visualViewport;
     if (!viewport || !mobile.matches) return;
@@ -26,6 +46,7 @@ function initializeChat() {
   function syncClosed() {
     launcher!.setAttribute('aria-expanded', 'false');
     document.documentElement.classList.remove('blog-chat-modal-open');
+    syncReadingLayout();
   }
 
   function close(restoreFocus = true) {
@@ -77,6 +98,7 @@ function initializeChat() {
       document.documentElement.classList.add('blog-chat-modal-open');
     } else panel!.show();
     launcher!.setAttribute('aria-expanded', 'true');
+    syncReadingLayout();
     if (mount) focusChat();
     void loadChat();
   }
@@ -96,15 +118,14 @@ function initializeChat() {
       close();
     }
   }, {signal});
-  document.addEventListener('pointerdown', (event) => {
-    if (!mobile.matches && panel.open && !widget.contains(event.target as Node)) close(false);
-  }, {signal});
+  // A docked assistant stays open while the reader selects text and uses the page.
   mobile.addEventListener('change', () => {
     if (!panel.open) return;
     panel.close();
     syncClosed();
     open();
   }, {signal});
+  window.addEventListener('resize', syncReadingLayout, {signal});
   window.visualViewport?.addEventListener('resize', syncViewport, {signal});
   window.visualViewport?.addEventListener('scroll', syncViewport, {signal});
   cleanup = () => {

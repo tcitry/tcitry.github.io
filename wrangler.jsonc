@@ -6,8 +6,8 @@
   "compatibility_date": "2026-09-07",
   "workers_dev": true,
   "routes": [{ "pattern": "yindongliang.com", "custom_domain": true }],
-  "ai": { "binding": "AI" },
-  "ai_search": [{ "binding": "BLOG_SEARCH", "instance_name": "tcitry-blog-search" }],
+  "ai": { "binding": "AI", "remote": true },
+  "ai_search": [{ "binding": "BLOG_SEARCH", "instance_name": "tcitry-blog-search", "remote": true }],
   "assets": {
     "binding": "ASSETS",
     "run_worker_first": ["/api/*"],

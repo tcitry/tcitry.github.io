@@ -5,6 +5,7 @@ import svelte from '@astrojs/svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 import { rehypeBlogCodeBlocks, remarkBlogCodeSource } from './src/lib/markdown.mjs';
+import { blogChatDev } from './scripts/lib/chat-dev.mjs';
 
 export default defineConfig({
   site: 'https://yindongliang.com',
@@ -19,7 +20,7 @@ export default defineConfig({
     markdown: { code: false, remarkPlugins: [remarkBlogCodeSource], rehypePlugins: [rehypeBlogCodeBlocks] },
   }), react(), svelte()],
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), blogChatDev()],
     // These renderers are imported on demand, including on pages without React islands.
     optimizeDeps: { include: ['@heroui-pro/react/code-block', '@heroui-pro/react/command'] },
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },

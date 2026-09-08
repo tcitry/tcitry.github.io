@@ -30,8 +30,9 @@
     "deploy:verified": "node scripts/deploy-verified.mjs",
     "ai-search:export": "node scripts/export-ai-search.mjs",
     "ai-search:sync": "node scripts/sync-ai-search.mjs",
+    "ai-search:bootstrap": "node scripts/bootstrap-ai-search.mjs",
     "verify:deployment": "node scripts/verify-deployment.mjs --env production && node scripts/verify-ai-search-deployment.mjs",
-    "dev:worker": "wrangler dev --local",
+    "dev:worker": "wrangler dev",
     "test:browser:chat": "node tests/browser/chat.mjs"
   },
   "dependencies": {
