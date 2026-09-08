@@ -50,3 +50,6 @@ node_modules
 
 # Local development artifacts; published themes are installed from npm.
 /.artifacts/
+
+.agents/
+.claude/
