@@ -7,6 +7,7 @@
 - `hugo-book` 备份分支中的开发规则继续有效；Hugo 迁移到 Astro 只改变技术实现和入口，不取消 URL、评论兼容、内容边界或验证要求。
 - 日常在 `tcitry-blog` 站点检出的 `main` 分支工作。迁移前的主分支是 `master`；不要将它误记为旧 `main`。临时 worktree 完成合并后再清理，先确认没有未提交工作或需要保留的本地文件。
 - 本站使用 Astro + `@tcitry/astro-book`，业务覆写维护在 `src/`，通用主题实现维护在独立 astro-book 仓库。`package.json` 是安装、开发、构建、检查和发布的唯一权威入口；`main` 不保留 Makefile 或 Hugo 专用入口、模板、样式与构建配置，旧实现到 `hugo-book` / `master` 备份分支查阅。Astro 仍依赖的旧 URL 基线、内容兼容层、评论规则和验证必须保留。
+- 改写 Blog 技术文档的术语、中文导读或 Mermaid 时，读取 [blog-technical-docs Skill](skills/blog-technical-docs/SKILL.md)，并以 Blog 内容仓库当前的 `Agents.md` 为准。Contract Testing 文章是已验收示范；“其他文档”的批量改造默认不重复改写它。
 
 ## Astro 生产与预览
 
