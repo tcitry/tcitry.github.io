@@ -2,12 +2,22 @@
 
 当前生产演示入口：
 
-- `/labs/`：[Labs](https://yindongliang.com/labs/)，从顶部菜单 **About** 之后的 **Labs** 进入，以 HeroUI Pro 的选择、评价和消息组件为主，另有 HeroUI、Svelte 与 Astro 示例；右侧目录对应真实章节锚点。
+- `/labs/`：[Labs](https://yindongliang.com/labs/)，从顶部菜单 **About** 之后的 **Labs** 进入。页面顶部的 Demo 列表统一收录独立页面与本页示例，右侧目录对应真实章节锚点。
 - `/labs/agent-replay/`：复用同一个 React 组件的独立页面。
+- `/demos/2026/threejs-basics/`：Three.js 场景与 HeroUI 交互控件。
+- `/demos/2026/rounded-timeline/`：Astro 原生圆弧时间线示例。
 
 演示文件都在站点仓库内，`Blog` 内容保持只读。修改后先在本地 review，再随主站发布到唯一的生产 Worker；旧迁移预览域名已下线，流程见 [本地验收与生产发布](astro-preview.md)。Agent 演示仅播放本地预设数据，不调用模型或后端，也不收集输入。
 
 本站采用 Astro + `@tcitry/astro-book` + Tailwind CSS v4，并在 React 交互组件中使用 HeroUI。HeroUI Pro 是本站额外接入的商业组件；独立的公开主题不依赖 React、HeroUI 或 HeroUI Pro。主题本身的使用方式见 [英文 README](https://github.com/tcitry/astro-book/blob/main/README.md)、[入门指南](https://github.com/tcitry/astro-book/blob/main/docs/getting-started.md) 与 [公开 API](https://github.com/tcitry/astro-book/blob/main/docs/architecture.md)。
+
+## 维护 Labs 统一入口
+
+新增、迁移或移除 demo 时，同步维护 `src/pages/labs/index.mdx` 中的 `demoDirectory`，让 `/labs/` 始终提供完整且可用的入口。每项保留名称、一句话说明，以及独立页面地址或本页实际章节锚点；一个示例同时存在两种入口时，合并在同一项中。
+
+列表只收录已实现且会进入构建产物的示例。核对 `src/pages/demos/`、`src/pages/labs/`、公开静态资源及 `scripts/prepare-assets.mjs` 的排除清单；已移除的 demo 不重新加入，已由 Astro 接管的旧静态目录不重复列出。不要在页面末尾另建零散入口，也不要为目录复制完整组件展示。
+
+目录使用静态语义列表与现有主题样式，桌面保持名称、说明和入口同列对齐，窄屏将说明排到下一行。间距采用 4px / 8px 基准；新加控件优先复用已有 HeroUI / HeroUI Pro 组件与主题样式。保持 `/labs/` 路径及既有章节锚点稳定，并在构建后核对每个链接的 HTML 文件或目标 `id`，实际点击确认桌面、手机和键盘导航都能到达目标。
 
 ## 主题与自定义页面
 
@@ -39,7 +49,7 @@ src/components/demos/
   SvelteCounter.svelte        Svelte 状态、派生值与双向绑定
   DemoSurface.module.css     将 Book 主题变量传给 demo 的 HeroUI tokens
 src/pages/labs/
-  index.mdx                  按组件库与框架组织的 Labs 展示入口
+  index.mdx                  demoDirectory 统一入口与按组件库组织的展示
   agent-replay.astro          独立页面复用 AgentReplay
 src/layouts/LabsLayout.astro   为 MDX 适配现有 Book 布局
 src/styles/
@@ -153,6 +163,7 @@ npm run preview -- --port 4321
 检查 `/labs/` 与 `/labs/agent-replay/`：
 
 - Pro InlineSelect 改变关注点后更新说明，Rating 与重置按钮更新反馈；两种选择器的浮层在明暗主题与窄屏均有正确宽度、圆角、阴影和可读文本。
+- 顶部 Demo 列表覆盖当前独立演示和本页可用示例；逐项打开入口，独立页返回正常内容，本页链接指向真实章节。桌面同列对齐，窄屏无水平溢出，键盘焦点清晰。
 - Labs 右侧目录与移动端目录中的每条链接均能定位真实章节。
 - HeroUI 的标题、分类和标签开关即时更新预览；收藏、恢复示例、Tabs、按钮反馈和 Accordion 可操作，Select 浮层不会被裁切。
 - Agent 初始完整结果包含 3 个步骤、4 段回答、来源与代码；7 帧回放的开始、暂停、恢复、完成、重放和重置均可用，修改速度立即作用于下一帧。

@@ -7,9 +7,9 @@ import surfaceStyles from './DemoSurface.module.css';
 import styles from './ThreeBasics.module.css';
 
 const shapes = [
-  {value: 'cube', label: '立方体', symbol: '□'},
-  {value: 'sphere', label: '球体', symbol: '○'},
-  {value: 'torus', label: '圆环', symbol: '◎'},
+  {value: 'cube', label: '立方体'},
+  {value: 'sphere', label: '球体'},
+  {value: 'torus', label: '圆环'},
 ] as const;
 const colors = [
   {value: '#257f81', label: '湖蓝'},
@@ -66,16 +66,19 @@ ambient.intensity = ${state.light.toFixed(1)} * 0.625; key.intensity = ${state.l
       <main className={styles.main}>
         <header className={styles.header}>
           <div>
-            <p className={styles.eyebrow}>THREE.JS / 交互观察台</p>
+            <p className={styles.eyebrow}>Three.js / 交互观察台</p>
             <h1 className={styles.title}>亲手改变一个 3D 场景</h1>
             <p className={styles.intro}>从形状、颜色和光开始。每一次操作，都能在画面中找到对应的变化。</p>
           </div>
-          <a className={styles.backLink} href="/docs/Frontend/Tooling/threejs-and-blender-guide/" target="_top">返回入门文章 <span aria-hidden="true">↗</span></a>
+          <nav className={styles.demoLinks} aria-label="演示导航">
+            <a className={styles.backLink} href="/labs/" target="_top">全部演示</a>
+            <a className={styles.backLink} href="/docs/Frontend/Tooling/threejs-and-blender-guide/" target="_top">返回入门文章</a>
+          </nav>
         </header>
 
         <div className={styles.workspace}>
           <section className={styles.stage} aria-label="3D 观察区域">
-            <div className={styles.stageLabel} aria-hidden="true"><span className={styles.dot} />Scene / 场景</div>
+            <div className={styles.stageLabel} aria-hidden="true">Scene / 场景</div>
             <div className={styles.viewport} data-viewport>
               <div ref={canvasHost} className={styles.canvasHost} data-canvas-host />
               <div className={styles.fallback} data-status role="status" hidden={status === 'ready'}>
@@ -91,16 +94,16 @@ ambient.intensity = ${state.light.toFixed(1)} * 0.625; key.intensity = ${state.l
 
           <form className={styles.panel} aria-label="场景控制" onSubmit={event => event.preventDefault()}>
             <section className={styles.section}>
-              <h2 className={styles.sectionTitle} id="three-geometry-heading"><span>01</span> Geometry</h2>
+              <h2 className={styles.sectionTitle} id="three-geometry-heading">Geometry</h2>
               <p className={styles.explanation} id="three-geometry-help">改变形状，其他设置保持不变。</p>
               <RadioGroup className={styles.choiceGroup} name="geometry" aria-labelledby="three-geometry-heading" aria-describedby="three-geometry-help" orientation="horizontal" value={state.geometry} isDisabled={disabled} onChange={value => {
                 if (value === 'cube' || value === 'sphere' || value === 'torus') update('geometry', value);
               }}>
-                {shapes.map(({value, label, symbol}) => (
+                {shapes.map(({value, label}) => (
                   <Radio key={value} className={styles.choice} value={value}>
-                    <Radio.Content className={styles.shapeOption}>
-                      <span aria-hidden="true" className={styles.shapeSymbol}>{symbol}</span>
-                      <span className={styles.choiceLabel}><Radio.Control><Radio.Indicator /></Radio.Control><Label>{label}</Label></span>
+                    <Radio.Content className={styles.choiceContent}>
+                      <Radio.Control><Radio.Indicator /></Radio.Control>
+                      <Label className={styles.choiceLabel}>{label}</Label>
                     </Radio.Content>
                   </Radio>
                 ))}
@@ -108,14 +111,14 @@ ambient.intensity = ${state.light.toFixed(1)} * 0.625; key.intensity = ${state.l
             </section>
 
             <section className={styles.section}>
-              <h2 className={styles.sectionTitle} id="three-material-heading"><span>02</span> Material</h2>
+              <h2 className={styles.sectionTitle} id="three-material-heading">Material</h2>
               <p className={styles.explanation} id="three-material-help">改变表面颜色，物体形状不变。</p>
               <RadioGroup className={styles.choiceGroup} name="material" aria-labelledby="three-material-heading" aria-describedby="three-material-help" orientation="horizontal" value={state.material} isDisabled={disabled} onChange={value => update('material', value)}>
                 {colors.map(({value, label}) => (
                   <Radio key={value} className={styles.choice} value={value}>
-                    <Radio.Content className={styles.colorOption}>
-                      <span className={styles.swatch} style={{'--swatch': value} as CSSProperties} aria-hidden="true" />
-                      <span className={styles.choiceLabel}><Radio.Control><Radio.Indicator /></Radio.Control><Label>{label}</Label></span>
+                    <Radio.Content className={styles.choiceContent}>
+                      <Radio.Control><Radio.Indicator /></Radio.Control>
+                      <Label className={styles.choiceLabel}>{label}<span className={styles.swatch} style={{'--swatch': value} as CSSProperties} aria-hidden="true" /></Label>
                     </Radio.Content>
                   </Radio>
                 ))}
@@ -123,7 +126,7 @@ ambient.intensity = ${state.light.toFixed(1)} * 0.625; key.intensity = ${state.l
             </section>
 
             <section className={styles.section}>
-              <h2 className={styles.sectionTitle}><span>03</span> Light</h2>
+              <h2 className={styles.sectionTitle}>Light</h2>
               <p className={styles.explanation}>调暗光线，观察表面的明暗变化。</p>
               <Slider className={styles.lightSlider} value={state.light} onChange={value => update('light', Array.isArray(value) ? value[0] : value)} minValue={0} maxValue={5} step={0.1} isDisabled={disabled} formatOptions={{minimumFractionDigits: 1, maximumFractionDigits: 1}}>
                 <Label className="text-xs">Light 强度</Label>
@@ -134,26 +137,28 @@ ambient.intensity = ${state.light.toFixed(1)} * 0.625; key.intensity = ${state.l
             </section>
 
             <div className={styles.toggles} role="group" aria-label="观察方式">
-              <div>
-                <Switch size="sm" name="wireframe" isSelected={state.wireframe} onChange={value => update('wireframe', value)} isDisabled={disabled} aria-describedby="three-wireframe-help">
-                  <Switch.Content><Switch.Control><Switch.Thumb /></Switch.Control><Label>显示线框</Label></Switch.Content>
-                </Switch>
+              <Switch className={styles.toggle} name="wireframe" isSelected={state.wireframe} onChange={value => update('wireframe', value)} isDisabled={disabled} aria-describedby="three-wireframe-help">
+                <Switch.Content className={styles.toggleContent}>
+                  <Label elementType="span">显示线框</Label>
+                  <Switch.Control><Switch.Thumb /></Switch.Control>
+                </Switch.Content>
                 <p className={styles.toggleHelp} id="three-wireframe-help">沿着三角形边线，看看 Geometry 的结构。</p>
-              </div>
-              <div>
-                <Switch size="sm" name="rotation" isSelected={state.rotation} onChange={value => update('rotation', value)} isDisabled={disabled} aria-describedby="three-rotation-help">
-                  <Switch.Content><Switch.Control><Switch.Thumb /></Switch.Control><Label>自动旋转</Label></Switch.Content>
-                </Switch>
+              </Switch>
+              <Switch className={styles.toggle} name="rotation" isSelected={state.rotation} onChange={value => update('rotation', value)} isDisabled={disabled} aria-describedby="three-rotation-help">
+                <Switch.Content className={styles.toggleContent}>
+                  <Label elementType="span">自动旋转</Label>
+                  <Switch.Control><Switch.Thumb /></Switch.Control>
+                </Switch.Content>
                 <p className={styles.toggleHelp} id="three-rotation-help">让物体随时间转动，观察 Animation。</p>
-              </div>
+              </Switch>
             </div>
-            <Button className="w-full justify-between" variant="outline" size="sm" type="button" onPress={reset} data-reset isDisabled={disabled}>重置场景 <span aria-hidden="true">↺</span></Button>
+            <Button className="w-full" variant="outline" type="button" onPress={reset} data-reset isDisabled={disabled}>重置场景</Button>
           </form>
         </div>
 
         <Disclosure className={styles.codeDisclosure} isExpanded={codeExpanded} onExpandedChange={setCodeExpanded}>
           <Disclosure.Heading className={styles.codeHeading}>
-            <Disclosure.Trigger className={styles.codeTrigger}>查看对应代码<Disclosure.Indicator /></Disclosure.Trigger>
+            <Disclosure.Trigger className={styles.codeTrigger}><span>查看对应代码</span><Disclosure.Indicator /></Disclosure.Trigger>
           </Disclosure.Heading>
           <Disclosure.Content>
             <Disclosure.Body className="min-w-0 px-0 pb-0">

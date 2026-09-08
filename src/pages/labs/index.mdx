@@ -1,6 +1,6 @@
 ---
 title: Labs
-description: 可以直接操作的前端实验，主要展示 HeroUI Pro 组件，并收录 HeroUI、Svelte 与 Astro 示例。
+description: 前端 demo 的统一入口，收录 Three.js、CSS、HeroUI Pro、HeroUI、Svelte 与 Astro 示例。
 layout: ../../layouts/LabsLayout.astro
 ---
 
@@ -11,9 +11,39 @@ import SvelteCounter from '../../components/demos/SvelteCounter.svelte';
 import Notice from '@tcitry/astro-book/components/Notice';
 import packageJson from '../../../package.json';
 
-这里收录可以直接操作的前端实验，先从 HeroUI Pro 的选择、评价和消息组件开始。右侧目录可以跳到感兴趣的示例。
+export const demoDirectory = [
+  {name: 'Three.js · 3D 场景', description: '换形状、颜色与灯光，拖动查看物体，认识 3D 场景。', links: [{label: '打开页面', href: '/demos/2026/threejs-basics/'}]},
+  {name: 'CSS · 圆弧时间线', description: '观察卡片之间的圆弧连接线怎样随页面宽度调整。', links: [{label: '打开页面', href: '/demos/2026/rounded-timeline/'}]},
+  {name: 'HeroUI Pro · 选择与评价', description: '试用句子里的选择器和星级评分，查看即时反馈。', links: [{label: '本页体验', href: '#heroui-pro选择与评价'}]},
+  {name: 'HeroUI Pro · 消息回放', description: '暂停、调速和重放一段包含步骤、来源与代码的回答。', links: [{label: '本页体验', href: '#heroui-pro完整的消息过程'}, {label: '独立页面', href: '/labs/agent-replay/'}]},
+  {name: 'HeroUI · 编辑与预览', description: '编辑内容、切换样式，观察表单与预览如何同步。', links: [{label: '本页体验', href: '#heroui编辑与即时预览'}]},
+  {name: 'Svelte · 响应式计数', description: '改变计数和步长，观察派生值一起更新。', links: [{label: '本页体验', href: '#其他框架svelte'}]},
+  {name: 'Astro · 静态主题组件', description: '查看主题提示框如何和正文一起呈现。', links: [{label: '本页查看', href: '#astro静态主题组件'}]},
+  {name: 'KaTeX 与 Mermaid', description: '查看文章里的数学公式、流程图及其 Markdown 写法。', links: [{label: '本页查看', href: '#文章的公式和图表'}]},
+];
+
+这里是本站 demo 的统一入口。从下面选择一个实验，直接打开独立页面，或跳到本页对应的交互示例。
 
 [HeroUI Pro 组件文档](https://heroui.pro/docs/react/components) · [编写 demo](https://github.com/tcitry/tcitry.github.io/blob/main/docs/demo-authoring.md)
+
+
+## Demo 列表
+
+<div className="not-prose my-8 @container" data-demo-directory>
+  <ul className="m-0! list-none p-0!">
+    {demoDirectory.map((demo) => (
+      <li key={demo.name} className="grid min-w-0 grid-cols-[minmax(0,1fr)_7rem] gap-x-4 gap-y-2 border-b border-[var(--gray-200)] py-4 first:border-t @min-[40rem]:grid-cols-[13rem_minmax(0,1fr)_7rem]">
+        <span className="min-w-0 text-sm leading-6 font-semibold">{demo.name}</span>
+        <p className="col-span-2 row-start-2 m-0 min-w-0 text-sm leading-6 @min-[40rem]:col-span-1 @min-[40rem]:col-start-2 @min-[40rem]:row-start-1">{demo.description}</p>
+        <div className="col-start-2 row-start-1 flex flex-col items-end gap-2 text-sm leading-6 @min-[40rem]:col-start-3">
+          {demo.links.map((link) => (
+            <a key={link.href} href={link.href} aria-label={`${demo.name}：${link.label}`} className="text-[var(--color-link)] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4">{link.label}<span aria-hidden="true"> →</span></a>
+          ))}
+        </div>
+      </li>
+    ))}
+  </ul>
+</div>
 
 <div class="my-5 flex flex-wrap items-center gap-3 border-y border-[var(--gray-200)] py-3 text-sm">
   <label htmlFor="labs-reading-theme">试试不同外观</label>
@@ -36,7 +66,7 @@ InlineSelect 把选择器放进一句话，Rating 用星级表达反馈。试试
 
 <AgentReplay client:visible />
 
-同一个组件也可以[在独立页面打开](/labs/agent-replay/)。它只回放本地预设数据，不调用 AI 模型或后端服务。
+这个示例只回放本地预设数据，不调用 AI 模型或后端服务。
 
 ## HeroUI：编辑与即时预览
 
@@ -109,13 +139,7 @@ import AgentReplay from '../../components/demos/AgentReplay';
 
 ## 已有演示，统一构建
 
-- [Three.js：亲手改变一个 3D 场景](/demos/2026/threejs-basics/)：切换 Geometry、Material 与 Light，拖动 Camera，观察线框与 Animation。也可结合 [Three.js 与 Blender 入门](/docs/Frontend/Tooling/threejs-and-blender-guide/) 阅读。
-
-圆弧时间线已迁入本站的 Astro 页面，保留文章中原有的嵌入地址，也可以直接打开：
-
-- [圆弧时间线](/demos/2026/rounded-timeline/)：Astro 静态卡片与 Tailwind v4，小脚本在尺寸变化时更新连接线。
-
-它与博客共用开发、构建和部署命令，组件代码保存在本站。
+Three.js 场景与圆弧时间线的独立页面已收录在顶部 Demo 列表。它们与博客共用开发、构建和部署流程，组件代码保存在本站；圆弧时间线继续保留文章中原有的嵌入地址。
 
 ## 使用与定制
 

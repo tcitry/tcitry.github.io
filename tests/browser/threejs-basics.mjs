@@ -39,6 +39,77 @@ async function assertFits(page, label) {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${label}: no document horizontal overflow`);
 }
 
+async function assertAlignment(root, label) {
+  const layout = await root.evaluate((element) => {
+    const rect = (node) => {
+      const bounds = node.getBoundingClientRect();
+      return { left: bounds.left, right: bounds.right, top: bounds.top, bottom: bounds.bottom, height: bounds.height, centerY: bounds.top + bounds.height / 2 };
+    };
+    const choices = [...element.querySelectorAll('[data-slot="radio-content"]')].map((choice) => {
+      const text = choice.querySelector('[data-slot="label"]');
+      const textRange = document.createRange();
+      textRange.selectNodeContents(text);
+      const visibleText = textRange.getBoundingClientRect();
+      return {
+        card: rect(choice), control: rect(choice.querySelector('[data-slot="radio-control"]')), label: rect(text),
+        contentLeft: visibleText.left, contentRight: visibleText.right,
+        overflow: choice.scrollWidth - choice.clientWidth,
+      };
+    });
+    const switches = [...element.querySelectorAll('[data-slot="switch"]')].map((toggle) => ({
+      row: rect(toggle.querySelector('[data-slot="switch-content"]')),
+      control: rect(toggle.querySelector('[data-slot="switch-control"]')),
+      label: rect(toggle.querySelector('[data-slot="label"]')),
+      help: rect(toggle.querySelector('p')),
+    }));
+    const trigger = element.querySelector('[data-slot="disclosure-trigger"]');
+    const triggerStyle = getComputedStyle(trigger);
+    const triggerBounds = rect(trigger);
+    const stage = element.querySelector('[aria-label="3D 观察区域"]');
+    const panel = element.querySelector('form');
+    return {
+      choices, switches,
+      disclosure: {
+        label: rect(trigger.firstElementChild), indicator: rect(trigger.querySelector('[data-slot="disclosure-indicator"]')),
+        contentLeft: triggerBounds.left + parseFloat(triggerStyle.paddingLeft) + parseFloat(triggerStyle.borderLeftWidth),
+        contentRight: triggerBounds.right - parseFloat(triggerStyle.paddingRight) - parseFloat(triggerStyle.borderRightWidth),
+      },
+      stacked: rect(panel).top >= rect(stage).bottom - 1,
+      stackedStarts: [
+        rect(stage.querySelector(':scope > [aria-hidden="true"]')).left,
+        rect(element.querySelector('#three-camera-help strong')).left,
+        rect(element.querySelector('#three-geometry-heading')).left,
+      ],
+    };
+  });
+  const aligned = (a, b, message) => assert.ok(Math.abs(a - b) <= 1, `${label}: ${message} (${a.toFixed(2)} vs ${b.toFixed(2)})`);
+  assert.equal(layout.choices.length, 6, `${label}: six visible choices`);
+  for (const [index, choice] of layout.choices.entries()) {
+    aligned(choice.card.height, layout.choices[0].card.height, 'Radio options have equal heights');
+    assert.ok(choice.card.height >= 44, `${label}: Radio options have usable touch targets`);
+    assert.ok(choice.overflow <= 1 && choice.contentLeft >= choice.card.left - 1 && choice.contentRight <= choice.card.right + 1, `${label}: Radio option ${index + 1} contains its label and color swatch`);
+    assert.ok(choice.control.left >= choice.card.left - 1 && choice.control.right <= choice.card.right + 1, `${label}: Radio indicator stays inside its option`);
+    aligned(choice.control.centerY, choice.label.centerY, 'Radio indicators and labels share a vertical center');
+    if (index >= 3) {
+      aligned(choice.control.left, layout.choices[index - 3].control.left, 'Geometry and Material indicator columns align');
+      aligned(choice.label.left, layout.choices[index - 3].label.left, 'Geometry and Material label columns align');
+    }
+  }
+  assert.equal(layout.switches.length, 2);
+  for (const toggle of layout.switches) {
+    aligned(toggle.label.left, toggle.help.left, 'Switch labels and descriptions share a left edge');
+    aligned(toggle.control.right, toggle.row.right, 'Switch controls sit at the trailing edge');
+    aligned(toggle.control.right, layout.switches[0].control.right, 'Switch controls share a right edge');
+    aligned(toggle.label.centerY, toggle.control.centerY, 'Switch labels and controls are vertically centered');
+  }
+  aligned(layout.disclosure.label.left, layout.disclosure.contentLeft, 'Code disclosure label aligns left');
+  aligned(layout.disclosure.indicator.right, layout.disclosure.contentRight, 'Code disclosure indicator aligns right');
+  aligned(layout.disclosure.label.centerY, layout.disclosure.indicator.centerY, 'Code disclosure contents are vertically centered');
+  if (layout.stacked) {
+    for (const start of layout.stackedStarts) aligned(start, layout.stackedStarts[0], 'Scene, Camera and panel labels share the stacked content edge');
+  }
+}
+
 // Compare successive screenshots of the actual canvas, without a stored golden
 // image. Waiting for stable frames accommodates OrbitControls damping and GPUs
 // with different rendering speeds while still detecting a stopped render loop.
@@ -92,6 +163,7 @@ try {
   assert.equal(await canvas.evaluate((element) => element.tagName), 'CANVAS');
   assert.ok(await canvas.isVisible());
   await assertFits(page, '1440px');
+  await assertAlignment(root, '1440px');
 
   const initialForm = await formState(root);
   const automatic = root.getByRole('switch', { name: '自动旋转', exact: true });
@@ -216,6 +288,7 @@ try {
 
   await page.setViewportSize({ width: 375, height: 850 });
   await assertFits(page, '375px');
+  await assertAlignment(root, '375px');
   await stableCanvas(canvas, 'Mobile resize');
   const mobileBounds = await canvas.boundingBox();
   assert.ok(mobileBounds && mobileBounds.width <= 375 && mobileBounds.width > 100, 'Mobile canvas fits the viewport');
@@ -227,6 +300,14 @@ try {
   await assertFits(page, '375px with expanded code');
   await codeToggle.click();
   if (screenshots) await page.screenshot({ path: join(screenshots, 'threejs-basics-mobile.png'), fullPage: true });
+
+  for (const width of [768, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await assertFits(page, `${width}px`);
+    await assertAlignment(root, `${width}px`);
+    await stableCanvas(canvas, `${width}px resize`);
+    if (screenshots) await page.screenshot({ path: join(screenshots, `threejs-basics-${width}.png`), fullPage: true });
+  }
   await context.close();
 
   const fallbackContext = await createContext();
