@@ -28,7 +28,7 @@ function envelopeItems(body) {
     items.push({
       type: header.type,
       bytes: end - offset,
-      ...(['event', 'replay_event'].includes(header.type)
+      ...(['event', 'replay_event', 'trace_metric'].includes(header.type)
         ? { payload: JSON.parse(body.subarray(offset, end).toString()) } : {}),
     });
     offset = end + (body[end] === 10 ? 1 : 0);
@@ -36,13 +36,15 @@ function envelopeItems(body) {
   return items;
 }
 
-async function fixture({ mockSearch = false } = {}) {
+async function fixture({ mockSearch = false, searchModule } = {}) {
   const context = await browser.newContext({
     serviceWorkers: 'block',
     viewport: { width: 1440, height: 1000 },
   });
   const events = [];
   const replays = [];
+  const metrics = [];
+  const metricContainers = [];
   const envelopeErrors = [];
   let envelopeCount = 0;
   let closing = false;
@@ -61,6 +63,10 @@ async function fixture({ mockSearch = false } = {}) {
       try {
         const items = envelopeItems(request.postDataBuffer() ?? Buffer.alloc(0));
         events.push(...items.filter((item) => item.type === 'event').map((item) => item.payload));
+        for (const item of items.filter((item) => item.type === 'trace_metric')) {
+          metricContainers.push(item.payload);
+          metrics.push(...item.payload.items);
+        }
         const recordingBytes = items.filter((item) => item.type === 'replay_recording').reduce((sum, item) => sum + item.bytes, 0);
         replays.push(...items.filter((item) => item.type === 'replay_event')
           .map((item) => ({ event: item.payload, recordingBytes })));
@@ -71,11 +77,11 @@ async function fixture({ mockSearch = false } = {}) {
       return route.fulfill({ status: 200, headers, contentType: 'application/json', body: '{}' });
     }
     if (url.origin !== canonical.origin && url.origin !== base.origin) return route.abort();
-    if (mockSearch && url.pathname === '/pagefind/pagefind.js') {
+    if ((mockSearch || searchModule) && url.pathname === '/pagefind/pagefind.js') {
       return route.fulfill({
         status: 200,
         contentType: 'text/javascript',
-        body: `export async function search() { throw new Error('Sentry search failure fixture'); }`,
+        body: searchModule ?? `export async function search() { throw new Error('Sentry search failure fixture'); }`,
       });
     }
     if (url.origin === base.origin) return route.continue();
@@ -92,7 +98,7 @@ async function fixture({ mockSearch = false } = {}) {
   const page = await context.newPage();
   page.setDefaultTimeout(15000);
   page.setDefaultNavigationTimeout(30000);
-  return { page, events, replays, envelopeErrors, envelopeCount: () => envelopeCount,
+  return { page, events, replays, metrics, metricContainers, envelopeErrors, envelopeCount: () => envelopeCount,
     close: async () => { closing = true; await context.close(); },
   };
 }
@@ -141,6 +147,52 @@ async function flush(page) {
     }
     await Promise.all([...clients].map((client) => client.flush(5000)));
   });
+}
+
+function metricAttributes(metric) {
+  return Object.fromEntries(Object.entries(metric.attributes ?? {}).map(([name, attribute]) => [name, attribute.value]));
+}
+
+function metricCount(current, name, attributes = {}) {
+  return current.metrics.filter((metric) => metric.name === name
+    && Object.entries(attributes).every(([key, value]) => metricAttributes(metric)[key] === value))
+    .reduce((total, metric) => total + metric.value, 0);
+}
+
+async function waitMetric(current, name, attributes = {}) {
+  const deadline = Date.now() + 10000;
+  while (Date.now() < deadline) {
+    await flush(current.page);
+    assert.deepEqual(current.envelopeErrors, [], 'Intercepted metric envelopes are readable');
+    const metric = current.metrics.find((metric) => metric.name === name
+      && Object.entries(attributes).every(([key, value]) => metricAttributes(metric)[key] === value));
+    if (metric) return metric;
+    await delay(25);
+  }
+  assert.fail(`Expected ${name} metric did not arrive at the local interceptor`);
+}
+
+function assertMetrics(current, path) {
+  assert.ok(current.metricContainers.length > 0, `${path}: the SDK sent metric envelopes`);
+  for (const container of current.metricContainers) {
+    assert.equal(container.version, 2, `${path}: current metric envelope format`);
+    assert.deepEqual(container.ingest_settings, { infer_ip: 'never', infer_user_agent: 'never' },
+      `${path}: Metrics does not request IP or user-agent inference`);
+  }
+  for (const metric of current.metrics) {
+    const attributes = metricAttributes(metric);
+    assert.equal(metric.type, 'counter', `${metric.name}: usage is recorded as a counter`);
+    assert.equal(metric.value, 1, `${metric.name}: each action contributes one count`);
+    assert.equal(attributes.page_path, path, `${metric.name}: pathname identifies the source page`);
+    assert.equal(attributes['sentry.environment'], 'production', `${metric.name}: production environment`);
+    assert.ok(attributes['sentry.release'], `${metric.name}: release identifies the build`);
+    assert.equal(attributes['user.email'], undefined, `${metric.name}: no user email`);
+    assert.equal(attributes['user.id'], undefined, `${metric.name}: no user identifier`);
+  }
+}
+
+async function renderFrames(page) {
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
 
 async function waitEvent(fixture, predicate) {
@@ -246,10 +298,233 @@ try {
     await search.close();
   }
 
+  const portfolio = await fixture();
+  try {
+    await portfolio.page.goto(new URL('/portfolio/?source=private-project-source#private-fragment', canonical).href,
+      { waitUntil: 'load' });
+    await waitClient(portfolio.page);
+    const links = portfolio.page.locator('a[data-analytics-project][data-analytics-placement]');
+    const entries = await links.evaluateAll((elements) => elements.map((element) => ({
+      project_id: element.dataset.analyticsProject,
+      placement: element.dataset.analyticsPlacement,
+      href: element.href,
+      target: element.target,
+      visible: (() => {
+        const box = element.getBoundingClientRect();
+        const width = Math.max(0, Math.min(box.right, innerWidth) - Math.max(box.left, 0));
+        const height = Math.max(0, Math.min(box.bottom, innerHeight) - Math.max(box.top, 0));
+        return box.width > 0 && box.height > 0 && width * height >= box.width * box.height / 2;
+      })(),
+    })));
+    assert.ok(entries.length > 4, 'The real Portfolio has enough entries to exercise offscreen impressions');
+    const firstVisibleIndex = entries.findIndex((entry) => entry.visible);
+    assert.ok(firstVisibleIndex >= 0, 'At least one project entrance is visible initially');
+    const firstVisible = entries[firstVisibleIndex];
+    await waitMetric(portfolio, 'project_cta_view', {
+      project_id: firstVisible.project_id, placement: firstVisible.placement,
+    });
+    assert.ok(metricCount(portfolio, 'project_cta_view') < entries.length,
+      'Opening Portfolio does not count every offscreen project entrance as viewed');
+
+    const lastIndex = entries.length - 1;
+    const last = entries[lastIndex];
+    const lastAttributes = { project_id: last.project_id, placement: last.placement };
+    assert.equal(last.visible, false, 'The final real Portfolio link starts offscreen');
+    assert.equal(metricCount(portfolio, 'project_cta_view', lastAttributes), 0,
+      'An offscreen project entrance has no impression');
+    // A brief scroll past an entrance must not satisfy the one-second exposure.
+    await links.nth(lastIndex).scrollIntoViewIfNeeded();
+    await renderFrames(portfolio.page);
+    await links.nth(firstVisibleIndex).scrollIntoViewIfNeeded();
+    await delay(1100);
+    await flush(portfolio.page);
+    assert.equal(metricCount(portfolio, 'project_cta_view', lastAttributes), 0,
+      'Passing an entrance for less than one second does not count an impression');
+
+    await links.nth(lastIndex).scrollIntoViewIfNeeded();
+    await waitMetric(portfolio, 'project_cta_view', lastAttributes);
+    assert.equal(metricCount(portfolio, 'project_cta_view', lastAttributes), 1,
+      'A project entrance viewed for a full second counts once');
+    await links.nth(firstVisibleIndex).scrollIntoViewIfNeeded();
+    await renderFrames(portfolio.page);
+    await links.nth(lastIndex).scrollIntoViewIfNeeded();
+    await delay(1100);
+    await flush(portfolio.page);
+    assert.equal(metricCount(portfolio, 'project_cta_view', lastAttributes), 1,
+      'Scrolling away and back does not duplicate an entrance impression');
+
+    assert.equal(last.target, '_blank', 'The last real project opens separately and preserves the source page');
+    await links.nth(lastIndex).click();
+    await waitMetric(portfolio, 'project_click', lastAttributes);
+    assert.equal(metricCount(portfolio, 'project_click', lastAttributes), 1, 'A real project click is counted once');
+    const click = portfolio.metrics.find((metric) => metric.name === 'project_click');
+    assert.equal(metricAttributes(click).target_path, new URL(last.href).pathname,
+      'Project clicks record the linked path');
+    await links.nth(lastIndex).focus();
+    await portfolio.page.keyboard.press('Enter');
+    await flush(portfolio.page);
+    assert.equal(metricCount(portfolio, 'project_click', lastAttributes), 2, 'Keyboard activation counts one additional project click');
+    await links.nth(lastIndex).click({ button: 'middle' });
+    await flush(portfolio.page);
+    assert.equal(metricCount(portfolio, 'project_click', lastAttributes), 3, 'Opening a project with the middle button counts once');
+    assertMetrics(portfolio, '/portfolio/');
+    assert.equal(JSON.stringify(portfolio.metricContainers).includes('private-project-source'), false,
+      'Source query parameters are absent from project metrics');
+    assert.equal(JSON.stringify(portfolio.metricContainers).includes('private-fragment'), false,
+      'Source fragments are absent from project metrics');
+    checked++;
+  } finally {
+    await portfolio.close();
+  }
+
+  const article = await fixture();
+  try {
+    const response = await article.page.goto(new URL('/posts/this-blog/', canonical).href, { waitUntil: 'load' });
+    assert.ok(response?.ok(), 'The real site introduction article exists');
+    await waitClient(article.page);
+    const projectLinks = article.page.locator('article.markdown a[data-analytics-project="github/tcitry/tcitry.github.io"]');
+    assert.ok(await projectLinks.count() > 1, 'The existing article mentions the site project more than once');
+    const placements = await projectLinks.evaluateAll((elements) => elements.map((element) => element.dataset.analyticsPlacement));
+    assert.ok(placements.every((placement) => placement === 'article_link'), 'Known project links in an article are classified as article links');
+    const reference = article.page.locator('article.markdown a[href="https://docs.astro.build/en/concepts/islands/"]');
+    assert.equal(await reference.count(), 1, 'The existing article also links to ordinary third-party documentation');
+    assert.equal(await reference.getAttribute('data-analytics-project'), null,
+      'Ordinary external references are not classified as project entrances');
+    const attributes = { project_id: 'github/tcitry/tcitry.github.io', placement: 'article_link' };
+    await projectLinks.first().scrollIntoViewIfNeeded();
+    await waitMetric(article, 'project_cta_view', attributes);
+    await projectLinks.last().scrollIntoViewIfNeeded();
+    await delay(1100);
+    await flush(article.page);
+    assert.equal(metricCount(article, 'project_cta_view', attributes), 1,
+      'Repeated mentions of the same project and article placement count one impression');
+    await projectLinks.first().click({ button: 'middle' });
+    await waitMetric(article, 'project_click', attributes);
+    assert.equal(metricCount(article, 'project_click', attributes), 1, 'A real article project link produces one click metric');
+    assertMetrics(article, '/posts/this-blog/');
+    checked++;
+  } finally {
+    await article.close();
+  }
+
+  const demo = await fixture();
+  try {
+    await demo.page.goto(new URL('/labs/?source=private-demo-source#private-fragment', canonical).href,
+      { waitUntil: 'load' });
+    await waitClient(demo.page);
+    const increment = demo.page.locator('[data-testid="svelte-increment"]');
+    await increment.scrollIntoViewIfNeeded();
+    await demo.page.waitForFunction(() => !document.querySelector('[data-testid="svelte-increment"]')?.disabled);
+    await flush(demo.page);
+    assert.equal(metricCount(demo, 'demo_start'), 0,
+      'Loading, scrolling to and hydrating real demos do not count as using them');
+    await increment.click();
+    await demo.page.waitForFunction(() => document.querySelector('[data-testid="svelte-count"]')?.textContent === '1');
+    await waitMetric(demo, 'demo_start', { demo_id: 'svelte-counter' });
+    await increment.click();
+    await demo.page.waitForFunction(() => document.querySelector('[data-testid="svelte-count"]')?.textContent === '2');
+    await flush(demo.page);
+    assert.equal(metricCount(demo, 'demo_start', { demo_id: 'svelte-counter' }), 1,
+      'Multiple real operations count one demo start per document');
+    assertMetrics(demo, '/labs/');
+    assert.equal(JSON.stringify(demo.metricContainers).includes('private-demo-source'), false,
+      'Source query parameters are absent from demo metrics');
+    checked++;
+  } finally {
+    await demo.close();
+  }
+
+  const usage = await fixture({ searchModule: `
+    export async function search(query) {
+      return { results: query === 'private-empty-query' ? [] : [{ data: async () => ({
+        url: '/posts/this-blog/?source=private-result-query#private-result-fragment',
+        meta: { title: 'A local Metrics search fixture' },
+        plain_excerpt: 'A local result; no private search input is included in its text.',
+      }) }] };
+    }
+  ` });
+  try {
+    await usage.page.goto(new URL('/archives/?source=private-search-source', canonical).href, { waitUntil: 'load' });
+    await waitClient(usage.page);
+    await flush(usage.page);
+    assert.equal(metricCount(usage, 'search_open'), 0, 'Page load does not count as opening search');
+    await usage.page.locator('[data-blog-search-trigger]:visible').first().click();
+    const input = usage.page.locator('[data-blog-search-input]');
+    await input.waitFor({ state: 'visible' });
+    await waitMetric(usage, 'search_open');
+    assert.equal(metricCount(usage, 'search_open'), 1, 'Opening the real search dialog counts once');
+    assert.equal(metricCount(usage, 'search_query'), 0, 'Recent updates are not counted as a submitted query');
+
+    await input.fill('private-empty-query');
+    await usage.page.waitForFunction(() => document.querySelector('[data-blog-command]')?.getAttribute('data-search-state') === 'results');
+    await waitMetric(usage, 'search_query', { result_count: 0 });
+    const query = 'private-search-query-20260908';
+    await input.fill(query);
+    await usage.page.locator('[data-blog-search-result]').waitFor({ state: 'visible' });
+    await waitMetric(usage, 'search_query', { result_count: 1 });
+    assert.equal(metricCount(usage, 'search_query'), 2, 'Each completed distinct query counts once, including no results');
+    await input.fill(query + ' ');
+    await renderFrames(usage.page);
+    await usage.page.waitForFunction(() => document.querySelector('[data-blog-command]')?.getAttribute('data-search-state') === 'results');
+    await flush(usage.page);
+    assert.equal(metricCount(usage, 'search_query'), 2, 'Adding trailing whitespace does not count the same query twice');
+    assertMetrics(usage, '/archives/');
+
+    await Promise.all([
+      usage.page.waitForURL((url) => url.pathname === '/posts/this-blog/', { waitUntil: 'load' }),
+      usage.page.locator('[data-blog-search-result]').click(),
+    ]);
+    const resultClick = await waitMetric(usage, 'search_result_click', { target_path: '/posts/this-blog/', source: 'results' });
+    assert.equal(metricCount(usage, 'search_result_click'), 1, 'A real result click counts once while navigation still works');
+    assert.equal(metricAttributes(resultClick).page_path, '/archives/', 'Result clicks retain the source page through navigation');
+    const serialized = JSON.stringify(usage.metricContainers);
+    for (const privateValue of [query, 'private-empty-query', 'private-search-source', 'private-result-query', 'private-result-fragment']) {
+      assert.equal(serialized.includes(privateValue), false, 'Search text and URL parameters are absent from all metric payloads');
+    }
+    checked++;
+  } finally {
+    await usage.close();
+  }
+
+  const keyboardSearch = await fixture();
+  try {
+    await keyboardSearch.page.goto(new URL('/archives/?source=private-keyboard-source', canonical).href,
+      { waitUntil: 'load' });
+    await waitClient(keyboardSearch.page);
+    await keyboardSearch.page.locator('[data-blog-search-trigger]:visible').first().click();
+    await keyboardSearch.page.waitForFunction(() => document.querySelector('[data-blog-command]')?.getAttribute('data-search-state') === 'recent');
+    await keyboardSearch.page.waitForFunction(() => document.querySelector('[data-blog-search-input]') === document.activeElement);
+    await keyboardSearch.page.keyboard.press('ArrowDown');
+    const focused = keyboardSearch.page.locator('[data-blog-search-result][data-focused="true"]');
+    await focused.waitFor({ state: 'visible' });
+    const href = await focused.getAttribute('href');
+    assert.ok(href, 'The focused real recent result has a destination');
+    const destination = new URL(href, canonical);
+    await Promise.all([
+      keyboardSearch.page.waitForURL((url) => url.href === destination.href, { waitUntil: 'load' }),
+      keyboardSearch.page.keyboard.press('Enter'),
+    ]);
+    const recentClick = await waitMetric(keyboardSearch, 'search_result_click', {
+      target_path: destination.pathname, source: 'recent',
+    });
+    assert.equal(metricAttributes(recentClick).page_path, '/archives/', 'Keyboard navigation keeps the search source page');
+    assert.equal(metricCount(keyboardSearch, 'search_result_click'), 1, 'Enter activates one recent result and records one click');
+    assert.equal(metricCount(keyboardSearch, 'search_query'), 0, 'Choosing a recent article does not count as a full-text query');
+    assert.equal(JSON.stringify(keyboardSearch.metricContainers).includes('private-keyboard-source'), false,
+      'Keyboard navigation metrics omit source URL parameters');
+    checked++;
+  } finally {
+    await keyboardSearch.close();
+  }
+
   const local = await fixture();
   try {
-    await local.page.goto(new URL('/', base).href, { waitUntil: 'networkidle' });
+    await local.page.goto(new URL('/labs/', base).href, { waitUntil: 'networkidle' });
     assert.deepEqual(await clientOptions(local.page), [], 'Production assets do not initialize Sentry on localhost');
+    await local.page.locator('[data-testid="svelte-increment"]').scrollIntoViewIfNeeded();
+    await local.page.waitForFunction(() => !document.querySelector('[data-testid="svelte-increment"]')?.disabled);
+    await local.page.locator('[data-testid="svelte-increment"]').click();
+    await local.page.waitForFunction(() => document.querySelector('[data-testid="svelte-count"]')?.textContent === '1');
     await local.page.evaluate(() => setTimeout(() => { throw new Error('Localhost Sentry fixture must stay offline'); }, 0));
     await delay(300);
     assert.equal(local.envelopeCount(), 0, 'Localhost does not send any Sentry envelopes');
@@ -257,7 +532,7 @@ try {
   } finally {
     await local.close();
   }
-  console.log(`Sentry browser regression passed (${checked} checks): layout coverage, one client, uncaught and handled errors, automatic error Replay, release/path tags, private query omission and localhost gating. All telemetry was intercepted locally.`);
+  console.log(`Sentry browser regression passed (${checked} checks): layout coverage, errors and Replay, release/path tags, project impressions and clicks, real demo usage, search metrics and privacy, and localhost gating. All telemetry was intercepted locally.`);
 } finally {
   await browser.close();
 }

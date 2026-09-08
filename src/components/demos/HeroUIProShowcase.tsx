@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {Button, Chip, ListBox} from '@heroui/react';
 import {InlineSelect, Rating} from '@heroui-pro/react';
+import {trackDemoStart} from '../../lib/analytics';
 import '../../styles/demos.css';
 import styles from './DemoSurface.module.css';
 
@@ -30,7 +31,7 @@ export default function HeroUIProShowcase() {
         <div>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
             <span>这次更关注</span>
-            <InlineSelect aria-label="体验关注点" value={view} onChange={value => {if (typeof value === 'string') setView(value);}} isDisabled={!hydrated}>
+            <InlineSelect aria-label="体验关注点" value={view} onChange={value => {if (typeof value === 'string') {setView(value); trackDemoStart('heroui-pro-showcase', 'view');}}} isDisabled={!hydrated}>
               <InlineSelect.Trigger><InlineSelect.Value /><InlineSelect.Indicator /></InlineSelect.Trigger>
               <InlineSelect.Popover className={`${styles.surface} min-w-48 max-w-[calc(100vw-2rem)]`} data-demo="heroui-pro-select-popover">
                 <ListBox>
@@ -44,11 +45,11 @@ export default function HeroUIProShowcase() {
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-separator pt-5">
           <div className="space-y-2">
             <div className="text-sm font-medium">你的体验评分</div>
-            <Rating aria-label="体验评分" value={rating} onValueChange={setRating} isDisabled={!hydrated}>
+            <Rating aria-label="体验评分" value={rating} onValueChange={value => {setRating(value); trackDemoStart('heroui-pro-showcase', 'rating');}} isDisabled={!hydrated}>
               {[1, 2, 3, 4, 5].map(value => <Rating.Item key={value} value={value} aria-label={`${value} 星`} />)}
             </Rating>
           </div>
-          <Button size="sm" variant="ghost" isDisabled={!hydrated} onPress={() => {setView('reading'); setRating(4);}}>重置反馈</Button>
+          <Button size="sm" variant="ghost" isDisabled={!hydrated} onPress={() => {setView('reading'); setRating(4); trackDemoStart('heroui-pro-showcase', 'reset');}}>重置反馈</Button>
         </div>
         <div className="rounded-xl bg-surface-secondary px-4 py-3 text-sm" role="status" aria-live="polite">{selected.label} · {rating} / 5 星<span className="mt-1 block text-xs text-muted">仅在本页演示，不会提交或保存。</span></div>
       </div>

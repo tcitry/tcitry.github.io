@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import {trackDemoStart} from '../../lib/analytics';
 
 export type SceneState = {
   geometry: 'cube' | 'sphere' | 'torus';
@@ -90,7 +91,17 @@ export function createThreeBasicsScene(
     renderer.render(scene, camera);
     if (state.rotation) invalidate();
   }
-  controls.addEventListener('change', invalidate);
+  let cameraInteraction = false;
+  const onCameraStart = () => { cameraInteraction = true; };
+  const onCameraEnd = () => { cameraInteraction = false; };
+  const onCameraChange = () => {
+    invalidate();
+    // A control must actually move the camera; pointer focus alone is not usage.
+    if (cameraInteraction) trackDemoStart('threejs-basics', 'camera');
+  };
+  controls.addEventListener('start', onCameraStart);
+  controls.addEventListener('end', onCameraEnd);
+  controls.addEventListener('change', onCameraChange);
 
   const update = (next: SceneState) => {
     if (disposed || failed) return;
@@ -133,6 +144,7 @@ export function createThreeBasicsScene(
     camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(spherical));
     controls.update();
     invalidate();
+    trackDemoStart('threejs-basics', 'camera_keyboard');
   }, { signal: abort.signal });
 
   const resize = new ResizeObserver(() => {
@@ -172,7 +184,9 @@ export function createThreeBasicsScene(
     abort.abort();
     resize.disconnect();
     intersection.disconnect();
-    controls.removeEventListener('change', invalidate);
+    controls.removeEventListener('start', onCameraStart);
+    controls.removeEventListener('end', onCameraEnd);
+    controls.removeEventListener('change', onCameraChange);
     controls.dispose();
     Object.values(geometries).forEach(geometry => geometry.dispose());
     material.dispose();

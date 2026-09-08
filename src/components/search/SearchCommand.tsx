@@ -5,6 +5,7 @@ import {Command} from '@heroui-pro/react/command';
 import {searchContent} from '../../lib/search-client';
 import {loadRecentUpdates} from '../../lib/search-recent-client';
 import {captureFeatureError, withFeatureSpan} from '../../lib/monitoring';
+import {flushAnalytics, trackEvent} from '../../lib/analytics';
 import type {SearchEntry, SearchResponse} from '../../lib/search-types';
 import surfaceStyles from '../demos/DemoSurface.module.css';
 import styles from './SearchCommand.module.css';
@@ -39,8 +40,17 @@ function SearchCommand({onClose}: Props) {
   const composingRef = useRef(false);
   const compositionEndedAt = useRef(-Infinity);
   const requestVersion = useRef(0);
+  const openedReported = useRef(false);
+  const queryReported = useRef(false);
+  const resultActivated = useRef(false);
   const backdrop = useRef<HTMLDivElement>(null);
   const normalizedQuery = query.trim();
+
+  useEffect(() => {
+    if (openedReported.current) return;
+    openedReported.current = true;
+    trackEvent('search_open');
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -65,6 +75,7 @@ function SearchCommand({onClose}: Props) {
     if (value === query) return;
     // Invalidate immediately, before the next effect can cancel an older request.
     requestVersion.current += 1;
+    if (value.trim() !== normalizedQuery) queryReported.current = false;
     setQuery(value);
     setLimit(PAGE_SIZE);
     setRetry(0);
@@ -93,6 +104,11 @@ function SearchCommand({onClose}: Props) {
         if (!response || requestVersion.current !== version) return;
         setResult({...response, query: normalizedQuery, limit});
         setBusy(false);
+        // A completed query counts once; pagination and retries are not new searches.
+        if (!queryReported.current) {
+          queryReported.current = true;
+          trackEvent('search_query', {result_count: response.total});
+        }
       }).catch((error) => {
         if (requestVersion.current !== version) return;
         setFailed(true);
@@ -212,7 +228,22 @@ function SearchCommand({onClose}: Props) {
             aria-busy={busy || (!normalizedQuery && recentState === 'loading') || undefined}
             className={styles.list}
             data-search-results
-            onAction={() => { queueMicrotask(onClose); }}
+            onAction={(key) => {
+              if (resultActivated.current) return;
+              resultActivated.current = true;
+              const entry = entries.find(({url}) => url === key);
+              if (entry) {
+                try {
+                  trackEvent('search_result_click', {
+                    target_path: new URL(entry.url, window.location.origin).pathname,
+                    source: normalizedQuery ? 'results' : 'recent',
+                  });
+                  // Begin sending while the source document is still active.
+                  flushAnalytics();
+                } catch { /* An invalid analytics URL must not interrupt navigation. */ }
+              }
+              queueMicrotask(onClose);
+            }}
             renderEmptyState={() => <div className={styles.empty}>{emptyMessage}</div>}
           >
             {entries.length > 0 && <Command.Group heading={normalizedQuery ? '搜索结果' : '最近更新'}>

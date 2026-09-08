@@ -1,6 +1,7 @@
 import {useEffect, useLayoutEffect, useRef, useState, type CSSProperties} from 'react';
 import {Button, Disclosure, Label, Radio, RadioGroup, Slider, Switch} from '@heroui/react';
 import {CodeBlock} from '@heroui-pro/react/code-block';
+import {trackDemoStart} from '../../lib/analytics';
 import {createThreeBasicsScene, initialSceneState, type SceneController, type SceneState} from './three-basics';
 import '../../styles/demos.css';
 import surfaceStyles from './DemoSurface.module.css';
@@ -49,11 +50,13 @@ export default function ThreeBasicsView() {
 
   function update<K extends keyof SceneState>(key: K, value: SceneState[K]) {
     setState(current => ({...current, [key]: value}));
+    trackDemoStart('threejs-basics', key);
   }
 
   function reset() {
     scene.current?.reset();
     setState({...initialSceneState});
+    trackDemoStart('threejs-basics', 'reset');
   }
 
   const code = `mesh.geometry = geometries.${state.geometry};

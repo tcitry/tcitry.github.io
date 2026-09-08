@@ -5,6 +5,7 @@ import {ChatMessage} from '@heroui-pro/react/chat-message';
 import {ChatSource, ChatSources} from '@heroui-pro/react/chat-source';
 import {ChatMessageActions} from '@heroui-pro/react/chat-message-actions';
 import {CodeBlock} from '@heroui-pro/react/code-block';
+import {trackDemoStart} from '../../lib/analytics';
 import '../../styles/demos.css';
 import styles from './DemoSurface.module.css';
 
@@ -53,6 +54,7 @@ export default function AgentReplay() {
   const visibleAnswer = answer.slice(0, Math.max(0, frame - steps.length));
 
   function reset() {
+    trackDemoStart('agent-replay', 'reset');
     setPlaying(false);
     setFrame(0);
     setCopied(false);
@@ -60,6 +62,7 @@ export default function AgentReplay() {
   }
 
   function play() {
+    trackDemoStart('agent-replay', 'play');
     if (complete) setFrame(0);
     setPlaying(true);
     setCopied(false);
@@ -95,14 +98,14 @@ export default function AgentReplay() {
           <Button onPress={play} isDisabled={!hydrated || playing} size="sm" data-testid="replay-start">
             {complete ? '重新回放' : frame ? '继续回放' : '开始回放'}
           </Button>
-          <Button onPress={() => setPlaying(false)} isDisabled={!playing} variant="secondary" size="sm" data-testid="replay-pause">暂停</Button>
+          <Button onPress={() => {setPlaying(false); trackDemoStart('agent-replay', 'pause');}} isDisabled={!playing} variant="secondary" size="sm" data-testid="replay-pause">暂停</Button>
             <Button onPress={reset} isDisabled={!hydrated || (!frame && !playing)} variant="ghost" size="sm" data-testid="replay-reset">重置</Button>
-            <Button onPress={() => {setPlaying(false); setFrame(lastFrame);}} isDisabled={!hydrated || complete} variant="ghost" size="sm">完整结果</Button>
+            <Button onPress={() => {setPlaying(false); setFrame(lastFrame); trackDemoStart('agent-replay', 'complete');}} isDisabled={!hydrated || complete} variant="ghost" size="sm">完整结果</Button>
           </div>
         <Slider
           className="w-full max-w-36"
           value={speed}
-          onChange={(value) => setSpeed(Array.isArray(value) ? value[0] : value)}
+          onChange={(value) => {setSpeed(Array.isArray(value) ? value[0] : value); trackDemoStart('agent-replay', 'speed');}}
           minValue={0.5}
           maxValue={2}
           step={0.5}
@@ -157,7 +160,7 @@ export default function AgentReplay() {
             </ChatSources>}
             {visibleAnswer.length > 0 && <ChatMessageActions className="mt-2 flex-wrap opacity-100">
               <ChatMessageActions.Copy size="sm" variant="ghost" isDisabled={!hydrated} isCopied={copied} onPress={copyAnswer} aria-label={copied ? '回答已复制' : '复制演示回答'} />
-              <ChatMessageActions.Regenerate size="sm" variant="ghost" isDisabled={!hydrated || playing} onPress={() => {setFrame(0); setPlaying(true); setCopied(false);}} aria-label="重新回放演示" />
+              <ChatMessageActions.Regenerate size="sm" variant="ghost" isDisabled={!hydrated || playing} onPress={() => {setFrame(0); setPlaying(true); setCopied(false); trackDemoStart('agent-replay', 'replay');}} aria-label="重新回放演示" />
             </ChatMessageActions>}
             {copyError && <div role="status" className="text-xs text-muted">浏览器未允许复制，可以直接选中上方文字。</div>}
           </ChatMessage.Body>

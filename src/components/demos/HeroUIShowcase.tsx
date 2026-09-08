@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import {Accordion, Button, Card, Chip, Description, Input, Label, ListBox, Select, Switch, Tabs, TextField} from '@heroui/react';
+import {trackDemoStart} from '../../lib/analytics';
 import '../../styles/demos.css';
 import styles from './DemoSurface.module.css';
 
@@ -21,11 +22,17 @@ export default function HeroUIShowcase() {
   const category = topics.find((item) => item.id === topic)?.label ?? topics[0].label;
 
   function reset() {
+    trackDemoStart('heroui-showcase', 'reset');
     setTitle(initialTitle);
     setTopic('frontend');
     setShowTags(true);
     setSaved(false);
     setFeedback('已恢复初始示例。');
+  }
+
+  function showButtonFeedback(message: string) {
+    setFeedback(message);
+    trackDemoStart('heroui-showcase', 'button');
   }
 
   return (
@@ -48,12 +55,12 @@ export default function HeroUIShowcase() {
 
         <Tabs.Panel id="compose" className="min-w-0 space-y-6 p-5 sm:p-6">
           <div className="grid min-w-0 gap-4 @min-[38rem]:grid-cols-[1.2fr_1fr]">
-            <TextField className="min-w-0" value={title} onChange={setTitle} isDisabled={!hydrated}>
+            <TextField className="min-w-0" value={title} onChange={value => {setTitle(value); trackDemoStart('heroui-showcase', 'title');}} isDisabled={!hydrated}>
               <Label>文章标题</Label>
               <Input className="min-w-0 w-full" maxLength={60} placeholder="为这篇文章起个名字" />
               <Description>最多 60 个字符，仅更新这张演示卡片。</Description>
             </TextField>
-            <Select fullWidth className="min-w-0" value={topic} onChange={(value) => setTopic(String(value))} isDisabled={!hydrated}>
+            <Select fullWidth className="min-w-0" value={topic} onChange={(value) => {setTopic(String(value)); trackDemoStart('heroui-showcase', 'topic');}} isDisabled={!hydrated}>
               <Label>文章分类</Label>
               <Select.Trigger><Select.Value /><Select.Indicator /></Select.Trigger>
               <Select.Popover className={`${styles.surface} max-w-[calc(100vw-2rem)]`} data-demo="heroui-select-popover">
@@ -64,7 +71,7 @@ export default function HeroUIShowcase() {
             </Select>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <Switch size="sm" isSelected={showTags} onChange={setShowTags} isDisabled={!hydrated}>
+            <Switch size="sm" isSelected={showTags} onChange={value => {setShowTags(value); trackDemoStart('heroui-showcase', 'tags');}} isDisabled={!hydrated}>
               <Switch.Content><Switch.Control><Switch.Thumb /></Switch.Control>显示技术标签</Switch.Content>
             </Switch>
             <Button size="sm" variant="ghost" onPress={reset} isDisabled={!hydrated}>恢复示例</Button>
@@ -81,7 +88,7 @@ export default function HeroUIShowcase() {
             </Card.Content>
             <Card.Footer className="flex-wrap justify-between gap-3 border-t border-separator pt-4">
               <span className="text-xs text-muted">交互预览 · 未写入博客</span>
-              <Button size="sm" variant={saved ? 'secondary' : 'primary'} isDisabled={!hydrated} aria-pressed={saved} onPress={() => {setSaved(!saved); setFeedback(saved ? '已取消本次收藏。' : '已在本次演示中收藏。');}}>{saved ? '已收藏' : '收藏这篇'}</Button>
+              <Button size="sm" variant={saved ? 'secondary' : 'primary'} isDisabled={!hydrated} aria-pressed={saved} onPress={() => {setSaved(!saved); setFeedback(saved ? '已取消本次收藏。' : '已在本次演示中收藏。'); trackDemoStart('heroui-showcase', 'save');}}>{saved ? '已收藏' : '收藏这篇'}</Button>
             </Card.Footer>
           </Card>
           <div className="text-xs leading-relaxed text-muted" role="status" aria-live="polite">{feedback}</div>
@@ -91,11 +98,11 @@ export default function HeroUIShowcase() {
           <div>
             <div className="mb-3 text-sm font-medium">同一按钮，不同操作层级</div>
             <div className="flex flex-wrap gap-2">
-              <Button size="sm" isDisabled={!hydrated} onPress={() => setFeedback('主操作：继续编辑。')}>继续编辑</Button>
-              <Button size="sm" variant="secondary" isDisabled={!hydrated} onPress={() => setFeedback('次要操作：已查看预览。')}>查看预览</Button>
-              <Button size="sm" variant="outline" isDisabled={!hydrated} onPress={() => setFeedback('描边操作：已选择导出示例。')}>导出示例</Button>
-              <Button size="sm" variant="ghost" isDisabled={!hydrated} onPress={() => setFeedback('轻量操作：稍后再看。')}>稍后再看</Button>
-              <Button size="sm" variant="danger-soft" isDisabled={!hydrated} onPress={() => setFeedback('危险操作样式演示，没有删除任何内容。')}>移除草稿</Button>
+              <Button size="sm" isDisabled={!hydrated} onPress={() => showButtonFeedback('主操作：继续编辑。')}>继续编辑</Button>
+              <Button size="sm" variant="secondary" isDisabled={!hydrated} onPress={() => showButtonFeedback('次要操作：已查看预览。')}>查看预览</Button>
+              <Button size="sm" variant="outline" isDisabled={!hydrated} onPress={() => showButtonFeedback('描边操作：已选择导出示例。')}>导出示例</Button>
+              <Button size="sm" variant="ghost" isDisabled={!hydrated} onPress={() => showButtonFeedback('轻量操作：稍后再看。')}>稍后再看</Button>
+              <Button size="sm" variant="danger-soft" isDisabled={!hydrated} onPress={() => showButtonFeedback('危险操作样式演示，没有删除任何内容。')}>移除草稿</Button>
               <Button size="sm" isDisabled>暂不可用</Button>
             </div>
             <div className="mt-3 text-xs leading-relaxed text-muted" role="status" aria-live="polite">{feedback}</div>

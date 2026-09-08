@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/astro';
+import {setupProjectAnalytics} from './src/scripts/project-analytics';
 
 // The DSN is a public ingestion address. Upload credentials stay in build secrets.
 if (import.meta.env.PUBLIC_SITE_ENV === 'production' && window.location.hostname === 'yindongliang.com') {
@@ -33,6 +34,7 @@ if (import.meta.env.PUBLIC_SITE_ENV === 'production' && window.location.hostname
       return breadcrumb;
     },
   });
+  setupProjectAnalytics();
 }
 
 function withoutQuery(value: string): string {

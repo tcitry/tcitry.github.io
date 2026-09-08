@@ -2,6 +2,7 @@ import {Button, Card, Chip, Label} from '@heroui/react';
 import {ItemCard} from '@heroui-pro/react/item-card';
 import {NativeSelect} from '@heroui-pro/react/native-select';
 import type {PortfolioItem} from './special-pages';
+import {projectIdFromHref} from '../../lib/project-analytics';
 import './ContentSections.css';
 import styles from './ContentSections.module.css';
 
@@ -44,7 +45,7 @@ export default function PortfolioView({items}: {items: PortfolioItem[]}) {
         <Card className={styles.projectCard}>
           <Card.Header data-book-island>
             <span className={styles.projectPeriod}>{item.period}</span>
-            <h2 className={styles.projectTitle}><a href={item.href} target={item.target} rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}>{item.label}</a></h2>
+            <h2 className={styles.projectTitle}><a href={item.href} data-analytics-project={projectIdFromHref(item.href)} data-analytics-placement="portfolio_title" target={item.target} rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}>{item.label}</a></h2>
           </Card.Header>
           {item.imageHTML && <div className={styles.projectImage} dangerouslySetInnerHTML={{__html: item.imageHTML}} />}
           {!!item.tags?.length && <div className={styles.tags} data-book-island>
@@ -54,7 +55,7 @@ export default function PortfolioView({items}: {items: PortfolioItem[]}) {
             {(item.detailsHTML || []).map((html, detailIndex) => <div className={`markdown ${styles.authored}`} key={detailIndex} dangerouslySetInnerHTML={{__html: html}} />)}
           </Card.Content>
           <Card.Footer className={styles.projectFooter} data-book-island>
-            <a href={item.href} target={item.target} rel={item.target === '_blank' ? 'noopener noreferrer' : undefined} className={styles.projectLink} aria-label={`查看项目：${item.label}`}>查看项目 <span aria-hidden="true">↗</span></a>
+            <a href={item.href} data-analytics-project={projectIdFromHref(item.href)} data-analytics-placement="portfolio_footer" target={item.target} rel={item.target === '_blank' ? 'noopener noreferrer' : undefined} className={styles.projectLink} aria-label={`查看项目：${item.label}`}>查看项目 <span aria-hidden="true">↗</span></a>
           </Card.Footer>
         </Card>
       </div>)}

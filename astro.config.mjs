@@ -18,8 +18,8 @@ const readerConfig = production ? readProductionReaderConfig(readerEnv) : {
   clerkPublishableKey: readerEnv.PUBLIC_CLERK_PUBLISHABLE_KEY || '',
   convexUrl: readerEnv.PUBLIC_CONVEX_URL || readerEnv.CONVEX_URL || '',
 };
-const uploadSourceMaps = production && Boolean(process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT);
-const release = process.env.SENTRY_RELEASE || `tcitry-blog@${execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()}`;
+const uploadSourceMaps = production && Boolean(readerEnv.SENTRY_AUTH_TOKEN && readerEnv.SENTRY_ORG && readerEnv.SENTRY_PROJECT);
+const release = readerEnv.SENTRY_RELEASE || `tcitry-blog@${execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()}`;
 
 export default defineConfig({
   site: 'https://yindongliang.com',
@@ -33,6 +33,9 @@ export default defineConfig({
     search: { glob: '{docs,posts,weekly}/**/*.html', rootSelector: 'main' },
     markdown: { code: false, remarkPlugins: [remarkBlogCodeSource], rehypePlugins: [rehypeBlogCodeBlocks] },
   }), react(), svelte(), sentry({
+    org: readerEnv.SENTRY_ORG,
+    project: readerEnv.SENTRY_PROJECT,
+    authToken: readerEnv.SENTRY_AUTH_TOKEN,
     enabled: { client: production, server: false },
     autoInstrumentation: { requestHandler: false },
     telemetry: false,
