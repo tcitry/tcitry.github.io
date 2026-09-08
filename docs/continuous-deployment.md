@@ -1,6 +1,6 @@
 # Astro 构建与发布
 
-本站已上线 `yindongliang.com`，GitHub 默认分支为 `main`。博客只使用一个生产 Worker **`tcitry-blog`**，通过 Cloudflare Workers Static Assets 托管静态资源。日常流程是 **本地预览 → review 与验证 → 提交 → 发布已验证产物**。Workers Builds 的构建入口已准备，但远端 Git 连接与受限构建凭据尚未完成，当前发布仍在本地执行。
+本站已上线 `yindongliang.com`，GitHub 默认分支为 `main`。博客只使用一个生产 Worker **`tcitry-blog`**，通过 Cloudflare Workers Static Assets 托管静态资源。日常流程是 **本地预览与 review → 推送 main → Workers Builds 构建、验证并部署**。Cloudflare 已连接站点仓库；每次云端构建自动选定 Blog 远端 `main` 的最新提交，不需要手工维护内容 SHA。首次云端部署与独立内容通知链路仍需实际运行验收。手动 Wrangler 发布保留为备用入口。
 
 2026-09-07 的首轮生产 HTTP 验收已检查 23 个页面、34 条跳转和 23 项资源。公开主题 CI 继续运行，但不会构建或发布完整博客。
 
@@ -22,17 +22,15 @@
 
 旧默认分支实际名为 `master`，保留为历史 Hugo 分支。远端 `hugo-book` 备份 `ce25b344d48e561f6420f727f43509c4f478e8d9` 包含旧生产提交 `d02f8b83854f7eff39b32b00c1d585d4f3567d7c` 和之后已提交的 Hugo 工作。备份不包含其他工作区的未提交文件或独立 Blog 仓库的内容。
 
-主题 CI 覆盖 `main` 和 `astro`，只检查公开主题来源、打包与 lockfile，不获取私有 Blog 或商业组件。`astro-book` 独立主题的 GitHub Pages 文档站单独维护，不参与博客发布。站点、Blog 和主题仓库推送均不会自动触发博客部署。
+主题 CI 覆盖 `main` 和 `astro`，只检查公开主题来源、打包与 lockfile，不获取私有 Blog 或商业组件。`astro-book` 独立主题的 GitHub Pages 文档站单独维护，不参与博客发布。站点 `main` push 由 Cloudflare Git 集成触发生产构建；Blog 内容通知通过下文的 Deploy Hook 流程触发同一构建。主题仓库 push 不直接部署博客，需要先更新站点固定的主题来源。
 
-### 2026-09-07 自动发布链路核查
+### 自动发布链路状态
 
-本次同时核对了 GitHub 远端工作流、运行记录和已登录的 Cloudflare 控制台，时间均为北京时间：
+2026-09-07 的核查确认旧 Hugo 发布工作流已停用，Blog 的通知虽被 GitHub 接收，但站点没有接收任务，Cloudflare 也未连接 Git，因此当时只能手动发布。
 
-- Blog 的 `Notify public site` 工作流仍监听 `main` push，并发送 `repository_dispatch` 事件 `blog-content-updated`；23:10 的通知运行成功，只表示 GitHub 接收了通知。
-- 站点默认分支 `main` 只有 `Astro theme reproducibility` 工作流，没有接收该事件的任务，也没有部署步骤。最后一次由该事件触发的[旧 Hugo 发布运行](https://github.com/tcitry/tcitry.github.io/actions/runs/34105161080)发生于 17:17，分支为 `master`；它的成功不代表当前 Cloudflare Worker 已部署。
-- Cloudflare 的 **Workers & Pages → tcitry-blog → Settings → Builds** 中，**Git repository** 仍只显示 **Connect**，尚未连接仓库，Workers Builds 自动发布链路未接通。
+2026-09-08 已核对 Cloudflare 控制台：站点仓库已连接，生产分支为 `main`，非生产分支构建已关闭，构建命令、部署命令、缓存和三个构建 secrets 已配置。Secret 值本身未读回，其有效性由首次真实构建验证。
 
-2026-09-08 再次核对控制台，Git repository 仍为 Connect，未存在可复用的 Workers Builds 部署 token。连接表单会默认创建可编辑多个 Cloudflare 产品的 token；应改用符合本项目所需权限的部署凭据。构建脚本和发布校验已优化，真实云端构建仍待 Git 连接和 CI 凭据就绪后验收。
+站点新增 `.github/workflows/content-update.yml`，接收 Blog 已有的 `blog-content-updated` 通知。还需一次性创建生产 Deploy Hook，并将 URL 保存为站点 GitHub Actions secret `CLOUDFLARE_DEPLOY_HOOK`；此前未配置此 secret。Git 连接、通知请求成功和生产部署成功是三个独立状态，最终以 Cloudflare 构建记录及线上验收为准。
 
 ## 本地预览与 review
 
@@ -103,13 +101,13 @@ node scripts/verify-deployment.mjs --env production
 
 ## Workers Builds
 
-目标是由 Cloudflare 构建并上传，减少本地安装和网络上传的等待。继续使用现有 `tcitry-blog`，只从站点 `main` 发布生产。**当前代码已准备，控制台连接与构建凭据待完成，尚未获得真实云端成功记录。**
+目标是由 Cloudflare 构建并上传，减少本地安装和网络上传的等待。继续使用现有 `tcitry-blog`，只从站点 `main` 发布生产。**Git 连接与构建 secrets 已配置，首次真实云端构建和内容通知链路正在验收。**
 
-`npm run build:workers` 校验配置、保留内容 `main` 完整历史，并检出 `BLOG_CONTENT_COMMIT` 指定的已审查提交。随后准备主题和锁定依赖，执行一次生产构建、check、test 与发布校验；只生成产物，不自行上传。生产环境显式设置 `PUBLIC_SITE_ENV=production`。缺少凭据、提交不符或验证失败时中止，成功或失败均清理临时内容。
+`npm run build:workers` 校验配置，获取内容 `main` 的完整历史，将这次获取到的分支提交解析为 SHA，然后以 detached HEAD 检出并固定使用它。构建过程中即使远端出现新提交，也不会改变本次内容。内容审查在推送到 Blog 发布分支前完成。随后准备主题和锁定依赖，执行一次生产构建、check、test 与发布校验；只生成产物，不自行上传。生产环境显式设置 `PUBLIC_SITE_ENV=production`。缺少凭据、提交不符或验证失败时中止，成功或失败均清理临时内容。
 
 ### 控制台配置
 
-完成凭据准备后，在 **Workers & Pages → tcitry-blog → Settings → Builds** 连接站点仓库：
+在 **Workers & Pages → tcitry-blog → Settings → Builds** 使用以下配置：
 
 | 控制台字段 | 值 |
 | --- | --- |
@@ -129,9 +127,10 @@ node scripts/verify-deployment.mjs --env production
 | `NODE_VERSION` | Text | `24` |
 | `PUBLIC_SITE_ENV` | Text | `production` |
 | `BLOG_CONTENT_REPOSITORY` | Secret | 私有内容仓库的 `owner/repo`，不带 URL |
-| `BLOG_CONTENT_COMMIT` | Text | 已审查内容提交的完整 40 位 SHA，必须属于内容 `main` 历史 |
 | `BLOG_READ_TOKEN` | Secret | 仅有该内容仓库 Contents 读取权限的 GitHub token |
 | `HEROUI_AUTH_TOKEN` | Secret | HeroUI Pro 的 CI/CD Token |
+
+**日常不配置 `BLOG_CONTENT_COMMIT`**。如果曾经添加，请删除此变量，而非留空。仅在回滚或复现时可临时填写内容 `main` 历史中的完整 40 位 SHA；脚本校验其归属，完成后删除覆盖值，即恢复自动选择最新内容。解析结果写入本次忽略的发布记录，并在验证前后核对检出版本。
 
 `SKIP_DEPENDENCY_INSTALL=1` 让项目先生成固定主题包，再安装 lockfile 依赖；空环境直接 `npm ci` 会因主题包尚未生成而失败。使用项目声明的 npm 版本。见[构建镜像与依赖安装](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/)。
 
@@ -139,20 +138,32 @@ HeroUI 使用 Dashboard → Overview / Settings 中的 **CI/CD Token**；见 [He
 
 内容凭据只传给私有内容 Git 检出，Pro 凭据只传给本站依赖安装；公开主题构建与页面渲染不接收这些凭据，Cloudflare 部署凭据也不传给内容准备和测试子进程。成功或失败后均清理临时内容。Workers Builds 使用平台配置的部署 token，云端构建不依赖本地 Wrangler 登录。私有内容检出、`.generated` 和安装后的商业组件均不应上传为公开构建附件。
 
-连接成功后，站点 `main` push 会触发构建。Blog 内容仓库属于独立来源：内容发布必须先审查并更新 `BLOG_CONTENT_COMMIT`，再触发构建；仅发送 Deploy Hook 而不更新固定提交不会发布新内容。后续可将该步骤接入受控通知工作流，Hook URL 作为 secret 保存，不能写入公开仓库。当前这条内容触发链尚未接通。主题升级继续显式更新 `astro-book.source.json` 和 lockfile。
+### Blog 内容更新触发
+
+站点 `main` push 由 Cloudflare Git 集成直接触发构建。Blog 是独立内容仓库，需要一次性配置 [Workers Builds Deploy Hook](https://developers.cloudflare.com/workers/ci-cd/builds/deploy-hooks/)：
+
+1. 在同一 **Settings → Builds → Deploy Hooks** 中新增 `blog-content-updated`，选择站点生产分支 `main`。
+2. 将生成的完整 URL 保存到 **站点仓库 → Settings → Secrets and variables → Actions**，名称为 `CLOUDFLARE_DEPLOY_HOOK`。URL 本身即为触发凭据，不写进 Git、文章或聊天。
+3. Blog 已有 `Notify public site` 工作流和专用通知 token。推送 Blog `main` 后，它发送不含内容或提交号的 `repository_dispatch` 事件 `blog-content-updated`。
+4. 站点 `Build updated Blog content` 工作流接收事件，向 Hook 发出一次 POST。Cloudflare 随后自行获取站点代码与最新 Blog `main`，执行构建、验证和部署。
+
+日常只需审查后 push，无需修改控制台变量。也可手动运行上述 GitHub 工作流进行链路验收。通知工作流不检出私有内容，不构建站点，也不持有 Cloudflare 部署 token。GitHub 的 concurrency 只合并等待中的通知并串行发送请求，不代表等待整个 Cloudflare 构建完成；最终结果仍需在 Cloudflare Builds 中确认。
+
+主题升级继续显式更新 `astro-book.source.json` 和 lockfile，再推送站点 `main`。
 
 依赖使用 npm 缓存和 `--prefer-offline`，主题 tarball 仅在缓存存在且来源、实际哈希与锁文件校验通过时复用；Cloudflare 默认缓存范围不包含本站 `.artifacts`。Cloudflare 的[构建缓存](https://developers.cloudflare.com/workers/ci-cd/builds/build-caching/)支持 npm 缓存；不能把忽略目录中的产物记录当成跨构建有效的生产发布凭据。首次启用后记录冷启动与缓存命中两次构建耗时，并检查[官方额度与限制](https://developers.cloudflare.com/workers/ci-cd/builds/limits-and-pricing/)。
 
 ## 发布结果与通知
 
-当前手动发布以 Wrangler 输出和线上检查为准。GitHub 公开主题 CI 的成功状态只表示主题检查通过，不表示博客已发布；没有配置自动成功邮件或通知后端。
+云端发布以 Workers Builds 的构建、部署结果和线上检查为准；手动发布以 Wrangler 输出和线上检查为准。GitHub 公开主题 CI 的成功状态只表示主题检查通过，不表示博客已发布；没有配置自动成功邮件或通知后端。
 
-若以后启用 Workers Builds，其 [GitHub 集成](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/github-integration/)可提供提交 check run 和构建详情链接。邮件取决于 GitHub 个人订阅设置；成功、失败均主动推送到指定渠道还需另行配置通知目标与授权。本项目不为此新增常驻后端。
+Workers Builds 的 [GitHub 集成](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/github-integration/)可提供提交 check run 和构建详情链接。邮件取决于 GitHub 个人订阅设置；成功、失败均主动推送到指定渠道还需另行配置通知目标与授权。本项目不为此新增常驻后端。
 
 ## 优化顺序
 
 - 已实施：最近更新改为独立 JSON，按需加载并重新验证缓存；列表数据变化不再单独导致所有 HTML 改变。导航结构或全站组件变化仍可能改变大量页面。
 - 已实施：锁定主题和 npm 缓存复用、固定内容提交、一次构建后验证并上传同一份产物。
-- 待接通：Workers Builds Git 集成、受限 CI 凭据、真实云端构建与发布后验收。
+- 已配置：Workers Builds Git 集成、构建 secrets、仅 main 生产构建与缓存；脚本自动选定并固定本次内容提交。
+- 待验收：真实云端构建与发布后检查、一次性 Deploy Hook secret 配置及 Blog 内容推送触发。
 - 后续评估：按需加载完整文档菜单，减少每页重复的侧栏 HTML；为 Archives/Modified 增加适合静态站的分页，保留现有入口和索引能力。当前本地产物抽样中，this-blog 约 278 KB HTML 里侧栏约 248 KB、1,981 个节点；Archives 约 1.24 MB、12,197 个节点（gzip 约 68 KB）。优化重点是手机 DOM 与布局开销，不能直接把未压缩体积当作实际传输流量。具体实现需要保留无 JavaScript 导航与既有锚点。
 - 后续评估：周刊封面增加小尺寸、响应式图片变体，列表不再下载原始大图；现有懒加载和比例占位继续保留。

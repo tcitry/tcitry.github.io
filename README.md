@@ -27,7 +27,7 @@ BLOG_DIR=/path/to/Blog npm run verify:release
 npm run preview -- --port 4321
 ```
 
-Review the resulting site locally, then use `npm run deploy:verified` from the isolated release checkout. It checks the recorded source and asset hashes without rebuilding. Wrangler uses `wrangler.jsonc`. The [Workers Builds entry point](docs/continuous-deployment.md#workers-builds) is ready; the remote connection and build credentials are still pending, so repository pushes do not yet deploy the blog.
+Review the resulting site locally, then use `npm run deploy:verified` from the isolated release checkout. It checks the recorded source and asset hashes without rebuilding. Wrangler uses `wrangler.jsonc`. [Workers Builds](docs/continuous-deployment.md#workers-builds) is connected to the site repository. Cloud builds select the latest content `main` commit once per build; no manually maintained content SHA is required. Content-update notifications can request a build through a repository Deploy Hook secret. Confirm successful cloud deployment in the build history.
 
 Ordinary `npm run build` creates a local preview with `noindex`. Production builds and verification apply the public site's indexing policy.
 

@@ -1,0 +1,50 @@
+name: Build updated Blog content
+
+on:
+  repository_dispatch:
+    types: [blog-content-updated]
+  workflow_dispatch:
+
+permissions: {}
+
+# Coalesce pending notifications; this only serializes requests, not cloud builds.
+concurrency:
+  group: blog-content-build-request
+  cancel-in-progress: false
+
+jobs:
+  request-build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Request a Cloudflare production build
+        env:
+          CLOUDFLARE_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+
+          hook = os.environ.get('CLOUDFLARE_DEPLOY_HOOK', '')
+          if not re.fullmatch(r'https://api\.cloudflare\.com/client/v4/workers/builds/deploy_hooks/[A-Za-z0-9_-]+', hook):
+              raise SystemExit('::error::Set CLOUDFLARE_DEPLOY_HOOK to the production Deploy Hook URL in repository secrets.')
+
+          # No checkout, content payload, redirect following or automatic POST retry.
+          result = subprocess.run([
+              'curl', '--fail', '--silent', '--show-error',
+              '--connect-timeout', '10', '--max-time', '30',
+              '--request', 'POST', hook,
+          ], capture_output=True, text=True)
+          if result.returncode:
+              raise SystemExit('::error::Cloudflare build request failed. Check the Deploy Hook and Cloudflare Builds before retrying.')
+          try:
+              accepted = json.loads(result.stdout).get('success') is True
+          except (ValueError, AttributeError):
+              accepted = False
+          if not accepted:
+              raise SystemExit('::error::Cloudflare did not confirm the build request. Check Cloudflare Builds before retrying.')
+          print('Cloudflare accepted the build request. Follow the actual build and deployment status in Cloudflare Builds.')
+          PY

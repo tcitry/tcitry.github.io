@@ -13,7 +13,7 @@
 
 - `main` 是 Astro 生产及默认分支，`astro` 保留迁移历史并可用于本地验证，不对应远端环境。切换前的默认分支实际名为 `master`；保留该旧分支。`hugo-book` 的远端备份 `ce25b344d48e561f6420f727f43509c4f478e8d9` 包含旧生产提交 `d02f8b83854f7eff39b32b00c1d585d4f3567d7c` 和后续已提交的 Hugo 工作。
 - 仅保留生产 Worker `tcitry-blog`，使用默认配置 `wrangler.jsonc`；`PUBLIC_SITE_ENV=production` 仅控制生产产物的收录策略，不代表另一个 Wrangler 环境。先本地 review，再执行 `build:production` / `verify:production` / `deploy:production`（或 `deploy`）。普通 `build` 默认生成本地 noindex 预览产物；不得将它发布到生产域名。迁移使用的远端 preview 环境已停用，不再创建预览 Worker。
-- `build:workers` 只生成并验证生产产物，内容必须固定到 `BLOG_CONTENT_COMMIT` 指定的已审查提交。当前仍采用本地发布；Workers Builds 的入口与缓存优化已准备，Git 集成、受限构建凭据和内容触发尚待完成，不能将代码就绪写成云端已接通。公开主题 CI 成功不能当作博客已部署。旧 Hugo GitHub Pages 工作流已停用，GitHub Pages 自定义域名按持续部署文档由用户手动移除。
+- `build:workers` 默认自动获取 Blog 远端 `main`，在每次构建开始时解析并固定内容提交，构建期间不再追随分支变化；内容审查应在推送到发布分支前完成。日常不得要求用户手工维护 `BLOG_CONTENT_COMMIT`，该变量仅作为回滚或复现时的可选覆盖。Workers Builds 已连接站点仓库并仅构建 `main`；首次云端成功与内容通知触发需以实际记录验收。Blog 的 `blog-content-updated` 通知由站点 `.github/workflows/content-update.yml` 接收，通过 Actions secret `CLOUDFLARE_DEPLOY_HOOK` 请求云端构建；Hook 只需配置一次，通知中不传私有内容或 SHA，Actions 触发成功不等于部署成功。公开主题 CI 成功不能当作博客已部署。旧 Hugo GitHub Pages 工作流已停用，GitHub Pages 自定义域名按持续部署文档由用户手动移除。
 - `www.yindongliang.com` 通过 Cloudflare Redirect Rule 301 跳转到主域，保持路径和查询参数，不使用额外 Worker。主站日常发布无需修改这项稳定规则。
 - 首次检出使用 `npm run setup`，先准备固定提交的 `@tcitry/astro-book` 包，再安装站点锁定依赖。主题在独立公开仓库维护，使用公开导出，不把主题实现复制到本站。
 - `BLOG_DIR` 是只读内容源。私有内容、生成文件、凭据和安装后的商业组件源码不得进入 Git。React / HeroUI Pro demo 包装组件属于本站，不属于公开主题。
