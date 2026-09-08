@@ -1,3 +1,4 @@
+import {useAuth} from '@clerk/react';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import type {Components} from 'react-markdown';
 import {Button, Tooltip} from '@heroui/react';
@@ -10,6 +11,7 @@ import {Markdown} from '@heroui-pro/react/markdown';
 import {PromptInput} from '@heroui-pro/react/prompt-input';
 import {PromptSuggestion} from '@heroui-pro/react/prompt-suggestion';
 import surface from '../demos/DemoSurface.module.css';
+import {ChatSignIn} from './ChatSession';
 import '../../styles/chat.css';
 
 type Source = {id: string; title: string; url: string; sourceKind: 'author' | 'ai-assisted'};
@@ -148,6 +150,7 @@ function Answer({message}: {message: Message}) {
 }
 
 export default function BlogChat({onClose, onReady}: {onClose: () => void; onReady: () => void}) {
+  const {isLoaded, userId, getToken} = useAuth();
   const [hydrated, setHydrated] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [value, setValue] = useState('');
@@ -179,14 +182,14 @@ export default function BlogChat({onClose, onReady}: {onClose: () => void; onRea
 
   async function submit() {
     const question = value.trim();
-    if (!question || question.length > MAX_INPUT || controller.current || retryAfter || !hydrated) return;
+    if (!question || question.length > MAX_INPUT || controller.current || retryAfter || !hydrated || !userId) return;
     const run = new AbortController();
     controller.current = run;
-    const userId = crypto.randomUUID();
+    const userMessageId = crypto.randomUUID();
     const assistantId = crypto.randomUUID();
     const history = completedHistory(messages, question);
     setMessages((current) => [...current,
-      {id: userId, role: 'user', content: question, sources: [], state: 'complete'},
+      {id: userMessageId, role: 'user', content: question, sources: [], state: 'complete'},
       {id: assistantId, role: 'assistant', content: '', sources: [], state: 'pending'},
     ]);
     setValue('');
@@ -223,8 +226,12 @@ export default function BlogChat({onClose, onReady}: {onClose: () => void; onRea
     }
 
     try {
+      const token = await getToken();
+      if (!token) throw new Error('请先登录后再提问。');
       const response = await fetch('/api/chat/', {
-        method: 'POST', headers: {'Content-Type': 'application/json', Accept: 'application/x-ndjson'},
+        method: 'POST', headers: {
+          'Content-Type': 'application/json', Accept: 'application/x-ndjson', Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({messages: history}), signal: run.signal,
       });
       if (!response.ok) {
@@ -301,6 +308,7 @@ export default function BlogChat({onClose, onReady}: {onClose: () => void; onRea
           </Tooltip>
         </div>
       </div>
+      {!isLoaded ? <p className="blog-chat__notice" role="status">正在加载登录状态…</p> : !userId ? <ChatSignIn /> : <>
       <ChatConversation className="blog-chat__conversation" role="region" aria-label="对话记录" tabIndex={0}>
         <ChatConversation.Content className="blog-chat__messages">
           {!messages.length && <PromptSuggestion className="blog-chat__welcome">
@@ -320,7 +328,7 @@ export default function BlogChat({onClose, onReady}: {onClose: () => void; onRea
       </ChatConversation>
       <div className="blog-chat__composer">
         <div className="blog-chat__sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</div>
-        <PromptInput value={value} onValueChange={setValue} status={status} onSubmit={submit} onStop={() => controller.current?.abort()} isDisabled={!hydrated} maxHeight={160}>
+        <PromptInput value={value} onValueChange={setValue} status={status} onSubmit={submit} onStop={() => controller.current?.abort()} isDisabled={!hydrated || !userId} maxHeight={160}>
           <PromptInput.Shell>
             <PromptInput.Content>
               <PromptInput.TextArea ref={input} aria-label="向博客助手提问" placeholder="向博客助手提问…" maxLength={MAX_INPUT} aria-describedby="blog-chat-input-help" />
@@ -335,9 +343,10 @@ export default function BlogChat({onClose, onReady}: {onClose: () => void; onRea
               </PromptInput.ToolbarEnd>
             </PromptInput.Toolbar>
           </PromptInput.Shell>
-          <PromptInput.Footer>回答请以原文为准 · 对话仅保留在当前页面</PromptInput.Footer>
+          <PromptInput.Footer>登录后提问 · 回答请以原文为准 · 对话仅保留在当前页面</PromptInput.Footer>
         </PromptInput>
       </div>
+      </>}
       <noscript><p className="blog-chat__notice">启用 JavaScript 后可以提问，也可以使用站点搜索查找文章。</p></noscript>
     </section>
   );

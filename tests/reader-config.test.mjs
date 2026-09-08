@@ -53,3 +53,16 @@ test('Local environment files have Astro precedence with explicit process values
   assert.equal(loadReaderEnvironment(directory, {}, 'development').VALUE, 'development-local');
   assert.deepEqual(loadReaderEnvironment(directory, { VALUE: 'environment' }), { VALUE: 'environment', BASE: 'base', LOCAL: 'local' });
 });
+
+test('Production mode reads committed wrangler public vars; development mode ignores them', async t => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'reader-wrangler-env-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const key = 'pk_live_' + Buffer.from('clerk.wrangler.invalid$').toString('base64');
+  await writeFile(path.join(directory, 'wrangler.jsonc'), JSON.stringify({
+    vars: { PUBLIC_CLERK_PUBLISHABLE_KEY: key, PUBLIC_CONVEX_URL: 'https://hushed-mallard-700.convex.cloud' },
+  }));
+  assert.equal(loadReaderEnvironment(directory, {}, 'production').PUBLIC_CONVEX_URL, 'https://hushed-mallard-700.convex.cloud');
+  assert.equal(loadReaderEnvironment(directory, {}, 'development').PUBLIC_CONVEX_URL, undefined);
+  assert.equal(loadReaderEnvironment(directory, { PUBLIC_CONVEX_URL: 'https://other.convex.cloud' }, 'production').PUBLIC_CONVEX_URL,
+    'https://other.convex.cloud');
+});

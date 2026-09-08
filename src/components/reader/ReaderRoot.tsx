@@ -1,8 +1,9 @@
 import {Component, useEffect, useState, type ReactNode} from 'react';
-import {ClerkFailed, ClerkLoaded, ClerkLoading, ClerkProvider, SignIn, useAuth, useClerk} from '@clerk/react';
+import {useAuth, useClerk} from '@clerk/react';
 import {ConvexReactClient, useConvexAuth} from 'convex/react';
 import {ConvexProviderWithClerk} from 'convex/react-clerk';
 import {Button} from '@heroui/react';
+import SignInPanel from '../auth/SignInPanel';
 import ArticleReader from './ArticleReader';
 import ReaderLibrary from './ReaderLibrary';
 import surfaceStyles from '../demos/DemoSurface.module.css';
@@ -22,10 +23,9 @@ class ReaderBoundary extends Component<{children: ReactNode}, {failed: boolean}>
 
 function ReaderAccount(props: ReaderProps) {
   const clerk = useClerk();
-  const {userId, sessionId} = useAuth();
+  const {isLoaded, userId, sessionId} = useAuth();
   const {isAuthenticated, isLoading} = useConvexAuth();
   const [accountError, setAccountError] = useState('');
-  const [signingIn, setSigningIn] = useState(false);
   const [pending, setPending] = useState(false);
   const [slow, setSlow] = useState(false);
   useEffect(() => {
@@ -39,37 +39,31 @@ function ReaderAccount(props: ReaderProps) {
     if (!window.dispatchEvent(new CustomEvent('reader:before-signout', {cancelable: true}))) return;
     setPending(true);
     setAccountError('');
-    try { await clerk.signOut(); }
+    try { await clerk.signOut({redirectUrl: window.location.href}); }
     catch { setAccountError('退出未完成，请重试。'); }
     finally { setPending(false); }
   }
 
+  if (!isLoaded) return <p role="status">正在加载登录状态…</p>;
+
   return <>
     <div className="reader-account-bar">
       <span className="reader-account-caption">{props.library ? '你的私人阅读空间' : '阅读账户'}</span>
-      <div className="reader-account-actions">
-        {userId
-          ? <Button size="sm" variant="ghost" isPending={pending} onPress={signOut}>退出登录</Button>
-          : <Button size="sm" variant="secondary" onPress={() => {
-            setAccountError('');
-            setSigningIn(true);
-          }}>登录 / 注册</Button>}
-      </div>
+      {userId ? <div className="reader-account-actions">
+        <Button size="sm" variant="ghost" isPending={pending} onPress={signOut}>退出登录</Button>
+      </div> : null}
     </div>
-    {signingIn && !userId && <div className="reader-inline-signin">
-      <SignIn routing="hash" withSignUp forceRedirectUrl={window.location.href} signUpForceRedirectUrl={window.location.href} />
-    </div>}
     {accountError && <p role="alert">{accountError}</p>}
-    {isLoading
-      ? <p role="status">{slow ? '连接仍在进行中，请检查网络或稍后刷新。' : '正在连接阅读账户…'}</p>
-      : userId && isAuthenticated
-        ? <ReaderBoundary key={`${userId}:${sessionId}`}>
-          {props.pathname && <ArticleReader pathname={props.pathname} title={props.title!} />}
-          {props.library && <ReaderLibrary />}
-        </ReaderBoundary>
-        : <p className="reader-account-hint">{userId
-          ? '阅读数据暂时无法同步，请稍后刷新或重新登录。'
-          : '登录后收藏文章、继续上次阅读，并保存仅自己可见的笔记。'}</p>}
+    {!userId
+      ? <SignInPanel description="登录后收藏文章、继续上次阅读，并保存仅自己可见的笔记。" />
+      : isLoading
+        ? <p role="status">{slow ? '连接仍在进行中，请检查网络或稍后刷新。' : '正在连接阅读账户…'}</p>
+        : isAuthenticated
+          ? <ReaderBoundary key={`${userId}:${sessionId}`}>
+            {props.pathname && <ArticleReader pathname={props.pathname} title={props.title!} />}
+            {props.library && <ReaderLibrary />}
+          </ReaderBoundary>
+          : <p className="reader-account-hint">阅读数据暂时无法同步，请稍后刷新或重新登录。</p>}
   </>;
 }
 
@@ -88,16 +82,6 @@ function SessionReader(props: ReaderProps & {convexUrl: string}) {
   return <SessionClient key={`${userId ?? 'anonymous'}:${sessionId ?? ''}`} {...props} />;
 }
 
-function ConnectedReader({clerkKey, ...props}: ReaderProps & {clerkKey: string; convexUrl: string}) {
-  return <ClerkProvider publishableKey={clerkKey} signInFallbackRedirectUrl="/me/" signUpFallbackRedirectUrl="/me/">
-    <ClerkLoading><p role="status">正在加载阅读账户…</p></ClerkLoading>
-    <ClerkFailed><p role="alert">登录服务暂时无法连接，请稍后重试。</p></ClerkFailed>
-    <ClerkLoaded>
-      <SessionReader {...props} />
-    </ClerkLoaded>
-  </ClerkProvider>;
-}
-
 export default function ReaderRoot(props: ReaderProps) {
   const clerkKey = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY ?? '';
   const convexUrl = import.meta.env.PUBLIC_CONVEX_URL ?? '';
@@ -105,7 +89,7 @@ export default function ReaderRoot(props: ReaderProps) {
     data-book-island data-reader-root data-pagefind-ignore data-sentry-mask>
     <ReaderBoundary>
       {clerkKey && convexUrl
-        ? <ConnectedReader {...props} clerkKey={clerkKey} convexUrl={convexUrl} />
+        ? <SessionReader {...props} convexUrl={convexUrl} />
         : <p className="reader-account-hint">阅读账户尚未开放。你可以继续阅读全部公开文章。</p>}
     </ReaderBoundary>
   </section>;

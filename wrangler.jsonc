@@ -10,6 +10,10 @@
   },
   "workers_dev": true,
   "routes": [{ "pattern": "yindongliang.com", "custom_domain": true }],
+  "vars": {
+    "PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsueWluZG9uZ2xpYW5nLmNvbSQ",
+    "PUBLIC_CONVEX_URL": "https://hushed-mallard-700.convex.cloud"
+  },
   "ai": { "binding": "AI", "remote": true },
   "ai_search": [{ "binding": "BLOG_SEARCH", "instance_name": "tcitry-blog-search", "remote": true }],
   "assets": {

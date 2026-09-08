@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { CHAT_GATEWAY, CHAT_MODEL, generationMessages, handleChat, modelText, reasoningFilter, selectSources, validateMessages } from '../worker/chat.mjs';
+import { createChatClerk } from './helpers/chat-clerk.mjs';
 
+const clerk = await createChatClerk();
+const authHeaders = await clerk.headers();
 const encoder = new TextEncoder();
 const origin = 'https://yindongliang.com';
 const documents = Array.from({ length: 12 }, (_, index) => ({
@@ -34,7 +37,7 @@ function byteStream(text, { sizes = [Infinity], close = true, cancel = () => {} 
 
 function request(body = question, { headers = {}, signal, method = 'POST', raw = false } = {}) {
   return new Request(`${origin}/api/chat`, {
-    method, signal, headers: { 'content-type': 'application/json', ...headers },
+    method, signal, headers: { 'content-type': 'application/json', ...authHeaders, ...headers },
     ...(method === 'POST' ? { body: raw ? body : JSON.stringify(body), duplex: 'half' } : {}),
   });
 }
@@ -42,6 +45,7 @@ function request(body = question, { headers = {}, signal, method = 'POST', raw =
 function environment({ chunks = [chunk()], stream = () => byteStream(complete('回答 [1]')), search, run, limit } = {}) {
   const calls = { search: [], run: [] };
   const env = {
+    ...clerk.env,
     BLOG_SEARCH: { async search(input) { calls.search.push(input); return search ? search(input) : { chunks }; } },
     AI: { async run(...args) { calls.run.push(args); return run ? run(...args) : stream(); } },
     ...(limit ? { CHAT_RATE_LIMIT: { limit } } : {}),
@@ -88,6 +92,28 @@ test('message validation rejects injected roles, options, malformed conversation
     { messages: Array.from({ length: 9 }, (_, index) => ({ role: index % 2 ? 'assistant' : 'user', content: 'a'.repeat(2000) })) },
   ];
   for (const body of invalid) assert.throws(() => validateMessages(body), error => error.status === 400);
+});
+
+test('chat requires a verified Clerk session before searching', async () => {
+  const { env, calls } = environment();
+  const unauthenticated = await handleChat(request(question, { headers: { authorization: '' } }), env, references);
+  assert.equal(unauthenticated.status, 401);
+  assert.equal((await unauthenticated.json()).message, '请先登录后再提问。');
+  const convexToken = await clerk.headers({ aud: 'convex' });
+  assert.equal((await handleChat(request(question, { headers: convexToken }), env, references)).status, 401);
+  assert.equal((await handleChat(request(), { ...clerk.env, CLERK_JWT_ISSUER: '' }, references)).status, 503);
+  assert.equal(calls.search.length, 0);
+});
+
+test('chat can derive the Clerk issuer from a publishable key', async () => {
+  const { env, calls } = environment();
+  const publishable = 'pk_test_' + Buffer.from('clerk.test.invalid$').toString('base64');
+  const response = await handleChat(request(), {
+    ...env, CLERK_JWT_ISSUER: '', PUBLIC_CLERK_PUBLISHABLE_KEY: publishable,
+  }, references);
+  assert.equal(response.status, 200);
+  await response.text();
+  assert.equal(calls.search.length, 1);
 });
 
 test('HTTP method and cross-origin checks reject before searching', async () => {
@@ -289,7 +315,7 @@ test('missing bindings and unexpected generation response are reported without l
   assert.doesNotMatch(JSON.stringify(list), /private|unsupported/);
 });
 
-test('optional Worker limiter blocks before retrieval and hashes the IP key', async () => {
+test('optional Worker limiter blocks before retrieval and hashes the account key', async () => {
   const keys = [];
   const { env, calls } = environment({ limit: async ({ key }) => { keys.push(key); return { success: false }; } });
   const input = request(question, { headers: { 'cf-connecting-ip': '192.0.2.1' } });
@@ -297,9 +323,9 @@ test('optional Worker limiter blocks before retrieval and hashes the IP key', as
   assert.equal(response.status, 429);
   assert.equal(response.headers.get('retry-after'), '60');
   assert.match(keys[0], /^[a-f\d]{64}$/);
-  assert.doesNotMatch(keys[0], /192\.0\.2\.1/);
+  assert.doesNotMatch(keys[0], /192\.0\.2\.1|user_test/);
   assert.equal(calls.search.length, 0);
-  assert.equal((await handleChat(request(), env, references)).status, 503);
+  assert.equal((await handleChat(request(), env, references)).status, 429);
 });
 
 test('already aborted request never invokes retrieval', async () => {

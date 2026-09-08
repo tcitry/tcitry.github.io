@@ -1,3 +1,5 @@
+import {verifyChatSession} from './clerk-session.mjs';
+
 export const CHAT_MODEL = '@cf/qwen/qwen3-30b-a3b-fp8';
 export const CHAT_GATEWAY = 'tcitry-blog-chat';
 const MAX_BODY = 32_768;
@@ -227,12 +229,12 @@ export async function handleChat(request, env, references) {
     controller.signal.throwIfAborted();
     // Framework dev servers resolve real bindings lazily, after input validation.
     if (typeof env === 'function') env = await abortable(Promise.resolve().then(env), controller.signal);
+    const session = await verifyChatSession(request, env);
+    if (session.status) throw new ChatError(session.message, session.status);
     // Optional, independent API protection. No binding is enabled initially;
     // enabling it later does not replace the single Gateway's own configuration.
     if (env.CHAT_RATE_LIMIT) {
-      const ip = request.headers.get('cf-connecting-ip');
-      if (!ip) throw new ChatError('无法识别请求来源，请稍后重试。', 503);
-      const key = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(`blog-chat:${ip}`))), byte => byte.toString(16).padStart(2, '0')).join('');
+      const key = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(`blog-chat:${session.userId}`))), byte => byte.toString(16).padStart(2, '0')).join('');
       const { success } = await env.CHAT_RATE_LIMIT.limit({ key });
       if (!success) throw new ChatError('提问过于频繁，请一分钟后再试。', 429, 60);
     }

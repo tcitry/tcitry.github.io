@@ -4,7 +4,9 @@ import {createServer} from 'node:http';
 import test from 'node:test';
 import {createChatMiddleware} from '../scripts/lib/chat-dev.mjs';
 import {CHAT_GATEWAY, CHAT_MODEL} from '../worker/chat.mjs';
+import {createChatClerk} from './helpers/chat-clerk.mjs';
 
+const clerk = await createChatClerk();
 const encoder = new TextEncoder();
 const document = {
   key: 'public/dev-http.md', hash: 'current-content-hash', title: '公开文章',
@@ -24,6 +26,7 @@ function deferred() {
 function bindings({stream} = {}) {
   const calls = {search: [], run: []};
   const env = {
+    ...clerk.env,
     BLOG_SEARCH: {async search(input) {
       calls.search.push(input);
       return {chunks: [{text: '来自公开文章的依据', score: 0.8,
@@ -61,9 +64,11 @@ async function serve(t, options = {}) {
   server.listen(0, '127.0.0.1');
   await once(server, 'listening');
   const origin = `http://127.0.0.1:${server.address().port}`;
-  const request = (path = '/api/chat', options = {}) => fetch(origin + path, {
+  const request = async (path = '/api/chat', options = {}) => fetch(origin + path, {
     method: 'POST', ...options,
-    headers: {'content-type': 'application/json', origin, ...options.headers},
+    headers: {
+      'content-type': 'application/json', origin, ...(await clerk.headers({azp: origin})), ...options.headers,
+    },
     ...(options.method && ['GET', 'HEAD'].includes(options.method) ? {} : {body: options.body ?? JSON.stringify(question)}),
   });
   return {origin, request, calls, model: model.calls};

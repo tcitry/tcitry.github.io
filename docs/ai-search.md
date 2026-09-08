@@ -8,7 +8,7 @@
 
 首屏只输出原生按钮和轻量控制脚本，首次点击再加载 React 与 HeroUI Pro 聊天组件。面板使用原生 dialog，让加载失败时仍可关闭和重试，同时保留收起后的 React 状态。窄屏高度跟随可视视口，避免软键盘盖住输入区。`/chat/` 保留为使用说明页，不再渲染第二份聊天组件。
 
-HeroUI Agents SDK 是独立的托管产品；本站仅参考其交互规范，消息发送到自己的 `/api/chat/`，沿用既有 AI Search 与单个 AI Gateway。API 的规范路径带结尾斜线，与本站 `trailingSlash: 'always'` 一致。[HeroUI Agents 概览](https://heroui.pro/docs/agents)
+HeroUI Agents SDK 是独立的托管产品；本站仅参考其交互规范，消息发送到自己的 `/api/chat/`，沿用既有 AI Search 与单个 AI Gateway。提问前必须登录 Clerk；Worker 校验 `Authorization: Bearer` 中的 session JWT，浏览器不能提交模型、Gateway 或自定义系统提示。API 的规范路径带结尾斜线，与本站 `trailingSlash: 'always'` 一致。[HeroUI Agents 概览](https://heroui.pro/docs/agents)
 
 `npm run dev` 已通过 `scripts/lib/chat-dev.mjs` 的 Vite 插件处理 `/api/chat/`，复用生产的 `worker/chat.mjs`，无需另外运行 `dev:worker`。适配器在请求通过格式与来源校验后才加载云端绑定，并将回答流直接传给浏览器。`getPlatformProxy` 根据 `wrangler.jsonc` 中的 `remote: true` 配置连接唯一的 AI Search 实例 `tcitry-blog-search` 和 Workers AI；检索与生成仍共用唯一的 Gateway `tcitry-blog-chat`。[Wrangler 编程接口](https://developers.cloudflare.com/workers/wrangler/api/)、[AI Search Workers binding](https://developers.cloudflare.com/ai-search/api/search/workers-binding/)
 
@@ -42,7 +42,7 @@ Custom Metadata 配置以下五个字段。上传前同步脚本会检查字段�
 | `canonical_url` | `text` | 已发布的文章 URL |
 | `section` | `text` | `docs`、`posts` 或 `weekly` |
 | `updated_at` | `datetime` | 正文的公开更新时间；未知时不上传该值 |
-| `source_kind` | `text` | `author` 或 `ai-assisted`，保留 ByAi 的来源边界 |
+| `source_kind` | `text` | `author` 或 `ai-assisted`，保留 ByAI 的来源边界 |
 | `content_hash` | `text` | 导出文档的 SHA-256，避免重复索引并识别旧版本 |
 
 标题已在文档首行和 Worker 引用清单中，不再占一个远端 metadata 字段。调用方应从当前部署的引用清单取标题与链接，不能采用模型编造的 URL。
@@ -53,9 +53,9 @@ Custom Metadata 配置以下五个字段。上传前同步脚本会检查字段�
 
 | 层次 | 控制内容 | 当前配置 / 后续建议 |
 | --- | --- | --- |
-| 聊天界面 | 同一会话只生成一条回答，支持停止并保留输入 | 默认 |
+| 聊天界面 | 登录后同一会话只生成一条回答，支持停止并保留输入 | 默认 |
 | Worker 输入/输出 | 每问 2,000 字、最近四轮完整问答、请求体 32 KiB、输出 2,048 tokens | 默认；这是单次请求边界，不是频率限流 |
-| Worker Rate Limiting binding | 只在 `/api/chat` 检索前按代码提供的 key 限制提交频率 | 暂未配置。后续可从 10 次 / 60 秒开始 |
+| Worker Rate Limiting binding | 只在 `/api/chat` 检索前按已登录用户的哈希 key 限制提交频率 | 暂未配置。后续可从 10 次 / 60 秒开始 |
 | 文章同步 | 串行上传，每篇完成索引后再上传下一篇；API 请求至少间隔 1 秒 | 默认 |
 | AI Gateway Rate limiting | 统一限制这个 Gateway 的模型调用，索引和聊天共享 | **关闭** |
 | AI Gateway Caching | 缓存模型响应；AI Search 嵌入使用该 Gateway | **关闭** |
@@ -91,7 +91,7 @@ Gateway 的计数单位是模型调用，不是独立访客或提问。一次提
 
 `ai-search:export` 读取本次构建的 `.generated/content.json`，只选 `page.kind === 'page'` 且 `type` 为 `docs`、`posts`、`weekly` 的页面。草稿、隐藏、跳转、`bookSearchExclude`、空正文以及分区和业务索引页均被排除。
 
-正文复用已渲染的 `page.html`，通过 HTML 解析器转换为 Markdown：保留标题层次、正文、列表、表格、公开链接、代码和代码中的空行，去掉脚本、复制按钮、导航、隐藏 UI 和演示包装组件。ByAi 标签会在导出正文中写成明确的来源声明，避免因为模板中的声明不在 article 内而丢失。
+正文复用已渲染的 `page.html`，通过 HTML 解析器转换为 Markdown：保留标题层次、正文、列表、表格、公开链接、代码和代码中的空行，去掉脚本、复制按钮、导航、隐藏 UI 和演示包装组件。ByAI 标签会在导出正文中写成明确的来源声明；文章里的 quote 提示也随正文一并导出。
 
 不会上传整个 `BLOG_DIR`、Markdown 源文件或原始 `content.json`。`source`、完整 frontmatter、私有检出路径、渲染诊断均不进入导出清单。所有导出文件位于已忽略的 `.generated/`，不得提交到 Git，也不复制到 `dist/` 作为可下载的完整语料包。
 
@@ -116,7 +116,7 @@ npm run ai-search:bootstrap -- --apply
 npm run dev
 ```
 
-第一条默认 dry-run：读取当前导出，在网上逐篇核对 HTTP 200、无跳转、canonical、显示标题、正文、ByAi 声明及 sitemap 更新时间，再验证文档字节的 SHA-256 等于本地可信引用清单。默认不会启动 Cloudflare binding。缺少导出时先运行 `npm run prepare:content`；该入口允许 preview 导出，但只有与当前公开页面完全匹配的三篇样本可以进入下一步。
+第一条默认 dry-run：读取当前导出，在网上逐篇核对 HTTP 200、无跳转、canonical、显示标题、正文及 sitemap 更新时间，再验证文档字节的 SHA-256 等于本地可信引用清单。默认不会启动 Cloudflare binding。缺少导出时先运行 `npm run prepare:content`；该入口允许 preview 导出，但只有与当前公开页面完全匹配的三篇样本可以进入下一步。
 
 第二条才通过已安装 Wrangler 的 `unstable_dev()` 启动临时本地 Workers 运行时，并使用配置中的 remote binding 连接现有 `tcitry-blog-search`。本地桥仅接受带随机会话标识的有限 JSON 操作，结束后关闭，不部署任何 Worker。Wrangler 管理既有 OAuth 登录；本次三篇样本导入无需另设 `CLOUDFLARE_API_TOKEN`，脚本不读取凭据文件。它核对单 Gateway 关联、内置数据源和完整对象列表；schema 为 null 时仅补上本文约定的五字段，已有非空 schema 不同则停止。仅新增不存在的样本 key，相同 hash 已存在时等待或跳过，不覆盖不同 hash，不删除任何文章。每篇上传前再次核对线上正文和远端 key，上传后等待索引完成。
 
@@ -177,6 +177,6 @@ npm run ai-search:sync -- --apply
 
 ## 验证
 
-`npm test` 包含 `tests/ai-search-*.test.mjs` 的合成测试：公开过滤、ByAi 标识、代码空行保留、URL/key/hash、发布语料封存、分页、删除范围、429 退避，以及索引失败不推进删除与完成状态。
+`npm test` 包含 `tests/ai-search-*.test.mjs` 的合成测试：公开过滤、ByAI 标识、代码空行保留、URL/key/hash、发布语料封存、分页、删除范围、429 退避，以及索引失败不推进删除与完成状态。
 
 上线验收还需在真实实例验证普通中文提问、技术名词、跨文章问题、找不到依据、来源卡片与原文链接，并验证停止生成和 429 提示。测试问题与样本只使用已公开文章。首次索引后查看 Items、Gateway 日志和检索返回质量，再决定是否开启共享 Gateway 限流及具体阈值。

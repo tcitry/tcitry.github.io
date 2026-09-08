@@ -30,6 +30,30 @@
   font-size: .9375rem;
 }
 
+.blog-chat__auth {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+  flex: 1;
+  min-height: 0;
+  padding: 1.25rem;
+  overflow: auto;
+}
+.blog-chat__auth > p,
+.reader-shell .blog-chat__auth > p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.blog-chat__auth .reader-inline-signin { margin-top: 0; width: 100%; }
+.blog-chat__auth :is(.cl-rootBox, .cl-cardBox, .cl-card) {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-shadow: none;
+}
+
 .blog-chat__header {
   display: flex;
   align-items: center;

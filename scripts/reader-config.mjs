@@ -3,10 +3,21 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parseEnv } from 'node:util';
 
+const wranglerPublicNames = ['PUBLIC_CLERK_PUBLISHABLE_KEY', 'PUBLIC_CONVEX_URL'];
+
+function wranglerPublicVars(root) {
+  let config;
+  try { config = JSON.parse(readFileSync(path.join(root, 'wrangler.jsonc'), 'utf8')); }
+  catch (error) { if (error.code === 'ENOENT' || error instanceof SyntaxError) return {}; throw error; }
+  const vars = config?.vars && typeof config.vars === 'object' ? config.vars : {};
+  return Object.fromEntries(wranglerPublicNames.filter(name => typeof vars[name] === 'string' && vars[name]).map(name => [name, vars[name]]));
+}
+
 // Follow Astro/Vite's file precedence. Keep credentials in ignored local files;
 // examples use literal values so configuration never depends on shell expansion.
+// Production mode also reads wrangler.jsonc vars as the committed public defaults.
 export function loadReaderEnvironment(root, env = process.env, mode = 'production') {
-  const loaded = {};
+  const loaded = mode === 'production' ? wranglerPublicVars(root) : {};
   for (const file of ['.env', '.env.local', `.env.${mode}`, `.env.${mode}.local`]) {
     try { Object.assign(loaded, parseEnv(readFileSync(path.join(root, file), 'utf8'))); }
     catch (error) { if (error.code !== 'ENOENT') throw error; }

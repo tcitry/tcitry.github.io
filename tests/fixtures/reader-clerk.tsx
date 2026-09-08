@@ -8,10 +8,16 @@ function switchSession(userId: string | null, sessionId: string | null) {
   listeners.forEach((listener) => listener());
 }
 export function useAuth() {
-  return useSyncExternalStore((listener) => {listeners.add(listener); return () => listeners.delete(listener);}, currentFixtureAuth);
+  const current = useSyncExternalStore((listener) => {listeners.add(listener); return () => listeners.delete(listener);}, currentFixtureAuth);
+  return {
+    ...current,
+    isLoaded: true,
+    isSignedIn: Boolean(current.userId),
+    getToken: async () => current.userId ? 'fixture-session-token' : null,
+  };
 }
 export function useClerk() {
-  return {signOut: async () => switchSession(null, null), openSignIn: () => switchSession('fixture-a', 'session-a')};
+  return {signOut: async () => switchSession(null, null)};
 }
 export function ClerkProvider({children}: {children: ReactNode}) {return children;}
 export function ClerkLoaded({children}: {children: ReactNode}) {return children;}

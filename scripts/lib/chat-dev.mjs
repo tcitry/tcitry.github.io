@@ -2,7 +2,23 @@ import {readFile} from 'node:fs/promises';
 import {Readable} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
 import {fileURLToPath} from 'node:url';
+import {clerkIssuerFromPublishableKey, normalizeClerkIssuer} from './clerk-issuer.mjs';
 import {ChatError, handleChat} from '../../worker/chat.mjs';
+
+export function withClerkSession(env, processEnv = process.env) {
+  const issuer = normalizeClerkIssuer(processEnv.CLERK_JWT_ISSUER)
+    || clerkIssuerFromPublishableKey(processEnv.PUBLIC_CLERK_PUBLISHABLE_KEY)
+    || normalizeClerkIssuer(env?.CLERK_JWT_ISSUER)
+    || clerkIssuerFromPublishableKey(env?.PUBLIC_CLERK_PUBLISHABLE_KEY);
+  const key = processEnv.CLERK_JWT_KEY || env?.CLERK_JWT_KEY;
+  return new Proxy(env ?? {}, {
+    get(target, prop, receiver) {
+      if (prop === 'CLERK_JWT_ISSUER') return issuer;
+      if (prop === 'CLERK_JWT_KEY') return key;
+      return Reflect.get(target, prop, receiver);
+    },
+  });
+}
 
 const configPath = fileURLToPath(new URL('../../wrangler.jsonc', import.meta.url));
 const referencesPath = fileURLToPath(new URL('../../.generated/ai-search/references.json', import.meta.url));
@@ -125,7 +141,7 @@ export function blogChatDev() {
             if (stopped) { await proxy.dispose(); throw new Error('Development server closed'); }
             return proxy;
           }).catch(error => { connection = undefined; throw error; });
-          return (await connection).env;
+          return withClerkSession((await connection).env);
         },
       }));
       server.httpServer?.once('close', () => {

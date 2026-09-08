@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import assert from 'node:assert/strict';
-import { assertProductionDeployKey, readProductionReaderConfig } from './reader-config.mjs';
+import { assertProductionDeployKey, loadReaderEnvironment, readProductionReaderConfig } from './reader-config.mjs';
 
 const execute = promisify(execFile);
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -34,8 +34,9 @@ async function main() {
   if (siteEnvironment !== 'production') {
     throw new BuildError('build:workers only supports PUBLIC_SITE_ENV=production. For local noindex previews, use npm run build.');
   }
-  const reader = readProductionReaderConfig(process.env);
-  assertProductionDeployKey(process.env, reader);
+  const readerEnv = loadReaderEnvironment(root, process.env, 'production');
+  const reader = readProductionReaderConfig(readerEnv);
+  assertProductionDeployKey(readerEnv, reader);
 
   const scratch = await mkdtemp(path.join(tmpdir(), 'astro-workers-content-'));
   const checkout = path.join(scratch, 'content');

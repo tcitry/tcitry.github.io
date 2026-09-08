@@ -1,0 +1,8 @@
+# Local wrangler override. Copy to ignored .dev.vars.
+# wrangler.jsonc vars hold the production pk_live_ key; this file supplies pk_test_.
+# The Worker derives CLERK_JWT_ISSUER from PUBLIC_CLERK_PUBLISHABLE_KEY.
+PUBLIC_CLERK_PUBLISHABLE_KEY=
+
+# Optional PEM public key from Clerk Dashboard → API keys → Show JWT public key.
+# When set, /api/chat verifies sessions without fetching JWKS.
+# CLERK_JWT_KEY=
