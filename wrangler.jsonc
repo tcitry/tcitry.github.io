@@ -3,6 +3,10 @@
   "name": "tcitry-blog",
   "account_id": "204c96c4c30f2f25afd657495d67fe4d",
   "compatibility_date": "2026-09-07",
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
   "workers_dev": true,
   "routes": [{ "pattern": "yindongliang.com", "custom_domain": true }],
   "assets": {
