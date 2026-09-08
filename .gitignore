@@ -48,5 +48,5 @@ node_modules
 # Optional private content checkout; never commit it to the public site.
 /content/
 
-# Local prepublication theme artifact, regenerated with npm run theme:sync.
+# Local development artifacts; published themes are installed from npm.
 /.artifacts/

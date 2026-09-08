@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { themeRelease } from './theme-package.mjs';
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -142,7 +143,7 @@ async function main() {
   const [content, routes, source, redirectText] = await Promise.all([
     readFile(path.join(generated, 'content.json'), 'utf8').then(JSON.parse),
     readFile(path.join(generated, 'routes.json'), 'utf8').then(JSON.parse),
-    readFile(path.join(root, 'astro-book.source.json'), 'utf8').then(JSON.parse),
+    themeRelease(root),
     readFile(path.join(root, 'dist/_redirects'), 'utf8'),
   ]);
   const routeMap = new Map(routes.map(route => [route.url, route]));
@@ -255,7 +256,7 @@ async function main() {
   }, 'Static assets and search');
   const report = path.resolve(root, values.report || `.generated/deployment-verification-${environment}.json`);
   await mkdir(path.dirname(report), { recursive: true });
-  await writeFile(report, JSON.stringify({ environment, origin, hostingChecks: !localPreview, expectedThemeCommit: source.commit, checkedAt: new Date().toISOString(), exhaustiveRoutes: values['all-routes'], checks }, null, 2));
+  await writeFile(report, JSON.stringify({ environment, origin, hostingChecks: !localPreview, expectedTheme: source, checkedAt: new Date().toISOString(), exhaustiveRoutes: values['all-routes'], checks }, null, 2));
   console.log(`Verified ${environment} at ${origin}: ${selected.size} pages, ${checkedRedirects.length} legacy HTTP redirects, ${assets.size} assets, feeds/search/Giscus/indexing and actual 404 responses. Report: ${report}`);
 }
 

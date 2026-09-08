@@ -195,7 +195,7 @@ Convex deploy 明确读取仅含 production deploy key 的临时 `.generated/con
 
 日常只需审查后 push，无需修改控制台变量。也可手动运行上述 GitHub 工作流进行链路验收。通知工作流不检出私有内容，不构建站点，也不持有 Cloudflare 部署 token。GitHub 的 concurrency 只合并等待中的通知并串行发送请求，不代表等待整个 Cloudflare 构建完成；最终结果仍需在 Cloudflare Builds 中确认。
 
-主题升级继续显式更新 `astro-book.source.json` 和 lockfile，再推送站点 `main`。
+主题升级显式安装已发布的准确 npm 版本，提交 `package.json` 和 lockfile，通过站点验收后再推送 `main`。
 
 依赖使用 npm 缓存和 `--prefer-offline`，主题 tarball 仅在缓存存在且来源、实际哈希与锁文件校验通过时复用；Cloudflare 默认缓存范围不包含本站 `.artifacts`。Cloudflare 的[构建缓存](https://developers.cloudflare.com/workers/ci-cd/builds/build-caching/)支持 npm 缓存；不能把忽略目录中的产物记录当成跨构建有效的生产发布凭据。首次启用后记录冷启动与缓存命中两次构建耗时，并检查[官方额度与限制](https://developers.cloudflare.com/workers/ci-cd/builds/limits-and-pricing/)。
 

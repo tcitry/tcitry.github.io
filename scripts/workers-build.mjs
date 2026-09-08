@@ -28,7 +28,7 @@ async function main() {
     if (!value?.trim() || /[\r\n\0]/.test(value)) throw new BuildError(`Set the ${name} build secret before starting Workers Builds.`);
   }
   if (process.env.SKIP_DEPENDENCY_INSTALL !== '1') {
-    throw new BuildError('Set SKIP_DEPENDENCY_INSTALL=1 in Workers Builds; this command installs the pinned theme before npm ci.');
+    throw new BuildError('Set SKIP_DEPENDENCY_INSTALL=1 in Workers Builds; this command installs locked dependencies with npm ci.');
   }
   const siteEnvironment = process.env.PUBLIC_SITE_ENV ?? 'production';
   if (siteEnvironment !== 'production') {

@@ -20,12 +20,16 @@ async function fixture(t) {
   const root = await mkdtemp(path.join(tmpdir(), 'ai-search-release-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   for (const folder of ['.generated/ai-search/documents', 'dist/posts/one', 'scripts/lib', 'worker', 'node_modules']) await mkdir(path.join(root, folder), { recursive: true });
-  for (const script of ['release-manifest.mjs', 'verify-ai-search-deployment.mjs', 'lib/ai-search-corpus.mjs']) await copyFile(new URL(`../scripts/${script}`, import.meta.url), path.join(root, 'scripts', script));
+  for (const script of ['theme-package.mjs', 'release-manifest.mjs', 'verify-ai-search-deployment.mjs', 'lib/ai-search-corpus.mjs']) await copyFile(new URL(`../scripts/${script}`, import.meta.url), path.join(root, 'scripts', script));
   await symlink(fileURLToPath(new URL('../node_modules/parse5', import.meta.url)), path.join(root, 'node_modules/parse5'));
   await writeFile(path.join(root, '.gitignore'), '.generated/\ndist/\nnode_modules/\n');
   await writeFile(path.join(root, 'wrangler.jsonc'), JSON.stringify({ name: 'fixture', main: 'worker/index.ts', assets: { directory: './dist' } }));
   await writeFile(path.join(root, 'worker/index.ts'), 'import references from "../.generated/ai-search/references.json";\nexport default references;\n');
-  await writeFile(path.join(root, 'astro-book.source.json'), JSON.stringify({ commit: 'a'.repeat(40) }));
+  await writeFile(path.join(root, 'package.json'), JSON.stringify({ type: 'module', dependencies: { '@tcitry/astro-book': '0.1.1' } }));
+  await writeFile(path.join(root, 'package-lock.json'), JSON.stringify({ packages: {
+    '': { dependencies: { '@tcitry/astro-book': '0.1.1' } },
+    'node_modules/@tcitry/astro-book': { version: '0.1.1', resolved: 'https://registry.npmjs.org/@tcitry/astro-book/-/astro-book-0.1.1.tgz', integrity: 'sha512-' + 'A'.repeat(86) + '==' },
+  } }));
   const reader = {
     clerkPublishableKey: 'pk_live_' + Buffer.from('clerk.test.invalid$').toString('base64'),
     clerkIssuerDomain: 'https://clerk.test.invalid', convexUrl: 'https://production-fixture-123.convex.cloud',
@@ -43,7 +47,7 @@ async function fixture(t) {
   await writeFile(path.join(root, 'dist/posts/one/index.html'), '<html>Published fixture content.</html>');
   const marker = { version: 1, ...corpus.manifest.revision, corpusHash: corpus.manifest.corpusHash, environment: 'production' };
   await writeFile(path.join(root, 'dist/blog-release.json'), JSON.stringify(marker));
-  const release = { version: 2, environment: 'production', ...inputs, contentCommit: corpus.manifest.revision.contentCommit, reader, assets: await assetHashes(path.join(root, 'dist')) };
+  const release = { version: 3, environment: 'production', ...inputs, contentCommit: corpus.manifest.revision.contentCommit, reader, assets: await assetHashes(path.join(root, 'dist')) };
   release.aiSearch = await releaseCorpus(root, release);
   const releaseBytes = jsonBytes(release);
   await writeFile(path.join(root, '.generated/release.json'), releaseBytes);

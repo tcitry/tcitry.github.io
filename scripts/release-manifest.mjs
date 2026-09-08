@@ -5,6 +5,8 @@ import { lstat, readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 
+import { themeRelease } from './theme-package.mjs';
+
 const execute = promisify(execFile);
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 
@@ -42,10 +44,9 @@ export async function assetHashes(directory) {
 export async function releaseInputs(root) {
   const [siteCommit, config, source] = await Promise.all([
     cleanCommit(root), readFile(path.join(root, 'wrangler.jsonc')),
-    readFile(path.join(root, 'astro-book.source.json'), 'utf8').then(JSON.parse),
+    themeRelease(root),
   ]);
-  assert.match(source.commit, /^[a-f0-9]{40}$/, 'Release theme must have a pinned commit');
-  return { siteCommit, themeCommit: source.commit, wranglerHash: sha256(config) };
+  return { siteCommit, ...source, wranglerHash: sha256(config) };
 }
 
 // Static-only fixtures/releases remain supported. A Worker that imports the
@@ -58,7 +59,7 @@ export async function releaseCorpus(root, release) {
 }
 
 export async function assertSealedRelease(root, manifest) {
-  assert.equal(manifest.version, 2, 'Unsupported release manifest; rebuild and verify with the current production release scripts');
+  assert.equal(manifest.version, 3, 'Unsupported release manifest; rebuild and verify with the current production release scripts');
   assert.equal(manifest.environment, 'production', 'Only a verified production release can deploy');
   assert.match(manifest.contentCommit, /^[a-f0-9]{40}$/, 'Release must record its reviewed content commit');
   const inputs = await releaseInputs(root);

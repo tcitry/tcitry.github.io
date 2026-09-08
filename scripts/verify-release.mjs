@@ -32,7 +32,7 @@ try {
   assert.deepEqual(await assetHashes(path.join(root, 'dist')), assets, 'Assets changed during verification');
   assert.deepEqual(await assertBuiltReaderConfig(root), reader, 'Reader build configuration changed during verification.');
   assert.deepEqual(await releaseCorpus(root, { ...inputs, contentCommit, assets }), aiSearch, 'AI Search corpus changed during verification');
-  await writeFile(output, JSON.stringify({ version: 2, environment: 'production', ...inputs,
+  await writeFile(output, JSON.stringify({ version: 3, environment: 'production', ...inputs,
     contentCommit, reader, verifiedAt: verification.checkedAt, assets, ...(aiSearch ? { aiSearch } : {}) }, null, 2) + '\n');
   console.log(`Sealed ${Object.keys(assets).length} verified assets. Deploy with npm run deploy:verified; do not rebuild this directory.`);
 } catch (error) {

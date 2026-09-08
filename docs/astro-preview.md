@@ -42,11 +42,9 @@ Posts 页尾的“相关阅读”由 `src/lib/related-posts.ts` 在构建时从�
 
 相关阅读采用 HeroUI Card / Chip，在 Astro 构建时渲染为静态 HTML，使用原生整卡链接，不额外加载客户端脚本。正文列达到 40rem 时显示两列，小屏单列；标题完整换行，摘要最多两行，展示最多两个共同主题标签和发布日期。摘要优先使用显式 description，否则从正文提取叙述段落，跳过代码、图表、标题和 AI 编辑说明；没有适合段落时省略摘要。
 
-`setup` 仅使用 Node 内置模块启动：读取 `astro-book.source.json` 中的公开仓库和完整 commit，独立检出该提交，按照主题自己的 lockfile 执行 `npm ci`，再通过 `npm pack` 构建主题。打包结果必须匹配本站 lockfile 中的 SHA-512，最后才执行本站 `npm ci`。它不会使用本机碰巧存在的主题源码、跟随远端 main 更新或修改 lockfile。`.artifacts/` 中的临时源码和 tarball 均不入 Git；临时源码在打包后自动清理。
+`npm run setup` 先检查主题依赖与 lockfile 一致，再执行本站 `npm ci`。`@tcitry/astro-book` 直接从公开 npm registry 安装，版本和 SHA-512 由 `package-lock.json` 锁定；不再克隆主题仓库、构建主题或依赖 `.artifacts/` 中的 tarball。也可以直接运行 `npm ci`。
 
-打包脚本保留 npm 生成的 tar 条目，再统一 gzip 为不压缩的存储块并规范平台标记。这样不会因 Node 内含的 zlib 压缩算法版本不同而产生不同的 lockfile 完整性；本地包略大，但不上传、不影响网站资源大小。
-
-只准备主题包时运行 `npm run theme:prepare`，然后可单独运行 `npm ci`。如果 HeroUI Pro 安装因未登录失败，完成登录后重新运行 `npm run setup`。构建内容来自另行准备的 Blog checkout；`BLOG_DIR` 指向它即可，不会修改原文。
+`npm run theme:verify` 独立下载 lockfile 中的主题 tarball 并核验 SHA-512，无需 npm 登录或商业组件授权。跨平台主题 CI 使用此入口。完整站点的 HeroUI Pro 依赖仍需既有授权；它与公开主题安装无关。`BLOG_DIR` 指向单独准备的 Blog checkout，不会修改原文。
 
 ## 验收入口
 
@@ -86,23 +84,19 @@ BLOG_DIR 始终只读。构建层兼容 relref、前言字段、旧 URL、HTML�
 
 博客关闭主题的普通代码块展示及 Astro 静态高亮，完整原文仍在构建 HTML 的 `pre/code` 中。阅读到代码附近后，共享 React root 按帧挂载 Pro CodeBlock，使用现成的高亮与复制按钮；禁用 JavaScript 或组件加载失败时保留可读原文。普通文章只加载 CodeBlock / Button 所需样式。Mermaid 图表使用主题的轻量源码复制；普通代码不会出现双框或双复制按钮。此选择增加了阅读代码时的 React、Pro、Motion 与 Shiki 客户端成本，具体策略见 [Demo 编写指南](demo-authoring.md#普通文章与-mdx-代码块)。
 
-`package.json` 和 lockfile 当前锁定 `.artifacts/tcitry-astro-book.tgz`，主题来源锁在 `astro-book.source.json`。主题尚未发布 npm，因此干净检出先运行 `npm run setup`，不要直接运行 `npm ci`。以后发布主题版本时再改为准确的 registry 版本号。
-
-升级公开主题时，先确认主题代码已经推送，把 `astro-book.source.json` 的 `commit` 改为完整的新提交 SHA，然后执行 `npm run theme:sync`。它按新的固定来源构建真实 tarball、重新安装并更新本站 lockfile；运行 build/check/test/verify 后，将来源配置与 lockfile 一起提交。回退时恢复两者后运行 `npm run setup` 即可，不需要保留或提交旧 tarball，也不需要改文章。
-
-联调尚未推送的主题代码时，显式指定本地源码：
+本站当前使用 npm 发布的 `@tcitry/astro-book@0.1.1`。升级时，先在主题仓库发布新版本，再在本站安装准确版本，例如：
 
 ```sh
-# 先在独立主题仓库安装开发依赖（只需首次或依赖更新时执行）。
-npm --prefix "$HOME/code/astro-book" ci
-ASTRO_BOOK_DIR="$HOME/code/astro-book" npm run theme:sync
-npm run build
+npm install --save-exact @tcitry/astro-book@0.1.1
 npm run check
 npm test
+npm run build
 npm run verify
 ```
 
-此模式会使用本地修改并更新 tarball 的 lockfile 完整性，供开发验收；不要把只有本机能构建的 lockfile 提交到共享分支。联调通过后先推送主题、更新本站来源 commit，再不设置 `ASTRO_BOOK_DIR` 执行 `npm run theme:sync`；或不设置该变量直接同步原有固定提交以恢复基线。`npm run setup` 始终使用提交的来源，忽略 `ASTRO_BOOK_DIR`。主题更新会参与 Markdown 缓存指纹，避免同版本本地迭代仍显示旧渲染结果。
+把命令中的版本替换为已发布的目标版本。验收后提交 `package.json` 与 `package-lock.json`；恢复这两个文件并运行 `npm ci` 即可回退。发布封存记录改为主题 npm 版本、下载 URL 与 SHA-512，不再记录过时的源码提交 pin。主题更新仍参与 Markdown 缓存指纹。
+
+需要测试未发布代码时，在独立主题仓库用 `npm pack` 生成包，再在临时站点检出中安装该 tarball。共享分支与生产依赖必须恢复为公开 npm 的准确版本。
 
 首次固定来源安装的历史验证使用没有 `node_modules`、主题源码或预存 tarball 的临时目录：固定主题先构建，再完整安装本站依赖，lockfile 字节保持不变；当时安装的 125 个主题文件与打包产物逐字节一致，主题公开入口、CSS、HeroUI Pro 与 React/Svelte integration 均可解析。本站 Node 24 生成的 lockfile 在该 Node 26 环境也通过校验。此记录对应当时的主题版本，并使用本机现有 HeroUI Pro 授权环境；更换主题提交后仍须重新验证，新的开发机器或 CI 也须配置自己的授权。
 

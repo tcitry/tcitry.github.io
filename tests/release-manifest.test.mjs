@@ -24,7 +24,11 @@ async function fixture(t) {
   await writeFile(path.join(site, '.gitignore'), 'dist/\n.generated/\nnode_modules/\n.env*\n');
   await writeFile(path.join(site, 'package.json'), '{"type":"module"}');
   await writeFile(path.join(site, 'wrangler.jsonc'), '{"name":"test-worker","assets":{"directory":"./dist"}}');
-  await writeFile(path.join(site, 'astro-book.source.json'), JSON.stringify({ commit: 'a'.repeat(40) }));
+  await writeFile(path.join(site, 'package.json'), JSON.stringify({ type: 'module', dependencies: { '@tcitry/astro-book': '0.1.1' } }));
+  await writeFile(path.join(site, 'package-lock.json'), JSON.stringify({ packages: {
+    '': { dependencies: { '@tcitry/astro-book': '0.1.1' } },
+    'node_modules/@tcitry/astro-book': { version: '0.1.1', resolved: 'https://registry.npmjs.org/@tcitry/astro-book/-/astro-book-0.1.1.tgz', integrity: 'sha512-' + 'A'.repeat(86) + '==' },
+  } }));
   await writeFile(path.join(site, 'dist/index.html'), '<html>production fixture</html>');
   const reader = {
     clerkPublishableKey: 'pk_live_' + Buffer.from('clerk.test.invalid$').toString('base64'),

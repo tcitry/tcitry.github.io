@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   theme:
-    name: Packed theme (${{ matrix.os }})
+    name: Published theme (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     strategy:
@@ -26,7 +26,7 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
-      - name: Build and verify the pinned public theme
-        run: npm run theme:prepare
-      - name: Verify that preparation preserved the source pin and lockfile
-        run: git diff --exit-code -- astro-book.source.json package-lock.json
+      - name: Download and verify the locked npm theme
+        run: npm run theme:verify
+      - name: Verify that verification preserved the dependency and lockfile
+        run: git diff --exit-code -- package.json package-lock.json

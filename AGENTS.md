@@ -16,7 +16,7 @@
 - 仅保留生产 Worker `tcitry-blog`，使用默认配置 `wrangler.jsonc`；`PUBLIC_SITE_ENV=production` 仅控制生产产物的收录策略，不代表另一个 Wrangler 环境。先本地 review，再执行 `build:production` / `verify:production` / `deploy:production`（或 `deploy`）。普通 `build` 默认生成本地 noindex 预览产物；不得将它发布到生产域名。迁移使用的远端 preview 环境已停用，不再创建预览 Worker。
 - `build:workers` 默认自动获取 Blog 远端 `main`，在每次构建开始时解析并固定内容提交，构建期间不再追随分支变化；内容审查应在推送到发布分支前完成。日常不得要求用户手工维护 `BLOG_CONTENT_COMMIT`，该变量仅作为回滚或复现时的可选覆盖。Workers Builds 已连接站点仓库并仅构建 `main`；2026-09-08 已完成首次 Git push 云端构建、部署与线上验收，Blog 内容通知仍待一次性 Deploy Hook secret 配置及实测。Blog 的 `blog-content-updated` 通知由站点 `.github/workflows/content-update.yml` 接收，通过 Actions secret `CLOUDFLARE_DEPLOY_HOOK` 请求云端构建；Hook 只需配置一次，通知中不传私有内容或 SHA，Actions 触发成功不等于部署成功。公开主题 CI 成功不能当作博客已部署。旧 Hugo GitHub Pages 工作流已停用，GitHub Pages 自定义域名按持续部署文档由用户手动移除。
 - `www.yindongliang.com` 通过 Cloudflare Redirect Rule 301 跳转到主域，保持路径和查询参数，不使用额外 Worker。主站日常发布无需修改这项稳定规则。
-- 首次检出使用 `npm run setup`，先准备固定提交的 `@tcitry/astro-book` 包，再安装站点锁定依赖。主题在独立公开仓库维护，使用公开导出，不把主题实现复制到本站。
+- 首次检出使用 `npm run setup`（执行 `npm ci`），直接安装 npm 上准确版本的 `@tcitry/astro-book` 与其他锁定依赖；不再检出主题源码或生成本地 tarball。主题在独立公开仓库维护，使用公开导出，不把主题实现复制到本站。
 - `BLOG_DIR` 是只读内容源。私有内容、生成文件、凭据和安装后的商业组件源码不得进入 Git。React / HeroUI Pro demo 包装组件属于本站，不属于公开主题。
 - 主题默认使用 Astro 自带的 Shiki 与小型复制功能；本站继续通过关闭与替换接口使用 HeroUI Pro CodeBlock。不得因主题简化而把本站代码块改回主题默认展示。
 - 全站正文宽度以 posts 文章详情页为统一基准。Archives、Tags、Categories、Timeline、Portfolio、Links 等索引或业务页面不单独启用宽页布局；没有右侧目录时也不扩大正文列。Weekly 列表及分页是用户明确指定的例外：不保留右侧 TOC 空白，卡片在足够宽的桌面内容区域显示 4 列，较窄区域依次为 2 列、1 列；单篇 Weekly 正文继续使用统一文章宽度。调整后核对桌面实际宽度与移动端溢出。
@@ -28,7 +28,7 @@
 - 空正文栏目入口由 `scripts/site-pages.mjs` 维护，Blog 不再需要 `archives.md`、`ghstar.md`、`modified.md`、`portfolio.md`、`timeline.md` 占位；栏目 URL 与既有元数据继续保持兼容。
 - 修改主题或渲染后，运行站点 build、check、tests 和 verify；生产验收使用对应的 production 命令。保持旧 URL 基线和 Giscus pathname term。
 - 生产发布使用独立检出、独立依赖与缓存、独立 `dist/`，内容固定到已审查提交。不得从其他任务仍可能构建的共享工作区发布；`verify:release` 校验生产产物并记录来源与哈希，`deploy:verified` 只上传该份已验收产物；Wrangler 上传期间不能重建或改写资产目录。发现产物被并行改写时，中止上传，确认线上版本，再从独立目录重建、复验和发布。
-- `tcitry-blog` 的远端 `main` 是 production 发布入口；推送站点 `main` 即发起生产发布，包含同一提交中的 Convex schema/functions 与 Clerk 客户端生产配置，不能把随手提交、推送当作保存进度。只有完成本地功能验收、类型检查、权限测试、构建验证和脱敏检查后，才允许提交并推送 `main`；配置缺失或真实登录链路未验收时，保留本地改动，不推送。主题改动先推送主题仓库，再更新本站固定来源与 lockfile。Blog 内容仓库可以继续独立、随时提交 `main`，不要求同步提交站点代码。
+- `tcitry-blog` 的远端 `main` 是 production 发布入口；推送站点 `main` 即发起生产发布，包含同一提交中的 Convex schema/functions 与 Clerk 客户端生产配置，不能把随手提交、推送当作保存进度。只有完成本地功能验收、类型检查、权限测试、构建验证和脱敏检查后，才允许提交并推送 `main`；配置缺失或真实登录链路未验收时，保留本地改动，不推送。主题改动先在主题仓库发布 npm 版本，再更新本站准确依赖版本与 lockfile。Blog 内容仓库可以继续独立、随时提交 `main`，不要求同步提交站点代码。
 - 本站是开源仓库。真实环境配置只能保存在 Git 忽略的 `.env.local`、`.env.production.local`、`.dev.vars` 等本地文件，或 Cloudflare / Convex 的环境设置中；Git 中只保留无真实值的 `.env.example`。Secret Key、Deploy Key、访问令牌、凭据、本机绝对路径、私有内容、生成产物和安装后的商业组件源码不得入 Git。即使 Publishable Key 允许进入客户端产物，也通过环境变量注入，不硬编码进源码。提交前运行 `npm run check:public` 并人工 review diff；该模式检查不能替代人工脱敏。
 - 读者功能采用静态 Astro + React Client Island + Clerk + Convex，仍只有一个 Cloudflare Worker；第一版只做个人收藏、阅读进度和私有笔记，评论继续使用既有 Giscus。Clerk 开发与生产实例、Convex development 与 production deployment 分离。`PUBLIC_CLERK_PUBLISHABLE_KEY` 和 `PUBLIC_CONVEX_URL` 属于构建时公开配置；`CONVEX_DEPLOY_KEY` 仅提供给部署步骤，`CLERK_JWT_ISSUER_DOMAIN` 分别配置在 Convex 两个环境。当前路线不需要在 Worker 配置 `CLERK_SECRET_KEY`。生产后端和前端发布不具备跨平台原子性，schema/API 变更必须兼容仍在线的前端，发布后核验真实登录与私有数据隔离。
 - Astro 的 Giscus 配置与页面适用条件位于 `src/layouts/BookLayout.astro`；以下评论规则同样约束 Astro，提及的旧 Hugo 模板路径均位于备份分支，不属于当前 `main` 的开发入口。

@@ -15,7 +15,7 @@ npm run setup
 BLOG_DIR=/path/to/Blog npm run dev
 ```
 
-`setup` prepares the pinned theme package before installing locked dependencies. Use `package.json` as the source of truth for development, build, and deployment commands.
+`setup` installs all locked dependencies, including the published npm theme, with `npm ci`. Use `package.json` as the source of truth for development, build, and deployment commands.
 
 `dev` imports Blog once at startup, then watches its public Markdown and assets. Saving, adding, renaming, or deleting a source updates the running site and reloads the browser. Imports are debounced and run serially; after an import error, fix the source and save again. `BLOG_DIR` stays read-only. The full-text Pagefind index still requires a build; `preview` serves the existing build and does not watch content.
 
@@ -35,7 +35,7 @@ Ordinary `npm run build` creates a local preview with `noindex`. Production buil
 
 ## Repository boundaries
 
-Keep the fixed theme commit in `astro-book.source.json` aligned with `package-lock.json`. Publish theme changes in the independent theme repository before updating the pinned source here.
+Pin the published `@tcitry/astro-book` npm version in `package.json` and commit its `package-lock.json` integrity. Publish theme changes from the independent theme repository before upgrading the site. `npm run setup` runs `npm ci`; no theme checkout or local tarball is required.
 
 Keep private content, secrets, generated files, and installed commercial component source out of this public repository. `.gitignore` covers local caches, reports, and environment files; sanitized environment templates may be committed.
 
