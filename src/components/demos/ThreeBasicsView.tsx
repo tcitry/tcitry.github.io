@@ -3,6 +3,7 @@ import {Button, Disclosure, Label, Radio, RadioGroup, Slider, Switch} from '@her
 import {CodeBlock} from '@heroui-pro/react/code-block';
 import {trackDemoStart} from '../../lib/analytics';
 import {createThreeBasicsScene, initialSceneState, type SceneController, type SceneState} from './three-basics';
+import {threeBasicsExample} from './three-basics-example';
 import '../../styles/demos.css';
 import surfaceStyles from './DemoSurface.module.css';
 import styles from './ThreeBasics.module.css';
@@ -59,10 +60,7 @@ export default function ThreeBasicsView() {
     trackDemoStart('threejs-basics', 'reset');
   }
 
-  const code = `mesh.geometry = geometries.${state.geometry};
-material.color.set('${state.material}'); material.wireframe = ${state.wireframe};
-ambient.intensity = ${state.light.toFixed(1)} * 0.625; key.intensity = ${state.light.toFixed(1)} * 1.4;
-// 每帧旋转物体：${state.rotation ? '开启' : '关闭'}`;
+  const code = threeBasicsExample(state);
 
   return (
     <div className={`${surfaceStyles.surface} ${styles.demo}`} data-demo="threejs-basics" data-state={status} data-embedded={embedded} data-book-island>
@@ -165,10 +163,10 @@ ambient.intensity = ${state.light.toFixed(1)} * 0.625; key.intensity = ${state.l
           </Disclosure.Heading>
           <Disclosure.Content>
             <Disclosure.Body className="min-w-0 px-0 pb-0">
-              <p className={styles.codeHelp}>这段示意代码随当前设置更新；最后一行标记自动旋转的状态。完整场景还需要 Camera 和 Rendering。</p>
+              <p className={styles.codeHelp}>完整 HTML 示例，包含 Three.js 0.180.0、Scene、Camera、Light、OrbitControls 和 Rendering。形状、颜色、光照、线框与自动旋转采用当前设置；Camera 从默认视角开始，不包含本页的控件面板。复制后可在支持完整 HTML 的在线编辑器运行，或通过 HTTP 服务打开；需要网络访问 CDN 和 WebGL 2。</p>
               {codeExpanded && <CodeBlock className="min-w-0 max-w-full rounded-xl">
-                <CodeBlock.Header><span className="text-xs text-muted">JavaScript · 当前场景</span><CodeBlock.CopyButton code={code} aria-label="复制场景代码" /></CodeBlock.Header>
-                <CodeBlock.Code code={code} language="javascript" theme="github-light" darkTheme="github-dark" />
+                <CodeBlock.Header><span className="text-xs text-muted">HTML · 可独立运行的场景</span><CodeBlock.CopyButton code={code} aria-label="复制场景代码" /></CodeBlock.Header>
+                <div className="max-h-[32rem] overflow-auto" tabIndex={0} role="region" aria-label="完整场景代码"><CodeBlock.Code code={code} language="html" theme="github-light" darkTheme="github-dark" /></div>
               </CodeBlock>}
             </Disclosure.Body>
           </Disclosure.Content>

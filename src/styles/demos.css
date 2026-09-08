@@ -1,3 +1,6 @@
+/* Establish layer order before component imports, including standalone demo entry points. */
+@layer theme, base, components, utilities;
+
 /* Vendor component styles only. The full HeroUI entry also imports a global reset. */
 @reference "./tailwind.css";
 @import "tw-animate-css";

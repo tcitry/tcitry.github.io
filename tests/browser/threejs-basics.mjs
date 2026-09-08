@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
 
@@ -69,6 +69,11 @@ async function assertAlignment(root, label) {
     const panel = element.querySelector('form');
     return {
       choices, switches,
+      track: (() => {
+        const track = element.querySelector('[data-slot="slider-track"]');
+        const style = getComputedStyle(track);
+        return { startBorder: parseFloat(style.borderInlineStartWidth), endBorder: parseFloat(style.borderInlineEndWidth), radius: parseFloat(style.borderTopLeftRadius), overflow: style.overflow };
+      })(),
       disclosure: {
         label: rect(trigger.firstElementChild), indicator: rect(trigger.querySelector('[data-slot="disclosure-indicator"]')),
         contentLeft: triggerBounds.left + parseFloat(triggerStyle.paddingLeft) + parseFloat(triggerStyle.borderLeftWidth),
@@ -83,6 +88,8 @@ async function assertAlignment(root, label) {
     };
   });
   const aligned = (a, b, message) => assert.ok(Math.abs(a - b) <= 1, `${label}: ${message} (${a.toFixed(2)} vs ${b.toFixed(2)})`);
+  assert.ok(layout.track.startBorder > 0 && layout.track.endBorder > 0 && layout.track.radius > 0, `${label}: Slider retains rounded border caps`);
+  assert.equal(layout.track.overflow, 'visible', `${label}: Slider does not clip the thumb focus outline`);
   assert.equal(layout.choices.length, 6, `${label}: six visible choices`);
   for (const [index, choice] of layout.choices.entries()) {
     aligned(choice.card.height, layout.choices[0].card.height, 'Radio options have equal heights');
@@ -262,6 +269,46 @@ try {
   assert.equal(copiedSource, expectedSource, 'Copy writes the currently displayed scene code to the clipboard');
   assert.match(copiedSource, /geometries\.torus;/, 'Copied code contains the current Geometry');
   assert.match(copiedSource, /material\.color\.set\('#257f81'\)/, 'Copied code contains the current Material');
+  // Run the exact copied HTML as a separate document. Serve the pinned CDN
+  // modules from the matching installed package so CI needs no external CDN.
+  const example = await createPage(context, 'copied HTML');
+  const exampleURL = new URL('/three-example-test.html', base).href;
+  let exampleHTML = copiedSource;
+  await example.route(exampleURL, route => route.fulfill({ contentType: 'text/html', body: exampleHTML }));
+  const cdn = 'https://cdn.jsdelivr.net/npm/three@0.180.0/';
+  const modules = new Map([
+    ['build/three.module.js', new URL('../../node_modules/three/build/three.module.js', import.meta.url)],
+    ['build/three.core.js', new URL('../../node_modules/three/build/three.core.js', import.meta.url)],
+    ['examples/jsm/controls/OrbitControls.js', new URL('../../node_modules/three/examples/jsm/controls/OrbitControls.js', import.meta.url)],
+  ]);
+  await example.route(`${cdn}**`, async route => {
+    const file = modules.get(route.request().url().slice(cdn.length));
+    assert.ok(file, 'Copied example only imports the declared pinned modules');
+    await route.fulfill({ contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: await readFile(file) });
+  });
+  await example.goto(exampleURL);
+  const exampleCanvas = example.locator('canvas');
+  let exampleFrame = await stableCanvas(exampleCanvas, 'Copied HTML');
+  await example.mouse.move(450, 400);
+  await example.mouse.down();
+  await example.mouse.move(700, 500, { steps: 12 });
+  await example.mouse.up();
+  exampleFrame = await changedCanvas(exampleCanvas, exampleFrame, 'Copied HTML OrbitControls');
+  await example.setViewportSize({ width: 375, height: 600 });
+  await example.waitForFunction(() => {
+    const canvas = document.querySelector('canvas');
+    return canvas.width === Math.floor(innerWidth * Math.min(devicePixelRatio, 2));
+  });
+  await assertFits(example, 'Copied HTML mobile');
+  await setControl(root, 'switch', '自动旋转', true);
+  await source.filter({ hasText: 'const rotation = true;' }).waitFor();
+  exampleHTML = await source.textContent();
+  await example.reload();
+  const beforeRotation = await exampleCanvas.screenshot();
+  await example.waitForTimeout(350);
+  assert.ok(!beforeRotation.equals(await exampleCanvas.screenshot()), 'Copied HTML implements automatic rotation');
+  await example.close();
+  await setControl(root, 'switch', '自动旋转', false);
   await codeToggle.click();
   assert.equal(await codeToggle.getAttribute('aria-expanded'), 'false', 'Scene code can be collapsed again');
 
