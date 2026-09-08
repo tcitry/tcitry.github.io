@@ -86,7 +86,7 @@ export function buildViews(): PageView[] {
   for (const page of content.pages) {
     if (page.kind === 'taxonomy' || page.kind === 'term') continue;
     const entries = entriesFor(page);
-    const pageSize = page.kind === 'home' ? 10 : page.kind === 'section' && page.type === 'weekly' ? 100 : 0;
+    const pageSize = page.kind === 'home' ? 10 : page.kind === 'section' && page.type === 'weekly' ? 40 : 0;
     const total = pageSize ? Math.max(1, Math.ceil(entries.length / pageSize)) : 1;
     const paginationUrls = Array.from({ length: total }, (_, index) => index === 0 ? page.url : `${page.url}page/${index + 1}/`);
     for (let index = 0; index < total; index++) {

@@ -59,6 +59,29 @@ test('home pagination and posts archive retain articles located outside the post
 });
 
 
+test('Weekly pagination preserves every issue in date order at and beyond the 40-item boundary', async () => {
+  for (const [count, sizes] of [[40, [40]], [41, [40, 1]], [80, [40, 40]]]) {
+    const issues = Array.from({ length: count }, (_, index) => page({
+      id: `weekly-${index}`, source: `weekly/issue-${index}.md`, url: `/weekly/issue-${index}/`,
+      section: 'weekly', type: 'weekly', parent: '/weekly/',
+      date: new Date(Date.UTC(2025, 0, index + 1)).toISOString(),
+    }));
+    const site = await loadSite({ pages: [
+      page({ id: 'weekly', url: '/weekly/', kind: 'section', type: 'weekly', section: 'weekly', parent: '/', toc: false }),
+      ...issues,
+    ], tags: [], categories: [], diagnostics: { warnings: [], sourceCount: count + 1 } });
+    const views = site.buildViews().filter((view) => view.page.kind === 'section' && view.page.type === 'weekly');
+    const urls = sizes.map((_, index) => index ? `/weekly/page/${index + 1}/` : '/weekly/');
+    assert.deepEqual(views.map((view) => view.entries.length), sizes, `${count} issues: no empty trailing page`);
+    assert.deepEqual(views.map((view) => view.page.url), urls);
+    assert.deepEqual(views.flatMap((view) => view.entries.map((issue) => issue.id)), [...issues].reverse().map((issue) => issue.id), 'Newest first, with no missing or repeated issues');
+    for (const [index, view] of views.entries()) {
+      assert.deepEqual(view.pagination, { current: index + 1, total: sizes.length, urls });
+      assert.equal(view.page.toc, false, 'Every Weekly index keeps the layout without a TOC');
+    }
+  }
+});
+
 test('equal-date navigation follows Hugo Chinese collation and preserves empty legacy sort titles', async () => {
   const site = await loadSite({ pages: [
     page({ id: 'chinese', source: 'docs/分治.md', url: '/docs/分治/', title: '分治策略' }),
