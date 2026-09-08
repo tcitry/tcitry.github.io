@@ -1,3 +1,5 @@
+import {captureFeatureError} from '../lib/monitoring';
+
 let cleanup: (() => void) | undefined;
 let library: Promise<typeof import('../components/search/SearchCommand')> | undefined;
 
@@ -54,6 +56,7 @@ function initializeSearch() {
       if (events.signal.aborted || request !== generation) return;
       opened = false;
       errors.forEach((message) => { message.hidden = false; });
+      captureFeatureError(error, 'search', 'load');
       if (import.meta.env.DEV) console.error('[blog-search] Could not open search.', error);
     } finally {
       if (request === generation) triggers().forEach((button) => button.removeAttribute('aria-busy'));

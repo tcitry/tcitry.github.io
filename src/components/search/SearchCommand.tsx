@@ -4,6 +4,7 @@ import {createRoot} from 'react-dom/client';
 import {Command} from '@heroui-pro/react/command';
 import {searchContent} from '../../lib/search-client';
 import {loadRecentUpdates} from '../../lib/search-recent-client';
+import {captureFeatureError, withFeatureSpan} from '../../lib/monitoring';
 import type {SearchEntry, SearchResponse} from '../../lib/search-types';
 import surfaceStyles from '../demos/DemoSurface.module.css';
 import styles from './SearchCommand.module.css';
@@ -50,7 +51,12 @@ function SearchCommand({onClose}: Props) {
       if (!active) return;
       setRecent(entries);
       setRecentState('ready');
-    }).catch(() => { if (active) setRecentState('error'); })
+    }).catch((error) => {
+      // Cleanup aborts are expected; an active request timing out is a real failure.
+      if (!active) return;
+      setRecentState('error');
+      captureFeatureError(error, 'search', 'recent_load');
+    })
       .finally(() => window.clearTimeout(timeout));
     return () => { active = false; window.clearTimeout(timeout); controller.abort(); };
   }, [recentRetry]);
@@ -76,14 +82,22 @@ function SearchCommand({onClose}: Props) {
     setBusy(true);
     setFailed(false);
     const timer = window.setTimeout(() => {
-      void searchContent(normalizedQuery, limit).then((response) => {
-        if (requestVersion.current !== version) return;
+      void withFeatureSpan('search', 'query', async () => {
+        try { return await searchContent(normalizedQuery, limit); }
+        catch (error) {
+          // Superseded queries must not become reported failures or failed spans.
+          if (requestVersion.current !== version) return;
+          throw error;
+        }
+      }).then((response) => {
+        if (!response || requestVersion.current !== version) return;
         setResult({...response, query: normalizedQuery, limit});
         setBusy(false);
-      }).catch(() => {
+      }).catch((error) => {
         if (requestVersion.current !== version) return;
         setFailed(true);
         setBusy(false);
+        captureFeatureError(error, 'search', 'query');
       });
     }, limit === PAGE_SIZE && retry === 0 ? 150 : 0);
     return () => {
@@ -239,7 +253,11 @@ export interface SearchCommandController {
 
 /** The caller imports and mounts this module only on the first search request. */
 export function mountSearchCommand(host: HTMLElement, onClose: () => void): SearchCommandController {
-  const root = createRoot(host);
+  const root = createRoot(host, {
+    onUncaughtError: (error) => captureFeatureError(error, 'search', 'render'),
+    onCaughtError: (error) => captureFeatureError(error, 'search', 'render'),
+    onRecoverableError: (error) => captureFeatureError(error, 'search', 'render_recoverable'),
+  });
   let opened = false;
   let destroyed = false;
   let session = 0;

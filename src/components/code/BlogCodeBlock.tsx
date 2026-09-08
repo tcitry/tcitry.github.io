@@ -2,6 +2,7 @@ import {Component, memo, useLayoutEffect, type ReactNode} from 'react';
 import {createRoot, type Root} from 'react-dom/client';
 import {createPortal} from 'react-dom';
 import {CodeBlock} from '@heroui-pro/react/code-block';
+import {captureFeatureError} from '../../lib/monitoring';
 import styles from '../demos/DemoSurface.module.css';
 import './code-vendor.css';
 
@@ -34,6 +35,7 @@ const BlogCodeBlock = memo(function BlogCodeBlock({entry}: {entry: CodeEntry}) {
 class CodeFallback extends Component<{entry: CodeEntry; children: ReactNode}, {failed: boolean}> {
   state = {failed: false};
   static getDerivedStateFromError() { return {failed: true}; }
+  // The root's onCaughtError reports this failure once; this boundary restores code.
   componentDidCatch() { this.props.entry.fallback.hidden = false; }
   render() { return this.state.failed ? null : this.props.children; }
 }
@@ -43,7 +45,11 @@ export function createCodeMounts() {
   const host = document.createElement('div');
   host.dataset.blogCodeRoot = '';
   document.body.appendChild(host);
-  const root: Root = createRoot(host);
+  const root: Root = createRoot(host, {
+    onUncaughtError: (error) => captureFeatureError(error, 'code', 'render'),
+    onCaughtError: (error) => captureFeatureError(error, 'code', 'render'),
+    onRecoverableError: (error) => captureFeatureError(error, 'code', 'render_recoverable'),
+  });
   const entries: CodeEntry[] = [];
   return {
     add(entry: CodeEntry) {

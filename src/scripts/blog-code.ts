@@ -1,4 +1,5 @@
 import type {CodeEntry} from '../components/code/BlogCodeBlock';
+import {captureFeatureError} from '../lib/monitoring';
 
 let cleanup: (() => void) | undefined;
 let library: Promise<typeof import('../components/code/BlogCodeBlock')> | undefined;
@@ -42,6 +43,7 @@ function initializeBlogCode() {
       }
     } catch (error) {
       // A failed chunk or component never removes the readable static code.
+      if (!stopped) captureFeatureError(error, 'code', 'load');
       if (import.meta.env.DEV) console.error('[blog-code] Could not load the Pro code renderer.', error);
       library = undefined; pending.clear();
     } finally {
