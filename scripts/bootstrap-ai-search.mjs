@@ -13,7 +13,6 @@ export const BOOTSTRAP_PATHS = Object.freeze([
   '/docs/Git/git/',
   '/docs/Apple/SwiftData/DataStore/',
 ]);
-const aiNotice = 'This article is extracted from the chat log with AI.';
 const attribute = (node, name) => node.attrs?.find(item => item.name === name)?.value;
 const textContent = node => node.nodeName === '#text' ? node.value : (node.childNodes ?? []).map(textContent).join('');
 const all = (node, predicate) => [...(predicate(node) ? [node] : []), ...(node.childNodes ?? []).flatMap(child => all(child, predicate))];
@@ -51,7 +50,6 @@ export async function verifyBootstrapSample(document, page, { sitemap, fetchImpl
   assert.equal(articles.length, 1, 'AI Search bootstrap could not identify one public article body');
   const liveBody = articleMarkdown(serialize(articles[0]), document.url);
   assert.equal(liveBody, articleMarkdown(page.html, document.url), 'AI Search bootstrap public article body differs from the local reviewed content');
-  if (document.sourceKind === 'ai-assisted') assert.ok(textContent(main[0]).includes(aiNotice), 'AI Search bootstrap could not verify the public ByAI source notice');
   const sitemapText = sitemap ?? await fetchPublic(`${SITE_ORIGIN}/sitemap.xml`, fetchImpl);
   const entries = [...sitemapText.matchAll(/<url>([\s\S]*?)<\/url>/g)].map(match => match[1]).filter(entry => entry.includes(`<loc>${document.url}</loc>`));
   assert.equal(entries.length, 1, 'AI Search bootstrap sample must occur exactly once in the production sitemap');

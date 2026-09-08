@@ -12,7 +12,7 @@ async function fixture(t) {
   t.after(() => rm(directory, { recursive: true, force: true }));
   const pages = [...BOOTSTRAP_PATHS, '/docs/unselected-public-article/'].map((url, index) => ({
     kind: 'page', type: 'docs', url, title: `Sample ${index}`, date: '2026-09-01T00:00:00Z', lastmod: '2026-09-08T02:59:24Z',
-    tags: index === 1 ? [] : ['ByAI'], html: `<h2>Section ${index}</h2><p>Published body ${index}.</p><pre><code>const x = ${index};\n\n</code></pre>`,
+    tags: index === 1 ? [] : ['ByAi'], html: `<h2>Section ${index}</h2><p>Published body ${index}.</p><pre><code>const x = ${index};\n\n</code></pre>`,
     source: 'private-source-must-not-be-uploaded.md', params: { privateSetting: 'must-not-be-uploaded' },
   }));
   const corpus = createCorpus(pages, { environment: 'preview', revision: { siteCommit: 'a'.repeat(40), contentCommit: 'b'.repeat(40) } });
@@ -33,7 +33,6 @@ async function fixture(t) {
     const page = pages.find(page => `${SITE_ORIGIN}${page.url}` === url);
     assert.ok(page, 'No other URLs may be fetched');
     const html = `<html><head><link rel="canonical" href="${url}"></head><body><main id="main-content"><h1>${page.title}</h1>
-      ${page.tags.includes('ByAI') ? '<p>This article is extracted from the chat log with AI. Please identify it with caution.</p>' : ''}
       <article data-pagefind-body>${page.html}</article></main></body></html>`;
     return new Response(options.mutateHTML(html), { status: options.status, headers: { 'x-robots-tag': options.headerRobots } });
   };
@@ -121,13 +120,12 @@ test('bootstrap refuses existing different schemas, Gateway changes, external da
   }
 });
 
-test('a mismatched canonical, title, article body, timestamp or ByAI notice stops bootstrap before binding setup', async t => {
+test('a mismatched canonical, title, article body or timestamp stops bootstrap before binding setup', async t => {
   const context = await fixture(t);
   for (const mutateHTML of [
     html => html.replace('rel="canonical"', 'rel="alternate"'),
     html => html.replace('<h1>Sample 0</h1>', '<h1>Changed title</h1>'),
     html => html.replace('Published body 0.', 'Unpublished changed content.'),
-    html => html.replace('This article is extracted from the chat log with AI.', 'Missing source notice.'),
   ]) {
     context.options.mutateHTML = mutateHTML;
     let connections = 0;

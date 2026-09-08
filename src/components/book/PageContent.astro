@@ -63,7 +63,6 @@ const cloudSize = (count: number) => {
   <GroupedArticleList groups={groups(entries, isLinksList ? 'month' : 'year').map((group) => ({ id: group.key, label: group.key, items: group.pages.map((item) => articleItem(item, tags, { showSummary: isLinksList, showBreadcrumb: !isPostList && !isLinksList })) }))} />
 </> : <>
   {page.type === 'docs' && <h1>{bookTitle(page)}</h1>}
-  {page.type === 'docs' && page.tags.includes('ByAI') && <div class="my-4 flex items-center rounded border-l-4 border-l-[#fa8072] bg-[#fa8072]/10 px-4 py-3 text-[#9e4b44]"><span class="font-medium">This article is extracted from the chat log with AI. Please identify it with caution.</span></div>}
   <article class:list={{ markdown: true, 'book-post': ['posts', 'links'].includes(page.type), 'mb-16': ['posts', 'links'].includes(page.type), 'book-article': !['posts', 'links'].includes(page.type) }} data-pagefind-body>
     {['posts', 'weekly', 'links'].includes(page.type) && <><h1><a href={page.url}>{bookTitle(page)}</a></h1><PostMeta page={page} tags={tags} /></>}
     {page.type === 'posts' && dateText(page.lastmod) && Date.now() - new Date(page.lastmod).getTime() >= 365 * 86400000 && <Notice variant="danger">注意：此文章已超过 1 年未更新，部分信息可能已经过时。</Notice>}
