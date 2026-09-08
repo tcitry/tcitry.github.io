@@ -5,8 +5,8 @@ import TermList from '@tcitry/astro-book/components/TermList';
 import LinkRows from './LinkRows.astro';
 import { byDate, dateText, displayDate, groups, headingTree, timelineBlocks } from './helpers';
 import { compareLegacyTitles } from '../../lib/site';
-interface Props { view: PageView; allPages: ContentPage[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[]; portfolio?: any[]; related: ContentPage[]; relatedAnchor: string }
-const { view, allPages, tags, categories, related, relatedAnchor } = Astro.props;
+interface Props { view: PageView; allPages: ContentPage[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[]; portfolio?: any[] }
+const { view, allPages, tags, categories } = Astro.props;
 const page = view.page;
 const regular = allPages.filter((item) => item.kind === 'page');
 const weeklies = byDate(regular.filter((item) => item.type === 'weekly' && dateText(item.date)));
@@ -39,5 +39,4 @@ const termItems = terms.map((term) => ({
     <TermList title={!showCategories ? 'Tags' : undefined} total={!showCategories ? tags.length : undefined} items={termItems} />
   </nav> : <nav id="TableOfContents">
     <HeadingTree nodes={headingTree(page.headings)} />
-    {related.length > 0 && <a data-related-posts-toc href={`#${relatedAnchor}`} class="block py-[.5em] transition-opacity duration-100 ease-in-out hover:opacity-50 aria-[current=location]:text-[#8250df]!">相关阅读</a>}
   </nav>}

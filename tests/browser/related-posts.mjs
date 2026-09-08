@@ -7,24 +7,6 @@ const routes = ['/posts/this-blog/', '/posts/clang-struct-primer/'];
 const browser = await chromium.launch({ headless: true });
 let checked = 0;
 
-async function waitForAnchorScroll(page, anchor, label) {
-  let previousScroll;
-  let stableSamples = 0;
-  const deadline = Date.now() + 10000;
-  while (Date.now() < deadline) {
-    const state = await page.evaluate((id) => {
-      const target = document.getElementById(id)?.getBoundingClientRect();
-      return { scroll: scrollY, visible: Boolean(target && target.top < innerHeight && target.bottom > 0) };
-    }, anchor);
-    stableSamples = state.visible && previousScroll === state.scroll ? stableSamples + 1 : 0;
-    if (stableSamples >= 2) return;
-    previousScroll = state.scroll;
-    // Poll from Node: the page deliberately has JavaScript disabled.
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-  assert.fail(`${label}: native anchor must scroll the related section into view and settle`);
-}
-
 try {
   for (const width of [1440, 375, 320]) {
     const context = await browser.newContext({
@@ -66,6 +48,17 @@ try {
           assert.equal(destination.origin, base.origin, `${label}: recommendation stays on this site`);
           assert.notEqual(destination.pathname, path, `${label}: no self recommendation`);
           destinations.push(destination.pathname);
+          assert.equal(await link.locator('.card').count(), 1, `${label}: recommendation uses a static HeroUI card`);
+          const title = link.getByRole('heading', { level: 3 });
+          assert.equal(await title.count(), 1, `${label}: card title is a heading`);
+          assert.equal(await link.getAttribute('aria-labelledby'), await title.getAttribute('id'), `${label}: link name is its article title`);
+          const summaries = link.locator('.card__description');
+          assert.ok(await summaries.count() <= 1);
+          for (const summary of await summaries.all()) {
+            assert.ok(!/^AI\s*参与说明/.test((await summary.innerText()).trim()), `${label}: summary omits editorial disclosure`);
+            assert.equal(await summary.evaluate((node) => getComputedStyle(node).webkitLineClamp), '2');
+          }
+          assert.ok(await link.locator('.chip').count() <= 2, `${label}: topic labels stay compact`);
         }
         assert.equal(new Set(destinations).size, destinations.length, `${label}: no duplicate recommendations`);
         const dates = related.locator('time');
@@ -89,23 +82,10 @@ try {
         assert.deepEqual(order, { afterArticle: true, beforeComments: true, ignoredBySearch: true },
           `${label}: related section follows the article, precedes Giscus and stays outside search indexing`);
 
-        const mobile = width < 1024;
-        if (mobile) {
-          await page.locator('.book-header label[for="toc-control"]').click();
-          assert.equal(await page.locator('#toc-control').isChecked(), true);
-        }
-        const toc = page.locator(mobile ? '.book-header > aside' : '.book-toc');
-        const tocLink = toc.locator('a[data-related-posts-toc]');
-        assert.equal(await tocLink.count(), 1, `${label}: relevant TOC contains one related link`);
-        assert.equal(await tocLink.isVisible(), true, `${label}: TOC link is visible`);
-        const tocHref = await tocLink.getAttribute('href');
-        assert.ok(tocHref?.startsWith('#'), `${label}: TOC uses a native fragment link`);
-        assert.equal(decodeURIComponent(tocHref.slice(1)), anchor, `${label}: TOC targets the unique section`);
-        await tocLink.click();
-        await page.waitForURL((url) => decodeURIComponent(url.hash.slice(1)) === anchor);
-        await waitForAnchorScroll(page, anchor, label);
-        // Without JavaScript the native checkbox stays open. Measure the actual
-        // destination instead of clicking the now offscreen header during scroll.
+        const toc = page.locator('.book-toc, .book-header > aside');
+        assert.equal(await toc.locator(`a[href="#${anchor}"]`).count(), 0, `${label}: recommendations are not article TOC entries`);
+        assert.equal(await page.locator('[data-related-posts-toc]').count(), 0);
+        await related.scrollIntoViewIfNeeded();
 
         const layout = await related.evaluate((section) => {
           const article = document.querySelector('article[data-pagefind-body]');
@@ -120,7 +100,17 @@ try {
         });
         assert.deepEqual(layout, { noHorizontalOverflow: true, sectionInsideColumn: true, linksInsideColumn: true },
           `${label}: related links fit within the article column`);
-        console.log(`${label}: ${count} recommendations, dates, TOC anchor, placement and layout passed.`);
+        if (count > 1) {
+          const first = await links.nth(0).boundingBox();
+          const second = await links.nth(1).boundingBox();
+          assert.ok(first && second);
+          if (width === 1440) {
+            assert.ok(Math.abs(first.y - second.y) <= 1 && second.x > first.x + first.width, `${label}: two columns on desktop`);
+          } else {
+            assert.ok(Math.abs(first.x - second.x) <= 1 && second.y >= first.y + first.height, `${label}: one column on mobile`);
+          }
+        }
+        console.log(`${label}: ${count} cards, dates, article-only TOC, placement and layout passed.`);
         checked++;
       }
     } finally {

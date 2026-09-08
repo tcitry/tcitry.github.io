@@ -30,7 +30,9 @@ npm run preview -- --port 4321
 
 Posts 页尾的“相关阅读”由 `src/lib/related-posts.ts` 在构建时从公开文章元数据中选出，`RelatedPosts.astro` 输出静态列表。共同主题标签越多越靠前；重合数量相同时，优先使用频率较低的主题标签，再按发布时间从新到旧排列，避免宽泛标签盖过具体主题。不把 `Recommended`、`ByAI`、`Weekly`、`Links` 状态标签或年份分类当作相关主题。最多显示 5 篇，排除自身、重复 URL、草稿、隐藏页和跳转页；无匹配时不显示。旧文章可以推荐后来发布的同主题文章。
 
-该区块位于正文及版权、前后篇导航之后，Giscus 之前；桌面和移动目录提供“相关阅读”锚点，沿用页面的目录开关。推荐列表不进入 Pagefind 正文索引。`npm test` 检查推荐规则，`npm run test:browser` 同时检查禁用 JavaScript 时的文章链接、目录跳转、评论位置及 1440px / 375px / 320px 布局。
+该区块位于正文及版权、前后篇导航之后，Giscus 之前，不加入桌面或移动端文章目录。推荐列表不进入 Pagefind 正文索引。`npm test` 检查推荐规则，`npm run test:browser` 同时检查禁用 JavaScript 时的文章链接、目录边界、评论位置及 1440px / 375px / 320px 布局。
+
+相关阅读采用 HeroUI Card / Chip，在 Astro 构建时渲染为静态 HTML，使用原生整卡链接，不额外加载客户端脚本。正文列达到 40rem 时显示两列，小屏单列；标题完整换行，摘要最多两行，展示最多两个共同主题标签和发布日期。摘要优先使用显式 description，否则从正文提取叙述段落，跳过代码、图表、标题和 AI 编辑说明；没有适合段落时省略摘要。
 
 `setup` 仅使用 Node 内置模块启动：读取 `astro-book.source.json` 中的公开仓库和完整 commit，独立检出该提交，按照主题自己的 lockfile 执行 `npm ci`，再通过 `npm pack` 构建主题。打包结果必须匹配本站 lockfile 中的 SHA-512，最后才执行本站 `npm ci`。它不会使用本机碰巧存在的主题源码、跟随远端 main 更新或修改 lockfile。`.artifacts/` 中的临时源码和 tarball 均不入 Git；临时源码在打包后自动清理。
 

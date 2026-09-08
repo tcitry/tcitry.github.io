@@ -84,5 +84,5 @@ const cloudSize = (count: number) => {
     {next && <a href={next.url} title={`下一${navLabel}：${next.title}`} aria-label={`下一${navLabel}：${next.title}`}>〉</a>}
   </div>
   <div id="navigation-mobile" class="min-[64.01rem]:hidden"><p>{previous && <>上一{navLabel}：<a href={previous.url}>{previous.title}</a></>}</p><p>{next && <>下一{navLabel}：<a href={next.url}>{next.title}</a></>}</p></div>
-  <RelatedPosts items={related} anchorId={relatedAnchor} />
+  <RelatedPosts items={related} current={page} anchorId={relatedAnchor} />
 </div>}

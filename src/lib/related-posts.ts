@@ -2,12 +2,21 @@ import type { ContentPage } from './types';
 
 // These tags describe how an article is published, rather than its subject.
 const editorialTags = new Set(['recommended', 'byai', 'weekly', 'links']);
+const normalizeTopic = (tag: string) => tag.normalize('NFKC').trim().toLowerCase();
 const topics = (page: ContentPage) => new Set(page.tags
-  .map((tag) => tag.normalize('NFKC').trim().toLowerCase())
+  .map(normalizeTopic)
   .filter((tag) => tag && !editorialTags.has(tag)));
 const eligible = (page: ContentPage) => page.kind === 'page' && page.type === 'posts'
   && !page.hidden && !page.redirect && page.params.draft !== true && page.params.draft !== 'true';
 const timestamp = (page: ContentPage) => Date.parse(page.date) || 0;
+
+/** Display the shared subjects using the current article's original labels. */
+export function getSharedTopics(page: ContentPage, item: ContentPage): string[] {
+  const subject = topics(page);
+  const other = topics(item);
+  const labels = new Map(page.tags.map((tag) => [normalizeTopic(tag), tag.trim()]));
+  return [...subject].filter((tag) => other.has(tag)).map((tag) => labels.get(tag)!);
+}
 
 /** Build-time recommendations from the already filtered public content set. */
 export function getRelatedPosts(page: ContentPage, allPages: ContentPage[]): ContentPage[] {

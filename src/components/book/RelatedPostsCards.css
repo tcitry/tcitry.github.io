@@ -1,0 +1,4 @@
+/* Component styles only; Book continues to own the page's reset and typography. */
+@reference "../../styles/tailwind.css";
+@import "@heroui/styles/components/card.css" layer(components);
+@import "@heroui/styles/components/chip.css" layer(components);

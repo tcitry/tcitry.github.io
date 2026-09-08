@@ -1,36 +1,30 @@
 ---
 import type { ContentPage } from '../../lib/types';
-import { bookTitle, displayDate } from './helpers';
+import { getRelatedPostPreview } from '../../lib/related-post-preview';
+import RelatedPostsCards from './RelatedPostsCards';
+import contentStyles from './ContentSections.module.css';
 import styles from './RelatedPosts.module.css';
 
 interface Props {
   items: ContentPage[];
   anchorId: string;
+  current: ContentPage;
 }
 
-const { items, anchorId } = Astro.props;
+const { items, anchorId, current } = Astro.props;
 const headingId = `${anchorId}-heading`;
+const cards = items.map((item) => getRelatedPostPreview(item, current));
 ---
 
 {items.length > 0 && (
   <section
     id={anchorId}
-    class={styles.related}
+    class:list={[contentStyles.section, styles.related]}
     data-related-posts
     data-pagefind-ignore
     aria-labelledby={headingId}
   >
     <h2 id={headingId} class={styles.heading}>相关阅读</h2>
-    <ul class={styles.list} role="list">
-      {items.map((item) => {
-        const dateLabel = displayDate(item);
-        return (
-          <li class={styles.item}>
-            {dateLabel && <time class={styles.date} datetime={item.date}>{dateLabel}</time>}
-            <a class={styles.link} href={item.url} data-related-post-link>{bookTitle(item)}</a>
-          </li>
-        );
-      })}
-    </ul>
+    <RelatedPostsCards cards={cards} anchorId={anchorId} />
   </section>
 )}
