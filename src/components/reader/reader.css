@@ -1,0 +1,5 @@
+@reference "../../styles/tailwind.css";
+@import "@heroui/styles/components/button.css" layer(components);
+@import "@heroui/styles/components/textarea.css" layer(components);
+@import "@heroui/styles/components/tabs.css" layer(components);
+@import "@heroui/styles/components/scroll-shadow.css" layer(components);

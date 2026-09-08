@@ -1,0 +1,74 @@
+@reference "../../styles/tailwind.css";
+
+.panel {
+  @apply min-w-0 text-sm leading-relaxed;
+}
+
+.toolbar {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.muted {
+  @apply text-xs text-muted;
+}
+
+.note {
+  @apply mt-4 min-w-0 border-t border-separator pt-4;
+}
+
+.noteLabel {
+  @apply mb-2 block text-sm font-medium;
+}
+
+.textarea {
+  @apply block min-h-36 w-full resize-y text-sm leading-relaxed;
+}
+
+.noteFooter {
+  @apply mt-2 flex flex-wrap items-center justify-between gap-3;
+}
+
+.message {
+  @apply mt-2 text-xs leading-relaxed text-muted;
+}
+
+.error {
+  @apply text-danger-soft-foreground;
+}
+
+.conflict {
+  @apply my-3 rounded-lg border border-border bg-surface-secondary p-3 text-sm;
+}
+
+.remoteNote {
+  @apply my-3 max-h-52 overflow-auto whitespace-pre-wrap rounded-md border border-border bg-surface p-3 text-xs [overflow-wrap:anywhere];
+  font-family: inherit;
+}
+
+.list {
+  @apply m-0 list-none p-0;
+}
+
+.item {
+  @apply flex min-w-0 flex-col gap-1 border-b border-separator py-4;
+}
+
+.itemLink {
+  @apply w-fit max-w-full text-base font-medium text-accent underline-offset-4 hover:underline [overflow-wrap:anywhere];
+}
+
+.excerpt {
+  @apply my-1 line-clamp-3 whitespace-pre-wrap text-sm text-muted [overflow-wrap:anywhere];
+}
+
+.empty {
+  @apply py-10 text-sm text-muted;
+}
+
+.libraryPanel {
+  @apply min-w-0 pt-2;
+}
+
+.loadMore {
+  @apply mt-5;
+}

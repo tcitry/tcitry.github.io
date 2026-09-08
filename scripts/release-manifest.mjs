@@ -49,11 +49,13 @@ export async function releaseInputs(root) {
 }
 
 export async function assertSealedRelease(root, manifest) {
-  assert.equal(manifest.version, 1, 'Unsupported release manifest');
+  assert.equal(manifest.version, 2, 'Unsupported release manifest; rebuild and verify with the current production release scripts');
   assert.equal(manifest.environment, 'production', 'Only a verified production release can deploy');
   assert.match(manifest.contentCommit, /^[a-f0-9]{40}$/, 'Release must record its reviewed content commit');
   const inputs = await releaseInputs(root);
   for (const key of Object.keys(inputs)) assert.equal(manifest[key], inputs[key], `Release ${key} changed after verification`);
+  const reader = JSON.parse(await readFile(path.join(root, '.generated/reader-build.json'), 'utf8'));
+  assert.deepEqual(reader, manifest.reader, 'Reader build configuration changed after verification');
   const assets = await assetHashes(path.join(root, 'dist'));
   assert.deepEqual(assets, manifest.assets, 'Release assets changed after verification; rebuild and verify in an isolated checkout');
   return assets;

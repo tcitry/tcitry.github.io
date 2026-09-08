@@ -7,8 +7,15 @@ import sentry from '@sentry/astro';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { rehypeBlogCodeBlocks, remarkBlogCodeSource } from './src/lib/markdown.mjs';
+import { loadReaderEnvironment, readProductionReaderConfig } from './scripts/reader-config.mjs';
+import { readerBuildIntegration } from './scripts/reader-build.mjs';
 
 const production = process.env.PUBLIC_SITE_ENV === 'production';
+const readerEnv = loadReaderEnvironment(fileURLToPath(new URL('.', import.meta.url)), process.env, production ? 'production' : 'development');
+const readerConfig = production ? readProductionReaderConfig(readerEnv) : {
+  clerkPublishableKey: readerEnv.PUBLIC_CLERK_PUBLISHABLE_KEY || '',
+  convexUrl: readerEnv.PUBLIC_CONVEX_URL || readerEnv.CONVEX_URL || '',
+};
 const uploadSourceMaps = production && Boolean(process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT);
 const release = process.env.SENTRY_RELEASE || `tcitry-blog@${execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()}`;
 
@@ -20,7 +27,7 @@ export default defineConfig({
   build: { format: 'directory' },
   // Keep exact static source; the site's Pro renderer adds highlighting near the viewport.
   markdown: { syntaxHighlight: false },
-  integrations: [astroBook({
+  integrations: [readerBuildIntegration({ root: fileURLToPath(new URL('.', import.meta.url)), production, readerConfig }), astroBook({
     search: { glob: '{docs,posts,weekly}/**/*.html', rootSelector: 'main' },
     markdown: { code: false, remarkPlugins: [remarkBlogCodeSource], rehypePlugins: [rehypeBlogCodeBlocks] },
   }), react(), svelte(), sentry({
@@ -34,7 +41,11 @@ export default defineConfig({
     },
   })],
   vite: {
-    define: { 'import.meta.env.PUBLIC_SENTRY_RELEASE': JSON.stringify(release) },
+    define: {
+      'import.meta.env.PUBLIC_SENTRY_RELEASE': JSON.stringify(release),
+      'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify(readerConfig.clerkPublishableKey),
+      'import.meta.env.PUBLIC_CONVEX_URL': JSON.stringify(readerConfig.convexUrl),
+    },
     plugins: [tailwindcss()],
     // These renderers are imported on demand, including on pages without React islands.
     optimizeDeps: { include: ['@heroui-pro/react/code-block', '@heroui-pro/react/command'] },

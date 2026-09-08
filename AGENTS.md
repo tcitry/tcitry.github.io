@@ -3,6 +3,7 @@
 ## 通用开发规则
 
 - 与用户使用中文交流。
+- 当用户提到、咨询、设计、实现或排查 `tcitry-blog` 的功能时，只在对话及必要的站点工程中处理，不得自动在 Blog 创建或更新技术文档（包括流量统计、功能使用分析与转化优化）。仅在用户明确要求撰写或更新 Blog 文档时才进行文档沉淀；此规则优先于 Blog 的一般自动沉淀与知识库写回约定。
 - 站点项目今后统一称为 `tcitry-blog`，不再用 `tcitry.github.io` 作为日常项目称谓，避免与域名混淆；本站已不使用 GitHub Pages 托管。真实 GitHub 仓库 URL、Git remote、Giscus `repo` 标识及历史路径仍按实际值保留，名称约定本身不表示重命名远端仓库或修改这些配置。
 - `hugo-book` 备份分支中的开发规则继续有效；Hugo 迁移到 Astro 只改变技术实现和入口，不取消 URL、评论兼容、内容边界或验证要求。
 - 日常在 `tcitry-blog` 站点检出的 `main` 分支工作。迁移前的主分支是 `master`；不要将它误记为旧 `main`。临时 worktree 完成合并后再清理，先确认没有未提交工作或需要保留的本地文件。
@@ -25,7 +26,9 @@
 - 空正文栏目入口由 `scripts/site-pages.mjs` 维护，Blog 不再需要 `archives.md`、`ghstar.md`、`modified.md`、`portfolio.md`、`timeline.md` 占位；栏目 URL 与既有元数据继续保持兼容。
 - 修改主题或渲染后，运行站点 build、check、tests 和 verify；生产验收使用对应的 production 命令。保持旧 URL 基线和 Giscus pathname term。
 - 生产发布使用独立检出、独立依赖与缓存、独立 `dist/`，内容固定到已审查提交。不得从其他任务仍可能构建的共享工作区发布；`verify:release` 校验生产产物并记录来源与哈希，`deploy:verified` 只上传该份已验收产物；Wrangler 上传期间不能重建或改写资产目录。发现产物被并行改写时，中止上传，确认线上版本，再从独立目录重建、复验和发布。
-- 完成脱敏、review 与验证后，可在 `main` 按合理批次 commit、push 并部署；主题改动先推送主题仓库，再更新本站固定来源与 lockfile。提交前检查 diff 与忽略规则，不提交凭据、本机绝对路径、私有内容、生成产物或安装后的商业组件源码；发布后核验线上结果。
+- `tcitry-blog` 的远端 `main` 是 production 发布入口；推送站点 `main` 即发起生产发布，包含同一提交中的 Convex schema/functions 与 Clerk 客户端生产配置，不能把随手提交、推送当作保存进度。只有完成本地功能验收、类型检查、权限测试、构建验证和脱敏检查后，才允许提交并推送 `main`；配置缺失或真实登录链路未验收时，保留本地改动，不推送。主题改动先推送主题仓库，再更新本站固定来源与 lockfile。Blog 内容仓库可以继续独立、随时提交 `main`，不要求同步提交站点代码。
+- 本站是开源仓库。真实环境配置只能保存在 Git 忽略的 `.env.local`、`.env.production.local`、`.dev.vars` 等本地文件，或 Cloudflare / Convex 的环境设置中；Git 中只保留无真实值的 `.env.example`。Secret Key、Deploy Key、访问令牌、凭据、本机绝对路径、私有内容、生成产物和安装后的商业组件源码不得入 Git。即使 Publishable Key 允许进入客户端产物，也通过环境变量注入，不硬编码进源码。提交前运行 `npm run check:public` 并人工 review diff；该模式检查不能替代人工脱敏。
+- 读者功能采用静态 Astro + React Client Island + Clerk + Convex，仍只有一个 Cloudflare Worker；第一版只做个人收藏、阅读进度和私有笔记，评论继续使用既有 Giscus。Clerk 开发与生产实例、Convex development 与 production deployment 分离。`PUBLIC_CLERK_PUBLISHABLE_KEY` 和 `PUBLIC_CONVEX_URL` 属于构建时公开配置；`CONVEX_DEPLOY_KEY` 仅提供给部署步骤，`CLERK_JWT_ISSUER_DOMAIN` 分别配置在 Convex 两个环境。当前路线不需要在 Worker 配置 `CLERK_SECRET_KEY`。生产后端和前端发布不具备跨平台原子性，schema/API 变更必须兼容仍在线的前端，发布后核验真实登录与私有数据隔离。
 - Astro 的 Giscus 配置与页面适用条件位于 `src/layouts/BookLayout.astro`；以下评论规则同样约束 Astro，提及的旧 Hugo 模板路径均位于备份分支，不属于当前 `main` 的开发入口。
 
 ## Giscus 评论
@@ -36,3 +39,17 @@
 - 页面标题变化但最终 pathname term 不变时，验证渲染结果，通常无需修改 Discussion。slug、permalink、目录或分区变化时，先更新现有 Discussion 标题，保留旧 term 和最终 term，再发布页面。
 - 审计和远端更新使用 Blog 内容仓库内的 `skills/giscus-discussion-compatibility/SKILL.md`（根目录由 `BLOG_DIR` 指定）。优先使用 GitHub MCP；仅在形成可审计的映射计划后，才回退到已认证的 GitHub GraphQL。映射维护期间不得创建或删除 Discussion，也不得修改其正文、分类、状态、评论或 reaction。
 - URL alias 和重定向与 Giscus 匹配相互独立。除非用户要求保留历史链接，不要仅为评论迁移添加它们。
+
+<!-- convex-ai-start -->
+
+This project uses [Convex](https://convex.dev) as its backend.
+
+When working on Convex code, **always read
+`convex/_generated/ai/guidelines.md` first** for important guidelines on
+how to correctly use Convex APIs and patterns. The file contains rules that
+override what you may have learned about Convex from training data.
+
+Convex agent skills for common tasks can be installed by running
+`npx convex ai-files install`.
+
+<!-- convex-ai-end -->

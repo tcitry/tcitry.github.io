@@ -10,6 +10,7 @@ import '../styles/tailwind.css';
 import blogStyles from '../styles/blog.module.css';
 import codeStyles from '../components/code/BlogCode.module.css';
 import BlogSearch from '../components/search/BlogSearch.astro';
+import ReaderRoot from '../components/reader/ReaderRoot';
 interface Props { page: ContentPage; navigation: NavigationNode[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[] }
 const { page, navigation, tags } = Astro.props;
 const title = headTitle(page);
@@ -24,7 +25,8 @@ const previous = index >= 0 ? pageLink(docs[index - 1]) : undefined;
 const next = index >= 0 ? pageLink(docs[index + 1]) : undefined;
 // Eligibility and pathname compatibility remain the blog's publishing policy.
 const comments = page.kind === 'page' && ['docs', 'posts', 'about', 'weekly', 'links'].includes(page.type);
-const articleSchema = page.kind === 'page' ? {
+const readerArticle = page.kind === 'page' && ['docs', 'posts', 'weekly', 'links'].includes(page.type) && Boolean(page.html);
+const articleSchema = page.kind === 'page' && page.type !== 'reader' ? {
   '@context': 'https://schema.org', '@type': 'BlogPosting', headline: page.title,
   description, url: canonical, mainEntityOfPage: canonical,
   author: { '@type': 'Person', name: 'YINDONGLIANG', url: 'https://yindongliang.com/about/' },
@@ -32,7 +34,7 @@ const articleSchema = page.kind === 'page' ? {
   ...(dateText(page.lastmod) ? { dateModified: page.lastmod } : {}),
   ...(page.image ? { image: new URL(page.image, 'https://yindongliang.com').href } : {}),
 } : undefined;
-const menu = [['/archives/', '✔️ Archives'], ['/tags/', '🏷️ Tags'], ['/weekly/', '🔥 Weekly'], ['/timeline/', '⏳ Timeline'], ['/links/', '🔗 Links'], ['/portfolio/', '📱 Portfolio'], ['/about/', '👨‍💻 About'], ['/labs/', '🧪 Labs']];
+const menu = [['/archives/', '✔️ Archives'], ['/tags/', '🏷️ Tags'], ['/weekly/', '🔥 Weekly'], ['/timeline/', '⏳ Timeline'], ['/links/', '🔗 Links'], ['/portfolio/', '📱 Portfolio'], ['/about/', '👨‍💻 About'], ['/labs/', '🧪 Labs'], ['/me/', '📚 我的阅读']];
 const toNavigation = (nodes: NavigationNode[]): NavigationItem[] => nodes
   .filter(({ page }) => !page.hidden && (page.kind !== 'page' || Boolean(page.html)))
   .map((node) => ({
@@ -57,7 +59,7 @@ const site = {
   code={false}
   page={{ title, url: page.url, headings: page.headings, toc: page.toc, bodyClass: `${blogStyles.site} ${codeStyles.scope} book-kind-${page.kind} book-type-${page.type}${page.layout ? ` book-layout-${page.layout}` : ''}` }}
   navigation={toNavigation(navigation)} previous={previous} next={next}
-  seo={{ title, openGraphTitle: bookTitle(page), description, canonical, robots: production ? undefined : 'noindex, nofollow', siteName: site.title, locale: 'zh_CN', type: page.kind === 'page' ? 'article' : 'website', image: page.image ? new URL(page.image, 'https://yindongliang.com').href : undefined, twitterSite: '@tcitry', feeds: [{ title: site.title, href: '/index.xml' }], structuredData: articleSchema }}
+  seo={{ title, openGraphTitle: bookTitle(page), description, canonical, robots: production && page.type !== 'reader' ? undefined : 'noindex, nofollow', siteName: site.title, locale: 'zh_CN', type: page.kind === 'page' && page.type !== 'reader' ? 'article' : 'website', image: page.image ? new URL(page.image, 'https://yindongliang.com').href : undefined, twitterSite: '@tcitry', feeds: [{ title: site.title, href: '/index.xml' }], structuredData: articleSchema }}
   mermaid={{ errorMessage: '图表未能渲染，已保留 Mermaid 源码。' }}
   labels={{ skipToContent: '跳至正文', navigation: '主导航', openNavigation: '打开导航', closeNavigation: '关闭导航', tableOfContents: '目录', openTableOfContents: '打开目录', expandSection: '展开', previousPage: '上一篇', nextPage: '下一篇', search: '搜索博客', closeSearch: '关闭 Esc' }}>
   <Fragment slot="head">
@@ -70,6 +72,11 @@ const site = {
   </Fragment>
   <Fragment slot="content-before">
     {import.meta.env.DEV && page.source && <p><a href={`obsidian://open?vault=Blog&file=${encodeURIComponent(page.source)}`} class="mb-5 inline-block rounded-[5px] bg-[#4caf50] px-[15px] py-[10px] text-white! no-underline hover:bg-[#45a049]" target="_blank">在 Obsidian 打开笔记</a></p>}
+    {readerArticle && <div data-pagefind-ignore data-sentry-mask>
+      <ReaderRoot pathname={page.url} title={bookTitle(page)} client:only="react">
+        <p slot="fallback">正在加载阅读工具…</p>
+      </ReaderRoot>
+    </div>}
   </Fragment>
   <slot />
   <Fragment slot="toc">

@@ -23,7 +23,8 @@ try {
   const routes = ['/posts/this-blog/', '/docs/Agents/CLI/deepseek-harness-dsh-plugin-agent-architecture/'];
   for (const route of routes) {
     await page.goto(new URL(route, base).href);
-    assert.equal(await page.locator('astro-island').count(), 0, 'Exercise a document without a React island');
+    await page.locator('[data-reader-root]').waitFor();
+    assert.equal(await page.locator('#main-content astro-island').count(), 0, 'Article code rendering loads independently of the sidebar and reader islands');
     const diagrams = page.locator('pre.mermaid');
     assert.ok(await diagrams.count() > 0, `${route} has Mermaid source`);
     await page.waitForFunction(() => [...document.querySelectorAll('pre.mermaid')].every((diagram) => diagram.querySelector('svg')));

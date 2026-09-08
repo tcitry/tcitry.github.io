@@ -20,6 +20,7 @@ async function fixture(t) {
   await writeFile(path.join(directory, 'tmp', 'unrelated'), 'keep');
   const script = path.join(directory, 'scripts', 'workers-build.mjs');
   await copyFile(source, script);
+  await copyFile(new URL('../scripts/reader-config.mjs', import.meta.url), path.join(directory, 'scripts/reader-config.mjs'));
   const log = path.join(directory, 'commands.jsonl');
   await writeFile(path.join(directory, 'bin', 'git'), `#!${process.execPath}
 const fs = require('node:fs');
@@ -28,7 +29,7 @@ const args = process.argv.slice(2);
 const clone = args.includes('clone');
 const stateFile = process.env.FIXTURE_LOG + '.state';
 const state = fs.existsSync(stateFile) ? JSON.parse(fs.readFileSync(stateFile, 'utf8')) : { main: process.env.FIXTURE_MAIN_COMMIT, head: null };
-const record = { command: 'git', args, contentToken: !!process.env.BLOG_READ_TOKEN, proToken: !!process.env.HEROUI_AUTH_TOKEN, deployToken: !!process.env.CLOUDFLARE_API_TOKEN, siteEnvironment: process.env.PUBLIC_SITE_ENV };
+const record = { command: 'git', args, contentToken: !!process.env.BLOG_READ_TOKEN, proToken: !!process.env.HEROUI_AUTH_TOKEN, deployToken: !!process.env.CLOUDFLARE_API_TOKEN, convexToken: !!process.env.CONVEX_DEPLOY_KEY, clerkSecret: !!process.env.CLERK_SECRET_KEY, siteEnvironment: process.env.PUBLIC_SITE_ENV };
 if (clone) {
   record.askpassUser = cp.execFileSync(process.env.GIT_ASKPASS, ['Username'], { encoding: 'utf8' }).trim();
   record.askpassMatches = cp.execFileSync(process.env.GIT_ASKPASS, ['Password'], { encoding: 'utf8' }).trim() === process.env.BLOG_READ_TOKEN;
@@ -67,6 +68,7 @@ fs.appendFileSync(process.env.FIXTURE_LOG, JSON.stringify({ command: 'npm', args
   contentToken: !!process.env.BLOG_READ_TOKEN, proToken: !!process.env.HEROUI_AUTH_TOKEN,
   repository: !!process.env.BLOG_CONTENT_REPOSITORY, blog: process.env.BLOG_DIR,
   contentPin: process.env.BLOG_CONTENT_COMMIT ?? null, deployToken: !!process.env.CLOUDFLARE_API_TOKEN, githubToken: !!process.env.GITHUB_TOKEN,
+  convexToken: !!process.env.CONVEX_DEPLOY_KEY, clerkSecret: !!process.env.CLERK_SECRET_KEY,
   siteEnvironment: process.env.PUBLIC_SITE_ENV, askpassExists: fs.existsSync(process.env.BLOG_DIR + '/../askpass'),
   contentExists: fs.existsSync(process.env.BLOG_DIR) }) + '\\n');
 console.log('ordinary build output ' + (process.env.HEROUI_AUTH_TOKEN || '') + ' ' + process.env.BLOG_DIR
@@ -82,6 +84,9 @@ if (process.env.FIXTURE_FAIL === script) process.exit(1);
     HEROUI_AUTH_TOKEN: 'test-pro-token-456', SKIP_DEPENDENCY_INSTALL: '1',
     FIXTURE_MAIN_COMMIT: mainCommit,
     CLOUDFLARE_API_TOKEN: 'test-deploy-token-789', GITHUB_TOKEN: 'test-github-token-789',
+    PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_live_' + Buffer.from('clerk.test.invalid$').toString('base64'),
+    PUBLIC_CONVEX_URL: 'https://production-fixture-123.convex.cloud',
+    CONVEX_DEPLOY_KEY: 'prod:production-fixture-123|fixture-convex-secret', CLERK_SECRET_KEY: 'fixture-unused-clerk-secret',
   };
   delete env.PUBLIC_SITE_ENV;
   delete env.BLOG_CONTENT_COMMIT;
@@ -121,6 +126,12 @@ test('Workers build rejects missing or unsafe configuration before any command r
     [{ PUBLIC_SITE_ENV: 'staging' }, 'only supports PUBLIC_SITE_ENV=production'],
     [{ PUBLIC_SITE_ENV: 'Production' }, 'only supports PUBLIC_SITE_ENV=production'],
     [{ PUBLIC_SITE_ENV: 'production\n' }, 'only supports PUBLIC_SITE_ENV=production'],
+    [{ PUBLIC_CLERK_PUBLISHABLE_KEY: '' }, 'PUBLIC_CLERK_PUBLISHABLE_KEY'],
+    [{ PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_test_anything' }, 'PUBLIC_CLERK_PUBLISHABLE_KEY'],
+    [{ PUBLIC_CONVEX_URL: '' }, 'PUBLIC_CONVEX_URL'],
+    [{ CONVEX_DEPLOY_KEY: '' }, 'CONVEX_DEPLOY_KEY'],
+    [{ CONVEX_DEPLOY_KEY: 'dev:production-fixture-123|secret' }, 'CONVEX_DEPLOY_KEY'],
+    [{ CONVEX_DEPLOY_KEY: 'prod:another-deployment|secret' }, 'same production deployment'],
   ]) {
     const context = await fixture(t);
     const result = await context.run(overrides);
@@ -164,6 +175,7 @@ test('Workers build defaults to the fetched main commit with full history, scope
   assert.deepEqual(steps.map(step => step.contentPin), [null, null, null, null, mainCommit]);
   assert.ok(steps.every(step => !step.contentToken && !step.repository && !step.askpassExists && !step.githubToken));
   assert.ok(result.commands.every(command => !command.deployToken));
+  assert.ok(result.commands.every(command => !command.convexToken && !command.clerkSecret));
   assert.ok([resolve, checkout, revision, remote].every(command => !command.contentToken && !command.proToken));
   assert.ok(result.commands.every(command => command.siteEnvironment === 'production'));
   assert.ok(steps.every(step => step.contentExists));

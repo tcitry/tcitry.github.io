@@ -119,6 +119,15 @@ for (const language of Object.values(searchEntry.languages)) {
   await access(path.join(output, `pagefind/wasm.${language.wasm || 'unknown'}.pagefind`));
 }
 for (const directory of ['index', 'fragment']) assert.ok((await readdir(path.join(output, 'pagefind', directory))).length > 0, `Pagefind ${directory} files missing`);
+// The personal account route is a public shell only; private records are never prerendered.
+{
+  const html = await readFile(path.join(output, 'me/index.html'), 'utf8');
+  assertCanonical(html, '/me/');
+  assertGiscus(html, false, '/me/');
+  assert.match(html, /<meta[^>]+name="robots"[^>]+content="noindex, nofollow"/);
+  assert.match(html, /data-pagefind-ignore/);
+  assert.ok(!sitemap.includes('<loc>https://yindongliang.com/me/</loc>'), 'Private account shell is excluded from sitemap');
+}
 const lab = await readFile(path.join(output, 'labs/index.html'), 'utf8');
 checkPage(lab, '/labs/');
 const replay = await readFile(path.join(output, 'labs/agent-replay/index.html'), 'utf8');

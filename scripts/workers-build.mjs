@@ -4,6 +4,8 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
+import assert from 'node:assert/strict';
+import { assertProductionDeployKey, readProductionReaderConfig } from './reader-config.mjs';
 
 const execute = promisify(execFile);
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -32,6 +34,8 @@ async function main() {
   if (siteEnvironment !== 'production') {
     throw new BuildError('build:workers only supports PUBLIC_SITE_ENV=production. For local noindex previews, use npm run build.');
   }
+  const reader = readProductionReaderConfig(process.env);
+  assertProductionDeployKey(process.env, reader);
 
   const scratch = await mkdtemp(path.join(tmpdir(), 'astro-workers-content-'));
   const checkout = path.join(scratch, 'content');
@@ -49,7 +53,7 @@ async function main() {
   delete env.GIT_ASKPASS;
   // Deploy credentials remain available to the later platform deploy command,
   // but dependency scripts and content renderers have no reason to receive them.
-  const deploySecrets = Object.keys(env).filter(name => /^(?:CLOUDFLARE_|CF_)/.test(name)
+  const deploySecrets = Object.keys(env).filter(name => /^(?:CLOUDFLARE_|CF_|CONVEX_|CLERK_)/.test(name)
     || ['GITHUB_TOKEN', 'GH_TOKEN', 'GH_ENTERPRISE_TOKEN', 'GITHUB_ENTERPRISE_TOKEN', 'GIT_CONFIG_PARAMETERS', 'GIT_CONFIG_COUNT'].includes(name));
   const sensitive = [contentToken, proToken, repository, requestedCommit, checkout,
     ...deploySecrets.map(name => env[name])].filter(Boolean).flatMap(value => [value, encodeURIComponent(value)]);
@@ -127,6 +131,6 @@ async function main() {
 try {
   await main();
 } catch (error) {
-  console.error(error instanceof BuildError ? error.message : 'Workers build failed. Check the build environment.');
+  console.error(error instanceof BuildError || error instanceof assert.AssertionError ? error.message.split('\n')[0] : 'Workers build failed. Check the build environment.');
   process.exitCode = 1;
 }

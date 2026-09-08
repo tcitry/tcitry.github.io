@@ -1,7 +1,13 @@
-import { mkdir, readFile, writeFile, access } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, access, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assertBuiltReaderConfig } from './reader-build.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
+// Preserve Astro's snapshot of the configuration actually compiled into JS.
+// Finalization can validate that snapshot, but must never recreate it from env.
+await rm(path.join(root, '.generated/release.json'), { force: true });
+if (process.env.PUBLIC_SITE_ENV === 'production') await assertBuiltReaderConfig(root);
+else await rm(path.join(root, '.generated/reader-build.json'), { force: true });
 const output = path.join(root, 'dist');
 const content = JSON.parse(await readFile(path.join(root, '.generated/content.json'), 'utf8'));
 const routes = JSON.parse(await readFile(path.join(root, '.generated/routes.json'), 'utf8'));
@@ -63,4 +69,5 @@ for (const [alias, url] of aliasEntries) {
 }
 await put('/_redirects', redirectRules.join('\n') + '\n');
 await writeFile(path.join(root, '.generated/build-summary.json'), JSON.stringify({ routes: routes.length, feeds: feedCount, redirects, generatedAt: new Date().toISOString() }, null, 2));
+if (process.env.PUBLIC_SITE_ENV === 'production') await assertBuiltReaderConfig(root);
 console.log(`Finalized ${routes.length} content routes, ${feedCount} feeds, sitemap and ${redirects} existing/pagination redirects.`);
