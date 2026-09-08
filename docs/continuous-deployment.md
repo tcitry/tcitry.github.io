@@ -1,6 +1,6 @@
 # Astro 构建与发布
 
-本站已上线 `yindongliang.com`，GitHub 默认分支为 `main`。博客只使用一个生产 Worker **`tcitry-blog`**，通过 Cloudflare Workers Static Assets 托管静态资源。日常流程是 **本地预览与 review → 推送 main → Workers Builds 构建、验证并部署**。Cloudflare 已连接站点仓库；每次云端构建自动选定 Blog 远端 `main` 的最新提交，不需要手工维护内容 SHA。首次云端部署与独立内容通知链路仍需实际运行验收。手动 Wrangler 发布保留为备用入口。
+本站已上线 `yindongliang.com`，GitHub 默认分支为 `main`。博客只使用一个生产 Worker **`tcitry-blog`**，通过 Cloudflare Workers Static Assets 托管静态资源。日常流程是 **本地预览与 review → 推送 main → Workers Builds 构建、验证并部署**。Cloudflare 已连接站点仓库；每次云端构建自动选定 Blog 远端 `main` 的最新提交，不需要手工维护内容 SHA。首次 Git 推送触发的云端部署已通过验收；独立内容通知仍待一次性 Deploy Hook secret 配置。手动 Wrangler 发布保留为备用入口。
 
 2026-09-07 的首轮生产 HTTP 验收已检查 23 个页面、34 条跳转和 23 项资源。公开主题 CI 继续运行，但不会构建或发布完整博客。
 
@@ -28,7 +28,7 @@
 
 2026-09-07 的核查确认旧 Hugo 发布工作流已停用，Blog 的通知虽被 GitHub 接收，但站点没有接收任务，Cloudflare 也未连接 Git，因此当时只能手动发布。
 
-2026-09-08 已核对 Cloudflare 控制台：站点仓库已连接，生产分支为 `main`，非生产分支构建已关闭，构建命令、部署命令、缓存和三个构建 secrets 已配置。Secret 值本身未读回，其有效性由首次真实构建验证。
+2026-09-08 已核对 Cloudflare 控制台：站点仓库已连接，生产分支为 `main`，非生产分支构建已关闭，构建命令、部署命令、缓存和三个构建 secrets 已配置。Secret 值本身未读回；首次真实构建已验证内容读取、商业组件安装及部署凭据均可用。
 
 站点新增 `.github/workflows/content-update.yml`，接收 Blog 已有的 `blog-content-updated` 通知。还需一次性创建生产 Deploy Hook，并将 URL 保存为站点 GitHub Actions secret `CLOUDFLARE_DEPLOY_HOOK`；此前未配置此 secret。Git 连接、通知请求成功和生产部署成功是三个独立状态，最终以 Cloudflare 构建记录及线上验收为准。
 
@@ -101,7 +101,7 @@ node scripts/verify-deployment.mjs --env production
 
 ## Workers Builds
 
-目标是由 Cloudflare 构建并上传，减少本地安装和网络上传的等待。继续使用现有 `tcitry-blog`，只从站点 `main` 发布生产。**Git 连接与构建 secrets 已配置，首次真实云端构建和内容通知链路正在验收。**
+目标是由 Cloudflare 构建并上传，减少本地安装和网络上传的等待。继续使用现有 `tcitry-blog`，只从站点 `main` 发布生产。**站点 main 推送触发的云端构建与部署已验收；Blog 内容推送触发仍待一次性 Hook 配置。**
 
 `npm run build:workers` 校验配置，获取内容 `main` 的完整历史，将这次获取到的分支提交解析为 SHA，然后以 detached HEAD 检出并固定使用它。构建过程中即使远端出现新提交，也不会改变本次内容。内容审查在推送到 Blog 发布分支前完成。随后准备主题和锁定依赖，执行一次生产构建、check、test 与发布校验；只生成产物，不自行上传。生产环境显式设置 `PUBLIC_SITE_ENV=production`。缺少凭据、提交不符或验证失败时中止，成功或失败均清理临时内容。
 
@@ -155,6 +155,8 @@ HeroUI 使用 Dashboard → Overview / Settings 中的 **CI/CD Token**；见 [He
 
 ## 发布结果与通知
 
+2026-09-08，站点提交 `303db233a` 由 Git push 自动触发 Workers Build `305e3c10`，构建及部署成功。平台使用 Node 24.20.0、npm 11.13.0，总耗时约 3 分 48 秒，其中构建 2 分 41 秒、部署 48 秒；没有配置 `BLOG_CONTENT_COMMIT`。部署后独立 HTTP 检查通过：7 个核心页面、6 条最近更新链接、12 项资源，以及 canonical、生产 robots、缓存和真实 404。
+
 云端发布以 Workers Builds 的构建、部署结果和线上检查为准；手动发布以 Wrangler 输出和线上检查为准。GitHub 公开主题 CI 的成功状态只表示主题检查通过，不表示博客已发布；没有配置自动成功邮件或通知后端。
 
 Workers Builds 的 [GitHub 集成](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/github-integration/)可提供提交 check run 和构建详情链接。邮件取决于 GitHub 个人订阅设置；成功、失败均主动推送到指定渠道还需另行配置通知目标与授权。本项目不为此新增常驻后端。
@@ -164,6 +166,7 @@ Workers Builds 的 [GitHub 集成](https://developers.cloudflare.com/workers/ci-
 - 已实施：最近更新改为独立 JSON，按需加载并重新验证缓存；列表数据变化不再单独导致所有 HTML 改变。导航结构或全站组件变化仍可能改变大量页面。
 - 已实施：锁定主题和 npm 缓存复用、固定内容提交、一次构建后验证并上传同一份产物。
 - 已配置：Workers Builds Git 集成、构建 secrets、仅 main 生产构建与缓存；脚本自动选定并固定本次内容提交。
-- 待验收：真实云端构建与发布后检查、一次性 Deploy Hook secret 配置及 Blog 内容推送触发。
+- 已验收：首次 Git push 自动构建与部署，以及线上核心页面、最近更新链接和资源。
+- 待完成：一次性 Deploy Hook secret 配置及 Blog 内容推送触发验收。
 - 后续评估：按需加载完整文档菜单，减少每页重复的侧栏 HTML；为 Archives/Modified 增加适合静态站的分页，保留现有入口和索引能力。当前本地产物抽样中，this-blog 约 278 KB HTML 里侧栏约 248 KB、1,981 个节点；Archives 约 1.24 MB、12,197 个节点（gzip 约 68 KB）。优化重点是手机 DOM 与布局开销，不能直接把未压缩体积当作实际传输流量。具体实现需要保留无 JavaScript 导航与既有锚点。
 - 后续评估：周刊封面增加小尺寸、响应式图片变体，列表不再下载原始大图；现有懒加载和比例占位继续保留。
