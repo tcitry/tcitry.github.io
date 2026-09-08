@@ -6,6 +6,7 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 // Preserve Astro's snapshot of the configuration actually compiled into JS.
 // Finalization can validate that snapshot, but must never recreate it from env.
 await rm(path.join(root, '.generated/release.json'), { force: true });
+await rm(path.join(root, '.generated/deployment.json'), { force: true });
 if (process.env.PUBLIC_SITE_ENV === 'production') await assertBuiltReaderConfig(root);
 else await rm(path.join(root, '.generated/reader-build.json'), { force: true });
 const output = path.join(root, 'dist');
@@ -46,7 +47,7 @@ const sitemap = routes.filter(route => !/\/page\/\d+\/$/.test(route.url)).map(ro
   const page = pageById.get(route.id);
   return `<url><loc>${escape(absolute(route.url))}</loc>${validDate(page?.lastmod) ? `<lastmod>${new Date(page.lastmod).toISOString()}</lastmod>` : ''}<changefreq>weekly</changefreq><priority>0.5</priority></url>`;
 });
-for (const url of ['/labs/', '/labs/agent-replay/', '/demos/2026/threejs-basics/']) sitemap.push(`<url><loc>${absolute(url)}</loc></url>`);
+for (const url of ['/labs/', '/labs/agent-replay/', '/demos/2026/threejs-basics/', '/chat/']) sitemap.push(`<url><loc>${absolute(url)}</loc></url>`);
 await put('/sitemap.xml', `<?xml version="1.0" encoding="utf-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${sitemap.join('\n')}</urlset>\n`);
 let redirects = 0;
 const routeURLs = new Set(routes.map(route => route.url));
@@ -69,5 +70,7 @@ for (const [alias, url] of aliasEntries) {
 }
 await put('/_redirects', redirectRules.join('\n') + '\n');
 await writeFile(path.join(root, '.generated/build-summary.json'), JSON.stringify({ routes: routes.length, feeds: feedCount, redirects, generatedAt: new Date().toISOString() }, null, 2));
+const corpus = JSON.parse(await readFile(path.join(root, '.generated/ai-search/manifest.json'), 'utf8'));
+await put('/blog-release.json', JSON.stringify({ version: 1, ...corpus.revision, corpusHash: corpus.corpusHash, environment: corpus.environment }) + '\n');
 if (process.env.PUBLIC_SITE_ENV === 'production') await assertBuiltReaderConfig(root);
 console.log(`Finalized ${routes.length} content routes, ${feedCount} feeds, sitemap and ${redirects} existing/pagination redirects.`);

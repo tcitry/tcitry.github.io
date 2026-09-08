@@ -11,6 +11,7 @@ import blogStyles from '../styles/blog.module.css';
 import codeStyles from '../components/code/BlogCode.module.css';
 import BlogSearch from '../components/search/BlogSearch.astro';
 import ReaderRoot from '../components/reader/ReaderRoot';
+import BlogChatWidget from '../components/chat/BlogChatWidget.astro';
 interface Props { page: ContentPage; navigation: NavigationNode[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[] }
 const { page, navigation, tags } = Astro.props;
 const title = headTitle(page);
@@ -57,7 +58,7 @@ const site = {
 <ThemeLayout site={site}
   components={{Search: BlogSearch}}
   code={false}
-  page={{ title, url: page.url, headings: page.headings, toc: page.toc, bodyClass: `${blogStyles.site} ${codeStyles.scope} book-kind-${page.kind} book-type-${page.type}${page.layout ? ` book-layout-${page.layout}` : ''}` }}
+  page={{ title, url: page.url, headings: page.headings, toc: page.toc, bodyClass: `${blogStyles.site} ${codeStyles.scope} blog-chat-layout book-kind-${page.kind} book-type-${page.type}${page.layout ? ` book-layout-${page.layout}` : ''}` }}
   navigation={toNavigation(navigation)} previous={previous} next={next}
   seo={{ title, openGraphTitle: bookTitle(page), description, canonical, robots: production && page.type !== 'reader' ? undefined : 'noindex, nofollow', siteName: site.title, locale: 'zh_CN', type: page.kind === 'page' && page.type !== 'reader' ? 'article' : 'website', image: page.image ? new URL(page.image, 'https://yindongliang.com').href : undefined, twitterSite: '@tcitry', feeds: [{ title: site.title, href: '/index.xml' }], structuredData: articleSchema }}
   mermaid={{ errorMessage: '图表未能渲染，已保留 Mermaid 源码。' }}
@@ -85,5 +86,5 @@ const site = {
   <Fragment slot="comments">
     {comments && <Giscus repo="tcitry/tcitry.github.io" repoId="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" category="Announcements" categoryId="DIC_kwDOCMyx684COMlk" mapping="pathname" lang="zh-CN" theme="preferred_color_scheme" />}
   </Fragment>
-  <Fragment slot="overlays"><script>import '../scripts/site'; import '../scripts/blog-code';</script></Fragment>
+  <Fragment slot="overlays"><BlogChatWidget /><script>import '../scripts/site'; import '../scripts/blog-code';</script></Fragment>
 </ThemeLayout>

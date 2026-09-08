@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import { blogChatDev } from './scripts/lib/chat-dev.mjs';
 import react from '@astrojs/react';
 import astroBook from '@tcitry/astro-book';
 import svelte from '@astrojs/svelte';
@@ -46,7 +47,7 @@ export default defineConfig({
       'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify(readerConfig.clerkPublishableKey),
       'import.meta.env.PUBLIC_CONVEX_URL': JSON.stringify(readerConfig.convexUrl),
     },
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), blogChatDev()],
     // These renderers are imported on demand, including on pages without React islands.
     optimizeDeps: { include: ['@heroui-pro/react/code-block', '@heroui-pro/react/command'] },
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },

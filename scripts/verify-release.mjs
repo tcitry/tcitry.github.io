@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assetHashes, cleanCommit, releaseInputs } from './release-manifest.mjs';
+import { assetHashes, cleanCommit, releaseInputs, releaseCorpus } from './release-manifest.mjs';
 import { run } from './theme-package.mjs';
 import { withoutReaderSecrets } from './reader-config.mjs';
 import { assertBuiltReaderConfig } from './reader-build.mjs';
@@ -19,6 +19,7 @@ try {
     releaseInputs(root), cleanCommit(content), assetHashes(path.join(root, 'dist')),
   ]);
   if (process.env.BLOG_CONTENT_COMMIT) assert.equal(contentCommit, process.env.BLOG_CONTENT_COMMIT, 'Content does not match BLOG_CONTENT_COMMIT');
+  const aiSearch = await releaseCorpus(root, { ...inputs, contentCommit, assets });
   const env = { ...withoutReaderSecrets(process.env), PUBLIC_SITE_ENV: 'production' };
   for (const name of Object.keys(env)) {
     if (/^(?:CLOUDFLARE_|CF_)/.test(name) || ['BLOG_READ_TOKEN', 'HEROUI_AUTH_TOKEN', 'GITHUB_TOKEN', 'GH_TOKEN'].includes(name)) delete env[name];
@@ -30,8 +31,9 @@ try {
   assert.equal(await cleanCommit(content), contentCommit, 'Content changed during verification');
   assert.deepEqual(await assetHashes(path.join(root, 'dist')), assets, 'Assets changed during verification');
   assert.deepEqual(await assertBuiltReaderConfig(root), reader, 'Reader build configuration changed during verification.');
+  assert.deepEqual(await releaseCorpus(root, { ...inputs, contentCommit, assets }), aiSearch, 'AI Search corpus changed during verification');
   await writeFile(output, JSON.stringify({ version: 2, environment: 'production', ...inputs,
-    contentCommit, reader, verifiedAt: verification.checkedAt, assets }, null, 2) + '\n');
+    contentCommit, reader, verifiedAt: verification.checkedAt, assets, ...(aiSearch ? { aiSearch } : {}) }, null, 2) + '\n');
   console.log(`Sealed ${Object.keys(assets).length} verified assets. Deploy with npm run deploy:verified; do not rebuild this directory.`);
 } catch (error) {
   // Git diagnostics may include private checkout paths; keep failures generic.

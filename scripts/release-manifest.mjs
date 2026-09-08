@@ -48,6 +48,15 @@ export async function releaseInputs(root) {
   return { siteCommit, themeCommit: source.commit, wranglerHash: sha256(config) };
 }
 
+// Static-only fixtures/releases remain supported. A Worker that imports the
+// generated public references must seal those bytes along with its assets.
+export async function releaseCorpus(root, release) {
+  const config = JSON.parse(await readFile(path.join(root, 'wrangler.jsonc'), 'utf8'));
+  if (config.main !== 'worker/index.ts') return null;
+  const { assertCorpusRelease } = await import('./lib/ai-search-corpus.mjs');
+  return (await assertCorpusRelease(root, release)).seal;
+}
+
 export async function assertSealedRelease(root, manifest) {
   assert.equal(manifest.version, 2, 'Unsupported release manifest; rebuild and verify with the current production release scripts');
   assert.equal(manifest.environment, 'production', 'Only a verified production release can deploy');
@@ -58,5 +67,7 @@ export async function assertSealedRelease(root, manifest) {
   assert.deepEqual(reader, manifest.reader, 'Reader build configuration changed after verification');
   const assets = await assetHashes(path.join(root, 'dist'));
   assert.deepEqual(assets, manifest.assets, 'Release assets changed after verification; rebuild and verify in an isolated checkout');
+  const aiSearch = await releaseCorpus(root, manifest);
+  if (aiSearch) assert.deepEqual(manifest.aiSearch, aiSearch, 'AI Search corpus changed after verification');
   return assets;
 }

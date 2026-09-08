@@ -83,6 +83,8 @@ Astro integration 在开始构建时清除旧 seal，并在成功构建后记录
 
 Convex CLI 的 `--cmd-url-env-var-name CONVEX_DEPLOYMENT_URL` 将实际 canonical Deployment URL 传给 `scripts/verify-convex-target.mjs`；回调在任何后端 push 前核对它与已封存的 `PUBLIC_CONVEX_URL` 完全一致。CLI 使用 `--codegen disable`，避免在生产 seal 后改写生成代码；类型检查仍执行。后端部署失败、issuer 不匹配、URL 不一致或产物变化均会停止后续 Worker 发布。Convex 成功但 Worker 失败时，后端已更新，前端仍是上一个成功版本：两项远端部署并非原子事务，后端 schema / API 必须向后兼容；先修复失败再重跑同一已验收提交，不自动回滚数据库或删表。
 
+博客助手同时封存 `.generated/ai-search/` 中的公开文章和 Worker 引用白名单。发布前需设置 `CLOUDFLARE_ACCOUNT_ID` 与 `CLOUDFLARE_API_TOKEN`，令牌包含既有 Worker 发布权限及 AI Search Edit / Run；仅 Wrangler OAuth 登录不足以运行 REST 同步。`deploy:verified` 在上传前检查远端访问和元数据配置，上传后执行全站线上核验、生产版本核对，再自动同步文章至 `tcitry-blog-search` 内置存储。它始终关联唯一 Gateway `tcitry-blog-chat`。具体控制台配置、限流分层及失败重试见 [AI Search 与博客助手](./ai-search.md)。
+
 便捷命令 `BLOG_DIR=/path/to/Blog npm run deploy:production` 会构建一次、验证并发布；它不会代替此前的 review、`check` 和 tests。Wrangler 仍扫描全部产物，但通过哈希复用已上传文件，只传输新增或变化的资源。
 
 `PUBLIC_SITE_ENV` 决定产物中的收录与统计策略，Wrangler 配置决定发布目标。生产域名只发布经过 `verify:production` 的产物。发布后记录站点提交、内容提交和 Wrangler 部署结果，并抽查首页、Archives、旧文章 URL、robots、sitemap、静态资源与本次修改的功能。

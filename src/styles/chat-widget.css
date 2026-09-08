@@ -1,0 +1,139 @@
+/* The launcher is independent of the chat runtime, which loads on first open. */
+:root { --blog-chat-sidebar-width: min(27.5rem, 45vw); }
+.blog-chat-widget {
+  --chat-edge: 1.5rem;
+  --chat-bg: var(--body-background, #fff);
+  --chat-fg: var(--body-font-color, #343a40);
+  --chat-accent: var(--color-link, #0055bb);
+  color: var(--chat-fg);
+  font-family: inherit;
+}
+.blog-chat-widget [hidden] { display: none !important; }
+.blog-chat-widget__launcher {
+  position: fixed;
+  z-index: 45;
+  right: max(var(--chat-edge), env(safe-area-inset-right));
+  bottom: max(var(--chat-edge), env(safe-area-inset-bottom));
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--chat-accent) 80%, white);
+  border-radius: 50%;
+  background: var(--chat-accent);
+  color: var(--chat-bg);
+  box-shadow: 0 4px 16px #0002, 0 1px 4px #0001;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.blog-chat-widget__launcher:hover { transform: translateY(-2px); box-shadow: 0 6px 20px #0003; }
+.blog-chat-widget__launcher:active { transform: scale(.96); }
+.blog-chat-widget :is(button, dialog):focus-visible { outline: 2px solid var(--chat-accent); outline-offset: 4px; }
+.blog-chat-widget__tooltip {
+  position: absolute;
+  right: calc(100% + .75rem);
+  padding: .375rem .625rem;
+  border-radius: .5rem;
+  color: var(--chat-fg);
+  background: var(--chat-bg);
+  box-shadow: 0 2px 12px #0002;
+  font-family: inherit;
+  font-size: .75rem;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+.blog-chat-widget__launcher:is(:hover, :focus-visible) .blog-chat-widget__tooltip { opacity: 1; visibility: visible; }
+.blog-chat-widget__launcher[aria-expanded="true"] .blog-chat-widget__tooltip { display: none; }
+.blog-chat-widget__launcher[aria-expanded="true"] { visibility: hidden; pointer-events: none; }
+.blog-chat-widget__panel {
+  box-sizing: border-box;
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 46;
+  width: var(--blog-chat-sidebar-width);
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid color-mix(in srgb, var(--chat-fg) 14%, transparent);
+  border-radius: 0;
+  background: var(--chat-bg);
+  color: var(--chat-fg);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+.blog-chat-widget__panel[open] { display: flex; animation: blog-chat-sidebar-enter 220ms ease-out; }
+@keyframes blog-chat-sidebar-enter { from { transform: translateX(100%); } to { transform: translateX(0); } }
+.blog-chat-widget__mount { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 0; }
+.blog-chat-widget__loading-header { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1rem; }
+.blog-chat-widget__close { width: 2.75rem; height: 2.75rem; border: 0; border-radius: .625rem; color: inherit; background: transparent; font-size: 1.5rem; cursor: pointer; }
+.blog-chat-widget__loading { margin: auto; padding: 1.5rem; text-align: center; font-size: .875rem; }
+.blog-chat-widget__loading button { margin-top: 1rem; min-height: 2.75rem; padding: .5rem 1rem; background: var(--chat-accent); color: var(--chat-bg); border: 0; border-radius: .625rem; cursor: pointer; }
+html.blog-chat-modal-open { overflow: hidden; }
+
+/* Reserve real reading space beside the docked panel. Public theme classes and
+   width tokens remain the integration boundary; article max widths stay shared. */
+@media (min-width: 640px) {
+  html.blog-chat-sidebar-open body.blog-chat-layout { width: calc(100% - var(--blog-chat-sidebar-width)); }
+  html.blog-chat-sidebar-open .blog-chat-layout > main > .book-page { min-width: 0; max-width: var(--book-content-max-width); }
+  html.blog-chat-sidebar-open .blog-chat-layout :is(.book-menu-content, .book-toc-content) {
+    inset-inline: auto;
+    min-inline-size: 0;
+  }
+  html.blog-chat-sidebar-open .blog-chat-layout .book-menu-content { inline-size: var(--book-menu-width); max-inline-size: var(--book-menu-width); }
+  html.blog-chat-sidebar-open .blog-chat-layout .book-toc-content { inline-size: var(--book-toc-width); max-inline-size: var(--book-toc-width); }
+  html.blog-chat-sidebar-open .blog-chat-layout:is([data-chat-reading-layout="compact"], [data-chat-reading-layout="narrow"]) > main > .book-toc { display: none; }
+  html.blog-chat-sidebar-open .blog-chat-layout:is([data-chat-reading-layout="compact"], [data-chat-reading-layout="narrow"]) .book-header { display: block; }
+  html.blog-chat-sidebar-open .blog-chat-layout:is([data-chat-reading-layout="compact"], [data-chat-reading-layout="narrow"]) > #toc-control:checked ~ main .book-header > aside { display: block; }
+
+  html.blog-chat-sidebar-open .blog-chat-layout[data-chat-reading-layout="compact"] { --book-menu-width: 15rem; }
+  html.blog-chat-sidebar-open .blog-chat-layout[data-chat-reading-layout="compact"] > main > .book-page { flex: 1 1 calc(100% - var(--book-menu-width)); }
+  html.blog-chat-sidebar-open .blog-chat-layout[data-chat-reading-layout="compact"] .book-header > div { justify-content: flex-end; }
+  html.blog-chat-sidebar-open .blog-chat-layout[data-chat-reading-layout="compact"] .book-header > div > :is(strong, label[for="menu-control"]) { display: none; }
+
+  html.blog-chat-sidebar-open .blog-chat-layout[data-chat-reading-layout="narrow"] > main > .book-page { flex: 1 1 100%; }
+  html.blog-chat-sidebar-open .blog-chat-layout[data-chat-reading-layout="narrow"] > main > .book-menu { display: none; }
+  html.blog-chat-sidebar-open .blog-chat-layout[data-chat-reading-layout="narrow"] > #menu-control:checked ~ main > .book-menu {
+    display: block;
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(var(--book-menu-width), calc(100vw - var(--blog-chat-sidebar-width)));
+    margin: 0;
+    visibility: visible;
+    z-index: 40;
+  }
+  html.blog-chat-sidebar-open .blog-chat-layout[data-chat-reading-layout="narrow"] > #menu-control:checked ~ main .book-menu-content {
+    inset-inline: 0 auto;
+    transform: none;
+    max-inline-size: calc(100vw - var(--blog-chat-sidebar-width));
+    background: var(--body-background);
+  }
+  html.blog-chat-sidebar-open .blog-chat-layout[data-chat-reading-layout="narrow"] > #menu-control:checked ~ main .book-menu-overlay { display: block; position: fixed; inset: 0 var(--blog-chat-sidebar-width) 0 0; z-index: 39; }
+  html.blog-chat-sidebar-open .blog-chat-layout[data-chat-reading-layout="narrow"] > #menu-control:checked ~ main > .book-page { opacity: .25; }
+}
+@media (max-width: 639px) {
+  .blog-chat-widget { --chat-edge: 1rem; }
+  .blog-chat-widget__panel {
+    inset: var(--chat-viewport-top, 0px) 0 auto;
+    width: 100dvw;
+    max-width: none;
+    height: var(--chat-viewport-height, 100dvh);
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .blog-chat-widget__panel::backdrop { background: var(--chat-bg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .blog-chat-widget__launcher, .blog-chat-widget__tooltip { transition: none; }
+  .blog-chat-widget__panel[open] { animation: none; }
+}

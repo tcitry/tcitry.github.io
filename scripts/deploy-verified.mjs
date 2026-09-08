@@ -19,6 +19,7 @@ try {
   assert.deepEqual(reader, manifest.reader, 'Reader configuration changed after production verification.');
   assertProductionDeployKey(configured, reader);
   const env = withoutReaderSecrets(configured);
+  await rm(path.join(root, '.generated/deployment.json'), { force: true });
   for (const name of ['BLOG_READ_TOKEN', 'BLOG_CONTENT_REPOSITORY', 'BLOG_CONTENT_COMMIT', 'HEROUI_AUTH_TOKEN', 'GITHUB_TOKEN', 'GH_TOKEN']) delete env[name];
   const convexEnv = { ...env, CONVEX_DEPLOY_KEY: configured.CONVEX_DEPLOY_KEY };
   for (const name of Object.keys(convexEnv)) {
@@ -45,6 +46,13 @@ try {
       throw new Error(`${label} failed`);
     }
   }
+  if (manifest.aiSearch) {
+    assert.ok(process.env.CLOUDFLARE_ACCOUNT_ID && process.env.CLOUDFLARE_API_TOKEN,
+      'Set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN with deployment and AI Search permissions before publishing. Wrangler OAuth alone does not authenticate article sync.');
+    // Check remote access and metadata before changing either deployed backend.
+    // The sync process receives no Convex deploy key or Clerk credentials.
+    await run('Checking AI Search access and the article sync plan', ['scripts/sync-ai-search.mjs', '--dry-run'], env);
+  }
   // --env-file replaces CLI deployment selection rather than supplementing it.
   // Use a short-lived, ignored file containing only the validated production key
   // so the CLI cannot reload development selection or secrets from .env.local.
@@ -65,6 +73,18 @@ try {
   assert.deepEqual(await assetHashes(path.join(root, 'dist')), assets,
     'Assets changed during upload. Check the active production version, then rebuild and redeploy from an isolated checkout.');
   console.log('Deployment finished; all sealed assets remained unchanged during upload.');
+  await assertSealedRelease(root, manifest);
+  if (manifest.aiSearch) {
+    // The online release marker verifies the published revision before ingestion.
+    // Sync failure leaves the site available, returns nonzero, and is retryable.
+    const verificationEnv = { ...env };
+    for (const name of Object.keys(verificationEnv)) {
+      if (/^(?:CLOUDFLARE_|CF_)/.test(name) || /(?:TOKEN|SECRET|PASSWORD|DEPLOY_KEY|ADMIN_KEY)/.test(name)) delete verificationEnv[name];
+    }
+    await run('Verifying the published site', ['scripts/verify-deployment.mjs', '--env', 'production'], verificationEnv);
+    await run('Verifying the published AI Search corpus and chat API', ['scripts/verify-ai-search-deployment.mjs'], verificationEnv);
+    await run('Synchronizing verified published articles', ['scripts/sync-ai-search.mjs', '--apply'], env);
+  }
 } catch (error) {
   console.error(error instanceof assert.AssertionError ? error.message.split('\n')[0] : 'Verified deployment failed. Check the Convex/Worker deployment result; the next deployment step did not run.');
   process.exitCode = 1;
