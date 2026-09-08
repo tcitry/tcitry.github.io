@@ -3,7 +3,7 @@ import { chromium } from 'playwright';
 
 // Point this at an independently built preview; this test never builds content.
 const base = new URL(process.env.BLOG_TEST_URL ?? 'http://127.0.0.1:4321');
-const routes = ['/posts/this-blog/', '/posts/clang-struct-primer/'];
+const routes = ['/posts/this-blog/', '/posts/pulumi-all-apply/', '/posts/clang-struct-primer/'];
 const browser = await chromium.launch({ headless: true });
 let checked = 0;
 
@@ -37,7 +37,7 @@ try {
 
         const links = related.locator('a[data-related-post-link]');
         const count = await links.count();
-        assert.ok(count >= 1 && count <= 5, `${label}: displays 1–5 recommendations`);
+        assert.ok(count >= 1 && count <= 6 && count !== 5, `${label}: displays six or four recommendations, or a smaller relevant set`);
         const destinations = [];
         for (const link of await links.all()) {
           assert.equal(await link.isVisible(), true, `${label}: recommendation link is visible`);

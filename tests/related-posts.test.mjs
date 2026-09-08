@@ -41,7 +41,7 @@ test('specific shared subjects rank above a common tag when overlap counts tie',
   const life = Array.from({ length: 7 }, (_, i) => post(`life-${i}`, { tags: ['Life'], date: '2026-01-01' }));
   const related = getRelatedPosts(current, [...life, blog]);
   assert.equal(related[0].id, 'blog', 'A recent general-interest article must not displace the specific shared topic');
-  assert.equal(related.length, 5);
+  assert.equal(related.length, 6);
 });
 
 test('topic spelling is normalized and repeated tags do not inflate relevance', () => {
@@ -66,13 +66,15 @@ test('only public posts are eligible, including posts stored inside docs', () =>
   }
 });
 
-test('recommendations contain at most five distinct article URLs', () => {
+test('recommendations use six or four distinct articles, retaining smaller relevant sets', () => {
   const current = post('current');
-  const candidates = Array.from({ length: 8 }, (_, i) => post(`post-${i}`));
-  const duplicate = post('duplicate', { url: candidates[0].url });
-  const related = getRelatedPosts(current, [...candidates, duplicate]);
-  assert.equal(related.length, 5);
-  assert.equal(new Set(related.map((p) => p.url)).size, 5);
+  for (const [available, expected] of [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 4], [6, 6], [7, 6], [8, 6]]) {
+    const candidates = Array.from({ length: available }, (_, i) => post(`post-${i}`));
+    const duplicates = candidates.map((item, i) => post(`duplicate-${i}`, { url: item.url }));
+    const related = getRelatedPosts(current, [...candidates, ...duplicates]);
+    assert.equal(related.length, expected, `${available} unique candidates`);
+    assert.equal(new Set(related.map((p) => p.url)).size, expected, 'Count unique URLs before choosing the grid size');
+  }
 });
 
 test('the related section anchor does not shadow an existing article heading', () => {

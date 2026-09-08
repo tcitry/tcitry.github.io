@@ -47,11 +47,14 @@ export function getRelatedPosts(page: ContentPage, allPages: ContentPage[]): Con
       || a.item.title.localeCompare(b.item.title, 'zh-CN') || a.item.url.localeCompare(b.item.url));
 
   const seen = new Set<string>();
-  return ranked.filter(({ item }) => {
+  const unique = ranked.filter(({ item }) => {
     if (seen.has(item.url)) return false;
     seen.add(item.url);
     return true;
-  }).slice(0, 5).map(({ item }) => item);
+  });
+  // Keep the two-column grid balanced when there are enough related articles.
+  const limit = unique.length >= 6 ? 6 : unique.length >= 4 ? 4 : unique.length;
+  return unique.slice(0, limit).map(({ item }) => item);
 }
 
 /** Keep the footer link distinct from any existing Markdown heading. */
