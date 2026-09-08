@@ -32,7 +32,7 @@ const articleSchema = page.kind === 'page' ? {
   ...(dateText(page.lastmod) ? { dateModified: page.lastmod } : {}),
   ...(page.image ? { image: new URL(page.image, 'https://yindongliang.com').href } : {}),
 } : undefined;
-const menu = [['/archives/', '✔️ Archives'], ['/tags/', '🏷️ Tags'], ['/weekly/', '🔥 Weekly'], ['/timeline/', '⏳ Timeline'], ['/links/', '🔗 Links'], ['/portfolio/', '📱 Portfolio'], ['/about/', '👨‍💻 About'], ['/labs/', '🧪 Labs']];
+const menu = [['/archives/', '✔️ Archives'], ['/tags/', '🏷️ Tags'], ['/weekly/', '🔥 Weekly'], ['/timeline/', '⏳ Timeline'], ['/links/', '🔗 Links'], ['/portfolio/', '📱 Portfolio'], ['/about/', '👨‍💻 About'], ['/chat/', '💬 博客助手'], ['/labs/', '🧪 Labs']];
 const toNavigation = (nodes: NavigationNode[]): NavigationItem[] => nodes
   .filter(({ page }) => !page.hidden && (page.kind !== 'page' || Boolean(page.html)))
   .map((node) => ({

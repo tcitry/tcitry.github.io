@@ -75,6 +75,8 @@ npm run deploy:verified
 
 `verify:release` 要求站点与内容检出都干净，运行生产校验并在忽略目录 `.generated/release.json` 记录站点、内容、主题版本和产物哈希。`deploy:verified` 复核站点、配置和每个产物的哈希，再执行一次 Wrangler；不重复构建。它可以在云端内容临时目录已清理后运行。记录文件不含私有仓库 URL、绝对路径或凭据。
 
+博客助手同时封存 `.generated/ai-search/` 中的公开文章和 Worker 引用白名单。发布前需设置 `CLOUDFLARE_ACCOUNT_ID` 与 `CLOUDFLARE_API_TOKEN`，令牌包含既有 Worker 发布权限及 AI Search Edit / Run；仅 Wrangler OAuth 登录不足以运行 REST 同步。`deploy:verified` 在上传前检查远端访问和元数据配置，上传后执行全站线上核验、生产版本核对，再自动同步文章至 `tcitry-blog-search` 内置存储。它始终关联唯一 Gateway `tcitry-blog-chat`。具体控制台配置、限流分层及失败重试见 [AI Search 与博客助手](./ai-search.md)。
+
 便捷命令 `BLOG_DIR=/path/to/Blog npm run deploy:production` 会构建一次、验证并发布；它不会代替此前的 review、`check` 和 tests。Wrangler 仍扫描全部产物，但通过哈希复用已上传文件，只传输新增或变化的资源。
 
 `PUBLIC_SITE_ENV` 决定产物中的收录与统计策略，Wrangler 配置决定发布目标。生产域名只发布经过 `verify:production` 的产物。发布后记录站点提交、内容提交和 Wrangler 部署结果，并抽查首页、Archives、旧文章 URL、robots、sitemap、静态资源与本次修改的功能。
