@@ -1,4 +1,4 @@
-import {Card, Chip, Label} from '@heroui/react';
+import {Label} from '@heroui/react';
 import {NativeSelect} from '@heroui-pro/react/native-select';
 import {Timeline} from '@heroui-pro/react/timeline';
 import type {TimelineItem} from './special-pages';
@@ -29,24 +29,15 @@ export default function TimelineView({items, years = [], selected}: TimelineView
         </NativeSelect.Trigger>
       </NativeSelect>}
     </header>
-    {years.length > 1 && <details className={styles.yearLinks}>
-      <summary>浏览所有年份</summary>
-      <nav aria-label="所有时间线年份">{years.map((item) => <a key={item.value} href={item.value} aria-current={item.value === selected ? 'page' : undefined}>{item.label}</a>)}</nav>
-    </details>}
-    <div className="mb-5 flex flex-wrap items-center gap-3" data-book-island>
-      {year && <Chip size="sm" color="accent" variant="soft"><Chip.Label>{year}</Chip.Label></Chip>}
-      <span className={styles.count}>{items.length} 组记录</span>
-    </div>
-    <Timeline className={styles.timeline} size="sm" aria-label={year ? `${year} 年记录` : '日期记录'}>
+    <p className={styles.count} data-book-island>{items.length} 组记录</p>
+    <Timeline className={styles.timeline} aria-label={year ? `${year} 年记录` : '日期记录'}>
       {items.map((item, index) => <Timeline.Item className={styles.event} key={item.id || `${item.label}-${index}`} id={item.id}>
-        <Timeline.Rail className={styles.eventRail}><Timeline.Marker /><Timeline.Connector /></Timeline.Rail>
-        <Timeline.Content>
+        <Timeline.Rail><Timeline.Marker /><Timeline.Connector /></Timeline.Rail>
+        <Timeline.Content className={styles.eventContent}>
           <h2 className={styles.eventDate} data-book-island>
             <a href={item.id ? `#${item.id}` : undefined}>{/^\d{4}-\d{2}-\d{2}$/.test(item.label) ? <time dateTime={item.label}>{item.label}</time> : item.label}</a>
           </h2>
-          <Card className={styles.eventCard}>
-            <Card.Content className={styles.authored} dangerouslySetInnerHTML={{__html: item.html}} />
-          </Card>
+          <div className={styles.authored} data-timeline-entry dangerouslySetInnerHTML={{__html: item.html}} />
         </Timeline.Content>
       </Timeline.Item>)}
     </Timeline>

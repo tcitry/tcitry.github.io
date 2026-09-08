@@ -21,6 +21,7 @@
     "test": "node --test tests/*.test.mjs",
     "test:browser": "node tests/browser/reading.mjs && node tests/browser/related-posts.mjs && node tests/browser/search.mjs",
     "test:browser:threejs": "node tests/browser/threejs-basics.mjs",
+    "test:browser:timeline": "node tests/browser/timeline.mjs",
     "verify": "node scripts/verify-build.mjs",
     "verify:production": "PUBLIC_SITE_ENV=production npm run verify",
     "deploy": "npm run deploy:production",

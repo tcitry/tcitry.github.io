@@ -98,18 +98,13 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  --timeline-rail-width: 0.75rem;
-  --timeline-marker-size: 0.75rem;
-  --timeline-gap: 1rem;
-  --timeline-item-gap: 1.75rem;
 }
 .section .event { min-width: 0; margin: 0; scroll-margin-top: 5rem; }
-.section .eventRail { padding-top: 0.6rem; }
-.section .eventRail :global(.timeline__connector) { top: 1.35rem; }
-.section .eventCard { min-width: 0; gap: 1rem; padding: 1.25rem; border: 1px solid var(--border); border-radius: 1rem; box-shadow: none; }
-.section .eventDate { margin: 0 0 0.75rem; font-size: 0.875rem; font-weight: 600; line-height: 1.5; }
-.section .eventDate a { color: var(--accent); text-decoration: none; }
-.section .eventDate a:hover { text-decoration: underline; }
+.section .eventContent { gap: 0.75rem; }
+.section .eventDate { margin: 0; font-size: 0.875rem; font-weight: 600; line-height: 1.75rem; }
+.section .eventDate a { color: var(--foreground); text-decoration: none; }
+.section .eventDate a:hover { color: var(--accent); text-decoration: underline; }
+.section .eventDate a:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
 .section .authored { min-width: 0; max-width: 100%; overflow-wrap: anywhere; line-height: 1.8; }
 .section .authored > :first-child { margin-top: 0; }
 .section .authored > :last-child { margin-bottom: 0; }
@@ -117,10 +112,6 @@
 .section .authored :is(pre, .table-scroll) { max-width: 100%; overflow-x: auto; }
 .section .authored pre { white-space: pre; overflow-wrap: normal; }
 .section .yearSelect { width: 9rem; max-width: 100%; }
-.section .yearLinks { margin: 0 0 1.25rem; font-size: 0.75rem; color: var(--muted); }
-.section .yearLinks summary { cursor: pointer; width: fit-content; }
-.section .yearLinks nav { display: flex; flex-wrap: wrap; gap: 0.75rem; padding-top: 0.75rem; }
-.section .yearLinks a[aria-current="page"] { font-weight: 700; }
 
 .section .projects { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
 .section .project { min-width: 0; }
@@ -165,16 +156,12 @@
 
 @container (min-width: 42rem) {
   .section .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .section .timeline { --timeline-gap: 1.5rem; --timeline-item-gap: 2rem; }
-  .section .eventCard { padding: 1.5rem; }
 }
 
 @container (max-width: 26rem) {
   .section .title { font-size: 1.625rem; }
   .section .header { align-items: flex-start; }
   .section .projectCard { padding: 1rem; }
-  .section .eventCard { padding: 1rem; }
-  .section .timeline { --timeline-gap: 0.65rem; }
   .section .search { width: 100%; }
   .section .weeklyRow { gap: 0.75rem; padding: 0.75rem; align-items: flex-start; }
   .section .weeklyRowImage { width: 4.5rem; }
