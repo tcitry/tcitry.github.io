@@ -87,6 +87,16 @@ await assert.rejects(access(path.join(output, 'demos/2026/cloudflare-product-map
   for (const title of ['确认范围', '完成设计', '实现功能', '验收验证']) assert.ok(html.includes(title), `Timeline card must be present before JavaScript: ${title}`);
 }
 const feeds = new Set(['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/links/index.xml']);
+{
+  const url = '/demos/2026/threejs-basics/';
+  const html = await readFile(htmlPath(url), 'utf8');
+  checkPage(html, url); assertGiscus(html, false, url);
+  assert.ok(html.includes(`data-astro-demo="${url}"`), 'Three.js demo must use its Astro route');
+  assert.ok(html.includes('data-demo="threejs-basics"'), 'Three.js scene markup must survive the build');
+  assert.ok(html.includes('<noscript>'), 'The 3D demo must explain how to continue without JavaScript');
+  assert.ok(!html.includes('cdn.jsdelivr.net'), 'The 3D demo must use bundled local dependencies');
+  assert.ok(sitemap.includes(`<loc>https://yindongliang.com${url}</loc>`), 'Three.js demo is discoverable in sitemap');
+}
 for (const term of [...content.tags, ...content.categories]) { assert.ok(urls.has(term.url), `Taxonomy page missing: ${term.url}`); feeds.add(`${term.url}index.xml`); }
 for (const url of feeds) {
   const xml = await readFile(path.join(output, decodeURIComponent(url)), 'utf8');

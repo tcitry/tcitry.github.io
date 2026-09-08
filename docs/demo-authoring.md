@@ -131,6 +131,9 @@ Cloudflare 只托管构建后的静态产物时不需要运行时授权 token；
 | 地址 | 组件 | 运行方式 |
 | --- | --- | --- |
 | `/demos/2026/rounded-timeline/` | `src/components/demos/RoundedTimeline.astro` | 四张卡片静态生成，小脚本通过 ResizeObserver 更新连接线 |
+| `/demos/2026/threejs-basics/` | `src/components/demos/ThreeBasicsView.tsx` + `three-basics.ts` | Three.js 原生场景，切换形状、颜色、光照、线框，支持 Camera 操作与物体旋转 |
+
+Three.js demo 使用固定版本 npm 依赖，由 Astro 构建为本站资源；React island 复用 HeroUI 的 RadioGroup、Slider、Switch、Button 与 HeroUI Pro CodeBlock，视觉样式沿用 DemoSurface。普通文章只嵌入 lazy iframe 并提供独立页面入口。场景控制器按需绘制，自动旋转仅在可见时持续绘制；React 组件卸载时清理事件、观察器和 GPU 资源。不支持 WebGL 2 或禁用 JavaScript 时保留静态说明。运行 `BLOG_TEST_URL=http://127.0.0.1:4321 npm run test:browser:threejs` 可验证实际画面变化、键盘操作、重置、动画启停、窄屏与降级路径。
 
 入口位于 `src/pages/demos/2026/`，使用轻量 `DemoLayout`。演示保持原 iframe 地址和全屏布局，随根项目 `npm run dev` / `npm run build` 一起运行。本地预览构建使用 noindex；正式发布使用 `build:production`，canonical 始终指向生产域名。
 

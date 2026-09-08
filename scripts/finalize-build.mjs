@@ -40,7 +40,7 @@ const sitemap = routes.filter(route => !/\/page\/\d+\/$/.test(route.url)).map(ro
   const page = pageById.get(route.id);
   return `<url><loc>${escape(absolute(route.url))}</loc>${validDate(page?.lastmod) ? `<lastmod>${new Date(page.lastmod).toISOString()}</lastmod>` : ''}<changefreq>weekly</changefreq><priority>0.5</priority></url>`;
 });
-for (const url of ['/labs/', '/labs/agent-replay/']) sitemap.push(`<url><loc>${absolute(url)}</loc></url>`);
+for (const url of ['/labs/', '/labs/agent-replay/', '/demos/2026/threejs-basics/']) sitemap.push(`<url><loc>${absolute(url)}</loc></url>`);
 await put('/sitemap.xml', `<?xml version="1.0" encoding="utf-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${sitemap.join('\n')}</urlset>\n`);
 let redirects = 0;
 const routeURLs = new Set(routes.map(route => route.url));

@@ -5,6 +5,8 @@
 @import "@heroui/styles/components/chip.css" layer(components);
 @import "@heroui/styles/components/label.css" layer(components);
 @import "@heroui/styles/components/slider.css" layer(components);
+@import "@heroui/styles/components/radio.css" layer(components);
+@import "@heroui/styles/components/radio-group.css" layer(components);
 @import "@heroui/styles/components/avatar.css" layer(components);
 @import "@heroui/styles/components/disclosure.css" layer(components);
 @import "@heroui/styles/components/card.css" layer(components);
