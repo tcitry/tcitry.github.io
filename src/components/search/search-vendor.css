@@ -1,0 +1,5 @@
+/* Only search controls; the portal's token bridge supplies its local reset. */
+@reference "../../styles/tailwind.css";
+@import "@heroui-pro/react/css/components/command.css" layer(components);
+@import "@heroui/styles/components/input.css" layer(components);
+@import "@heroui/styles/components/close-button.css" layer(components);

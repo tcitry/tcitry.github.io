@@ -100,11 +100,21 @@ export function matchLegacySources(records, legacyPages) {
 export function gitDates(root) {
   const dates = new Map();
   try {
-    const output = execFileSync('git', ['-c', 'core.quotePath=false', '-C', root, 'log', '--format=%x00%ct%x00', '--name-only', '--', ...PUBLIC_SECTIONS, ...ROOT_PAGES], { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
+    const output = execFileSync('git', ['-C', root, 'log', '-z', '--format=%x00commit:%ct%x00', '--name-only', '--', ...PUBLIC_SECTIONS, ...ROOT_PAGES], { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
     let date = '';
-    for (const line of output.split('\n')) {
-      if (line.startsWith('\0')) date = new Date(Number(line.replaceAll('\0', '')) * 1000).toISOString();
-      else if (line && date && !dates.has(line)) dates.set(line, date);
+    let firstPath = false;
+    for (const field of output.split('\0')) {
+      const commit = field.match(/^commit:(-?\d+)$/);
+      if (commit) {
+        date = new Date(Number(commit[1]) * 1000).toISOString();
+        firstPath = true;
+      } else if (field) {
+        // -z preserves literal filenames. Only the first path after a pretty
+        // header has Git's extra newline separator; never trim the path itself.
+        const source = firstPath && field.startsWith('\n') ? field.slice(1) : field;
+        firstPath = false;
+        if (source && date && !dates.has(source)) dates.set(source, date);
+      }
     }
   } catch { /* Local source folders without Git use their file modification times. */ }
   return dates;

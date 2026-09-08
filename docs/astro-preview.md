@@ -26,7 +26,11 @@ npm run preview -- --port 4321
 
 开发时用 npm run dev。它会先只读导入 Blog 并复制公开资源；`BLOG_DIR` 默认是当前用户的 `~/Blog`，可显式覆盖。修改 Blog 后重新准备内容或重启 dev。Pagefind 由 astro-book 在 Astro 构建完成时自动生成，本站仅配置索引范围，不再单独安装或执行 Pagefind；验收搜索请使用 build + preview。
 
-代码块与图表需要同时验收开发模式：启动 dev 后运行 `npm run test:browser`，检查无 React island 的真实文章中 Pro 代码块、Mermaid SVG 和原文复制。构建预览可设置 `BLOG_TEST_URL` 复用同一检查。博客显式初始化 Pro 挂载所需的 React 开发运行时；主题 integration 在 dev 预构建 Mermaid 及其 CommonJS 子依赖。同步主题包后重启开发服务，同一检出不要同时启动多个 dev 进程共享 Vite 缓存。
+代码块与图表需要同时验收开发模式：启动 dev 后运行 `node tests/browser/reading.mjs`，检查无 React island 的真实文章中 Pro 代码块、Mermaid SVG 和原文复制。完整浏览器回归使用 build + preview，再设置 `BLOG_TEST_URL` 运行 `npm run test:browser`，同时验收需要生成索引的搜索功能。博客显式初始化 Pro 挂载所需的 React 开发运行时；主题 integration 在 dev 预构建 Mermaid 及其 CommonJS 子依赖。同步主题包后重启开发服务，同一检出不要同时启动多个 dev 进程共享 Vite 缓存。
+
+本站通过主题公开的 `components.Search` 接口替换默认搜索。`BlogSearch.astro` 输出原生入口与最近更新的精简元数据，首次打开时才加载 HeroUI Pro Command；空输入显示 6 条最近更新，输入关键词后才加载 Pagefind JavaScript API，按索引排名显示结果并逐批加载摘要。不再加载默认 Pagefind UI，主题自身仍保持原有默认实现。
+
+最近更新来自 `docs`、`posts`、`weekly` 的公开独立内容页，按有效更新时间排序，缺失时回落发布日期；没有发布日期但有更新时间的笔记同样参与。排除草稿、隐藏页、跳转页、空正文和显式 `bookSearchExclude`，只传递标题、URL、日期与内容类型；搜索结果继续使用现有 Pagefind 索引范围。弹窗支持 ⌘ / Ctrl + K、`/`、`s`、方向键、Enter、Esc、中文输入法、加载更多及失败重试。`tests/browser/search.mjs` 检查真实索引搜索、响应竞态、键盘焦点和移动布局。
 
 Posts 页尾的“相关阅读”由 `src/lib/related-posts.ts` 在构建时从公开文章元数据中选出，`RelatedPosts.astro` 输出静态列表。共同主题标签越多越靠前；重合数量相同时，优先使用频率较低的主题标签，再按发布时间从新到旧排列，避免宽泛标签盖过具体主题。不把 `Recommended`、`ByAI`、`Weekly`、`Links` 状态标签或年份分类当作相关主题。最多显示 5 篇，排除自身、重复 URL、草稿、隐藏页和跳转页；无匹配时不显示。旧文章可以推荐后来发布的同主题文章。
 

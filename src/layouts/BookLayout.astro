@@ -9,6 +9,7 @@ import { bookTitle, headTitle, dateText, flattenNavigation, includesPage, param 
 import '../styles/tailwind.css';
 import blogStyles from '../styles/blog.module.css';
 import codeStyles from '../components/code/BlogCode.module.css';
+import BlogSearch from '../components/search/BlogSearch.astro';
 interface Props { page: ContentPage; navigation: NavigationNode[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[] }
 const { page, navigation, tags } = Astro.props;
 const title = headTitle(page);
@@ -52,11 +53,11 @@ const site = {
 };
 ---
 <ThemeLayout site={site}
+  components={{Search: BlogSearch}}
   code={false}
   page={{ title, url: page.url, headings: page.headings, toc: page.toc, bodyClass: `${blogStyles.site} ${codeStyles.scope} book-kind-${page.kind} book-type-${page.type}${page.layout ? ` book-layout-${page.layout}` : ''}` }}
   navigation={toNavigation(navigation)} previous={previous} next={next}
   seo={{ title, openGraphTitle: bookTitle(page), description, canonical, robots: production ? undefined : 'noindex, nofollow', siteName: site.title, locale: 'zh_CN', type: page.kind === 'page' ? 'article' : 'website', image: page.image ? new URL(page.image, 'https://yindongliang.com').href : undefined, twitterSite: '@tcitry', feeds: [{ title: site.title, href: '/index.xml' }], structuredData: articleSchema }}
-  search={{ placeholder: '搜索', loadingMessage: '输入关键词搜索博客', errorMessage: '搜索索引暂时未能加载，请关闭后重试。开发环境需先运行完整构建以生成索引。', translations: { placeholder: '搜索博客', zero_results: '没有找到 “[SEARCH_TERM]”', searching: '正在搜索…', clear_search: '清除', load_more: '加载更多', search_label: '搜索博客' } }}
   mermaid={{ errorMessage: '图表未能渲染，已保留 Mermaid 源码。' }}
   labels={{ skipToContent: '跳至正文', navigation: '主导航', openNavigation: '打开导航', closeNavigation: '关闭导航', tableOfContents: '目录', openTableOfContents: '打开目录', expandSection: '展开', previousPage: '上一篇', nextPage: '下一篇', search: '搜索博客', closeSearch: '关闭 Esc' }}>
   <Fragment slot="head">

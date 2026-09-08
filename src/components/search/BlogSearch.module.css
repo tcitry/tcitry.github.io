@@ -1,0 +1,22 @@
+.search { margin-block: 0.5rem 1rem; }
+.trigger {
+  display: flex;
+  width: 100%;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--gray-200);
+  border-radius: 0.5rem;
+  background: var(--gray-100);
+  color: var(--body-font-color);
+  font: inherit;
+  cursor: pointer;
+}
+.trigger:hover { border-color: var(--color-link); }
+.trigger:focus-visible { outline: 2px solid var(--color-link); outline-offset: 2px; }
+.trigger[aria-busy="true"] { cursor: progress; }
+.trigger kbd { font: inherit; font-size: 0.6875rem; white-space: nowrap; opacity: 0.7; }
+.error, .hint { font-size: 0.75rem; line-height: 1.5; }
+.error { color: var(--body-font-color); }
