@@ -1,0 +1,39 @@
+.root {
+  --obsidian-fab-size: 3.5rem;
+  --obsidian-fab-gap: 0.75rem;
+  --obsidian-fab-edge: 1.5rem;
+  position: fixed;
+  z-index: 45;
+  right: calc(max(var(--obsidian-fab-edge), env(safe-area-inset-right)) + var(--obsidian-fab-size) + var(--obsidian-fab-gap));
+  bottom: max(var(--obsidian-fab-edge), env(safe-area-inset-bottom));
+}
+
+@media (max-width: 639px) {
+  .root { --obsidian-fab-edge: 1rem; }
+}
+
+:global(html.blog-chat-sidebar-open) .root,
+:global(html.blog-chat-modal-open) .root {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.button {
+  width: var(--obsidian-fab-size);
+  height: var(--obsidian-fab-size);
+  min-width: var(--obsidian-fab-size);
+  min-height: var(--obsidian-fab-size);
+  border-radius: 50%;
+  box-shadow: 0 4px 16px #0002, 0 1px 4px #0001;
+}
+
+.button :global(svg) {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.tooltip { z-index: 46; }
+
+@media (prefers-reduced-motion: reduce) {
+  .button { transition: none; }
+}

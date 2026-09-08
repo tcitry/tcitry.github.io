@@ -11,6 +11,7 @@ import blogStyles from '../styles/blog.module.css';
 import codeStyles from '../components/code/BlogCode.module.css';
 import BlogSearch from '../components/search/BlogSearch.astro';
 import BlogChatWidget from '../components/chat/BlogChatWidget.astro';
+import ObsidianNoteButton from '../components/book/ObsidianNoteButton';
 interface Props { page: ContentPage; navigation: NavigationNode[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[] }
 const { page, navigation, tags } = Astro.props;
 const title = headTitle(page);
@@ -70,9 +71,6 @@ const site = {
     </>}
     <slot name="head" />
   </Fragment>
-  <Fragment slot="content-before">
-    {import.meta.env.DEV && page.source && <p><a href={`obsidian://open?vault=Blog&file=${encodeURIComponent(page.source)}`} class="mb-5 inline-block rounded-[5px] bg-[#4caf50] px-[15px] py-[10px] text-white! no-underline hover:bg-[#45a049]" target="_blank">在 Obsidian 打开笔记</a></p>}
-  </Fragment>
   <slot />
   <Fragment slot="toc">
     {tocHTML ? <Fragment set:html={tocHTML} /> : page.headings.length ? <nav id="TableOfContents"><HeadingTree headings={page.headings} /></nav> : <nav><TermList title="Tags" total={tags.length} items={tags.map((term) => ({ label: term.name, href: term.url, count: term.pageIds.length }))} /></nav>}
@@ -80,5 +78,9 @@ const site = {
   <Fragment slot="comments">
     {comments && <Giscus repo="tcitry/tcitry.github.io" repoId="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" category="Announcements" categoryId="DIC_kwDOCMyx684COMlk" mapping="pathname" lang="zh-CN" theme="preferred_color_scheme" />}
   </Fragment>
-  <Fragment slot="overlays"><BlogChatWidget pathname={readerArticle ? page.url : undefined} title={readerArticle ? bookTitle(page) : undefined} reading={page.type === 'reader'} /><script>import '../scripts/site'; import '../scripts/blog-code';</script></Fragment>
+  <Fragment slot="overlays">
+    {import.meta.env.DEV && page.source && <ObsidianNoteButton source={page.source} client:load />}
+    <BlogChatWidget pathname={readerArticle ? page.url : undefined} title={readerArticle ? bookTitle(page) : undefined} reading={page.type === 'reader'} />
+    <script>import '../scripts/site'; import '../scripts/blog-code';</script>
+  </Fragment>
 </ThemeLayout>
