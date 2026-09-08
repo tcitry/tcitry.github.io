@@ -24,7 +24,9 @@ npm run preview -- --port 4321
 
 可运行 `node scripts/verify-deployment.mjs --env preview` 检查本地页面；默认地址为 `http://127.0.0.1:4321`，其他端口通过 `--origin` 指定。Astro preview 不执行 Cloudflare 的 `_headers`、`_redirects`，本机检查因此跳过平台响应头、HTTP 重定向与 immutable 缓存断言；重定向和响应头配置仍由 `npm run verify` 检查，实际托管行为在生产发布后验收。
 
-开发时用 npm run dev。它会先只读导入 Blog 并复制公开资源；`BLOG_DIR` 默认是当前用户的 `~/Blog`，可显式覆盖。修改 Blog 后重新准备内容或重启 dev。`preview` 只读取已有 `dist/`，不会跟随 Blog 或源码变化，更新后需要重新构建；不要将不同构建的页面、最近更新元数据和 Pagefind 索引混用。Pagefind 由 astro-book 在 Astro 构建完成时自动生成，本站仅配置索引范围，不再单独安装或执行 Pagefind；验收搜索请使用同一次 build + preview。
+开发时用 `npm run dev`。它会先只读导入 Blog 并复制公开资源；`BLOG_DIR` 默认是当前用户的 `~/Blog`，可显式覆盖。启动后自动监听公开内容目录和根级页面：修改、新增、重命名或删除 Markdown 后，重新导入并刷新浏览器，导航、目录和动态路由同步更新。Blog 的公开静态资源、白名单下载，以及本站 `static/` 的变更也会重新复制并刷新。连续保存会合并，导入期间发生的新变更排入下一批；导入错误会显示在终端，修正文件并再次保存即可恢复，无需重启。监听复用 Vite，不会将整个 Blog 暴露为公开资源，既有 private、草稿与资源排除规则继续由导入脚本执行。
+
+`preview` 只读取已有 `dist/`，不会跟随 Blog 或源码变化，更新后需要重新构建；不要将不同构建的页面、最近更新元数据和 Pagefind 索引混用。Pagefind 由 astro-book 在 Astro 构建完成时自动生成，本站仅配置索引范围，不再单独安装或执行 Pagefind；dev 的内容监听不会重建全文搜索索引，验收搜索请使用同一次 build + preview。
 
 代码块与图表需要同时验收开发模式：启动 dev 后运行 `node tests/browser/reading.mjs`，检查无 React island 的真实文章中 Pro 代码块、Mermaid SVG 和原文复制。完整浏览器回归使用 build + preview，再设置 `BLOG_TEST_URL` 运行 `npm run test:browser`，同时验收需要生成索引的搜索功能。博客显式初始化 Pro 挂载所需的 React 开发运行时；主题 integration 在 dev 预构建 Mermaid 及其 CommonJS 子依赖。同步主题包后重启开发服务，同一检出不要同时启动多个 dev 进程共享 Vite 缓存。
 

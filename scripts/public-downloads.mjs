@@ -3,11 +3,11 @@ import path from 'node:path';
 
 // Reviewed article attachments only. Blog/scripts also contains local tooling
 // and must never be copied wholesale into the public site.
-const downloads = ['scripts/upload-r2-image.py'];
+export const PUBLIC_DOWNLOADS = ['scripts/upload-r2-image.py'];
 
 export async function copyPublicDownloads(blog, output) {
   const sourceRoot = await realpath(blog);
-  for (const relative of downloads) {
+  for (const relative of PUBLIC_DOWNLOADS) {
     const source = path.join(sourceRoot, relative);
     const resolved = await realpath(source);
     if (!(await lstat(source)).isFile() || resolved !== source) {

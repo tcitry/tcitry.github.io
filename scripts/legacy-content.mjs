@@ -4,8 +4,8 @@ import { execFileSync } from 'node:child_process';
 import YAML from 'yaml';
 
 export const PUBLIC_SECTIONS = ['docs', 'posts', 'weekly', 'links', 'timeline'];
-const DENIED = /^(?:private|draft|drafts|template|templates|skills|demo|demos|test|tests|node_modules)$/i;
-const ROOT_PAGES = new Set(['_index.md', 'about.md', 'archives.md', 'modified.md', 'portfolio.md', 'timeline.md', 'ghstar.md']);
+export const CONTENT_DENIED = /^(?:private|draft|drafts|template|templates|skills|demo|demos|test|tests|node_modules)$/i;
+export const ROOT_PAGES = new Set(['_index.md', 'about.md', 'archives.md', 'modified.md', 'portfolio.md', 'timeline.md', 'ghstar.md']);
 export const lowerKeys = (value) => Object.fromEntries(Object.entries(value ?? {}).map(([key, item]) => [key.toLowerCase(), item]));
 export const asList = (value) => [...new Set((value == null ? [] : Array.isArray(value) ? value : [value]).map(String).map((v) => v.trim()).filter(Boolean))];
 export function frontmatter(text, source = '') {
@@ -21,7 +21,7 @@ export async function collectSources(root) {
     try { entries = await readdir(path.join(root, relative), { withFileTypes: true }); }
     catch (error) { if (error.code === 'ENOENT') return; throw error; }
     for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name, 'en'))) {
-      if (entry.name.startsWith('.') || DENIED.test(entry.name) || entry.isSymbolicLink()) continue;
+      if (entry.name.startsWith('.') || CONTENT_DENIED.test(entry.name) || entry.isSymbolicLink()) continue;
       const name = path.posix.join(relative, entry.name);
       if (entry.isDirectory()) await walk(name);
       else if (/\.mdx?$/i.test(entry.name)) output.push(name);

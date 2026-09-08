@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile, access } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, access, rename } from 'node:fs/promises';
 import path from 'node:path';
 import { homedir } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -143,7 +143,10 @@ function taxonomy(key) {
 }
 const uniqueWarnings = [...new Set(warnings)];
 const content = { pages: pages.sort((a, b) => a.url.localeCompare(b.url)), tags: taxonomy('tags'), categories: taxonomy('categories'), diagnostics: { warnings: uniqueWarnings, sourceCount: records.length } };
-await writeFile(path.join(generated, 'content.json'), JSON.stringify(content));
+// Vite watches this snapshot in dev; publish a complete JSON file in one rename.
+const contentTemporary = path.join(generated, `content.${process.pid}.tmp`);
+await writeFile(contentTemporary, JSON.stringify(content));
+await rename(contentTemporary, path.join(generated, 'content.json'));
 await writeFile(path.join(generated, 'render-cache.json'), JSON.stringify(cache));
 await writeFile(path.join(generated, 'content-diagnostics.json'), JSON.stringify({ publicSourceCount: records.length, excludedSourceCount: skippedCount, pageCount: pages.length, collisions, warnings: uniqueWarnings, sourceToURL: records.map((record) => ({ source: record.source, url: referencePages.find((page) => page.source === record.source)?.url })) }, null, 2) + '\n');
 await writeFile(path.join(generated, 'public-assets.json'), '[]\n');

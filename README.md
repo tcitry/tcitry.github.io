@@ -17,6 +17,8 @@ BLOG_DIR=/path/to/Blog npm run dev
 
 `setup` prepares the pinned theme package before installing locked dependencies. Use `package.json` as the source of truth for development, build, and deployment commands.
 
+`dev` imports Blog once at startup, then watches its public Markdown and assets. Saving, adding, renaming, or deleting a source updates the running site and reloads the browser. Imports are debounced and run serially; after an import error, fix the source and save again. `BLOG_DIR` stays read-only. The full-text Pagefind index still requires a build; `preview` serves the existing build and does not watch content.
+
 ## Verify and publish
 
 ```sh
