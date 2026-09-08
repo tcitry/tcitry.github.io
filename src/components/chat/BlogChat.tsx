@@ -147,7 +147,7 @@ function Answer({message}: {message: Message}) {
   );
 }
 
-export default function BlogChat() {
+export default function BlogChat({onClose, onReady}: {onClose: () => void; onReady: () => void}) {
   const [hydrated, setHydrated] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [value, setValue] = useState('');
@@ -162,6 +162,8 @@ export default function BlogChat() {
     setHydrated(true);
     return () => { controller.current?.abort(); };
   }, []);
+
+  useEffect(() => { if (hydrated) onReady(); }, [hydrated, onReady]);
 
   useEffect(() => {
     if (!retryAfter) return;
@@ -281,8 +283,13 @@ export default function BlogChat() {
   return (
     <section className={`${surface.surface} blog-chat not-prose`} aria-label="与博客助手对话" data-chat-hydrated={hydrated} data-chat-status={status}>
       <div className="blog-chat__header">
-        <span>公开文章 · 附原文出处</span>
-        <Button variant="ghost" size="sm" onPress={reset} isDisabled={!hydrated || busy || !messages.length}>新对话</Button>
+        <div className="blog-chat__identity"><strong>博客助手</strong><span>公开文章 · 附原文出处</span></div>
+        <div className="blog-chat__header-actions">
+          <Button variant="ghost" size="sm" onPress={reset} isDisabled={!hydrated || busy || !messages.length}>新对话</Button>
+          <Button variant="ghost" isIconOnly onPress={onClose} aria-label="关闭博客助手">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
+          </Button>
+        </div>
       </div>
       <ChatConversation className="blog-chat__conversation" role="region" aria-label="对话记录" tabIndex={0}>
         <ChatConversation.Content className="blog-chat__messages">
@@ -313,7 +320,7 @@ export default function BlogChat() {
               <PromptInput.ToolbarEnd><PromptInput.Send aria-label={busy ? '停止生成' : '发送问题'} isDisabled={!busy && (retryAfter > 0 || !value.trim())} /></PromptInput.ToolbarEnd>
             </PromptInput.Toolbar>
           </PromptInput.Shell>
-          <PromptInput.Footer>Enter 发送 · Shift + Enter 换行。对话仅保留在当前页面。</PromptInput.Footer>
+          <PromptInput.Footer>回答请以原文为准 · 对话仅保留在当前页面</PromptInput.Footer>
         </PromptInput>
       </div>
       <noscript><p className="blog-chat__notice">启用 JavaScript 后可以提问，也可以使用站点搜索查找文章。</p></noscript>

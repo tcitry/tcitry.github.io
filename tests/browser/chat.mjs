@@ -12,6 +12,20 @@ const errors = [];
 // page; the actual React input, incremental decoder, Markdown and sources run.
 async function mockChat(context) {
   await context.addInitScript(() => {
+    // Observe renderer initialization without loading React or altering the app.
+    window.__chatReactRenderers = 0;
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
+      supportsFiber: true,
+      renderers: new Map(),
+      inject(renderer) {
+        const id = ++window.__chatReactRenderers;
+        this.renderers.set(id, renderer);
+        return id;
+      },
+      onCommitFiberRoot() {},
+      onCommitFiberUnmount() {},
+      onPostCommitFiberRoot() {},
+    };
     const originalFetch = window.fetch.bind(window);
     window.__chatRequests = [];
     window.__chatAborts = 0;
@@ -77,6 +91,52 @@ async function assertFits(page, label) {
   assert.ok(counter && counter.y >= input.y + input.height - 1, `${label}: toolbar does not overlap the input`);
 }
 
+function launcher(page) {
+  return page.locator('button[aria-label="打开博客助手"]');
+}
+
+function panel(page) {
+  return page.locator('dialog#blog-chat-panel');
+}
+
+async function openChat(page) {
+  await launcher(page).click();
+  await panel(page).waitFor({state: 'visible'});
+  await panel(page).locator('[data-chat-hydrated="true"]').waitFor();
+  assert.equal(await panel(page).getAttribute('data-chat-loaded'), 'true', 'The first open finishes loading the chat module');
+  assert.equal(await launcher(page).getAttribute('aria-expanded'), 'true', 'Launcher reports the open panel');
+  assert.equal(await panel(page).getAttribute('aria-label'), '博客助手');
+  return panel(page).locator('[data-chat-hydrated="true"]');
+}
+
+async function assertClosed(page, label, returnsFocus = true) {
+  await panel(page).waitFor({state: 'hidden'});
+  assert.equal(await launcher(page).getAttribute('aria-expanded'), 'false', `${label}: launcher reports closed panel`);
+  if (returnsFocus) assert.ok(await launcher(page).evaluate((element) => element === document.activeElement), `${label}: focus returns to launcher`);
+}
+
+async function assertMobilePanel(page) {
+  assert.ok(await panel(page).evaluate((element) => element.matches(':modal')), 'Mobile panel uses a modal dialog');
+  const bounds = await panel(page).boundingBox();
+  const viewport = page.viewportSize();
+  assert.ok(bounds && Math.abs(bounds.x) <= 1 && Math.abs(bounds.y) <= 1
+    && Math.abs(bounds.width - viewport.width) <= 2 && Math.abs(bounds.height - viewport.height) <= 2,
+  'Mobile panel occupies the viewport');
+  const close = panel(page).getByRole('button', {name: '关闭博客助手', exact: true});
+  await close.focus();
+  await launcher(page).evaluate((element) => element.focus());
+  assert.ok(await panel(page).evaluate((element) => element.contains(document.activeElement)), 'Modal background controls cannot receive focus');
+  for (const key of ['Shift+Tab', 'Tab', ...Array(12).fill('Tab')]) {
+    await page.keyboard.press(key);
+    // Native dialogs permit Tab to reach browser chrome; page controls outside
+    // the modal must remain inert when focus is within the document.
+    assert.ok(await panel(page).evaluate((element) => element.contains(document.activeElement)
+      || (!document.hasFocus() && document.activeElement === document.body)), 'Mobile dialog keeps document focus inside');
+  }
+  await close.focus();
+  await assertFits(page, '375px modal');
+}
+
 try {
   if (screenshots) await mkdir(screenshots, {recursive: true});
   const context = await browser.newContext({viewport: {width: 1440, height: 1000}, reducedMotion: 'reduce', permissions: ['clipboard-read', 'clipboard-write']});
@@ -86,15 +146,38 @@ try {
   page.setDefaultTimeout(15000);
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto(new URL('/chat/', base).href);
-  const root = page.locator('[data-chat-hydrated="true"]');
-  await root.waitFor();
   assert.equal(await page.getByRole('heading', {level: 1, name: '博客助手'}).count(), 1);
   assert.equal(await page.locator('.giscus').count(), 0, 'Chat page has no article comments');
+  assert.equal(await launcher(page).count(), 1, 'The page has one native chat launcher');
+  assert.equal(await launcher(page).getAttribute('aria-expanded'), 'false');
+  assert.notEqual(await panel(page).getAttribute('data-chat-loaded'), 'true', 'Chat module has not loaded before the first open');
+  assert.equal(await page.locator('astro-island').count(), 0, 'The guide page has no eager React island');
+  assert.equal(await page.locator('[data-chat-hydrated]').count(), 0, 'Chat is not mounted before the first open');
+  assert.equal(await page.evaluate(() => window.__chatReactRenderers), 0, 'React is not initialized before the first open');
+  assert.equal(await page.locator('aside a[href], nav a[href]').evaluateAll((links) => links.filter((link) => new URL(link.getAttribute('href'), location.href).pathname === '/chat/').length), 0, 'Chat has no sidebar navigation link');
+  const root = await openChat(page);
+  assert.ok(await page.evaluate(() => window.__chatReactRenderers > 0), 'Opening lazily initializes the React renderer');
+  assert.equal(await page.locator('astro-island').count(), 0, 'Chat mounts directly without an Astro island');
+  assert.equal(await panel(page).evaluate((element) => element.matches(':modal')), false, 'Desktop panel is non-modal');
+  const desktopBounds = await panel(page).boundingBox();
+  assert.ok(desktopBounds && Math.abs(desktopBounds.width - 440) <= 2 && desktopBounds.x > 900
+    && desktopBounds.y >= 0 && desktopBounds.y + desktopBounds.height <= 1001, 'Desktop panel is a 440px surface at the right edge');
   await assertFits(page, 'desktop');
   const question = root.getByRole('textbox', {name: '向博客助手提问'});
   const send = root.getByRole('button', {name: '发送问题', exact: true});
   assert.ok(await send.isDisabled(), 'Empty input cannot submit');
   assert.equal(await question.getAttribute('maxlength'), '2000');
+  await question.fill('关闭后继续编辑的草稿');
+  await panel(page).getByRole('button', {name: '关闭博客助手', exact: true}).click();
+  await assertClosed(page, 'Close button');
+  await openChat(page);
+  assert.equal(await question.inputValue(), '关闭后继续编辑的草稿', 'Closing and reopening preserves the draft');
+  await page.keyboard.press('Escape');
+  await assertClosed(page, 'Escape');
+  await openChat(page);
+  await page.getByRole('heading', {level: 1, name: '博客助手'}).click();
+  await assertClosed(page, 'Desktop outside click', false);
+  await openChat(page);
   await root.getByRole('button', {name: '博客中有哪些关于 Astro 的文章？', exact: true}).click();
   assert.equal(await question.inputValue(), '博客中有哪些关于 Astro 的文章？');
   assert.ok(await question.evaluate((element) => document.activeElement === element), 'Choosing a suggestion focuses the composer');
@@ -120,12 +203,25 @@ try {
   assert.equal(await root.locator('a[href*="example.com"]').count(), 0, 'Unretrieved model links cannot become clickable citations');
   assert.equal(await root.locator('img[src*="example.com"]').count(), 0, 'Model-generated image URLs are not fetched');
   assert.equal(await page.evaluate(() => window.__chatInjected), undefined, 'Markdown does not execute raw HTML');
+  await question.fill('保留这个追问草稿');
+  const renderers = await page.evaluate(() => window.__chatReactRenderers);
+  await panel(page).getByRole('button', {name: '关闭博客助手', exact: true}).click();
+  await assertClosed(page, 'Close completed conversation');
+  await openChat(page);
+  assert.equal(await question.inputValue(), '保留这个追问草稿');
+  assert.equal(await root.locator('[data-message-state="complete"]').count(), 1, 'Reopening preserves completed answers');
+  assert.equal(await page.evaluate(() => window.__chatReactRenderers), renderers, 'Reopening reuses the loaded React renderer');
   if (screenshots) {
     await page.screenshot({path: join(screenshots, 'chat-answer-desktop.png'), fullPage: true});
+    await panel(page).getByRole('button', {name: '关闭博客助手', exact: true}).click();
     await page.setViewportSize({width: 375, height: 850});
-    await assertFits(page, '375px answer');
+    await openChat(page);
+    await assertMobilePanel(page);
     await page.screenshot({path: join(screenshots, 'chat-answer-mobile.png'), fullPage: true});
+    await page.keyboard.press('Escape');
+    await assertClosed(page, 'Mobile Escape');
     await page.setViewportSize({width: 1440, height: 1000});
+    await openChat(page);
   }
   await root.getByLabel('复制回答和出处', {exact: true}).click();
   await page.waitForFunction(async () => (await navigator.clipboard.readText()).includes('[1] Astro 博客的内容组织 https://yindongliang.com/posts/example/'));
@@ -159,8 +255,10 @@ try {
   assert.equal(await root.locator('[data-message-state="complete"]').last().getByRole('link').count(), 0, 'No-results answer does not fabricate sources');
   if (screenshots) await page.screenshot({path: join(screenshots, 'chat-desktop.png'), fullPage: true});
 
+  await panel(page).getByRole('button', {name: '关闭博客助手', exact: true}).click();
   await page.setViewportSize({width: 375, height: 850});
-  await assertFits(page, '375px');
+  await openChat(page);
+  await assertMobilePanel(page);
   await page.emulateMedia({colorScheme: 'dark'});
   await assertFits(page, '375px dark');
   if (screenshots) await page.screenshot({path: join(screenshots, 'chat-mobile-dark.png'), fullPage: true});
@@ -168,11 +266,19 @@ try {
   assert.equal(await root.locator('[data-message-state]').count(), 0, 'New conversation clears in-memory answers');
   assert.ok(await question.evaluate((element) => document.activeElement === element), 'New conversation returns focus to input');
   assert.equal(await question.inputValue(), '');
+  await page.keyboard.press('Escape');
+  await assertClosed(page, 'Mobile Escape after reset');
   await page.reload();
-  await root.waitFor();
+  assert.equal(await launcher(page).getAttribute('aria-expanded'), 'false', 'Reload starts with a closed launcher');
+  assert.equal(await page.locator('[data-chat-hydrated]').count(), 0, 'Reload restores lazy initialization');
+  await openChat(page);
   assert.equal(await root.locator('[data-message-state]').count(), 0, 'Reload does not persist conversation history');
+  await page.keyboard.press('Escape');
+  await page.goto(new URL('/archives/', base).href);
+  assert.equal(await launcher(page).count(), 1, 'Launcher is also available on an existing site page');
+  assert.equal(await launcher(page).getAttribute('aria-expanded'), 'false');
   assert.deepEqual(errors, [], 'No uncaught browser errors');
-  console.log('Chat browser checks passed: streaming, sources, context, stop, 429, Markdown safety, keyboard, mobile, in-memory history.');
+  console.log('Chat browser checks passed: global lazy launcher, desktop/mobile dialogs, focus and draft retention, streaming, sources, context, stop, 429, Markdown safety, keyboard and in-memory history.');
   await context.close();
 } finally {
   await browser.close();

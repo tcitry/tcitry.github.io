@@ -10,6 +10,7 @@ import '../styles/tailwind.css';
 import blogStyles from '../styles/blog.module.css';
 import codeStyles from '../components/code/BlogCode.module.css';
 import BlogSearch from '../components/search/BlogSearch.astro';
+import BlogChatWidget from '../components/chat/BlogChatWidget.astro';
 interface Props { page: ContentPage; navigation: NavigationNode[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[] }
 const { page, navigation, tags } = Astro.props;
 const title = headTitle(page);
@@ -32,7 +33,7 @@ const articleSchema = page.kind === 'page' ? {
   ...(dateText(page.lastmod) ? { dateModified: page.lastmod } : {}),
   ...(page.image ? { image: new URL(page.image, 'https://yindongliang.com').href } : {}),
 } : undefined;
-const menu = [['/archives/', '✔️ Archives'], ['/tags/', '🏷️ Tags'], ['/weekly/', '🔥 Weekly'], ['/timeline/', '⏳ Timeline'], ['/links/', '🔗 Links'], ['/portfolio/', '📱 Portfolio'], ['/about/', '👨‍💻 About'], ['/chat/', '💬 博客助手'], ['/labs/', '🧪 Labs']];
+const menu = [['/archives/', '✔️ Archives'], ['/tags/', '🏷️ Tags'], ['/weekly/', '🔥 Weekly'], ['/timeline/', '⏳ Timeline'], ['/links/', '🔗 Links'], ['/portfolio/', '📱 Portfolio'], ['/about/', '👨‍💻 About'], ['/labs/', '🧪 Labs']];
 const toNavigation = (nodes: NavigationNode[]): NavigationItem[] => nodes
   .filter(({ page }) => !page.hidden && (page.kind !== 'page' || Boolean(page.html)))
   .map((node) => ({
@@ -78,5 +79,5 @@ const site = {
   <Fragment slot="comments">
     {comments && <Giscus repo="tcitry/tcitry.github.io" repoId="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" category="Announcements" categoryId="DIC_kwDOCMyx684COMlk" mapping="pathname" lang="zh-CN" theme="preferred_color_scheme" />}
   </Fragment>
-  <Fragment slot="overlays"><script>import '../scripts/site'; import '../scripts/blog-code';</script></Fragment>
+  <Fragment slot="overlays"><BlogChatWidget /><script>import '../scripts/site'; import '../scripts/blog-code';</script></Fragment>
 </ThemeLayout>

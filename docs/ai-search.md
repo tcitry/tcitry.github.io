@@ -2,6 +2,16 @@
 
 本站只使用一个 AI Gateway `tcitry-blog-chat`。AI Search 实例 `tcitry-blog-search` 位于 `default` namespace，继续关联这个 Gateway；运行时检索与回答生成共用它。文章使用 AI Search 内置存储，发布脚本通过 REST API 上传，站点 Worker 使用 binding 查询。Binding 不会自动监视 Git 仓库或上传本地文件，也无需另外创建 R2 bucket 或网站爬虫。[Cloudflare 内置存储说明](https://developers.cloudflare.com/ai-search/configuration/data-source/built-in-storage/)
 
+## 聊天入口与本地体验
+
+全站右下角的圆形按钮打开博客助手，侧边栏不再提供聊天入口。交互参考 HeroUI Agents 的 floating 模式：桌面打开右下角面板，背景仍可滚动、交互，点击外部或按 Esc 收起；小于 640px 时打开全屏模态面板，锁定背景滚动并限制键盘焦点。关闭按钮和 Esc 将焦点还给入口，收起保留本页对话和草稿，导航或刷新页面后清空。[官方 Appearance 规范](https://heroui.pro/docs/agents/configure/appearance)
+
+首屏只输出原生按钮和轻量控制脚本，首次点击再加载 React 与 HeroUI Pro 聊天组件。浮层使用原生 dialog，让加载失败时仍可关闭和重试，同时保留收起后的 React 状态。窄屏高度跟随可视视口，避免软键盘盖住输入区。`/chat/` 保留为使用说明页，不再渲染第二份聊天组件。
+
+HeroUI Agents SDK 是独立的托管产品；本站仅参考其交互规范，消息仍发送到自己的 `/api/chat`，沿用既有 AI Search 与单个 AI Gateway。[HeroUI Agents 概览](https://heroui.pro/docs/agents)
+
+`npm run dev` 可以直接体验上述真实界面。普通 Astro dev 尚未代理 Worker API；真实回答还需要接通本地 Worker、配置远端访问权限并完成首轮索引。此入口不会生成演示回答。`npm run test:browser:chat` 的合成流只注入测试浏览器，用于验证引用、停止、错误和限流提示，不代表云端链路已验收。
+
 ## 控制台配置
 
 在 AI Search → `tcitry-blog-search` → Settings 中核对：
