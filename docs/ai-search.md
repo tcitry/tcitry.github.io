@@ -42,7 +42,7 @@ Custom Metadata 配置以下五个字段。上传前同步脚本会检查字段�
 | `canonical_url` | `text` | 已发布的文章 URL |
 | `section` | `text` | `docs`、`posts` 或 `weekly` |
 | `updated_at` | `datetime` | 正文的公开更新时间；未知时不上传该值 |
-| `source_kind` | `text` | `author` 或 `ai-assisted`，保留 ByAI 的来源边界 |
+| `source_kind` | `text` | `author` 或 `ai-assisted`，保留 ByAi 的来源边界 |
 | `content_hash` | `text` | 导出文档的 SHA-256，避免重复索引并识别旧版本 |
 
 标题已在文档首行和 Worker 引用清单中，不再占一个远端 metadata 字段。调用方应从当前部署的引用清单取标题与链接，不能采用模型编造的 URL。
@@ -91,7 +91,7 @@ Gateway 的计数单位是模型调用，不是独立访客或提问。一次提
 
 `ai-search:export` 读取本次构建的 `.generated/content.json`，只选 `page.kind === 'page'` 且 `type` 为 `docs`、`posts`、`weekly` 的页面。草稿、隐藏、跳转、`bookSearchExclude`、空正文以及分区和业务索引页均被排除。
 
-正文复用已渲染的 `page.html`，通过 HTML 解析器转换为 Markdown：保留标题层次、正文、列表、表格、公开链接、代码和代码中的空行，去掉脚本、复制按钮、导航、隐藏 UI 和演示包装组件。ByAI 标签会在导出正文中写成明确的来源声明，避免因为模板中的声明不在 article 内而丢失。
+正文复用已渲染的 `page.html`，通过 HTML 解析器转换为 Markdown：保留标题层次、正文、列表、表格、公开链接、代码和代码中的空行，去掉脚本、复制按钮、导航、隐藏 UI 和演示包装组件。ByAi 标签会在导出正文中写成明确的来源声明，避免因为模板中的声明不在 article 内而丢失。
 
 不会上传整个 `BLOG_DIR`、Markdown 源文件或原始 `content.json`。`source`、完整 frontmatter、私有检出路径、渲染诊断均不进入导出清单。所有导出文件位于已忽略的 `.generated/`，不得提交到 Git，也不复制到 `dist/` 作为可下载的完整语料包。
 
@@ -116,7 +116,7 @@ npm run ai-search:bootstrap -- --apply
 npm run dev
 ```
 
-第一条默认 dry-run：读取当前导出，在网上逐篇核对 HTTP 200、无跳转、canonical、显示标题、正文、ByAI 声明及 sitemap 更新时间，再验证文档字节的 SHA-256 等于本地可信引用清单。默认不会启动 Cloudflare binding。缺少导出时先运行 `npm run prepare:content`；该入口允许 preview 导出，但只有与当前公开页面完全匹配的三篇样本可以进入下一步。
+第一条默认 dry-run：读取当前导出，在网上逐篇核对 HTTP 200、无跳转、canonical、显示标题、正文、ByAi 声明及 sitemap 更新时间，再验证文档字节的 SHA-256 等于本地可信引用清单。默认不会启动 Cloudflare binding。缺少导出时先运行 `npm run prepare:content`；该入口允许 preview 导出，但只有与当前公开页面完全匹配的三篇样本可以进入下一步。
 
 第二条才通过已安装 Wrangler 的 `unstable_dev()` 启动临时本地 Workers 运行时，并使用配置中的 remote binding 连接现有 `tcitry-blog-search`。本地桥仅接受带随机会话标识的有限 JSON 操作，结束后关闭，不部署任何 Worker。Wrangler 管理既有 OAuth 登录；本次三篇样本导入无需另设 `CLOUDFLARE_API_TOKEN`，脚本不读取凭据文件。它核对单 Gateway 关联、内置数据源和完整对象列表；schema 为 null 时仅补上本文约定的五字段，已有非空 schema 不同则停止。仅新增不存在的样本 key，相同 hash 已存在时等待或跳过，不覆盖不同 hash，不删除任何文章。每篇上传前再次核对线上正文和远端 key，上传后等待索引完成。
 
@@ -177,6 +177,6 @@ npm run ai-search:sync -- --apply
 
 ## 验证
 
-`npm test` 包含 `tests/ai-search-*.test.mjs` 的合成测试：公开过滤、ByAI 标识、代码空行保留、URL/key/hash、发布语料封存、分页、删除范围、429 退避，以及索引失败不推进删除与完成状态。
+`npm test` 包含 `tests/ai-search-*.test.mjs` 的合成测试：公开过滤、ByAi 标识、代码空行保留、URL/key/hash、发布语料封存、分页、删除范围、429 退避，以及索引失败不推进删除与完成状态。
 
 上线验收还需在真实实例验证普通中文提问、技术名词、跨文章问题、找不到依据、来源卡片与原文链接，并验证停止生成和 429 提示。测试问题与样本只使用已公开文章。首次索引后查看 Items、Gateway 日志和检索返回质量，再决定是否开启共享 Gateway 限流及具体阈值。

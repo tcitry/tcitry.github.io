@@ -23,16 +23,16 @@ test('corpus exports only public independent article content and allowlisted fie
   assert.doesNotMatch(JSON.stringify(result.references), /公开正文|"markdown"/);
 });
 
-test('HTML conversion preserves code bytes, syntax, links, headings, tables and ByAI notice', () => {
+test('HTML conversion preserves code bytes, syntax, links, headings, tables and ByAi notice', () => {
   const code = '\tconst value = `<raw>`;  \n\n\n// ``` embedded fence\n';
   const html = `<h2>标题<a class="anchor" href="#heading">#</a></h2><p>正文 <code>x &lt; 2</code><a href="../next/">下一篇</a></p>
     <div data-blog-code data-blog-code-language="js"><button>复制</button><div data-blog-code-fallback><pre><code>${code.replaceAll('<', '&lt;').replaceAll('>', '&gt;')}</code></pre></div></div>
     <table><thead><tr><th>参数</th><th>含义</th></tr></thead><tbody><tr><td>limit</td><td>上限</td></tr></tbody></table>
     <div data-demo="private"><p>演示界面</p></div><p aria-hidden="true">隐藏UI</p>`;
-  const { documents } = createCorpus([page('code', { html, tags: ['ByAI'] })]);
+  const { documents } = createCorpus([page('code', { html, tags: ['ByAi'] })]);
   const document = documents[0];
   assert.equal(document.sourceKind, 'ai-assisted');
-  assert.match(document.markdown, /ByAI — 本文整理自与 AI 的对话/);
+  assert.match(document.markdown, /ByAi — 本文整理自与 AI 的对话/);
   assert.ok(document.markdown.includes('````js\n' + code + '````'));
   assert.match(document.markdown, /## 标题/);
   assert.match(document.markdown, /\[下一篇\]\(<https:\/\/yindongliang.com\/posts\/next\/>\)/);

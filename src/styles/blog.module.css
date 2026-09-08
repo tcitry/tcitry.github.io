@@ -30,7 +30,7 @@
 /* Site-specific badges and article annotations; generic Badge layout stays in the theme. */
 .site :global(.docs-title) { @apply border border-solid border-[dimgray] [font-size:small] font-bold text-[dimgray]; }
 .site :global(.danger-title) { @apply border border-solid border-[#ff7e67] bg-[#ff7e67] [font-size:small] text-white; }
-.site :global(.byAI-title) { @apply border border-solid border-[#fa8072] [font-size:small] font-bold text-[#fa8072]; }
+.site :global(.byAi-title) { @apply border border-solid border-[#fa8072] [font-size:small] font-bold text-[#fa8072]; }
 .site :global(.recommended-title) { @apply bg-[#9b59b6] [font-size:small] font-bold text-white; }
 .site :global(.links-title) { @apply bg-[#3498db] [font-size:small] font-bold text-white; }
 .site :global(.tags-title) { @apply border border-solid border-[#74aa9c] [font-size:small] font-bold text-[#74aa9c]; }

@@ -115,7 +115,7 @@ export function createCorpus(pages, { environment = 'preview', revision = { site
       `# ${escapeText(title)}`, `原文地址：${url}`, `栏目：${page.type}`,
       ...(metadata.date ? [`发布日期：${metadata.date}`] : []),
       ...(metadata.updatedAt ? [`更新日期：${metadata.updatedAt}`] : []),
-      sourceKind === 'ai-assisted' ? '来源类型：ByAI — 本文整理自与 AI 的对话，请辨别核实。' : '来源类型：作者文章',
+      sourceKind === 'ai-assisted' ? '来源类型：ByAi — 本文整理自与 AI 的对话，请辨别核实。' : '来源类型：作者文章',
       body,
     ].join('\n\n') + '\n';
     documents.push({ id, key: `${MANAGED_PREFIX}${id}.md`, hash: sha256(markdown), ...metadata, markdown });

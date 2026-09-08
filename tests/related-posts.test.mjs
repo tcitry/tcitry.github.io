@@ -28,8 +28,8 @@ test('related posts prefer shared topics, then publication date, with stable tie
 });
 
 test('editorial labels and publication years do not create unrelated recommendations', () => {
-  const current = post('current', { tags: ['Astro', 'Recommended', 'ByAI'] });
-  const unrelated = post('unrelated', { tags: ['Swift', 'Recommended', 'ByAI'] });
+  const current = post('current', { tags: ['Astro', 'Recommended', 'ByAi'] });
+  const unrelated = post('unrelated', { tags: ['Swift', 'Recommended', 'ByAi'] });
   const sameYear = post('same-year', { tags: [] });
   assert.deepEqual(getRelatedPosts(current, [unrelated, sameYear]), []);
   assert.deepEqual(getRelatedPosts(post('untagged', { tags: ['Recommended'] }), [current]), []);
