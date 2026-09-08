@@ -1,4 +1,4 @@
 interface:
-  display_name: "Blog 技术文档改写"
+  display_name: "Blog 技术文档"
   short_description: "统一英文术语、补齐中文名称对照，并用 Mermaid 改善技术文档阅读"
   default_prompt: "使用 $blog-technical-docs 改造 Blog 中其他技术文档，以已验收的 Contract Testing 文章为示范，优先近期内容，分批修改并验证。"
