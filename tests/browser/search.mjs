@@ -61,12 +61,14 @@ async function renderFrames(page) {
   await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
 
-async function openCommand(page, trigger) {
+async function openCommand(page, trigger, state = 'recent') {
+  assert.equal(await trigger.locator('span').innerText(), 'search');
   await trigger.click();
   await page.locator(selectors.command).waitFor({ state: 'visible' });
   assert.equal(await page.locator(selectors.command).getAttribute('aria-label'), '搜索博客');
-  await waitState(page, 'recent');
+  await waitState(page, state);
   await waitInputFocus(page);
+  assert.equal(await page.locator(selectors.input).getAttribute('placeholder'), 'search');
 }
 
 async function assertNoLegacySearch(page, requests, label) {
@@ -108,6 +110,17 @@ async function assertRecent(page, label) {
     return Date.parse(value);
   });
   assert.deepEqual(timestamps, [...timestamps].sort((a, b) => b - a), `${label}: updates are newest first`);
+}
+
+async function assertRecentDestinations(page, label) {
+  const hrefs = await page.locator(selectors.result).evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+  for (const href of hrefs) {
+    const response = await page.request.get(new URL(href, base).href, { maxRedirects: 0 });
+    assert.equal(response.status(), 200, `${label}: recent update ${href} must resolve directly to a real page`);
+    assert.match(response.headers()['content-type'] ?? '', /text\/html/i, `${label}: ${href} returns HTML`);
+    assert.match(await response.text(), /<main[\s>]/, `${label}: ${href} renders article content`);
+    await response.dispose();
+  }
 }
 
 async function assertBounds(page, label) {
@@ -162,8 +175,12 @@ try {
     const label = `Search at ${width}px`;
     try {
       await assertNoLegacySearch(page, requests, label);
+      assert.equal(requests.includes('/search/recent.json'), false, `${label}: recent metadata is lazy-loaded`);
       await openCommand(page, trigger);
       await assertRecent(page, label);
+      assert.equal(requests.filter((path) => path === '/search/recent.json').length, 1,
+        `${label}: opening the dialog fetches the recent metadata once`);
+      if (width === 1440) await assertRecentDestinations(page, label);
       await assertBounds(page, label);
       assert.equal(requests.some((path) => path.includes('/pagefind/')), false,
         `${label}: opening recent updates does not load Pagefind`);
@@ -208,13 +225,84 @@ try {
       const href = await focused.getAttribute('href');
       assert.ok(href, `${label}: keyboard selection has a destination`);
       const destination = new URL(href, base);
-      await Promise.all([
+      const [navigationResponse] = await Promise.all([
+        page.waitForResponse((response) => response.request().isNavigationRequest() && response.url() === destination.href),
         page.waitForURL((url) => url.href === destination.href, { waitUntil: 'load' }),
         page.keyboard.press('Enter'),
       ]);
       assert.equal(new URL(page.url()).href, destination.href, `${label}: Enter navigates to the focused result`);
+      assert.equal(navigationResponse.status(), 200, `${label}: keyboard navigation opens an existing article`);
       assert.deepEqual(errors, [], `${label}: no browser runtime errors`);
       console.log(`${label}: recent updates, lazy search, results, clearing, keyboard navigation and layout passed.`);
+      checked++;
+    } finally {
+      await context.close();
+    }
+  }
+
+  // A slow or unavailable recent-updates feed must not block the search input.
+  {
+    const { context, page, trigger, errors } = await fixture(1440, mockModule);
+    const recentPattern = '**/search/recent.json';
+    const metadata = await context.request.get(new URL('/search/recent.json', base).href);
+    assert.equal(metadata.status(), 200, 'The independently built recent metadata exists');
+    const body = await metadata.body();
+    await metadata.dispose();
+    let releaseRecent;
+    const pendingRecent = new Promise((resolve) => { releaseRecent = resolve; });
+    await context.route(recentPattern, async (route) => {
+      await pendingRecent;
+      await route.fulfill({ status: 200, contentType: 'application/json', body });
+    });
+    try {
+      await openCommand(page, trigger, 'recent-loading');
+      const input = page.locator(selectors.input);
+      await input.fill('fast');
+      await waitMockResult(page, 'fast');
+      await assertResults(page, 'Search while recent metadata is pending');
+      const resultsBefore = await page.locator(selectors.result).evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+      const completed = page.waitForResponse((response) => new URL(response.url()).pathname === '/search/recent.json');
+      releaseRecent();
+      await completed;
+      await renderFrames(page);
+      assert.equal(await input.inputValue(), 'fast', 'Late recent metadata preserves the query');
+      assert.equal(await page.locator(selectors.command).getAttribute('data-search-state'), 'results');
+      assert.deepEqual(await page.locator(selectors.result).evaluateAll((links) => links.map((link) => link.getAttribute('href'))),
+        resultsBefore, 'Late recent metadata cannot replace full-text results');
+      await page.getByRole('button', { name: '清除搜索', exact: true }).click();
+      await assertRecent(page, 'Recent metadata after a delayed response');
+      assert.deepEqual(errors, [], 'A delayed recent feed causes no browser runtime errors');
+      console.log('Recent updates: a delayed response does not block or replace full-text search.');
+      checked++;
+    } finally {
+      releaseRecent();
+      await context.close();
+    }
+  }
+
+  {
+    const { context, page, trigger, errors } = await fixture(375);
+    const recentPattern = '**/search/recent.json';
+    const failRecent = (route) => route.fulfill({ status: 502, contentType: 'application/json', body: '{}' });
+    await context.route(recentPattern, failRecent);
+    try {
+      const originalURL = page.url();
+      const documentTimeOrigin = await page.evaluate(() => performance.timeOrigin);
+      await openCommand(page, trigger, 'recent-error');
+      await assertBounds(page, 'Recent metadata failure at 375px');
+      await page.locator(selectors.input).fill('Astro');
+      await waitState(page, 'results');
+      await assertResults(page, 'Search while recent metadata is unavailable');
+      await page.getByRole('button', { name: '清除搜索', exact: true }).click();
+      await waitState(page, 'recent-error');
+      await context.unroute(recentPattern, failRecent);
+      await page.getByRole('button', { name: '重试最近更新', exact: true }).click();
+      await assertRecent(page, 'Recent metadata retry');
+      assert.equal(page.url(), originalURL, 'Retry stays on the current page');
+      assert.equal(await page.evaluate(() => performance.timeOrigin), documentTimeOrigin,
+        'Retry recovers the recent feed without a page refresh');
+      assert.deepEqual(errors, [], 'Recent metadata failure and retry are handled without runtime errors');
+      console.log('Recent updates: failed metadata preserves full-text search and retries without refreshing.');
       checked++;
     } finally {
       await context.close();

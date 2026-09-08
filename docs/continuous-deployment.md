@@ -1,6 +1,6 @@
 # Astro 构建与发布
 
-本站已上线 `yindongliang.com`，GitHub 默认分支为 `main`。博客只使用一个生产 Worker **`tcitry-blog`**，通过 Cloudflare Workers Static Assets 托管静态资源。日常流程是 **本地预览 → review 与验证 → 提交 → 手动 Wrangler 发布**，当前不启用自动部署。
+本站已上线 `yindongliang.com`，GitHub 默认分支为 `main`。博客只使用一个生产 Worker **`tcitry-blog`**，通过 Cloudflare Workers Static Assets 托管静态资源。日常流程是 **本地预览 → review 与验证 → 提交 → 发布已验证产物**。Workers Builds 的构建入口已准备，但远端 Git 连接与受限构建凭据尚未完成，当前发布仍在本地执行。
 
 2026-09-07 的首轮生产 HTTP 验收已检查 23 个页面、34 条跳转和 23 项资源。公开主题 CI 继续运行，但不会构建或发布完整博客。
 
@@ -16,7 +16,9 @@
 | 本地预览 | `npm run preview -- --port 4321`，打开 `http://127.0.0.1:4321` |
 | 普通构建 / 验证 | `npm run build` / `npm run verify`，默认本地预览模式 |
 | 生产构建 / 验证 | `npm run build:production` / `npm run verify:production` |
-| 手动构建、验证并发布 | `npm run deploy:production` |
+| 固定来源并验证产物 | `BLOG_DIR=/path/to/Blog npm run verify:release` |
+| 发布刚验证过的产物 | `npm run deploy:verified` |
+| 手动构建、验证并发布 | `BLOG_DIR=/path/to/Blog npm run deploy:production` |
 
 旧默认分支实际名为 `master`，保留为历史 Hugo 分支。远端 `hugo-book` 备份 `ce25b344d48e561f6420f727f43509c4f478e8d9` 包含旧生产提交 `d02f8b83854f7eff39b32b00c1d585d4f3567d7c` 和之后已提交的 Hugo 工作。备份不包含其他工作区的未提交文件或独立 Blog 仓库的内容。
 
@@ -30,7 +32,7 @@
 - 站点默认分支 `main` 只有 `Astro theme reproducibility` 工作流，没有接收该事件的任务，也没有部署步骤。最后一次由该事件触发的[旧 Hugo 发布运行](https://github.com/tcitry/tcitry.github.io/actions/runs/34105161080)发生于 17:17，分支为 `master`；它的成功不代表当前 Cloudflare Worker 已部署。
 - Cloudflare 的 **Workers & Pages → tcitry-blog → Settings → Builds** 中，**Git repository** 仍只显示 **Connect**，尚未连接仓库，Workers Builds 自动发布链路未接通。
 
-因此，当前推送 Blog 后仍需按下文手动构建、验证并发布。本次仅核查现状，没有启用自动部署或新增凭据；未来如需恢复，需明确接通后文的 Git 集成、构建配置与内容 Deploy Hook。
+2026-09-08 再次核对控制台，Git repository 仍为 Connect，未存在可复用的 Workers Builds 部署 token。连接表单会默认创建可编辑多个 Cloudflare 产品的 token；应改用符合本项目所需权限的部署凭据。构建脚本和发布校验已优化，真实云端构建仍待 Git 连接和 CI 凭据就绪后验收。
 
 ## 本地预览与 review
 
@@ -60,7 +62,7 @@ review 覆盖本次改动涉及的页面，以及有变化的布局、导航、�
 
 ```sh
 BLOG_DIR=/path/to/Blog npm run build:production
-npm run verify:production
+BLOG_DIR=/path/to/Blog npm run verify:release
 ```
 
 生产命令显式设置 `PUBLIC_SITE_ENV=production`，校验允许收录的 robots、canonical 和生产统计。需要检查最终产物时，再运行 `npm run preview -- --port 4321`。若 review 后又修改了代码或内容，应重新构建并运行对应检查。
@@ -68,11 +70,12 @@ npm run verify:production
 确认产物后发布这份 `dist/`：
 
 ```sh
-npx wrangler whoami
-npx wrangler deploy
+npm run deploy:verified
 ```
 
-便捷命令 `BLOG_DIR=/path/to/Blog npm run deploy:production` 会重新构建、验证并发布；它不会代替此前的本地 review、`check` 和 tests。希望发布刚验收过的同一份 `dist/` 时，使用上面的直接 Wrangler 命令。
+`verify:release` 要求站点与内容检出都干净，运行生产校验并在忽略目录 `.generated/release.json` 记录站点、内容、主题版本和产物哈希。`deploy:verified` 复核站点、配置和每个产物的哈希，再执行一次 Wrangler；不重复构建。它可以在云端内容临时目录已清理后运行。记录文件不含私有仓库 URL、绝对路径或凭据。
+
+便捷命令 `BLOG_DIR=/path/to/Blog npm run deploy:production` 会构建一次、验证并发布；它不会代替此前的 review、`check` 和 tests。Wrangler 仍扫描全部产物，但通过哈希复用已上传文件，只传输新增或变化的资源。
 
 `PUBLIC_SITE_ENV` 决定产物中的收录与统计策略，Wrangler 配置决定发布目标。生产域名只发布经过 `verify:production` 的产物。发布后记录站点提交、内容提交和 Wrangler 部署结果，并抽查首页、Archives、旧文章 URL、robots、sitemap、静态资源与本次修改的功能。
 
@@ -98,15 +101,15 @@ node scripts/verify-deployment.mjs --env production
 
 旧 Hugo Pages 工作流已停用，生产分支已移除 `.github/workflows/pages.yml`。旧 `master` 的源码继续保留；停用自动发布和清除 Pages 自定义域名是两个独立步骤。主题文档站的原生 GitHub Pages 域名可在解绑后单独验收。
 
-## 未来可选：Workers Builds
+## Workers Builds
 
-**当前不启用此方案。** 只有以后明确决定恢复自动发布时，才连接 Workers Builds 的 Git 集成、配置构建 secrets 和内容 Deploy Hook。届时继续使用现有的 `tcitry-blog`，只从 `main` 发布生产，不增加博客 Worker。
+目标是由 Cloudflare 构建并上传，减少本地安装和网络上传的等待。继续使用现有 `tcitry-blog`，只从站点 `main` 发布生产。**当前代码已准备，控制台连接与构建凭据待完成，尚未获得真实云端成功记录。**
 
-仓库保留 `npm run build:workers` 作为可复用的构建入口。它先校验配置、检出私有 Blog 的完整 `main` 历史，再执行 `setup → build → check → test → verify`；只负责构建和验证，不自行部署。生产使用显式 `PUBLIC_SITE_ENV=production`。已有离线测试覆盖环境选择、命令顺序、凭据隔离、失败中止和临时内容清理；这不代表真实云端构建或自动发布已接通。
+`npm run build:workers` 校验配置、保留内容 `main` 完整历史，并检出 `BLOG_CONTENT_COMMIT` 指定的已审查提交。随后准备主题和锁定依赖，执行一次生产构建、check、test 与发布校验；只生成产物，不自行上传。生产环境显式设置 `PUBLIC_SITE_ENV=production`。缺少凭据、提交不符或验证失败时中止，成功或失败均清理临时内容。
 
-### 可选控制台配置
+### 控制台配置
 
-以后启用时，在 **Workers & Pages → tcitry-blog → Settings → Builds** 连接站点仓库：
+完成凭据准备后，在 **Workers & Pages → tcitry-blog → Settings → Builds** 连接站点仓库：
 
 | 控制台字段 | 值 |
 | --- | --- |
@@ -114,8 +117,9 @@ node scripts/verify-deployment.mjs --env production
 | Production branch | `main` |
 | Root directory | 仓库根目录 `/` |
 | Build command | `npm run build:workers` |
-| Deploy command | `npx wrangler deploy` |
+| Deploy command | `npm run deploy:verified` |
 | Builds for non-production branches | 关闭 |
+| Build caching | 开启 |
 
 以下值属于 **Build variables and secrets**，不是 Worker 运行时配置：
 
@@ -125,6 +129,7 @@ node scripts/verify-deployment.mjs --env production
 | `NODE_VERSION` | Text | `24` |
 | `PUBLIC_SITE_ENV` | Text | `production` |
 | `BLOG_CONTENT_REPOSITORY` | Secret | 私有内容仓库的 `owner/repo`，不带 URL |
+| `BLOG_CONTENT_COMMIT` | Text | 已审查内容提交的完整 40 位 SHA，必须属于内容 `main` 历史 |
 | `BLOG_READ_TOKEN` | Secret | 仅有该内容仓库 Contents 读取权限的 GitHub token |
 | `HEROUI_AUTH_TOKEN` | Secret | HeroUI Pro 的 CI/CD Token |
 
@@ -132,12 +137,22 @@ node scripts/verify-deployment.mjs --env production
 
 HeroUI 使用 Dashboard → Overview / Settings 中的 **CI/CD Token**；见 [HeroUI Pro 自动安装](https://heroui.pro/docs/react/getting-started/installation)。GitHub Actions secret 无法读回明文，需要使用保留的值或新建受限凭据。Token 不应发到聊天、写入 Git 或放进 `PUBLIC_*` 变量。
 
-内容凭据只传给 Git，Pro 凭据只传给安装步骤；成功或失败后均清理临时内容。Workers Builds 使用平台配置的部署 token，云端构建不依赖本地 Wrangler 登录。私有内容检出、`.generated` 和安装后的商业组件均不应上传为公开构建附件。
+内容凭据只传给私有内容 Git 检出，Pro 凭据只传给本站依赖安装；公开主题构建与页面渲染不接收这些凭据，Cloudflare 部署凭据也不传给内容准备和测试子进程。成功或失败后均清理临时内容。Workers Builds 使用平台配置的部署 token，云端构建不依赖本地 Wrangler 登录。私有内容检出、`.generated` 和安装后的商业组件均不应上传为公开构建附件。
 
-如以后还需要 Blog 独立仓库更新触发发布，再为 `main` 创建 [Deploy Hook](https://developers.cloudflare.com/workers/ci-cd/builds/deploy-hooks/)，将 Hook URL 作为 secret 保存在内容通知工作流中；当前不接入。主题升级仍需显式更新站点的 `astro-book.source.json` 和 lockfile。首次启用时实测完整云端构建耗时，并对照[官方额度与限制](https://developers.cloudflare.com/workers/ci-cd/builds/limits-and-pricing/)确认适用性。
+连接成功后，站点 `main` push 会触发构建。Blog 内容仓库属于独立来源：内容发布必须先审查并更新 `BLOG_CONTENT_COMMIT`，再触发构建；仅发送 Deploy Hook 而不更新固定提交不会发布新内容。后续可将该步骤接入受控通知工作流，Hook URL 作为 secret 保存，不能写入公开仓库。当前这条内容触发链尚未接通。主题升级继续显式更新 `astro-book.source.json` 和 lockfile。
+
+依赖使用 npm 缓存和 `--prefer-offline`，主题 tarball 仅在缓存存在且来源、实际哈希与锁文件校验通过时复用；Cloudflare 默认缓存范围不包含本站 `.artifacts`。Cloudflare 的[构建缓存](https://developers.cloudflare.com/workers/ci-cd/builds/build-caching/)支持 npm 缓存；不能把忽略目录中的产物记录当成跨构建有效的生产发布凭据。首次启用后记录冷启动与缓存命中两次构建耗时，并检查[官方额度与限制](https://developers.cloudflare.com/workers/ci-cd/builds/limits-and-pricing/)。
 
 ## 发布结果与通知
 
 当前手动发布以 Wrangler 输出和线上检查为准。GitHub 公开主题 CI 的成功状态只表示主题检查通过，不表示博客已发布；没有配置自动成功邮件或通知后端。
 
 若以后启用 Workers Builds，其 [GitHub 集成](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/github-integration/)可提供提交 check run 和构建详情链接。邮件取决于 GitHub 个人订阅设置；成功、失败均主动推送到指定渠道还需另行配置通知目标与授权。本项目不为此新增常驻后端。
+
+## 优化顺序
+
+- 已实施：最近更新改为独立 JSON，按需加载并重新验证缓存；列表数据变化不再单独导致所有 HTML 改变。导航结构或全站组件变化仍可能改变大量页面。
+- 已实施：锁定主题和 npm 缓存复用、固定内容提交、一次构建后验证并上传同一份产物。
+- 待接通：Workers Builds Git 集成、受限 CI 凭据、真实云端构建与发布后验收。
+- 后续评估：按需加载完整文档菜单，减少每页重复的侧栏 HTML；为 Archives/Modified 增加适合静态站的分页，保留现有入口和索引能力。当前本地产物抽样中，this-blog 约 278 KB HTML 里侧栏约 248 KB、1,981 个节点；Archives 约 1.24 MB、12,197 个节点（gzip 约 68 KB）。优化重点是手机 DOM 与布局开销，不能直接把未压缩体积当作实际传输流量。具体实现需要保留无 JavaScript 导航与既有锚点。
+- 后续评估：周刊封面增加小尺寸、响应式图片变体，列表不再下载原始大图；现有懒加载和比例占位继续保留。

@@ -23,11 +23,11 @@ BLOG_DIR=/path/to/Blog npm run dev
 BLOG_DIR=/path/to/Blog npm run build:production
 npm run check
 npm test
-npm run verify:production
+BLOG_DIR=/path/to/Blog npm run verify:release
 npm run preview -- --port 4321
 ```
 
-Review the resulting site locally before following the [manual deployment workflow](docs/continuous-deployment.md). Wrangler uses the default `wrangler.jsonc`; repository pushes do not automatically deploy the blog.
+Review the resulting site locally, then use `npm run deploy:verified` from the isolated release checkout. It checks the recorded source and asset hashes without rebuilding. Wrangler uses `wrangler.jsonc`. The [Workers Builds entry point](docs/continuous-deployment.md#workers-builds) is ready; the remote connection and build credentials are still pending, so repository pushes do not yet deploy the blog.
 
 Ordinary `npm run build` creates a local preview with `noindex`. Production builds and verification apply the public site's indexing policy.
 

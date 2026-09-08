@@ -52,5 +52,5 @@ for (const asset of attachments) {
   await mkdir(path.dirname(target), { recursive: true }); await cp(source, target);
 }
 await writeFile(path.join(output, 'robots.txt'), production ? 'User-agent: *\nAllow: /\nSitemap: https://yindongliang.com/sitemap.xml\n' : 'User-agent: *\nDisallow: /\n');
-await writeFile(path.join(output, '_headers'), `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n${production ? '' : '  X-Robots-Tag: noindex, nofollow\n'}\n/_astro/*\n  Cache-Control: public, max-age=31536000, immutable\n`);
+await writeFile(path.join(output, '_headers'), `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n${production ? '' : '  X-Robots-Tag: noindex, nofollow\n'}\n/_astro/*\n  Cache-Control: public, max-age=31536000, immutable\n\n/search/recent.json\n  Cache-Control: no-cache\n`);
 console.log('Prepared public assets, Book icons, existing demos and preview indexing policy.');

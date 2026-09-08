@@ -6,6 +6,24 @@ import { parseArgs } from 'node:util';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 export const canonicalOrigin = 'https://yindongliang.com';
+export function assertRecentUpdates(entries, routes) {
+  assert.ok(Array.isArray(entries) && entries.length > 0 && entries.length <= 6, 'Recent updates must contain 1–6 public entries');
+  const routeMap = new Map(routes.map(route => [route.url, route]));
+  const seen = new Set();
+  let previousDate = Infinity;
+  for (const entry of entries) {
+    assert.deepEqual(Object.keys(entry).sort(), ['section', 'title', 'updated', 'url'], 'Recent updates may expose only display metadata');
+    assert.ok(typeof entry.title === 'string' && entry.title.trim(), 'Recent update title missing');
+    assert.ok(['文档', '文章', '周刊'].includes(entry.section), 'Unexpected recent update section');
+    const route = routeMap.get(entry.url);
+    assert.ok(route?.kind === 'page' && ['docs', 'posts', 'weekly'].includes(route.type), `Recent update must target a generated article: ${entry.url}`);
+    assert.ok(!seen.has(entry.url), 'Duplicate recent update');
+    seen.add(entry.url);
+    const date = Date.parse(entry.updated);
+    assert.ok(Number.isFinite(date) && date <= previousDate, 'Recent updates must be sorted by valid update dates');
+    previousDate = date;
+  }
+}
 const modes = ['production', 'preview'];
 const decodeHTML = value => value.replace(/&(?:amp|quot|apos|lt|gt|#\d+|#x[\da-f]+);/gi, entity => {
   if (entity.startsWith('&#')) return String.fromCodePoint(Number.parseInt(entity.slice(entity[2].toLowerCase() === 'x' ? 3 : 2, -1), entity[2].toLowerCase() === 'x' ? 16 : 10));
@@ -129,6 +147,9 @@ async function main() {
   ]);
   const routeMap = new Map(routes.map(route => [route.url, route]));
   const selected = new Set(['/', '/archives/', '/modified/', '/posts/', '/weekly/', '/timeline/', '/portfolio/', '/links/', '/tags/', '/categories/', '/about/', '/docs/', '/labs/', '/labs/agent-replay/', '/demos/2026/rounded-timeline/']);
+  const expectedRecent = JSON.parse(await readFile(path.join(root, 'dist/search/recent.json'), 'utf8'));
+  assertRecentUpdates(expectedRecent, routes);
+  for (const entry of expectedRecent) selected.add(entry.url);
   const regular = content.pages.filter(page => page.kind === 'page');
   for (const feature of ['data-blog-code-language=', 'class="katex"', 'class="mermaid"']) {
     const page = regular.find(page => page.type === 'docs' && page.html.includes(feature));
@@ -158,6 +179,11 @@ async function main() {
       console.log(`${label}: ${Math.min(index + 4, items.length)}/${items.length}`);
     }
   }
+  const recentResponse = await request('/search/recent.json');
+  assert.equal(recentResponse.status, 200, 'Recent updates endpoint status');
+  assert.match(recentResponse.headers.get('content-type') || '', /application\/json/i, 'Recent updates must return JSON');
+  assert.deepEqual(JSON.parse(recentResponse.body), expectedRecent, 'Recent updates must match this release');
+  if (!localPreview) assert.match(recentResponse.headers.get('cache-control') || '', /\bno-cache\b/i, 'Recent updates must revalidate between releases');
   await batches([...selected], async route => {
     const response = await request(route);
     assert.equal(response.status, 200, `Page status: ${route}`);

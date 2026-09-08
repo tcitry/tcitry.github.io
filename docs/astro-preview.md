@@ -24,13 +24,15 @@ npm run preview -- --port 4321
 
 可运行 `node scripts/verify-deployment.mjs --env preview` 检查本地页面；默认地址为 `http://127.0.0.1:4321`，其他端口通过 `--origin` 指定。Astro preview 不执行 Cloudflare 的 `_headers`、`_redirects`，本机检查因此跳过平台响应头、HTTP 重定向与 immutable 缓存断言；重定向和响应头配置仍由 `npm run verify` 检查，实际托管行为在生产发布后验收。
 
-开发时用 npm run dev。它会先只读导入 Blog 并复制公开资源；`BLOG_DIR` 默认是当前用户的 `~/Blog`，可显式覆盖。修改 Blog 后重新准备内容或重启 dev。Pagefind 由 astro-book 在 Astro 构建完成时自动生成，本站仅配置索引范围，不再单独安装或执行 Pagefind；验收搜索请使用 build + preview。
+开发时用 npm run dev。它会先只读导入 Blog 并复制公开资源；`BLOG_DIR` 默认是当前用户的 `~/Blog`，可显式覆盖。修改 Blog 后重新准备内容或重启 dev。`preview` 只读取已有 `dist/`，不会跟随 Blog 或源码变化，更新后需要重新构建；不要将不同构建的页面、最近更新元数据和 Pagefind 索引混用。Pagefind 由 astro-book 在 Astro 构建完成时自动生成，本站仅配置索引范围，不再单独安装或执行 Pagefind；验收搜索请使用同一次 build + preview。
 
 代码块与图表需要同时验收开发模式：启动 dev 后运行 `node tests/browser/reading.mjs`，检查无 React island 的真实文章中 Pro 代码块、Mermaid SVG 和原文复制。完整浏览器回归使用 build + preview，再设置 `BLOG_TEST_URL` 运行 `npm run test:browser`，同时验收需要生成索引的搜索功能。博客显式初始化 Pro 挂载所需的 React 开发运行时；主题 integration 在 dev 预构建 Mermaid 及其 CommonJS 子依赖。同步主题包后重启开发服务，同一检出不要同时启动多个 dev 进程共享 Vite 缓存。
 
-本站通过主题公开的 `components.Search` 接口替换默认搜索。`BlogSearch.astro` 输出原生入口与最近更新的精简元数据，首次打开时才加载 HeroUI Pro Command；空输入显示 6 条最近更新，输入关键词后才加载 Pagefind JavaScript API，按索引排名显示结果并逐批加载摘要。不再加载默认 Pagefind UI，主题自身仍保持原有默认实现。
+本站通过主题公开的 `components.Search` 接口替换默认搜索。`BlogSearch.astro` 输出原生入口，首次打开时才加载 HeroUI Pro Command；弹窗挂载后从构建生成的 `/search/recent.json` 获取 6 条最近更新，输入关键词后才加载 Pagefind JavaScript API，按索引排名显示结果并逐批加载摘要。最近更新不再内联到每份 HTML，避免只有更新时间改变时连带改写全部页面；导航目录或公共组件变动仍可能影响全站产物。不再加载默认 Pagefind UI，主题自身仍保持原有默认实现。
 
-最近更新来自 `docs`、`posts`、`weekly` 的公开独立内容页，按有效更新时间排序，缺失时回落发布日期；没有发布日期但有更新时间的笔记同样参与。排除草稿、隐藏页、跳转页、空正文和显式 `bookSearchExclude`，只传递标题、URL、日期与内容类型；搜索结果继续使用现有 Pagefind 索引范围。弹窗支持 ⌘ / Ctrl + K、`/`、`s`、方向键、Enter、Esc、中文输入法、加载更多及失败重试。`tests/browser/search.mjs` 检查真实索引搜索、响应竞态、键盘焦点和移动布局。
+最近更新请求使用 `cache: 'no-cache'` 与 HTTP 重验证策略，每次打开均与当前发布版本核对。加载过程不阻塞输入和全文搜索；失败或超时会显示独立重试入口，关闭弹窗取消未完成请求。构建、验收与发布必须让此 JSON、页面和 Pagefind 索引来自同一内容快照。
+
+最近更新来自 `docs`、`posts`、`weekly` 的公开独立内容页，按有效更新时间排序，缺失时回落发布日期；没有发布日期但有更新时间的笔记同样参与。排除草稿、隐藏页、跳转页、空正文和显式 `bookSearchExclude`，只传递标题、URL、日期与内容类型；搜索结果继续使用现有 Pagefind 索引范围。入口与输入框提示统一为 `search`，无障碍标签保留中文。弹窗支持 ⌘ / Ctrl + K、`/`、`s`、方向键、Enter、Esc、中文输入法、加载更多及失败重试。`tests/browser/search.mjs` 检查真实索引搜索、响应竞态、键盘焦点和移动布局，并逐条请求最近更新的目标页面、断言键盘跳转返回 HTTP 200，避免只检查链接字符串却漏过 404。
 
 Posts 页尾的“相关阅读”由 `src/lib/related-posts.ts` 在构建时从公开文章元数据中选出，`RelatedPosts.astro` 输出静态列表。共同主题标签越多越靠前；重合数量相同时，优先使用频率较低的主题标签，再按发布时间从新到旧排列，避免宽泛标签盖过具体主题。不把 `Recommended`、`ByAI`、`Weekly`、`Links` 状态标签或年份分类当作相关主题。最多显示 5 篇，排除自身、重复 URL、草稿、隐藏页和跳转页；无匹配时不显示。旧文章可以推荐后来发布的同主题文章。
 

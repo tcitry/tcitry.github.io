@@ -24,7 +24,7 @@ const fs = require('node:fs');
 const cp = require('node:child_process');
 const args = process.argv.slice(2);
 const clone = args.includes('clone');
-const record = { command: 'git', args, contentToken: !!process.env.BLOG_READ_TOKEN, proToken: !!process.env.HEROUI_AUTH_TOKEN, siteEnvironment: process.env.PUBLIC_SITE_ENV };
+const record = { command: 'git', args, contentToken: !!process.env.BLOG_READ_TOKEN, proToken: !!process.env.HEROUI_AUTH_TOKEN, deployToken: !!process.env.CLOUDFLARE_API_TOKEN, siteEnvironment: process.env.PUBLIC_SITE_ENV };
 if (clone) {
   record.askpassUser = cp.execFileSync(process.env.GIT_ASKPASS, ['Username'], { encoding: 'utf8' }).trim();
   record.askpassMatches = cp.execFileSync(process.env.GIT_ASKPASS, ['Password'], { encoding: 'utf8' }).trim() === process.env.BLOG_READ_TOKEN;
@@ -33,9 +33,14 @@ if (clone) {
   fs.mkdirSync(args.at(-1), { recursive: true });
 }
 fs.appendFileSync(process.env.FIXTURE_LOG, JSON.stringify(record) + '\\n');
+if (args.includes('rev-parse')) {
+  const changedAfterBuild = fs.existsSync(process.env.FIXTURE_LOG + '.built')
+    && process.env.FIXTURE_FAIL === (args.includes('-C') ? 'content-revision' : 'site-revision');
+  console.log(process.env.FIXTURE_FAIL === 'revision' || changedAfterBuild ? 'b'.repeat(40) : process.env.FIXTURE_CONTENT_COMMIT);
+}
 // Even a Git error that contains credentials and metadata must stay private.
 console.error(args.join(' ') + ' ' + (process.env.BLOG_READ_TOKEN || '') + ' private-revision-abc123');
-if (process.env.FIXTURE_FAIL === (clone ? 'clone' : 'remote')) process.exit(1);
+if (process.env.FIXTURE_FAIL === (clone ? 'clone' : args.includes('merge-base') ? 'ancestor' : 'remote')) process.exit(1);
 `, { mode: 0o700 });
   const npm = path.join(directory, 'npm.mjs');
   await writeFile(npm, `
@@ -45,9 +50,11 @@ const script = args.at(-1);
 fs.appendFileSync(process.env.FIXTURE_LOG, JSON.stringify({ command: 'npm', args,
   contentToken: !!process.env.BLOG_READ_TOKEN, proToken: !!process.env.HEROUI_AUTH_TOKEN,
   repository: !!process.env.BLOG_CONTENT_REPOSITORY, blog: process.env.BLOG_DIR,
+  contentPin: !!process.env.BLOG_CONTENT_COMMIT, deployToken: !!process.env.CLOUDFLARE_API_TOKEN, githubToken: !!process.env.GITHUB_TOKEN,
   siteEnvironment: process.env.PUBLIC_SITE_ENV, askpassExists: fs.existsSync(process.env.BLOG_DIR + '/../askpass'),
   contentExists: fs.existsSync(process.env.BLOG_DIR) }) + '\\n');
 console.log('ordinary build output ' + (process.env.HEROUI_AUTH_TOKEN || '') + ' ' + process.env.BLOG_DIR);
+if (script === 'build') fs.writeFileSync(process.env.FIXTURE_LOG + '.built', '');
 if (process.env.FIXTURE_FAIL === script) process.exit(1);
 `);
   const env = {
@@ -55,6 +62,8 @@ if (process.env.FIXTURE_FAIL === script) process.exit(1);
     TMPDIR: path.join(directory, 'tmp'), npm_execpath: npm, FIXTURE_LOG: log,
     BLOG_CONTENT_REPOSITORY: 'test-owner/private-content', BLOG_READ_TOKEN: 'test-private-token-123',
     HEROUI_AUTH_TOKEN: 'test-pro-token-456', SKIP_DEPENDENCY_INSTALL: '1',
+    BLOG_CONTENT_COMMIT: 'a'.repeat(40), FIXTURE_CONTENT_COMMIT: 'a'.repeat(40),
+    CLOUDFLARE_API_TOKEN: 'test-deploy-token-789', GITHUB_TOKEN: 'test-github-token-789',
   };
   delete env.PUBLIC_SITE_ENV;
   return {
@@ -79,6 +88,10 @@ test('Workers build rejects missing or unsafe configuration before any command r
     [{ BLOG_CONTENT_REPOSITORY: 'https://github.com/owner/repo' }, 'BLOG_CONTENT_REPOSITORY'],
     [{ BLOG_CONTENT_REPOSITORY: 'owner/repo\n--upload-pack=invalid' }, 'BLOG_CONTENT_REPOSITORY'],
     [{ BLOG_READ_TOKEN: '' }, 'BLOG_READ_TOKEN'],
+    [{ BLOG_CONTENT_COMMIT: '' }, 'BLOG_CONTENT_COMMIT'],
+    [{ BLOG_CONTENT_COMMIT: 'main' }, 'BLOG_CONTENT_COMMIT'],
+    [{ BLOG_CONTENT_COMMIT: 'abc1234' }, 'BLOG_CONTENT_COMMIT'],
+    [{ BLOG_CONTENT_COMMIT: 'a'.repeat(40) + '\n' }, 'BLOG_CONTENT_COMMIT'],
     [{ HEROUI_AUTH_TOKEN: ' \n' }, 'HEROUI_AUTH_TOKEN'],
     [{ SKIP_DEPENDENCY_INSTALL: '' }, 'SKIP_DEPENDENCY_INSTALL=1'],
     [{ PUBLIC_SITE_ENV: '' }, 'only supports PUBLIC_SITE_ENV=production'],
@@ -99,16 +112,17 @@ test('Workers build rejects missing or unsafe configuration before any command r
   }
 });
 
-test('Workers build defaults to production, checks out full main history, scopes secrets and verifies in order', async t => {
+test('Workers build defaults to production, pins reviewed content with full history, scopes secrets and seals once', async t => {
   const context = await fixture(t);
   // This CI entry always prepares a production release, independently of NODE_ENV.
   const result = await context.run({ NODE_ENV: 'development' });
   assert.equal(result.code, 0, result.output);
   assert.deepEqual(result.commands.filter(command => command.command === 'npm').map(command => command.args), [
-    ['run', 'setup'], ['run', 'build'], ['run', 'check'], ['test'], ['run', 'verify'],
+    ['run', 'setup'], ['run', 'build'], ['run', 'check'], ['test'], ['run', 'verify:release'],
   ]);
-  const [clone, remote, ...steps] = result.commands;
-  assert.deepEqual(clone.args.slice(0, -2), ['-c', 'credential.helper=', 'clone', '--quiet', '--branch', 'main', '--single-branch']);
+  const [clone, ancestor, checkout, revision, remote] = result.commands;
+  const steps = result.commands.filter(command => command.command === 'npm');
+  assert.deepEqual(clone.args.slice(0, -2), ['-c', 'credential.helper=', 'clone', '--quiet', '--branch', 'main', '--single-branch', '--no-checkout']);
   assert.equal(clone.args.at(-2), 'https://github.com/test-owner/private-content.git');
   assert.ok(!clone.args.some(arg => arg.includes(context.env.BLOG_READ_TOKEN) || arg.startsWith('--depth')));
   assert.equal(clone.contentToken, true);
@@ -117,17 +131,22 @@ test('Workers build defaults to production, checks out full main history, scopes
   assert.equal(clone.askpassMatches, true);
   assert.equal(clone.askpassMode, 0o700);
   assert.equal(clone.askpassContainsToken, false);
+  assert.deepEqual(ancestor.args.slice(-4), ['merge-base', '--is-ancestor', context.env.BLOG_CONTENT_COMMIT, 'origin/main']);
+  assert.deepEqual(checkout.args.slice(-4), ['checkout', '--quiet', '--detach', context.env.BLOG_CONTENT_COMMIT]);
+  assert.deepEqual(revision.args.slice(-2), ['rev-parse', 'HEAD']);
   assert.deepEqual(remote.args.slice(-3), ['remote', 'remove', 'origin']);
   assert.equal(remote.contentToken, false);
   assert.deepEqual(steps.map(step => step.proToken), [true, false, false, false, false]);
-  assert.ok(steps.every(step => !step.contentToken && !step.repository && !step.askpassExists));
+  assert.ok(steps.every(step => !step.contentToken && !step.contentPin && !step.repository && !step.askpassExists && !step.githubToken));
+  assert.ok(result.commands.every(command => !command.deployToken));
+  assert.ok([ancestor, checkout, revision, remote].every(command => !command.contentToken && !command.proToken));
   assert.ok(result.commands.every(command => command.siteEnvironment === 'production'));
   assert.ok(steps.every(step => step.contentExists));
   assert.equal(new Set(steps.map(step => step.blog)).size, 1);
   assert.deepEqual(await readdir(path.join(context.directory, 'tmp')), ['unrelated']);
   assert.match(result.output, /ordinary build output/);
   assert.match(result.output, /Production build verified/);
-  for (const secret of [context.env.BLOG_READ_TOKEN, context.env.HEROUI_AUTH_TOKEN, context.env.BLOG_CONTENT_REPOSITORY, steps[0].blog, 'private-revision-abc123']) {
+  for (const secret of [context.env.BLOG_READ_TOKEN, context.env.HEROUI_AUTH_TOKEN, context.env.BLOG_CONTENT_REPOSITORY, context.env.BLOG_CONTENT_COMMIT, context.env.CLOUDFLARE_API_TOKEN, steps[0].blog, 'private-revision-abc123']) {
     assert.ok(!result.output.includes(secret), 'build logs must not contain credentials or private checkout metadata');
   }
 });
@@ -138,7 +157,7 @@ test('Workers build preserves explicit production through the final verification
   assert.equal(result.code, 0, result.output);
   assert.ok(result.commands.every(command => command.siteEnvironment === 'production'));
   const steps = result.commands.filter(command => command.command === 'npm');
-  assert.deepEqual(steps.map(step => step.args.at(-1)), ['setup', 'build', 'check', 'test', 'verify']);
+  assert.deepEqual(steps.map(step => step.args.at(-1)), ['setup', 'build', 'check', 'test', 'verify:release']);
   assert.deepEqual(steps.map(step => step.proToken), [true, false, false, false, false]);
   assert.ok(steps.every(step => !step.contentToken && !step.repository));
   assert.match(result.output, /Production build verified/);
@@ -147,9 +166,13 @@ test('Workers build preserves explicit production through the final verification
 
 for (const [failingStep, expectedSteps] of [
   ['clone', []],
+  ['ancestor', []],
+  ['revision', []],
   ['setup', ['setup']],
   ['build', ['setup', 'build']],
-  ['verify', ['setup', 'build', 'check', 'test', 'verify']],
+  ['site-revision', ['setup', 'build', 'check', 'test']],
+  ['content-revision', ['setup', 'build', 'check', 'test']],
+  ['verify:release', ['setup', 'build', 'check', 'test', 'verify:release']],
 ]) {
   test(`Workers build stops after ${failingStep} failure and cleans only its temporary files`, async t => {
     const context = await fixture(t);

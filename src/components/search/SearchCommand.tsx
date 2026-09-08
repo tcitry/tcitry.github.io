@@ -3,6 +3,7 @@ import {flushSync} from 'react-dom';
 import {createRoot} from 'react-dom/client';
 import {Command} from '@heroui-pro/react/command';
 import {searchContent} from '../../lib/search-client';
+import {loadRecentUpdates} from '../../lib/search-recent-client';
 import type {SearchEntry, SearchResponse} from '../../lib/search-types';
 import surfaceStyles from '../demos/DemoSurface.module.css';
 import styles from './SearchCommand.module.css';
@@ -15,7 +16,6 @@ const sectionNames: Record<string, string> = {
 };
 
 interface Props {
-  recent: SearchEntry[];
   onClose: () => void;
 }
 
@@ -24,7 +24,10 @@ interface ResultState extends SearchResponse {
   limit: number;
 }
 
-function SearchCommand({recent, onClose}: Props) {
+function SearchCommand({onClose}: Props) {
+  const [recent, setRecent] = useState<SearchEntry[]>([]);
+  const [recentState, setRecentState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [recentRetry, setRecentRetry] = useState(0);
   const [query, setQuery] = useState('');
   const [limit, setLimit] = useState(PAGE_SIZE);
   const [retry, setRetry] = useState(0);
@@ -37,6 +40,20 @@ function SearchCommand({recent, onClose}: Props) {
   const requestVersion = useRef(0);
   const backdrop = useRef<HTMLDivElement>(null);
   const normalizedQuery = query.trim();
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+    setRecentState('loading');
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+    void loadRecentUpdates(controller.signal).then((entries) => {
+      if (!active) return;
+      setRecent(entries);
+      setRecentState('ready');
+    }).catch(() => { if (active) setRecentState('error'); })
+      .finally(() => window.clearTimeout(timeout));
+    return () => { active = false; window.clearTimeout(timeout); controller.abort(); };
+  }, [recentRetry]);
 
   const changeQuery = (value: string) => {
     if (value === query) return;
@@ -101,11 +118,15 @@ function SearchCommand({recent, onClose}: Props) {
     : busy ? (entries.length ? '正在加载更多…' : '正在搜索…')
     : failed ? '搜索暂时不可用，请重试。'
     : normalizedQuery ? `找到 ${activeResult?.total ?? 0} 条结果${hasMore ? `，已显示 ${entries.length} 条` : ''}`
+    : recentState === 'loading' ? '正在加载最近更新…'
+    : recentState === 'error' ? '最近更新暂时不可用，仍可输入关键词搜索。'
     : `最近更新 · ${entries.length} 篇`;
   const emptyMessage = composing ? '完成输入后即可搜索。'
     : busy ? '正在搜索…'
     : failed ? '暂时无法搜索，请稍后重试。'
     : normalizedQuery ? '没有找到匹配内容，试试其他关键词。'
+    : recentState === 'loading' ? '正在加载最近更新…'
+    : recentState === 'error' ? '暂时无法加载最近更新，可以重试或直接搜索。'
     : '暂无最近更新的文章。';
 
   return <Command>
@@ -129,7 +150,7 @@ function SearchCommand({recent, onClose}: Props) {
           className={styles.dialog}
           data-search-dialog
           data-blog-command
-          data-search-state={composing ? 'composing' : busy ? 'loading' : failed ? 'error' : normalizedQuery ? 'results' : 'recent'}
+          data-search-state={composing ? 'composing' : busy ? 'loading' : failed ? 'error' : normalizedQuery ? 'results' : recentState === 'loading' ? 'recent-loading' : recentState === 'error' ? 'recent-error' : 'recent'}
         >
           <Command.InputGroup aria-label="搜索博客" className={styles.inputGroup}>
             <Command.InputGroup.Prefix>
@@ -139,7 +160,7 @@ function SearchCommand({recent, onClose}: Props) {
             </Command.InputGroup.Prefix>
             <Command.InputGroup.Input
               aria-label="搜索博客"
-              placeholder="搜索文章与文档…"
+              placeholder="search"
               enterKeyHint="search"
               autoComplete="off"
               className={styles.input}
@@ -174,7 +195,7 @@ function SearchCommand({recent, onClose}: Props) {
 
           <Command.List
             aria-label={normalizedQuery ? '搜索结果' : '最近更新'}
-            aria-busy={busy || undefined}
+            aria-busy={busy || (!normalizedQuery && recentState === 'loading') || undefined}
             className={styles.list}
             data-search-results
             onAction={() => { queueMicrotask(onClose); }}
@@ -200,6 +221,7 @@ function SearchCommand({recent, onClose}: Props) {
           <Command.Footer className={styles.footer}>
             <span role="status" aria-live="polite" aria-atomic="true" className={styles.status} data-search-status>{status}</span>
             {failed ? <button type="button" className={styles.action} onClick={() => { setBusy(true); setRetry((value) => value + 1); }}>重试</button>
+              : !normalizedQuery && recentState === 'error' ? <button type="button" className={styles.action} data-search-recent-retry onClick={() => { setRecentState('loading'); setRecentRetry((value) => value + 1); }}>重试最近更新</button>
               : hasMore ? <button type="button" className={styles.action} disabled={busy} onClick={() => { setBusy(true); setLimit((value) => value + PAGE_SIZE); }}>{busy ? '加载中…' : '加载更多'}</button>
                 : <span className={styles.hint} aria-hidden="true">↑ ↓ 选择 · Enter 打开</span>}
           </Command.Footer>
@@ -216,7 +238,7 @@ export interface SearchCommandController {
 }
 
 /** The caller imports and mounts this module only on the first search request. */
-export function mountSearchCommand(host: HTMLElement, recent: SearchEntry[], onClose: () => void): SearchCommandController {
+export function mountSearchCommand(host: HTMLElement, onClose: () => void): SearchCommandController {
   const root = createRoot(host);
   let opened = false;
   let destroyed = false;
@@ -236,7 +258,7 @@ export function mountSearchCommand(host: HTMLElement, recent: SearchEntry[], onC
       if (opened || destroyed) return;
       opened = true;
       const current = ++session;
-      root.render(<SearchCommand recent={recent} onClose={() => { if (session === current) close(); }} />);
+      root.render(<SearchCommand onClose={() => { if (session === current) close(); }} />);
     },
     close,
     destroy() {

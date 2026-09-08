@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { parseArgs } from 'node:util';
-import { assertCanonical, assertGiscus, assertHeaderIndexing, assertHtmlIndexing, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects } from './verify-deployment.mjs';
+import { assertCanonical, assertGiscus, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects } from './verify-deployment.mjs';
 import { auditContentLinks } from './internal-links.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), output = path.join(root, 'dist');
 const { values } = parseArgs({ options: { env: { type: 'string' }, help: { type: 'boolean' } } });
@@ -13,6 +13,7 @@ assert.ok(['production', 'preview'].includes(environment), 'Verification environ
 const content = JSON.parse(await readFile(path.join(root, '.generated/content.json'), 'utf8'));
 assert.deepEqual(content.diagnostics.warnings.filter(warning => warning.startsWith('Unresolved relref')), [], 'Every prose relref must resolve before publishing');
 const routes = JSON.parse(await readFile(path.join(root, '.generated/routes.json'), 'utf8'));
+assertRecentUpdates(JSON.parse(await readFile(path.join(output, 'search/recent.json'), 'utf8')), routes);
 const legacy = JSON.parse(await readFile(path.join(root, 'scripts/legacy-routes.json'), 'utf8'));
 const htmlPath = url => path.join(output, decodeURIComponent(url), 'index.html');
 const assets = new Set();

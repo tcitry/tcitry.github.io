@@ -1,5 +1,3 @@
-import type {SearchEntry} from '../lib/search-types';
-
 let cleanup: (() => void) | undefined;
 let library: Promise<typeof import('../components/search/SearchCommand')> | undefined;
 
@@ -10,7 +8,6 @@ function initializeSearch() {
   if (!host || !triggers.length) return;
   const mountHost = host;
   const events = new AbortController();
-  const recent = JSON.parse(host.dataset.recentUpdates || '[]') as SearchEntry[];
   let mount: ReturnType<typeof import('../components/search/SearchCommand')['mountSearchCommand']> | undefined;
   let previousFocus: HTMLElement | null = null;
   let opened = false;
@@ -50,7 +47,7 @@ function initializeSearch() {
       library ??= import('../components/search/SearchCommand');
       const module = await library;
       if (events.signal.aborted || request !== generation) return;
-      mount ??= module.mountSearchCommand(mountHost, recent, restoreFocus);
+      mount ??= module.mountSearchCommand(mountHost, restoreFocus);
       mount.open();
     } catch (error) {
       library = undefined;
