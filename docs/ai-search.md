@@ -2,20 +2,6 @@
 
 本站只使用一个 AI Gateway `tcitry-blog-chat`。AI Search 实例 `tcitry-blog-search` 位于 `default` namespace，继续关联这个 Gateway；运行时检索与回答生成共用它。文章使用 AI Search 内置存储，发布脚本通过 REST API 上传，站点 Worker 使用 binding 查询。Binding 不会自动监视 Git 仓库或上传本地文件，也无需另外创建 R2 bucket 或网站爬虫。[Cloudflare 内置存储说明](https://developers.cloudflare.com/ai-search/configuration/data-source/built-in-storage/)
 
-## 本地体验
-
-已有构建产物和导出的公开语料时，运行：
-
-```sh
-npm run preview:chat
-```
-
-打开 `http://127.0.0.1:4330/chat/`，可输入「Astro 博客迁移」或「前端测试」，体验 HeroUI Pro 输入、逐字输出、出处卡片、停止和新对话。端口冲突时设置 `BLOG_CHAT_PREVIEW_PORT`。
-
-这是明确标注的**本地交互演示**：Node 服务从导出的公开文章中按关键词选取原文摘录，模拟流式传输，不调用大模型或 Cloudflare，也不代表 AI Search 的检索质量。演示只监听 `127.0.0.1`，通过 HTTP 加入提示和 noindex、去除统计脚本，不改写已封存的 `dist/`。首次检出还没有产物时先按站点约定执行 `npm run setup` 和 `BLOG_DIR=/path/to/Blog npm run build`。
-
-要体验真实 AI 回答，仍需先完成下文的 AI Search 配置、已发布文章同步和云端权限，然后运行 `npm run dev:worker`。AI Search / Workers AI binding 即使在本地 Worker 中也访问远端服务，不能靠启动本地服务器跳过授权。普通 `npm run preview` 只预览 Astro 静态页面，不提供聊天 API。
-
 ## 控制台配置
 
 在 AI Search → `tcitry-blog-search` → Settings 中核对：
