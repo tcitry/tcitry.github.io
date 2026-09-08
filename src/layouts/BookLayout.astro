@@ -10,6 +10,7 @@ import '../styles/tailwind.css';
 import blogStyles from '../styles/blog.module.css';
 import codeStyles from '../components/code/BlogCode.module.css';
 import BlogSearch from '../components/search/BlogSearch.astro';
+import BlogNavigation from '../components/book/BlogNavigation.astro';
 interface Props { page: ContentPage; navigation: NavigationNode[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[] }
 const { page, navigation, tags } = Astro.props;
 const title = headTitle(page);
@@ -53,7 +54,7 @@ const site = {
 };
 ---
 <ThemeLayout site={site}
-  components={{Search: BlogSearch}}
+  components={{Search: BlogSearch, Navigation: BlogNavigation}}
   code={false}
   page={{ title, url: page.url, headings: page.headings, toc: page.toc, bodyClass: `${blogStyles.site} ${codeStyles.scope} book-kind-${page.kind} book-type-${page.type}${page.layout ? ` book-layout-${page.layout}` : ''}` }}
   navigation={toNavigation(navigation)} previous={previous} next={next}
