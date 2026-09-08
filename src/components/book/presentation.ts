@@ -10,8 +10,8 @@ export function articleBadges(page: ContentPage, tags: TaxonomyTerm[], detailed 
   if (page.type === 'weekly') badges.push({ label: 'W', href: url('Weekly'), class: 'weekly-title' });
   if (page.type === 'links') badges.push({ label: 'L', href: '/links/', class: 'links-title' });
   if (page.tags.includes('Recommended')) badges.push({ label: 'R', href: url('Recommended'), class: 'recommended-title' });
-  else if (page.tags.includes('ByAi')) badges.push({ label: 'ByAi', href: url('ByAi'), class: 'byAi-title' });
-  if (detailed) for (const tag of page.tags.filter((name) => !['Weekly', 'Recommended', 'ByAi', 'Links'].includes(name))) badges.push({ label: tag, href: url(tag), class: 'tags-title', leadingSpace: true });
+  else if (page.tags.includes('ByAI')) badges.push({ label: 'ByAI', href: url('ByAI'), class: 'byAI-title' });
+  if (detailed) for (const tag of page.tags.filter((name) => !['Weekly', 'Recommended', 'ByAI', 'Links'].includes(name))) badges.push({ label: tag, href: url(tag), class: 'tags-title', leadingSpace: true });
   return badges;
 }
 

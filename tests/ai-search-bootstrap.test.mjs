@@ -12,7 +12,7 @@ async function fixture(t) {
   t.after(() => rm(directory, { recursive: true, force: true }));
   const pages = [...BOOTSTRAP_PATHS, '/docs/unselected-public-article/'].map((url, index) => ({
     kind: 'page', type: 'docs', url, title: `Sample ${index}`, date: '2026-09-01T00:00:00Z', lastmod: '2026-09-08T02:59:24Z',
-    tags: index === 1 ? [] : ['ByAi'], html: `<h2>Section ${index}</h2><p>Published body ${index}.</p><pre><code>const x = ${index};\n\n</code></pre>`,
+    tags: index === 1 ? [] : ['ByAI'], html: `<h2>Section ${index}</h2><p>Published body ${index}.</p><pre><code>const x = ${index};\n\n</code></pre>`,
     source: 'private-source-must-not-be-uploaded.md', params: { privateSetting: 'must-not-be-uploaded' },
   }));
   const corpus = createCorpus(pages, { environment: 'preview', revision: { siteCommit: 'a'.repeat(40), contentCommit: 'b'.repeat(40) } });

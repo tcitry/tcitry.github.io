@@ -36,7 +36,7 @@ npm run preview -- --port 4321
 
 最近更新来自 `docs`、`posts`、`weekly` 的公开独立内容页，按有效更新时间排序，缺失时回落发布日期；没有发布日期但有更新时间的笔记同样参与。排除草稿、隐藏页、跳转页、空正文和显式 `bookSearchExclude`，只传递标题、URL、日期与内容类型；搜索结果继续使用现有 Pagefind 索引范围。入口与输入框提示统一为 `Search`，无障碍标签保留中文。弹窗支持 ⌘ / Ctrl + K、`/`、`s`、方向键、Enter、Esc、中文输入法、加载更多及失败重试。`tests/browser/search.mjs` 检查真实索引搜索、响应竞态、键盘焦点和移动布局，并逐条请求最近更新的目标页面、断言键盘跳转返回 HTTP 200，避免只检查链接字符串却漏过 404。
 
-Posts 页尾的“相关阅读”由 `src/lib/related-posts.ts` 在构建时从公开文章元数据中选出，`RelatedPosts.astro` 输出静态列表。共同主题标签越多越靠前；重合数量相同时，优先使用频率较低的主题标签，再按发布时间从新到旧排列，避免宽泛标签盖过具体主题。不把 `Recommended`、`ByAi`、`Weekly`、`Links` 状态标签或年份分类当作相关主题。去重后有至少 6 篇候选时显示 6 篇，有 4–5 篇时显示 4 篇，使双列卡片完整成行；不足 4 篇时按实际相关数量展示，无匹配时不显示，不用无关文章补齐。排除自身、重复 URL、草稿、隐藏页和跳转页。旧文章可以推荐后来发布的同主题文章。
+Posts 页尾的“相关阅读”由 `src/lib/related-posts.ts` 在构建时从公开文章元数据中选出，`RelatedPosts.astro` 输出静态列表。共同主题标签越多越靠前；重合数量相同时，优先使用频率较低的主题标签，再按发布时间从新到旧排列，避免宽泛标签盖过具体主题。不把 `Recommended`、`ByAI`、`Weekly`、`Links` 状态标签或年份分类当作相关主题。去重后有至少 6 篇候选时显示 6 篇，有 4–5 篇时显示 4 篇，使双列卡片完整成行；不足 4 篇时按实际相关数量展示，无匹配时不显示，不用无关文章补齐。排除自身、重复 URL、草稿、隐藏页和跳转页。旧文章可以推荐后来发布的同主题文章。
 
 该区块位于正文及版权、前后篇导航之后，Giscus 之前，不加入桌面或移动端文章目录。推荐列表不进入 Pagefind 正文索引。`npm test` 检查推荐规则，`npm run test:browser` 同时检查禁用 JavaScript 时的文章链接、目录边界、评论位置及 1440px / 375px / 320px 布局。
 
@@ -181,7 +181,7 @@ HTTP 检查记录在 `.generated/cloudflare-verification.json`。Cloudflare 对 
 - 博客以 `markdown.code: false` 和布局 `code={false}` 关闭普通 EC 展示，在生成 HTML 前处理代码 AST；MD 与 MDX 使用同一适配。没有先生成 EC 再拆解 HTML，也没有添加 renderer/provider 注册层。主题自己的默认 EC 保留文件名、行号、标记、高亮和复制。
 - Lab 中 HeroUI 表单、Pro 消息/步骤/来源/代码复制、回放与暂停，以及 Svelte 状态和派生值均通过浏览器操作验证。普通 MDX 和文章代码的剪贴板内容与完整静态原文一致，保留末尾换行。明暗主题下代码高亮可读，没有双框或双复制按钮。
 - 包含 154 个代码块的 Kubectl 页面，顶部稳定后只挂载附近 5 个 Pro 块，向下阅读后增至 10 个，始终共享一个 React root；初始 HTML 保留全部 154 段原文。这里只验证按需挂载行为，未进行 Lighthouse 或 CPU 性能测量。
-- 2560px 下侧栏恢复 Hugo 的 max-content、20rem 最小宽度和原有 clamp 最大宽度，左侧起点为 0；Weekly 卡片与封面保持 320px、320×192px，间距 16px。390px 下 Weekly、归档和 Timeline 无整页横向溢出；Doc/ByAi/其他标签横向间距 4px、换行间距 2px。Timeline 年份选择实际跳转到 `/timeline/2025/`。
+- 2560px 下侧栏恢复 Hugo 的 max-content、20rem 最小宽度和原有 clamp 最大宽度，左侧起点为 0；Weekly 卡片与封面保持 320px、320×192px，间距 16px。390px 下 Weekly、归档和 Timeline 无整页横向溢出；Doc/ByAI/其他标签横向间距 4px、换行间距 2px。Timeline 年份选择实际跳转到 `/timeline/2025/`。
 
 独立主题文档示例位于 `astro-book` 的 `examples/basic/`，可在主题仓库运行 `npm run build`、`npm run preview -w @astro-book/basic`。本次本地验收地址为 `http://127.0.0.1:4322/astro-book/`，已验证带 base 路径的搜索、移动导航、EC 复制与明暗主题，以及 Mermaid 展示和原始源码复制。
 
