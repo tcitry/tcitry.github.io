@@ -19,11 +19,11 @@ try {
   const signedIn = await input.count() > 0;
   if (signedIn) {
     await input.fill('保留这段未发送的问题');
-    await panel.getByRole('button', {name: '账户', exact: true}).waitFor();
+    await panel.locator('.cl-userButtonTrigger').waitFor();
   } else {
-    await panel.locator('[data-clerk-signin]').waitFor();
-    assert.equal(await panel.locator('[data-clerk-signin]').count(), 1, 'Signed-out chat mounts one Clerk sign-in control');
-    assert.ok(await panel.getByRole('button', {name: '登录 / 注册'}).count() >= 2, 'Header and panel both offer sign-in');
+    await panel.getByRole('button', {name: '登录 / 注册'}).waitFor();
+    assert.equal(await panel.getByRole('button', {name: '登录 / 注册'}).count(), 1, 'Signed-out chat keeps sign-in in the header');
+    await panel.getByRole('heading', {name: '登录后提问'}).waitFor();
   }
   await page.getByRole('radio', {name: '阅读', exact: true}).click();
   if (signedIn) {
@@ -32,8 +32,8 @@ try {
     assert.equal(await page.locator('[data-reader-root]').evaluate(node => Boolean(node.closest('[data-pagefind-ignore]'))), true);
     assert.equal(await page.locator('[data-reader-root]').evaluate(node => Boolean(node.closest('[data-sentry-mask]'))), true);
   } else {
-    await panel.locator('[data-clerk-signin]').waitFor();
-    assert.equal(await panel.locator('[data-clerk-signin]').count(), 1, 'Reading view reuses the same Clerk sign-in control');
+    await panel.getByRole('heading', {name: '登录后阅读'}).waitFor();
+    assert.equal(await panel.getByRole('button', {name: '登录 / 注册'}).count(), 1, 'Reading view reuses the header sign-in control');
     assert.equal(await page.locator('[data-reader-root]').count(), 0, 'Private reader UI stays unmounted until login');
   }
   assert.equal(await page.locator('#main-content [data-reader-root]').count(), 0, 'Reader tools must not change the article progress denominator');
@@ -43,7 +43,7 @@ try {
   assert.match(await panel.innerText(), /对话列表还没有接入/);
   await page.getByRole('radio', {name: '咨询', exact: true}).click();
   if (signedIn) assert.equal(await input.inputValue(), '保留这段未发送的问题', 'Switching views retains the chat draft');
-  else await panel.locator('[data-clerk-signin]').waitFor();
+  else await panel.getByRole('heading', {name: '登录后提问'}).waitFor();
   await page.getByRole('radio', {name: '阅读', exact: true}).click();
   for (const width of [1440, 390]) {
     await page.setViewportSize({width, height: 900});
@@ -56,7 +56,7 @@ try {
   }
   await page.goto(new URL('/me/', base).href);
   await page.locator('[data-open-reading]').click();
-  await page.locator('#blog-chat-panel [data-reader-root], #blog-chat-panel [data-clerk-signin]').waitFor();
+  await page.locator('#blog-chat-panel [data-reader-root], #blog-chat-panel .empty-state').waitFor();
   assert.equal(await page.locator('article.book-article h1').textContent(), '我的阅读');
   assert.match(await page.locator('meta[name="robots"]').getAttribute('content'), /noindex/);
   assert.equal(await page.locator('[data-giscus], .giscus').count(), 0, 'Private account page does not get a public comment thread');

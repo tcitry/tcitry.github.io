@@ -3,7 +3,7 @@ import {useAuth} from '@clerk/react';
 import {CloseButton, Tooltip} from '@heroui/react';
 import {Segment} from '@heroui-pro/react/segment';
 import AccountButton from '../auth/AccountButton';
-import SignInPanel, {AuthLoading} from '../auth/SignInPanel';
+import SignInPanel, {AuthLoading, WorkspaceEmpty} from '../auth/SignInPanel';
 import BlogChat from './BlogChat';
 import {ChatSession} from './ChatSession';
 import surface from '../demos/DemoSurface.module.css';
@@ -18,9 +18,10 @@ const views = [
 type View = (typeof views)[number]['id'];
 
 function ChatHistory() {
-  return <div className="blog-chat__auth" role="status">
-    <p>跨页面的对话列表还没有接入。当前提问和草稿留在「咨询」。</p>
-  </div>;
+  return <WorkspaceEmpty
+    title="对话尚未接入"
+    description="跨页面的对话列表还没有接入。当前提问和草稿留在「咨询」。"
+  />;
 }
 
 function Workspace({onClose, onReady, pathname, title, reading = false}: {
@@ -33,12 +34,12 @@ function Workspace({onClose, onReady, pathname, title, reading = false}: {
 
   return <div className={`${surface.surface} assistant-workspace`}>
     <nav className="assistant-workspace__switcher">
-      <Segment aria-label="助手功能" size="sm" selectedKey={view} onSelectionChange={(key) => {
+      <Segment aria-label="助手功能" size="sm" className="w-auto" selectedKey={view} onSelectionChange={(key) => {
         const next = String(key) as View;
         if (next === 'reading') setReaderOpened(true);
         setView(next);
       }}>
-        {views.map((item) => <Segment.Item key={item.id} id={item.id}>{item.label}</Segment.Item>)}
+        {views.map((item) => <Segment.Item key={item.id} id={item.id} className="w-auto">{item.label}</Segment.Item>)}
       </Segment>
       <div className="assistant-workspace__actions">
         <AccountButton />
@@ -53,7 +54,10 @@ function Workspace({onClose, onReady, pathname, title, reading = false}: {
         ? view === 'consult' && <AuthLoading label="正在加载登录…" />
         : userId
           ? <BlogChat onReady={onReady} />
-          : view === 'consult' && <SignInPanel description="登录后可以向博客助手提问。回答仍然只依据已公开的文章。" />}
+          : view === 'consult' && <SignInPanel
+            title="登录后提问"
+            description="登录后可以向博客助手提问。回答仍然只依据已公开的文章。"
+          />}
     </div>
     <div className="assistant-workspace__view" hidden={view !== 'chat'}>
       {view === 'chat' && (!isLoaded
@@ -69,7 +73,10 @@ function Workspace({onClose, onReady, pathname, title, reading = false}: {
               <ReaderRoot library pathname={pathname} title={title} />
             </Suspense>
           </div>
-          : view === 'reading' && <SignInPanel description="登录后收藏文章、继续上次阅读，并保存仅自己可见的笔记。" />}
+          : view === 'reading' && <SignInPanel
+            title="登录后阅读"
+            description="登录后收藏文章、继续上次阅读，并保存仅自己可见的笔记。"
+          />}
     </div>
   </div>;
 }

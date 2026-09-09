@@ -48,7 +48,8 @@ try {
     const note = page.getByRole('textbox', {name: '这篇文章的私有笔记'});
     assert.equal(await note.inputValue(), '账号 A 的私有笔记');
     await note.fill('账号 A 尚未保存的草稿');
-    await clickAndConfirm(page, page.getByRole('button', {name: '退出登录'}), false);
+    page.once('dialog', (dialog) => dialog.dismiss());
+    assert.equal(await page.evaluate(() => window.dispatchEvent(new CustomEvent('reader:before-signout', {cancelable: true}))), false, 'Unsaved notes cancel sign-out');
     assert.equal((await state(page)).clients.length, 1, 'Declining sign-out preserves the authenticated client');
     assert.equal(await note.inputValue(), '账号 A 尚未保存的草稿');
     await page.evaluate(() => window.__readerAuth.switchSession('fixture-b', 'session-b'));
@@ -63,7 +64,7 @@ try {
     await page.waitForFunction(() => window.__readerFixture.getState().clients.length === 3);
     clients = (await state(page)).clients;
     assert.equal(clients[1].closed, true, 'Changing the session for the same account also discards its cache');
-    await page.getByRole('button', {name: '退出登录'}).click();
+    await page.evaluate(() => window.__readerAuth.switchSession(null, null));
     await page.locator('[data-reader-root] [data-clerk-signin]').waitFor();
     await page.waitForFunction(() => window.__readerFixture.getState().clients.length === 4);
     assert.equal((await state(page)).clients[2].closed, true);

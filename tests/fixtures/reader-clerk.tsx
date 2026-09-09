@@ -1,4 +1,4 @@
-import {useSyncExternalStore, type ReactNode} from 'react';
+import {cloneElement, isValidElement, useSyncExternalStore, type ReactElement, type ReactNode} from 'react';
 
 let auth = {userId: 'fixture-a' as string | null, sessionId: 'session-a' as string | null};
 const listeners = new Set<() => void>();
@@ -42,9 +42,31 @@ export function ClerkProvider({children}: {children: ReactNode}) {return childre
 export function ClerkLoaded({children}: {children: ReactNode}) {return children;}
 export function ClerkLoading() {return null;}
 export function ClerkFailed() {return null;}
+export function UNSAFE_PortalProvider({children}: {children?: ReactNode}) {return children;}
 Object.assign(window, {__readerAuth: {switchSession}});
+
+export function Show({when, children, fallback = null}: {
+  when: string | object | ((has: unknown) => boolean); children?: ReactNode; fallback?: ReactNode;
+}) {
+  const {userId} = useAuth();
+  if (when === 'signed-in') return userId ? children : fallback;
+  if (when === 'signed-out') return userId ? fallback : children;
+  return fallback;
+}
 
 export function SignIn() {return <button type="button" data-clerk-signin onClick={() => switchSession('fixture-a', 'session-a')}>登录 / 注册</button>;}
 export function SignInButton({children}: {children?: ReactNode}) {
-  return <button type="button" data-clerk-signin onClick={() => switchSession('fixture-a', 'session-a')}>{children ?? '登录 / 注册'}</button>;
+  const signIn = () => switchSession('fixture-a', 'session-a');
+  if (isValidElement(children)) {
+    const child = children as ReactElement<{onPress?: (event: unknown) => void}>;
+    return cloneElement(child, {
+      onPress: (event: unknown) => { child.props.onPress?.(event); signIn(); },
+    });
+  }
+  return <button type="button" onClick={signIn}>{children ?? '登录 / 注册'}</button>;
+}
+export function UserButton({fallback}: {fallback?: ReactNode} = {}) {
+  const {userId} = useAuth();
+  if (!userId) return fallback ?? null;
+  return <button type="button" className="cl-userButtonTrigger" aria-label="Open user button">账户</button>;
 }

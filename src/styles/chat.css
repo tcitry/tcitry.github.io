@@ -6,9 +6,6 @@
 @import "@heroui/styles/components/textarea.css" layer(components);
 @import "@heroui/styles/components/disclosure.css" layer(components);
 @import "@heroui/styles/components/tooltip.css" layer(components);
-@import "@heroui/styles/components/avatar.css" layer(components);
-@import "@heroui/styles/components/dropdown.css" layer(components);
-@import "@heroui/styles/components/menu-item.css" layer(components);
 @import "@heroui-pro/react/css/components/chat-conversation.css" layer(components);
 @import "@heroui-pro/react/css/components/chat-message.css" layer(components);
 @import "@heroui-pro/react/css/components/chat-message-actions.css" layer(components);
@@ -18,6 +15,7 @@
 @import "@heroui-pro/react/css/components/prompt-suggestion.css" layer(components);
 @import "@heroui-pro/react/css/components/code-block.css" layer(components);
 @import "@heroui-pro/react/css/components/segment.css" layer(components);
+@import "@heroui-pro/react/css/components/empty-state.css" layer(components);
 
 .blog-chat {
   --link: var(--accent);
@@ -36,23 +34,6 @@
   font-size: .9375rem;
 }
 
-.blog-chat__auth {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 1rem;
-  flex: 1;
-  min-height: 0;
-  padding: 1.25rem;
-  overflow: auto;
-}
-.blog-chat__auth > p,
-.reader-shell .blog-chat__auth > p {
-  margin: 0;
-  color: var(--muted);
-  font-size: .875rem;
-  line-height: 1.7;
-}
 .blog-chat__auth-status {
   display: flex;
   flex-direction: column;

@@ -1,8 +1,7 @@
 import {Component, useEffect, useState, type ReactNode} from 'react';
-import {useAuth, useClerk} from '@clerk/react';
+import {useAuth} from '@clerk/react';
 import {ConvexReactClient, useConvexAuth} from 'convex/react';
 import {ConvexProviderWithClerk} from 'convex/react-clerk';
-import {Button} from '@heroui/react';
 import SignInPanel, {AuthLoading} from '../auth/SignInPanel';
 import ArticleReader from './ArticleReader';
 import ReaderLibrary from './ReaderLibrary';
@@ -23,11 +22,8 @@ class ReaderBoundary extends Component<{children: ReactNode}, {failed: boolean}>
 }
 
 function ReaderAccount(props: ReaderProps) {
-  const clerk = useClerk();
   const {isLoaded, userId, sessionId} = useAuth();
   const {isAuthenticated, isLoading} = useConvexAuth();
-  const [accountError, setAccountError] = useState('');
-  const [pending, setPending] = useState(false);
   const [slow, setSlow] = useState(false);
   useEffect(() => {
     setSlow(false);
@@ -36,27 +32,18 @@ function ReaderAccount(props: ReaderProps) {
     return () => window.clearTimeout(timeout);
   }, [isLoading, sessionId]);
 
-  async function signOut() {
-    if (!window.dispatchEvent(new CustomEvent('reader:before-signout', {cancelable: true}))) return;
-    setPending(true);
-    setAccountError('');
-    try { await clerk.signOut({redirectUrl: window.location.href}); }
-    catch { setAccountError('退出未完成，请重试。'); }
-    finally { setPending(false); }
-  }
-
   if (!isLoaded) return <AuthLoading label="正在加载登录…" />;
 
   return <>
     <div className="reader-account-bar">
       <span className="reader-account-caption">{props.library ? '你的私人阅读空间' : '阅读账户'}</span>
-      {userId ? <div className="reader-account-actions">
-        <Button size="sm" variant="ghost" isPending={pending} onPress={signOut}>退出登录</Button>
-      </div> : null}
     </div>
-    {accountError && <p role="alert">{accountError}</p>}
     {!userId
-      ? <SignInPanel description="登录后收藏文章、继续上次阅读，并保存仅自己可见的笔记。" />
+      ? <SignInPanel
+        title="登录后阅读"
+        description="登录后收藏文章、继续上次阅读，并保存仅自己可见的笔记。"
+        action
+      />
       : isLoading
         ? <AuthLoading label={slow ? '连接仍在进行中，请检查网络或稍后刷新。' : '正在连接阅读账户…'} />
         : isAuthenticated

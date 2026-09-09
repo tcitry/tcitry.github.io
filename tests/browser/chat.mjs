@@ -100,7 +100,7 @@ function panel(page) {
 async function openChat(page) {
   await launcher(page).click();
   await panel(page).waitFor({state: 'visible'});
-  await panel(page).locator('[data-chat-hydrated="true"], .blog-chat__auth, .blog-chat__notice').waitFor();
+  await panel(page).locator('[data-chat-hydrated="true"], .assistant-workspace__empty, .blog-chat__notice').waitFor();
   assert.equal(await launcher(page).getAttribute('aria-expanded'), 'true', 'Launcher reports the open panel');
   assert.equal(await panel(page).getAttribute('aria-label'), '博客助手');
   return panel(page).locator('[data-chat-hydrated="true"], .assistant-workspace, .blog-chat__notice').first();

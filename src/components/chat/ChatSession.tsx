@@ -1,3 +1,4 @@
+import {UNSAFE_PortalProvider} from '@clerk/react';
 import {CloseButton, Tooltip} from '@heroui/react';
 import {useEffect, type ReactNode} from 'react';
 import BlogClerkProvider, {clerkPublishableKey} from '../auth/BlogClerkProvider';
@@ -24,9 +25,20 @@ export function ChatSession({children, onReady, onClose}: {children: ReactNode; 
       </div>
     </Ready>;
   }
-  return <BlogClerkProvider>{children}</BlogClerkProvider>;
+  return <BlogClerkProvider>
+    <UNSAFE_PortalProvider getContainer={() => {
+      const panel = document.getElementById('blog-chat-panel');
+      return panel instanceof HTMLDialogElement && panel.matches(':modal') ? panel : null;
+    }}>
+      {children}
+    </UNSAFE_PortalProvider>
+  </BlogClerkProvider>;
 }
 
 export function ChatSignIn() {
-  return <SignInPanel description="登录后可以向博客助手提问。回答仍然只依据已公开的文章。" />;
+  return <SignInPanel
+    title="登录后提问"
+    description="登录后可以向博客助手提问。回答仍然只依据已公开的文章。"
+    action
+  />;
 }

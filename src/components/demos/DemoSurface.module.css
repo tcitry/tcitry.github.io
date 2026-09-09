@@ -31,7 +31,14 @@
   @apply [overflow-wrap:anywhere];
   color: var(--foreground);
   --radius: 0.5rem;
+  --radius-xs: calc(var(--radius) * 0.25);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
   --radius-3xl: calc(var(--radius) * 3);
+  --radius-4xl: calc(var(--radius) * 4);
   --field-radius: 0.625rem;
   --border-width: 1px;
   --border-width-field: 1px;
@@ -53,6 +60,8 @@
   --overlay-foreground: var(--foreground);
   --default: var(--gray-200, #e9ecef);
   --default-foreground: var(--foreground);
+  --segment: var(--surface);
+  --segment-foreground: var(--foreground);
   --muted: color-mix(in srgb, var(--foreground) 70%, var(--background));
   --accent: var(--color-link, #0055bb);
   --accent-foreground: var(--background);
