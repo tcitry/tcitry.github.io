@@ -99,7 +99,7 @@ export function assetReferences(html, route = '/') {
   for (const [tag] of html.matchAll(/<(?:script|link|img|astro-island)\b[^>]*>/gi)) {
     const attrs = attributes(tag);
     const candidates = /^<link\b/i.test(tag)
-      ? /(?:^|\s)(?:stylesheet|modulepreload|icon)(?:\s|$)/.test(attrs.rel || '') ? [attrs.href] : []
+      ? /(?:^|\s)(?:stylesheet|modulepreload|icon|apple-touch-icon)(?:\s|$)/.test(attrs.rel || '') ? [attrs.href] : []
       : [attrs.src, attrs['component-url'], attrs['renderer-url'], attrs['before-hydration-url']];
     for (const value of candidates.filter(Boolean)) {
       const url = new URL(value, new URL(route, canonicalOrigin));
@@ -232,7 +232,7 @@ async function main() {
     assert.ok(response.headers.get('location'), `Trailing-slash Location missing: ${route}`);
     assert.equal(new URL(response.headers.get('location'), origin).href, `${origin}${route}/`, `Trailing-slash target: ${route}`);
   }
-  const assets = new Set(['/pagefind/pagefind.js', '/pagefind/pagefind-worker.js', '/pagefind/pagefind-entry.json', '/logo.gif', '/book-icons/menu.svg']);
+  const assets = new Set(['/pagefind/pagefind.js', '/pagefind/pagefind-worker.js', '/pagefind/pagefind-entry.json', '/logo.gif', '/book-icons/menu.svg', '/favicon.ico', '/apple-touch-icon.png', '/icons/menu.svg', '/katex/katex.min.css']);
   for (const route of selected) for (const asset of assetReferences(results.get(route).body, route)) assets.add(asset);
   const entry = await request('/pagefind/pagefind-entry.json'); assert.equal(entry.status, 200, 'Pagefind entry status');
   const index = JSON.parse(entry.body);

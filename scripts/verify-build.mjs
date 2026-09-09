@@ -58,6 +58,11 @@ for (const route of routes) {
 assert.ok(counts.code > 0, 'Article code blocks must retain static source for the blog Pro renderer');
 assert.ok(counts.math > 0 && counts.mermaid > 0, 'Math and Mermaid must survive the build');
 for (const url of ['/', '/archives/', '/modified/', '/posts/', '/weekly/', '/timeline/', '/portfolio/', '/links/', '/tags/', '/categories/', '/about/', '/docs/']) assert.ok(urls.has(url), `Core route missing: ${url}`);
+{
+  const home = await readFile(htmlPath('/'), 'utf8');
+  assert.match(home, /href="\/favicon.ico"/, 'Browsers request /favicon.ico; the page must name that file');
+  assert.match(home, /href="\/apple-touch-icon.png"/, 'iOS requests /apple-touch-icon.png; the page must name that file');
+}
 const archives = await readFile(htmlPath('/archives/'), 'utf8');
 const archiveTOCs = [...archives.matchAll(/<nav\b[^>]*\bdata-blog-archive-toc(?=[\s=>])[^>]*>([\s\S]*?)<\/nav>/g)];
 assert.ok(archiveTOCs.length > 0, 'Archives must render its local year navigation');
@@ -70,7 +75,7 @@ for (const [, navigation] of archiveTOCs) {
     assert.ok(archiveHeadings.has(term.name), `Archives category has no matching heading ID: ${term.name}`);
   }
 }
-for (const url of ['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/links/index.xml', '/sitemap.xml', '/robots.txt', '/404.html', '/pagefind/pagefind.js', '/pagefind/pagefind-entry.json', '/pagefind/pagefind-worker.js', '/demos/2026/rounded-timeline/index.html', '/labs/index.html', '/labs/agent-replay/index.html']) await access(path.join(output, url));
+for (const url of ['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/links/index.xml', '/sitemap.xml', '/robots.txt', '/404.html', '/favicon.ico', '/apple-touch-icon.png', '/icons/menu.svg', '/icons/chevron-right.svg', '/icons/favicon.ico', '/katex/katex.min.css', '/katex/katex.min.js', '/katex/fonts/KaTeX_Main-Regular.woff2', '/pagefind/pagefind.js', '/pagefind/pagefind-entry.json', '/pagefind/pagefind-worker.js', '/demos/2026/rounded-timeline/index.html', '/labs/index.html', '/labs/agent-replay/index.html']) await access(path.join(output, url));
 assertRobotsPolicy(await readFile(path.join(output, 'robots.txt'), 'utf8'), environment);
 const sitemap = await readFile(path.join(output, 'sitemap.xml'), 'utf8');
 assert.match(sitemap, /<urlset\b/); assertXMLSiteURLs(sitemap, 'sitemap.xml');

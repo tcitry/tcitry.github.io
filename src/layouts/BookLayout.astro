@@ -64,6 +64,8 @@ const site = {
   mermaid={{ errorMessage: '图表未能渲染，已保留 Mermaid 源码。' }}
   labels={{ skipToContent: '跳至正文', navigation: '主导航', openNavigation: '打开导航', closeNavigation: '关闭导航', tableOfContents: '目录', openTableOfContents: '打开目录', expandSection: '展开', previousPage: '上一篇', nextPage: '下一篇', search: '搜索博客', closeSearch: '关闭 Esc' }}>
   <Fragment slot="head">
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     {production && <>
       <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-Q20952BPE6"></script>
       <script is:inline>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-Q20952BPE6');</script>

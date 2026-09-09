@@ -3,6 +3,7 @@ import path from 'node:path';
 import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { copyPublicDownloads } from './public-downloads.mjs';
+import { publishIconAliases, publishKatexAssets, resolveKatexDist } from './lib/well-known-assets.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const blog = path.resolve(process.env.BLOG_DIR || path.join(homedir(), 'Blog'));
@@ -31,6 +32,8 @@ await copyTree(path.join(root, 'static'), output);
 await mkdir(path.join(output, 'book-icons'), { recursive: true });
 const themeIcons = path.dirname(fileURLToPath(import.meta.resolve('@tcitry/astro-book/assets/menu.svg')));
 await copyTree(themeIcons, path.join(output, 'book-icons'));
+await publishIconAliases(output, themeIcons);
+await publishKatexAssets(output, resolveKatexDist());
 // Only explicitly publishable assets; never copy the private content checkout wholesale.
 const blogStatic = path.join(blog, 'static');
 for (const entry of await readdir(blogStatic, { withFileTypes: true })) {
@@ -53,4 +56,4 @@ for (const asset of attachments) {
 }
 await writeFile(path.join(output, 'robots.txt'), production ? 'User-agent: *\nAllow: /\nSitemap: https://yindongliang.com/sitemap.xml\n' : 'User-agent: *\nDisallow: /\n');
 await writeFile(path.join(output, '_headers'), `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n${production ? '' : '  X-Robots-Tag: noindex, nofollow\n'}\n/_astro/*\n  Cache-Control: public, max-age=31536000, immutable\n\n/search/recent.json\n  Cache-Control: no-cache\n`);
-console.log('Prepared public assets, Book icons, existing demos and preview indexing policy.');
+console.log('Prepared public assets, Book icons, Hugo icon/KaTeX URLs, existing demos and preview indexing policy.');
