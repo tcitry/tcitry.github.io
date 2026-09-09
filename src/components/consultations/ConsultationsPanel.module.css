@@ -1,0 +1,30 @@
+.panel { height: 100%; min-width: 0; display: flex; flex-direction: column; gap: 18px; padding: 22px 20px; overflow-y: auto; }
+.header { display: grid; gap: 8px; }
+.eyebrow { color: var(--muted); font-size: 10px; letter-spacing: .12em; }
+.header h2 { margin: 0; font-size: 21px; font-weight: 650; }
+.header p, .note { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.membership { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; }
+.membership > p { margin: 0; font-size: 12px; line-height: 1.7; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.form { display: grid; gap: 10px; min-width: 0; }
+.form label { font-size: 12px; font-weight: 550; }
+.form textarea, .form input { width: 100%; min-width: 0; font: inherit; font-size: 13px; }
+.form textarea { resize: vertical; min-height: 90px; max-height: 300px; }
+.threadList { display: grid; }
+.threadButton { width: 100%; display: grid; gap: 8px; padding: 14px 4px; border: 0; border-bottom: 1px solid var(--border); text-align: left; color: inherit; background: transparent; cursor: pointer; }
+.threadButton:hover { background: color-mix(in srgb, currentColor 4%, transparent); }
+.threadButton:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.threadButton > strong { font-size: 13px; line-height: 1.6; font-weight: 550; overflow-wrap: anywhere; }
+.threadButton > span { display: flex; justify-content: space-between; gap: 10px; font-size: 11px; color: var(--muted); }
+.badge { color: var(--muted); font-size: 11px; }
+.empty { color: var(--muted); padding: 30px 8px; text-align: center; font-size: 12px; line-height: 1.8; }
+.conversation { display: flex; flex-direction: column; gap: 18px; min-height: 100%; min-width: 0; }
+.threadHeader { display: grid; gap: 8px; justify-items: start; }
+.threadHeader h3 { margin: 0; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
+.messages { display: flex; flex-direction: column; gap: 14px; flex: 1; }
+.message { padding: 14px; border: 1px solid var(--border); border-radius: 12px; }
+.author { background: color-mix(in srgb, currentColor 3%, transparent); }
+.messageMeta { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 10px; }
+.messageMeta strong { font-weight: 600; color: var(--foreground); }
+.message p { margin: 8px 0 0; font-size: 13px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.error { margin: 0; font-size: 12px; line-height: 1.7; color: var(--danger); }

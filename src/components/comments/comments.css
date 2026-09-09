@@ -1,0 +1,25 @@
+@reference "../../styles/tailwind.css";
+@import "@heroui/styles/components/button.css" layer(components);
+@import "@heroui/styles/components/input.css" layer(components);
+@import "@heroui/styles/components/textarea.css" layer(components);
+@import "@heroui/styles/components/textfield.css" layer(components);
+@import "@heroui/styles/components/label.css" layer(components);
+@import "@heroui/styles/components/description.css" layer(components);
+
+.blog-comments { margin-top: 2.5rem; border-top: 1px solid var(--book-border-color, #ddd); padding-top: 1.5rem; min-width: 0; text-align: start; }
+.blog-comments h2 { font-size: 1.15rem; margin: 0 0 1rem; }
+.blog-comments__content { font-size: .875rem; }
+.blog-comments__hint, .blog-comments__notice { color: var(--color-muted); line-height: 1.7; }
+.blog-comments__list { list-style: none; margin: 0; padding: 0; }
+.blog-comments__item { padding: 1.1rem 0; border-bottom: 1px solid var(--color-border); }
+.blog-comments__meta { display: flex; flex-wrap: wrap; gap: .4rem .75rem; align-items: baseline; overflow-wrap: anywhere; }
+.blog-comments__meta time, .blog-comments__reply { color: var(--color-muted); font-size: .75rem; }
+.blog-comments__body { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.8; margin: .6rem 0; }
+.blog-comments__actions { display: flex; flex-wrap: wrap; gap: .3rem; align-items: center; margin-top: .4rem; font-size: .75rem; }
+.blog-comments__composer { padding-top: 1.25rem; }
+.blog-comments__form { display: grid; gap: 1rem; }
+.blog-comments__form input, .blog-comments__form textarea { width: 100%; min-width: 0; }
+.blog-comments__submit, .blog-comments__signin, .blog-comments__reply-target { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: space-between; align-items: center; }
+.blog-comments__submit span { color: var(--color-muted); font-size: .75rem; }
+.blog-comments__error { color: var(--color-danger); }
+.blog-comments__notice:empty { display: none; }

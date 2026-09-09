@@ -59,7 +59,7 @@ src/styles/
 
 交互组件管理自己的状态，不依赖外层 Astro 模板的运行时。复杂演示应放在一棵完整的框架组件树内；跨框架传递初始数据时使用可序列化 props。
 
-新增 Vue 或更多 Svelte 实验时，沿用独立组件和章节入口；只有实际接入后才展示可操作示例。Labs 页面不启用 Giscus，路径迁移不会改变既有文章的评论映射。
+新增 Vue 或更多 Svelte 实验时，沿用独立组件和章节入口；只有实际接入后才展示可操作示例。Labs 页面不启用评论，路径迁移不会改变既有文章的评论映射。
 
 Select 与 InlineSelect 的 Popover 通过 portal 渲染，必须单独应用 `DemoSurface.module.css` 的颜色与派生 tokens。该公共 surface 不设置 `min-width: 0`，以免覆盖选择器按 `--trigger-width` 计算的浮层宽度；`min-w-0` 只放在演示容器等布局节点上。局部 tokens 同时提供浮层圆角、阴影和前景色，避免离开文章容器后失去样式。
 

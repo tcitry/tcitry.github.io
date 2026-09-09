@@ -1,3 +1,5 @@
+import {assistantUIState, type AssistantView} from './assistant-ui-state.mjs';
+
 let cleanup: (() => void) | undefined;
 
 function initializeChat() {
@@ -8,6 +10,9 @@ function initializeChat() {
   const target = panel?.querySelector<HTMLElement>('[data-chat-mount]');
   if (!widget || !launcher || !panel || !target) return;
 
+  const state = assistantUIState(() => window.sessionStorage, window.location.pathname);
+  const restoredView = state.restore();
+  let currentView: AssistantView = restoredView ?? (widget.dataset.readerInitial === 'true' ? 'reading' : 'chat');
   const events = new AbortController();
   const {signal} = events;
   const mobile = matchMedia('(max-width: 639px)');
@@ -15,6 +20,7 @@ function initializeChat() {
   let mount: ReturnType<typeof import('../components/chat/mount-chat')['mountChat']> | undefined;
   let launcherMount: ReturnType<typeof import('../components/chat/mount-launcher')['mountLauncher']> | undefined;
   let stopped = false;
+  let preservedCloseEvents = 0;
 
   function syncReadingLayout() {
     const docked = panel!.open && !mobile.matches;
@@ -50,8 +56,10 @@ function initializeChat() {
     syncReadingLayout();
   }
 
-  function close(restoreFocus = true) {
+  function close(restoreFocus = true, preserveState = false) {
+    if (!preserveState) state.clear();
     if (!panel!.open) return;
+    if (preserveState) preservedCloseEvents++;
     panel!.close();
     syncClosed();
     if (restoreFocus) launcher!.focus({preventScroll: true});
@@ -80,6 +88,12 @@ function initializeChat() {
         mount = mountChat(target!, () => close(), () => {
           panel!.dataset.chatLoaded = 'true';
           if (panel!.open && (panel!.contains(document.activeElement) || document.activeElement === document.body)) focusChat();
+        }, {
+          initialView: currentView,
+          onViewChange: view => {
+            currentView = view;
+            if (panel!.open) state.save(view);
+          },
         });
       } catch (error) {
         if (stopped) return;
@@ -100,6 +114,7 @@ function initializeChat() {
       document.documentElement.classList.add('blog-chat-modal-open');
     } else panel!.show();
     launcher!.setAttribute('aria-expanded', 'true');
+    state.save(currentView);
     syncReadingLayout();
     if (mount) focusChat();
     void loadChat();
@@ -126,6 +141,12 @@ function initializeChat() {
     if (element.closest('[data-chat-retry]')) void loadChat();
   }, {signal});
   panel.addEventListener('cancel', (event) => { event.preventDefault(); close(); }, {signal});
+  panel.addEventListener('close', () => {
+    if (preservedCloseEvents > 0) { preservedCloseEvents--; return; }
+    if (panel.open) return;
+    state.clear();
+    syncClosed();
+  }, {signal});
   // A tooltip inside the assistant must not consume the first Escape. Preserve
   // the normal overlay priority when keyboard focus is elsewhere on the page.
   document.addEventListener('keydown', (event) => {
@@ -144,6 +165,7 @@ function initializeChat() {
   // A docked assistant stays open while the reader selects text and uses the page.
   mobile.addEventListener('change', () => {
     if (!panel.open) return;
+    preservedCloseEvents++;
     panel.close();
     syncClosed();
     open();
@@ -153,11 +175,12 @@ function initializeChat() {
   window.visualViewport?.addEventListener('scroll', syncViewport, {signal});
   cleanup = () => {
     stopped = true;
-    close(false);
+    close(false, true);
     events.abort();
     launcherMount?.destroy();
     mount?.destroy();
   };
+  if (restoredView) open();
 }
 
 initializeChat();

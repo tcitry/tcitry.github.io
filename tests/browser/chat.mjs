@@ -178,9 +178,8 @@ try {
   const page = await context.newPage();
   page.setDefaultTimeout(15000);
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto(new URL('/chat/', base).href);
-  assert.equal(await page.getByRole('heading', {level: 1, name: '博客助手'}).count(), 1);
-  assert.equal(await page.locator('.giscus').count(), 0, 'Chat page has no article comments');
+  await page.goto(new URL('/', base).href);
+  assert.equal(await page.locator('[data-convex-comments], .giscus').count(), 0, 'Home has no article comments');
   assert.equal(await launcher(page).count(), 1, 'The page has one native chat launcher');
   assert.equal(await launcher(page).getAttribute('aria-expanded'), 'false');
   assert.equal(await launcher(page).locator('[data-chat-launcher-icon] svg').count(), 1, 'Unsigned launcher keeps the conversation icon');
@@ -189,7 +188,7 @@ try {
   assert.equal(await page.locator('astro-island[component-url*="chat"]').count(), 0, 'Chat has no eager island alongside the site navigation');
   assert.equal(await page.locator('[data-chat-hydrated]').count(), 0, 'Chat is not mounted before the first open');
   assert.equal(await page.evaluate(() => performance.getEntriesByType('resource').some(({name}) => /\/(?:_astro\/mount-chat\.[^/]+\.js|src\/components\/chat\/mount-chat\.tsx)$/.test(new URL(name).pathname))), false, 'Chat code stays unloaded even when navigation already uses React');
-  assert.equal(await page.locator('aside a[href], nav a[href]').evaluateAll((links) => links.filter((link) => new URL(link.getAttribute('href'), location.href).pathname === '/chat/').length), 0, 'Chat has no sidebar navigation link');
+  assert.equal(await page.locator('a[href]').evaluateAll((links) => links.filter((link) => ['/chat/', '/me/'].includes(new URL(link.getAttribute('href'), location.href).pathname)).length), 0, 'Account services have no separate navigation or body links');
   const originalReadingWidth = (await page.locator('body > main').boundingBox()).width;
   const root = await openChat(page);
   assert.ok(await page.evaluate(() => window.__chatReactRenderers > 0), 'Opening has a React renderer available for chat');

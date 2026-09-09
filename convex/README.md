@@ -1,6 +1,6 @@
 # Reader backend
 
-收藏、阅读进度、私有单篇笔记保存在 Convex；公开评论继续使用 Giscus。
+收藏、阅读进度、私有笔记、AI 会话、Pro 异步咨询和登录后可见的评论保存在 Convex，统一使用 Clerk 登录。会员使用 Clerk Billing；配置与联调边界见 [账户服务](../docs/member-services.md)。Giscus 历史评论暂缓迁移。
 所有 reader functions 都要求已认证的 Clerk 身份，并在服务端用
 `identity.tokenIdentifier` 隔离所有读写。客户端不能传入用户 ID。
 

@@ -54,14 +54,12 @@ try {
     if (process.env.BLOG_SCREENSHOT_DIR) await page.screenshot({path: join(process.env.BLOG_SCREENSHOT_DIR, `assistant-reading-${width}.png`)});
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Reader toolbar fits the viewport');
   }
-  await page.goto(new URL('/me/', base).href);
-  await page.locator('[data-open-reading]').click();
-  await page.locator('#blog-chat-panel [data-reader-root], #blog-chat-panel .empty-state').waitFor();
-  assert.equal(await page.locator('article.book-article h1').textContent(), '我的阅读');
-  assert.match(await page.locator('meta[name="robots"]').getAttribute('content'), /noindex/);
-  assert.equal(await page.locator('[data-giscus], .giscus').count(), 0, 'Private account page does not get a public comment thread');
+  await page.goto(new URL('/', base).href);
+  assert.equal(await page.locator('[data-open-reading]').count(), 0, 'Home has no alternate reading launcher');
+  assert.equal(await page.locator('[data-chat-launcher]').count(), 1, 'Reading is available through the shared circle');
+  assert.equal(await page.locator('[data-convex-comments], [data-giscus], .giscus').count(), 0, 'Home does not get a public comment thread');
   await page.goto(new URL('/docs/', base).href);
   assert.equal(await page.locator('[data-reader-root]').count(), 0, 'Section indexes do not get article tools');
   assert.deepEqual(errors, []);
-  console.log('Reader public-shell browser checks passed: article placement, personal route, noindex, privacy markers and mobile width.');
+  console.log('Reader browser checks passed: circle entry, article placement, privacy markers and mobile width.');
 } finally {await browser.close();}

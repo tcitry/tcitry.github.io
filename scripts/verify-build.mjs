@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { parseArgs } from 'node:util';
-import { assertCanonical, assertGiscus, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects } from './verify-deployment.mjs';
+import { assertCanonical, assertComments, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects } from './verify-deployment.mjs';
 import { auditContentLinks } from './internal-links.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), output = path.join(root, 'dist');
 const { values } = parseArgs({ options: { env: { type: 'string' }, help: { type: 'boolean' } } });
@@ -48,7 +48,7 @@ for (const route of routes) {
     assert.ok(html.includes('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1305150098246428'), `Production AdSense missing: ${route.url}`);
   }
   const expectedComments = route.kind === 'page' && ['docs', 'posts', 'about', 'weekly', 'links'].includes(route.type);
-  assertGiscus(html, expectedComments, route.url);
+  assertComments(html, expectedComments, route.url);
   if (expectedComments) counts.comments++;
   const page = pages.get(route.id);
   for (const [feature, pattern] of [['math', 'class="katex"'], ['mermaid', 'class="mermaid"'], ['code', 'data-blog-code-language=']]) {
@@ -81,21 +81,21 @@ const sitemap = await readFile(path.join(output, 'sitemap.xml'), 'utf8');
 assert.match(sitemap, /<urlset\b/); assertXMLSiteURLs(sitemap, 'sitemap.xml');
 for (const url of [...urls].filter(url => !/\/page\/\d+\/$/.test(url))) assert.ok(sitemap.includes(`<loc>https://yindongliang.com${url}</loc>`), `Canonical route missing from sitemap: ${url}`);
 const notFound = await readFile(path.join(output, '404.html'), 'utf8');
-assert.match(notFound, /页面未找到/); assertGiscus(notFound, false, '/404.html');
+assert.match(notFound, /页面未找到/); assertComments(notFound, false, '/404.html');
 for (const asset of assetReferences(notFound, '/404.html')) assets.add(asset);
 await assert.rejects(access(path.join(output, 'demos/2026/cloudflare-product-map')), { code: 'ENOENT' }, 'Removed demo assets must not be republished');
 {
   const url = '/demos/2026/rounded-timeline/';
   const html = await readFile(htmlPath(url), 'utf8');
   assert.ok(html.includes(`data-astro-demo="${url}"`), `Demo must come from its Astro route, not an old copied artifact: ${url}`);
-  checkPage(html, url); assertGiscus(html, false, url);
+  checkPage(html, url); assertComments(html, false, url);
   for (const title of ['确认范围', '完成设计', '实现功能', '验收验证']) assert.ok(html.includes(title), `Timeline card must be present before JavaScript: ${title}`);
 }
 const feeds = new Set(['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/links/index.xml']);
 {
   const url = '/demos/2026/threejs-basics/';
   const html = await readFile(htmlPath(url), 'utf8');
-  checkPage(html, url); assertGiscus(html, false, url);
+  checkPage(html, url); assertComments(html, false, url);
   assert.ok(html.includes(`data-astro-demo="${url}"`), 'Three.js demo must use its Astro route');
   assert.ok(html.includes('data-demo="threejs-basics"'), 'Three.js scene markup must survive the build');
   assert.ok(html.includes('<noscript>'), 'The 3D demo must explain how to continue without JavaScript');
@@ -124,19 +124,16 @@ for (const language of Object.values(searchEntry.languages)) {
   await access(path.join(output, `pagefind/wasm.${language.wasm || 'unknown'}.pagefind`));
 }
 for (const directory of ['index', 'fragment']) assert.ok((await readdir(path.join(output, 'pagefind', directory))).length > 0, `Pagefind ${directory} files missing`);
-// The personal account route is a public shell only; private records are never prerendered.
-{
-  const html = await readFile(path.join(output, 'me/index.html'), 'utf8');
-  assertCanonical(html, '/me/');
-  assertGiscus(html, false, '/me/');
-  assert.match(html, /<meta[^>]+name="robots"[^>]+content="noindex, nofollow"/);
-  assert.match(html, /data-pagefind-ignore/);
-  assert.ok(!sitemap.includes('<loc>https://yindongliang.com/me/</loc>'), 'Private account shell is excluded from sitemap');
+// Unpublished account pages were removed; the shared circle is the only entry.
+for (const url of ['/chat/', '/me/']) {
+  await assert.rejects(access(htmlPath(url)), {code: 'ENOENT'}, `Removed account page must not be generated: ${url}`);
+  assert.ok(!redirects.some(rule => rule.from === url), `Unpublished account URL does not need a redirect: ${url}`);
+  assert.ok(!sitemap.includes(`<loc>https://yindongliang.com${url}</loc>`), `Removed account URL is excluded from sitemap: ${url}`);
 }
 const lab = await readFile(path.join(output, 'labs/index.html'), 'utf8');
 checkPage(lab, '/labs/');
 const replay = await readFile(path.join(output, 'labs/agent-replay/index.html'), 'utf8');
-checkPage(replay, '/labs/agent-replay/'); assertGiscus(replay, false, '/labs/agent-replay/');
+checkPage(replay, '/labs/agent-replay/'); assertComments(replay, false, '/labs/agent-replay/');
 assert.match(lab, /astro-island/); assert.match(lab, /AgentReplay/); assert.match(lab, /SvelteCounter/); assert.match(lab, /katex/);
 assert.match(lab, /data-demo="heroui-pro-showcase"/, 'Labs must render the Pro component showcase');
 assert.match(lab, /<h1[^>]*>Labs<\/h1>/, 'Labs title must match its navigation entry');
@@ -152,7 +149,7 @@ for (const anchor of ['replay', 'try-it']) {
 }
 assert.match(lab, /data-blog-code-language=/, 'Native MDX must use the same progressive code renderer');
 assert.match(lab, /data-book-code-disabled/, 'The theme must not add a second ordinary code frame');
-assert.ok(!lab.includes('giscus.app/client.js'), 'Labs must not create legacy comment mappings');
+assertComments(lab, false, '/labs/');
 for (const url of assets) {
   const target = path.resolve(output, `.${decodeURIComponent(url)}`);
   assert.ok(target.startsWith(output + path.sep), `Asset reference escapes dist: ${url}`);
@@ -168,4 +165,4 @@ async function inspect(directory) {
 }
 await inspect(output); assert.deepEqual(errors, [], 'Only public generated artifacts can be deployed');
 await writeFile(path.join(root, '.generated/verification.json'), JSON.stringify({ environment, ...counts, contentLinks: links.checkedLinks, feeds: feeds.size, redirects: redirects.length, assets: assets.size, indexedPages, checkedAt: new Date().toISOString() }, null, 2));
-console.log(`Verified ${counts.routes} rendered routes; all ${counts.originalRoutes} original URLs retained; ${counts.comments} Giscus pages, ${counts.math} math pages, ${counts.mermaid} Mermaid pages, ${counts.code} code pages. ${links.checkedLinks} internal article links, ${feeds.size} feeds, ${redirects.length} redirects, ${assets.size} assets, search, existing demos, MDX/React/Svelte and ${environment} indexing policy passed.`);
+console.log(`Verified ${counts.routes} rendered routes; all ${counts.originalRoutes} original URLs retained; ${counts.comments} Convex comment pages, ${counts.math} math pages, ${counts.mermaid} Mermaid pages, ${counts.code} code pages. ${links.checkedLinks} internal article links, ${feeds.size} feeds, ${redirects.length} redirects, ${assets.size} assets, search, existing demos, MDX/React/Svelte and ${environment} indexing policy passed.`);

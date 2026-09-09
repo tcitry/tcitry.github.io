@@ -38,7 +38,7 @@ npm run preview -- --port 4321
 
 Posts 页尾的“相关阅读”由 `src/lib/related-posts.ts` 在构建时从公开文章元数据中选出，`RelatedPosts.astro` 输出静态列表。共同主题标签越多越靠前；重合数量相同时，优先使用频率较低的主题标签，再按发布时间从新到旧排列，避免宽泛标签盖过具体主题。不把 `Recommended`、`ByAI`、`Weekly`、`Links` 状态标签或年份分类当作相关主题。去重后有至少 6 篇候选时显示 6 篇，有 4–5 篇时显示 4 篇，使双列卡片完整成行；不足 4 篇时按实际相关数量展示，无匹配时不显示，不用无关文章补齐。排除自身、重复 URL、草稿、隐藏页和跳转页。旧文章可以推荐后来发布的同主题文章。
 
-该区块位于正文及版权、前后篇导航之后，Giscus 之前，不加入桌面或移动端文章目录。推荐列表不进入 Pagefind 正文索引。`npm test` 检查推荐规则，`npm run test:browser` 同时检查禁用 JavaScript 时的文章链接、目录边界、评论位置及 1440px / 375px / 320px 布局。
+该区块位于正文及版权、前后篇导航之后，评论之前，不加入桌面或移动端文章目录。推荐列表不进入 Pagefind 正文索引。`npm test` 检查推荐规则，`npm run test:browser` 同时检查禁用 JavaScript 时的文章链接、目录边界、评论位置及 1440px / 375px / 320px 布局。
 
 相关阅读采用 HeroUI Card / Chip，在 Astro 构建时渲染为静态 HTML，使用原生整卡链接，不额外加载客户端脚本。正文列达到 40rem 时显示两列，小屏单列；标题完整换行，摘要最多两行，展示最多两个共同主题标签和发布日期。摘要优先使用显式 description，否则从正文提取叙述段落，跳过代码、图表、标题和 AI 编辑说明；没有适合段落时省略摘要。
 
@@ -56,7 +56,7 @@ Posts 页尾的“相关阅读”由 `src/lib/related-posts.ts` 在构建时从�
 - /demos/2026/rounded-timeline/：圆弧时间线 demo。
 - /index.xml、/posts/index.xml、/weekly/index.xml、各标签与分类的 index.xml：RSS。
 
-侧栏已移除最近修改列表；`/modified/` 的文章列表与入口继续保留。Giscus 按原有文章类型及 kind=page 注入，维持 pathname 映射、仓库、分类、URL 大小写和编码；目录页不注入。没有修改 GitHub Discussions。
+侧栏已移除最近修改列表；`/modified/` 的文章列表与入口继续保留。Convex 评论按原有文章类型及 kind=page 注入，使用 canonical pathname；目录页不注入。登录后才能查看和参与。历史 GitHub Discussions 保持原状，迁移暂缓。
 
 ## 内容与样式边界
 
@@ -80,7 +80,7 @@ BLOG_DIR 始终只读。构建层兼容 relref、前言字段、旧 URL、HTML�
 
 `astro-book` 独立维护通用布局、导航/TOC、文章元数据与列表、搜索界面、图片查看、Giscus 展示，以及 Markdown/MDX 的 KaTeX、Mermaid 和默认的 Astro / Shiki 静态高亮与轻量复制。主题已移除 Expressive Code，仍提供 `markdown.code: false` 与布局 `code={false}`，允许消费者替换普通代码渲染。主题使用合成示例内容，安装、构建、测试不需要商业组件或账号；组件和 integration 都通过公开包入口使用。
 
-本站保留 Blog 导入、Hugo 兼容、旧 URL、标签/分类关系、排序和分页、RSS/sitemap、站点菜单、SEO 策略、Giscus 参数与资格判断，以及 React/HeroUI/HeroUI Pro/Svelte demo。Weekly、Timeline、Portfolio、Links 的路由、数据、业务组件、展示类型和专用样式也全部留在本站，后续可以独立迭代。HeroUI Pro 是博客自己的依赖，用于普通文章/MDX 的代码块以及交互 demo；主题保持无商业依赖。`src/layouts/BookLayout.astro` 是站点到主题的适配层。
+本站保留 Blog 导入、Hugo 兼容、旧 URL、标签/分类关系、排序和分页、RSS/sitemap、站点菜单、SEO 策略、Convex 评论与资格判断，以及 React/HeroUI/HeroUI Pro/Svelte demo。Weekly、Timeline、Portfolio、Links 的路由、数据、业务组件、展示类型和专用样式也全部留在本站，后续可以独立迭代。HeroUI Pro 是博客自己的依赖，用于普通文章/MDX 的代码块以及交互 demo；主题保持无商业依赖。`src/layouts/BookLayout.astro` 是站点到主题的适配层。
 
 博客关闭主题的普通代码块展示及 Astro 静态高亮，完整原文仍在构建 HTML 的 `pre/code` 中。阅读到代码附近后，共享 React root 按帧挂载 Pro CodeBlock，使用现成的高亮与复制按钮；禁用 JavaScript 或组件加载失败时保留可读原文。普通文章只加载 CodeBlock / Button 所需样式。Mermaid 图表使用主题的轻量源码复制；普通代码不会出现双框或双复制按钮。此选择增加了阅读代码时的 React、Pro、Motion 与 Shiki 客户端成本，具体策略见 [Demo 编写指南](demo-authoring.md#普通文章与-mdx-代码块)。
 
@@ -121,7 +121,7 @@ node scripts/verify-deployment.mjs --env production
 
 生产构建显式设置 `PUBLIC_SITE_ENV=production`，允许收录并启用原有统计；HTML、robots.txt 和响应头不得误带预览环境的 noindex。不要把普通预览构建直接上传生产。日常也可用 `npm run deploy:production` 重新构建、校验并发布；它会替换之前 review 的本地构建产物。
 
-生产 HTTP 验收默认访问 `https://yindongliang.com`，覆盖核心页面、Giscus、RSS、搜索、旧 URL 重定向、实际 404 和资源缓存；`--all-routes` 可扩大到全部页面。发布授权、`www` 跳转及可选自动化的维护方式见 [生产发布说明](continuous-deployment.md)。
+生产 HTTP 验收默认访问 `https://yindongliang.com`，覆盖核心页面、Convex 评论入口、RSS、搜索、旧 URL 重定向、实际 404 和资源缓存；`--all-routes` 可扩大到全部页面。发布授权、`www` 跳转及可选自动化的维护方式见 [生产发布说明](continuous-deployment.md)。
 
 ## 已下线的迁移预览（历史）
 

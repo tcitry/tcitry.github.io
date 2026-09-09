@@ -14,7 +14,7 @@ try {
       serviceWorkers: 'block',
       viewport: { width, height: 1000 },
     });
-    // Keep analytics, ads, Giscus and other external resources off the network.
+    // Keep analytics, ads, comments and other external resources off the network.
     await context.route('**/*', (route) => new URL(route.request().url()).origin === base.origin
       ? route.continue()
       : route.abort());
@@ -72,7 +72,7 @@ try {
 
         const order = await related.evaluate((section) => {
           const article = document.querySelector('article[data-pagefind-body]');
-          const comments = document.querySelector('script[src^="https://giscus.app/client.js"]');
+          const comments = document.querySelector('[data-convex-comments]');
           return {
             afterArticle: Boolean(article && article.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING),
             beforeComments: Boolean(comments && section.compareDocumentPosition(comments) & Node.DOCUMENT_POSITION_FOLLOWING),
@@ -80,7 +80,7 @@ try {
           };
         });
         assert.deepEqual(order, { afterArticle: true, beforeComments: true, ignoredBySearch: true },
-          `${label}: related section follows the article, precedes Giscus and stays outside search indexing`);
+          `${label}: related section follows the article, precedes comments and stays outside search indexing`);
 
         const toc = page.locator('.book-toc, .book-header > aside');
         assert.equal(await toc.locator(`a[href="#${anchor}"]`).count(), 0, `${label}: recommendations are not article TOC entries`);

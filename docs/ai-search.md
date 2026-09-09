@@ -4,11 +4,11 @@
 
 ## 聊天入口与本地体验
 
-全站右下角的圆形按钮打开博客助手，导航侧边栏不再提供聊天入口。交互参考 HeroUI Agents 的 sidebar 模式：桌面打开右侧整高栏，正文使用剩余空间，背景仍可滚动、交互，点击背景保持助手打开；小于 640px 时打开全屏模态面板，锁定背景滚动并限制键盘焦点。关闭按钮和 Esc 将焦点还给入口，收起保留本页对话和草稿，导航或刷新页面后清空。[官方 Appearance 规范](https://heroui.pro/docs/agents/configure/appearance)
+全站右下角的圆形按钮打开博客助手，导航侧边栏不再提供聊天入口。交互参考 HeroUI Agents 的 sidebar 模式：桌面打开右侧整高栏，正文使用剩余空间，背景仍可滚动、交互，点击背景保持助手打开；小于 640px 时打开全屏模态面板，锁定背景滚动并限制键盘焦点。关闭按钮和 Esc 将焦点还给入口，收起保留本页草稿；新 AI 对话和消息由 Convex Agent 持久化，可在导航或刷新后从会话列表继续，未发送草稿不承诺跨页面保存。[官方 Appearance 规范](https://heroui.pro/docs/agents/configure/appearance)
 
-首屏只输出原生按钮和轻量控制脚本，首次点击再加载 React 与 HeroUI Pro 聊天组件。面板使用原生 dialog，让加载失败时仍可关闭和重试，同时保留收起后的 React 状态。窄屏高度跟随可视视口，避免软键盘盖住输入区。`/chat/` 保留为使用说明页，不再渲染第二份聊天组件。
+首屏只输出原生按钮和轻量控制脚本，首次点击再加载 React 与 HeroUI Pro 聊天组件。面板使用原生 dialog，让加载失败时仍可关闭和重试，同时保留收起后的 React 状态。窄屏高度跟随可视视口，避免软键盘盖住输入区。登录、AI 对话、阅读、咨询和会员都从右下圆圈进入。尚未上线的 `/chat/` 与 `/me/` 开发页面已经删除，无需兼容跳转，也不进入 sitemap。文章评论保留正文页内入口。
 
-HeroUI Agents SDK 是独立的托管产品；本站仅参考其交互规范，消息发送到自己的 `/api/chat/`，沿用既有 AI Search 与单个 AI Gateway。提问前必须登录 Clerk；Worker 校验 `Authorization: Bearer` 中的 session JWT，浏览器不能提交模型、Gateway 或自定义系统提示。API 的规范路径带结尾斜线，与本站 `trailingSlash: 'always'` 一致。[HeroUI Agents 概览](https://heroui.pro/docs/agents)
+HeroUI Agents SDK 是独立的托管产品；本站仅参考其交互规范。2026-09-09 新助手面板改用 Convex Agent 保存会话和生成状态，Clerk 登录后才能读写。Convex 通过带服务端密钥的 `/api/internal/retrieve` 请求当前 Worker 检索，再经 Cloudflare REST API 与唯一 Gateway 生成；配置和验收边界见 [账户服务](member-services.md)。浏览器不能提交模型、Gateway、自定义系统提示或其他用户的历史。旧 `/api/chat/` 继续兼容此前客户端，Worker 仍校验普通 Clerk session JWT。[HeroUI Agents 概览](https://heroui.pro/docs/agents)
 
 `npm run dev` 已通过 `scripts/lib/chat-dev.mjs` 的 Vite 插件处理 `/api/chat/`，复用生产的 `worker/chat.mjs`，无需另外运行 `dev:worker`。适配器在请求通过格式与来源校验后才加载云端绑定，并将回答流直接传给浏览器。`getPlatformProxy` 根据 `wrangler.jsonc` 中的 `remote: true` 配置连接唯一的 AI Search 实例 `tcitry-blog-search` 和 Workers AI；检索与生成仍共用唯一的 Gateway `tcitry-blog-chat`。[Wrangler 编程接口](https://developers.cloudflare.com/workers/wrangler/api/)、[AI Search Workers binding](https://developers.cloudflare.com/ai-search/api/search/workers-binding/)
 
@@ -31,7 +31,7 @@ HeroUI Agents SDK 是独立的托管产品；本站仅参考其交互规范，�
 | Public endpoint | 关闭，读者经本站 Worker 访问 |
 | Similarity caching | 首轮关闭，便于验证刚发布的内容和检索质量 |
 
-生成模型在 `worker/chat.mjs` 固定为 `@cf/qwen/qwen3-30b-a3b-fp8`，每次生成明确指定 Gateway `tcitry-blog-chat`，最大输出 2,048 tokens。AI Search 只做检索，不调用它自带的回答生成接口。浏览器不能提交模型、Gateway 或自定义系统提示。
+旧入口的生成模型在 `worker/chat.mjs`、新 Agent 的模型在 `convex/assistantModel.ts` 固定为 `@cf/qwen/qwen3-30b-a3b-fp8`，每次生成明确指定 Gateway `tcitry-blog-chat`，最大输出 2,048 tokens。AI Search 只做检索，不调用它自带的回答生成接口。浏览器不能提交模型、Gateway 或自定义系统提示。
 
 **固定聊天模型不等于把网关中的所有请求都改成这个模型。** 嵌入继续使用 `@cf/qwen/qwen3-embedding-0.6b`；不要用 Gateway 路由规则将 embedding 强制改写成聊天模型。[固定生成模型](https://developers.cloudflare.com/workers-ai/models/qwen3-30b-a3b-fp8/)
 
@@ -79,7 +79,7 @@ Gateway 的计数单位是模型调用，不是独立访客或提问。一次提
 }
 ```
 
-选择一个本账户未被其他限流绑定共用的 `namespace_id`。当前代码对 Cloudflare 提供的 `CF-Connecting-IP` 做 SHA-256 后作为 key，不把 IP 写入模型 metadata 或应用日志。这是匿名博客的粗粒度防滥用：同一出口的多人会共享额度，换出口可能绕过；计数按 Cloudflare location 最终一致，不能承诺全球精确的“每个人十次”。本配置不创建新 Gateway。
+选择一个本账户未被其他限流绑定共用的 `namespace_id`。旧 `/api/chat` 对已验证的 Clerk 用户标识做 SHA-256 后作为 key，不将用户标识放入模型 metadata 或应用日志；计数按 Cloudflare location 最终一致，不能承诺全球精确的“每个人十次”。新 Convex Agent 的提问和创建会话通过 Convex rate-limiter 在后端控制，详见当前 `convex/assistant.ts`。本配置不创建新 Gateway。
 
 如果改用 WAF，规则只匹配主域的 `POST /api/chat` 与 `POST /api/chat/`，不要对所有博客路径限流；WAF 可用阈值和时间窗口随套餐而异，按控制台提供项设置即可，不必同时开启 Worker 和 WAF 两套相同规则。
 

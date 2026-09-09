@@ -4,7 +4,7 @@
 
 `tcitry-blog` 是公开仓库。站点 `main` push 是一次生产发布决定：必须先完成本地验收，再推送；Clerk 与 Convex 的生产配置、后端 schema 和 functions 也属于这次发布。Blog 内容仓库仍可独立、随时提交 `main`，不能把站点功能的未完成工作随内容更新推送。真实密钥、实例配置和本机路径只放在被 Git 忽略的 `.env*` 文件或相应平台配置中；示例文件只保留空值与说明。
 
-2026-09-08 新增的读者功能保留静态 Astro + 单 Worker，通过 React island 使用 Clerk 登录并直接连接 Convex，提供收藏、阅读进度与私有笔记。Giscus 继续负责现有评论。初次接入必须先配置下文的 development / production 值；未配置 Clerk 或 Convex 时可以构建本地预览，生产构建会明确失败，不会静默发布未配置的登录功能。
+2026-09-08 新增的读者功能保留静态 Astro + 单 Worker，通过 React island 使用 Clerk 登录并直接连接 Convex，提供收藏、阅读进度与私有笔记。2026-09-09 的后续开发将评论改为 Convex，统一使用 Clerk 登录且登录后才能查看；历史 Giscus 评论暂缓迁移。会员、AI 会话与真人咨询的配置和本地验收见 [账户服务](member-services.md)。初次接入必须先配置下文的 development / production 值；未配置 Clerk 或 Convex 时可以构建本地预览，生产构建会明确失败，不会静默发布未配置的登录功能。
 
 2026-09-07 的首轮生产 HTTP 验收已检查 23 个页面、34 条跳转和 23 项资源。公开主题 CI 继续运行，但不会构建或发布完整博客。
 
@@ -50,7 +50,7 @@ npm run preview -- --port 4321
 
 在 `http://127.0.0.1:4321` 检查页面与交互。开发时也可使用 `BLOG_DIR=/path/to/Blog npm run dev`；Pagefind 搜索需要用完整 build + preview 验收。普通构建默认使用本地预览模式，启用 noindex 并关闭生产统计，canonical 仍指向主站。
 
-review 覆盖本次改动涉及的页面，以及有变化的布局、导航、搜索、代码复制、数学公式、Mermaid、移动菜单与 Giscus。保留旧 URL 基线与评论 pathname term。通过后提交站点改动；若更新了主题，同时提交固定来源与 lockfile，确保其他环境能构建相同版本。
+review 覆盖本次改动涉及的页面，以及有变化的布局、导航、搜索、代码复制、数学公式、Mermaid、移动菜单与 Convex 评论。保留旧 URL 基线与评论 canonical pathname。通过后提交站点改动；若更新了主题，同时提交固定来源与 lockfile，确保其他环境能构建相同版本。
 
 读者功能还需用 development 账户实际检查登录与退出、收藏切换、跨页面 / 刷新后的进度与笔记恢复，以及两个账户间的数据隔离。`npm run check:local` 汇总类型、单元测试、构建与产物检查；`npm run test:browser:reader-ui` 使用内存身份和数据验收真实组件的交互、会话隔离与移动布局，`npm run test:browser:reader` 检查已启动的本地 preview 页面。浏览器检查需要 Playwright Chromium；内存 fixture 和配置缺失时的页面降级检查均不能替代实际登录验收。生产 public 配置通过 `npm run check:production-config` 校验，并用 `build:production` 与 `verify:production` 核对最终 HTML、脚本与 URL。全部通过后才可推送站点 `main`；新增后端的单元测试和类型检查也包含在云端检查中。
 
@@ -177,7 +177,7 @@ HeroUI 使用 Dashboard → Overview / Settings 中的 **CI/CD Token**；见 [He
 4. 在 Cloudflare **Build variables and secrets** 添加 production 两项 public 值与 `CONVEX_DEPLOY_KEY`，并在 Convex production 配好 issuer。首次生产接入要在站点 `main` push 前完成这些配置。
 5. 如确需手动备用发布，可把 production deploy key 临时存入被忽略的 `.env.production.local`，从独立、干净的 release checkout 执行 `deploy:verified`；脚本仅向 Convex deploy 子进程传递该 key，日志会遮蔽凭据。
 
-本版没有 Astro On-demand Rendering、Clerk server middleware 或 Clerk webhook，因此 **不需要 `CLERK_SECRET_KEY`**。Cloudflare Worker 的控制台变量不能给已经生成的静态 JS 注入值；读者功能的 publishable key 仍在构建变量里。`/api/chat` 在 Worker 运行时校验 Clerk session JWT：生产从 `wrangler.jsonc` 的 `PUBLIC_CLERK_PUBLISHABLE_KEY` 推导 issuer，不必在控制台再维护 `CLERK_JWT_ISSUER`。可选 secret `CLERK_JWT_KEY`（PEM 公钥）做无网络校验。`CLERK_JWT_ISSUER_DOMAIN` 仍在 Convex 环境配置。
+静态客户端与 Worker 不使用 Clerk Secret Key。新增 Clerk Billing 后端需要在对应 Convex 环境配置 `CLERK_SECRET_KEY`，不能放入 Worker 或前端；其余账户服务配置见 [账户服务](member-services.md)。Cloudflare Worker 的控制台变量不能给已经生成的静态 JS 注入值；读者功能的 publishable key 仍在构建变量里。`/api/chat` 在 Worker 运行时校验 Clerk session JWT：生产从 `wrangler.jsonc` 的 `PUBLIC_CLERK_PUBLISHABLE_KEY` 推导 issuer，不必在控制台再维护 `CLERK_JWT_ISSUER`。可选 secret `CLERK_JWT_KEY`（PEM 公钥）做无网络校验。`CLERK_JWT_ISSUER_DOMAIN` 仍在 Convex 环境配置。
 
 读者配置按 `.env` → `.env.local` → `.env.<mode>` → `.env.<mode>.local` 读取，显式进程环境优先；`PUBLIC_SITE_ENV=production` 时使用 production 模式，普通本地构建与开发服务器使用 development 模式。preview 展示已构建的静态产物，不重新选择后端。配置值用完整字面量，不在这些配置中使用 `$VAR` 展开。调试页面配置时仅报告变量是否存在与所属环境，不打印 key 或 secret 值。
 

@@ -18,6 +18,6 @@ createRoot(document.getElementById('root')!).render(<main id="main-content">
       <h2>正文区域</h2>
       {Array.from({length: 28}, (_, i) => <p key={i}>这是公开测试文章的第 {i + 1} 段。阅读记录只计算正文，私有笔记与讨论区不参与进度计算。</p>)}
     </article>
-    <footer data-fixture-comments>讨论区占位，测试时不请求 Giscus。</footer>
+    <footer data-fixture-comments>讨论区占位，测试时不请求评论服务。</footer>
   </>}
 </main>);

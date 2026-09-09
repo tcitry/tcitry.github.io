@@ -1,0 +1,11 @@
+---
+import CommentsRoot from './CommentsRoot';
+import './comments.css';
+interface Props {pathname: string}
+const {pathname} = Astro.props;
+---
+<section id="comments" class="blog-comments" data-convex-comments data-comment-pathname={pathname} data-pagefind-ignore data-sentry-mask aria-labelledby="comments-heading">
+  <h2 id="comments-heading">评论</h2>
+  <CommentsRoot pathname={pathname} client:visible />
+  <noscript>启用 JavaScript 并登录后可查看评论和参与讨论。</noscript>
+</section>

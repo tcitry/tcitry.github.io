@@ -109,15 +109,18 @@ export function assetReferences(html, route = '/') {
   return [...assets];
 }
 
-export function assertGiscus(html, expected, route) {
-  const scripts = [...html.matchAll(/<script\b[^>]*>/gi)].map(([tag]) => attributes(tag)).filter(tag => tag.src === 'https://giscus.app/client.js');
-  assert.equal(scripts.length, expected ? 1 : 0, `Giscus eligibility: ${route}`);
+export function assertComments(html, expected, route) {
+  assert.ok(!/<script\b[^>]*src=["']https:\/\/giscus\.app\/client\.js/i.test(html), `Giscus must not be loaded: ${route}`);
+  const markers = [...html.matchAll(/<section\b[^>]*\bdata-convex-comments(?=[\s=>])[^>]*>/gi)];
+  assert.equal(markers.length, expected ? 1 : 0, `Convex comment eligibility: ${route}`);
   if (expected) {
-    assert.equal(scripts[0]['data-mapping'], 'pathname', `Giscus mapping: ${route}`);
-    assert.equal(scripts[0]['data-repo'], 'tcitry/tcitry.github.io', `Giscus repository: ${route}`);
-    assert.match(html, /<footer\b[^>]*class="[^"]*\bbook-footer\b[^"]*"[^>]*>(?:(?!<\/footer>)[\s\S])*src="https:\/\/giscus\.app\/client\.js"/, `Giscus must follow navigation inside the Book footer: ${route}`);
-    const footer = /<footer\b[^>]*class="[^"]*\bbook-footer\b[^"]*"[^>]*>([\s\S]*?)<\/footer>/.exec(html)[1];
-    assert.ok(footer.lastIndexOf('</a>') < footer.indexOf('src="https://giscus.app/client.js"'), `Footer navigation must precede Giscus: ${route}`);
+    const attrs = attributes(markers[0][0]);
+    assert.equal(attrs['data-comment-pathname'], route, `Comments must use the canonical pathname: ${route}`);
+    assert.match(markers[0][0], /\bdata-pagefind-ignore(?=[\s=>])/, `Comments must stay out of article search: ${route}`);
+    assert.match(markers[0][0], /\bdata-sentry-mask(?=[\s=>])/, `Comment content must be masked in monitoring: ${route}`);
+    const footer = /<footer\b[^>]*class="[^"]*\bbook-footer\b[^"]*"[^>]*>([\s\S]*?)<\/footer>/.exec(html)?.[1];
+    assert.ok(footer?.includes(markers[0][0]), `Comments must follow navigation inside the Book footer: ${route}`);
+    assert.ok(footer.lastIndexOf('</a>') < footer.indexOf(markers[0][0]), `Footer navigation must precede comments: ${route}`);
   }
 }
 
@@ -148,7 +151,6 @@ async function main() {
   ]);
   const routeMap = new Map(routes.map(route => [route.url, route]));
   const selected = new Set(['/', '/archives/', '/modified/', '/posts/', '/weekly/', '/timeline/', '/portfolio/', '/links/', '/tags/', '/categories/', '/about/', '/docs/', '/labs/', '/labs/agent-replay/', '/demos/2026/rounded-timeline/']);
-  selected.add('/chat/');
   const expectedRecent = JSON.parse(await readFile(path.join(root, 'dist/search/recent.json'), 'utf8'));
   assertRecentUpdates(expectedRecent, routes);
   for (const entry of expectedRecent) selected.add(entry.url);
@@ -193,7 +195,7 @@ async function main() {
     assertCanonical(response.body, route); assertHtmlIndexing(response.body, environment, route);
     if (!localPreview) assertHeaderIndexing(response.headers.get('x-robots-tag'), environment, route);
     const record = routeMap.get(route);
-    assertGiscus(response.body, record?.kind === 'page' && ['docs', 'posts', 'about', 'weekly', 'links'].includes(record.type), route);
+    assertComments(response.body, record?.kind === 'page' && ['docs', 'posts', 'about', 'weekly', 'links'].includes(record.type), route);
     const page = content.pages.find(page => page.id === record?.id);
     for (const feature of ['data-blog-code-language=', 'class="katex"', 'class="mermaid"']) if (page?.html.includes(feature)) assert.ok(response.body.includes(feature), `Rendered feature missing (${feature}): ${route}`);
   }, 'Pages');
@@ -212,13 +214,14 @@ async function main() {
     assertXMLSiteURLs(response.body, route);
   }, 'Feeds and sitemap');
   const robots = await request('/robots.txt'); assert.equal(robots.status, 200, 'robots.txt status'); assertRobotsPolicy(robots.body, environment);
-  for (const route of ['/demos/2026/cloudflare-product-map/', '/__astro-deployment-verification-missing__/']) {
+  for (const route of ['/chat/', '/me/', '/demos/2026/cloudflare-product-map/', '/__astro-deployment-verification-missing__/']) {
     const response = await request(route); assert.equal(response.status, 404, `Must return a real HTTP 404: ${route}`);
-    assert.match(response.body, /页面未找到/, `Custom 404 missing: ${route}`); assertGiscus(response.body, false, route);
+    assert.match(response.body, /页面未找到/, `Custom 404 missing: ${route}`); assertComments(response.body, false, route);
     if (environment === 'preview') { assertHtmlIndexing(response.body, environment, route); if (!localPreview) assertHeaderIndexing(response.headers.get('x-robots-tag'), environment, route); }
   }
   const redirects = parseRedirects(redirectText);
   assert.ok(redirects.some(rule => rule.from === '/page/1/' && rule.to === '/'), 'Pagination redirect missing');
+  for (const from of ['/chat/', '/me/']) assert.ok(!redirects.some(rule => rule.from === from), `Unpublished account URL does not need a redirect: ${from}`);
   const checkedRedirects = localPreview ? [] : redirects;
   await batches(checkedRedirects, async ({ from, to, status }) => {
     const response = await request(from); assert.equal(response.status, status, `Redirect status: ${from}`);
@@ -257,7 +260,7 @@ async function main() {
   const report = path.resolve(root, values.report || `.generated/deployment-verification-${environment}.json`);
   await mkdir(path.dirname(report), { recursive: true });
   await writeFile(report, JSON.stringify({ environment, origin, hostingChecks: !localPreview, expectedTheme: source, checkedAt: new Date().toISOString(), exhaustiveRoutes: values['all-routes'], checks }, null, 2));
-  console.log(`Verified ${environment} at ${origin}: ${selected.size} pages, ${checkedRedirects.length} legacy HTTP redirects, ${assets.size} assets, feeds/search/Giscus/indexing and actual 404 responses. Report: ${report}`);
+  console.log(`Verified ${environment} at ${origin}: ${selected.size} pages, ${checkedRedirects.length} legacy HTTP redirects, ${assets.size} assets, feeds/search/Convex comments/indexing and actual 404 responses. Report: ${report}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

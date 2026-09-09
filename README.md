@@ -44,3 +44,7 @@ Keep private content, secrets, generated files, and installed commercial compone
 - [Local preview and verification](docs/astro-preview.md)
 - [Demo authoring](docs/demo-authoring.md)
 - [Build and deployment](docs/continuous-deployment.md)
+
+## 账户服务开发
+
+Clerk 统一认证、Clerk Billing、Convex Agent 持久 AI 会话、Pro 异步私人咨询和登录后可见的 Convex 评论见 [账户服务](docs/member-services.md)。本地实现与真实环境验收、生产发布分开记录；历史 Giscus 评论在数据结构稳定后另行迁移。

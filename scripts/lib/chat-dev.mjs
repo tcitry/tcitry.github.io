@@ -4,6 +4,7 @@ import {pipeline} from 'node:stream/promises';
 import {fileURLToPath} from 'node:url';
 import {clerkIssuerFromPublishableKey, normalizeClerkIssuer} from './clerk-issuer.mjs';
 import {ChatError, handleChat} from '../../worker/chat.mjs';
+import {handleRetrieval} from '../../worker/retrieval.mjs';
 
 export function withClerkSession(env, processEnv = process.env) {
   const issuer = normalizeClerkIssuer(processEnv.CLERK_JWT_ISSUER)
@@ -15,6 +16,7 @@ export function withClerkSession(env, processEnv = process.env) {
     get(target, prop, receiver) {
       if (prop === 'CLERK_JWT_ISSUER') return issuer;
       if (prop === 'CLERK_JWT_KEY') return key;
+      if (prop === 'RAG_BRIDGE_SECRET') return processEnv.RAG_BRIDGE_SECRET || Reflect.get(target, prop, receiver);
       return Reflect.get(target, prop, receiver);
     },
   });
@@ -78,7 +80,8 @@ function requestBody(req) {
 export function createChatMiddleware({getBindings, readReferences, onError = report}) {
   return (req, res, next) => {
     const pathname = new URL(req.url || '/', 'http://localhost').pathname;
-    if (pathname !== '/api/chat' && pathname !== '/api/chat/') return next();
+    const retrieval = pathname === '/api/internal/retrieve' || pathname === '/api/internal/retrieve/';
+    if (!retrieval && pathname !== '/api/chat' && pathname !== '/api/chat/') return next();
     const controller = new AbortController();
     const disconnected = () => { if (!res.writableFinished) controller.abort(); };
     req.once('aborted', disconnected);
@@ -99,13 +102,16 @@ export function createChatMiddleware({getBindings, readReferences, onError = rep
         console.warn('[blog-chat] Missing article references. Run npm run prepare:content.');
         throw new ChatError('博客资料尚未准备完成，请稍后重试。', 503);
       }
-      const response = await handleChat(request, async () => {
+      const bindings = async () => {
         try { return await getBindings(); }
         catch (error) {
           onError(error);
           throw new ChatError('博客助手尚未完成云端连接，请稍后重试。', 503);
         }
-      }, references);
+      };
+      const response = retrieval
+        ? await handleRetrieval(request, await bindings(), references)
+        : await handleChat(request, bindings, references);
       if (request.body && !request.bodyUsed) await request.body.cancel();
       res.writeHead(response.status, Object.fromEntries(response.headers));
       if (response.body) await pipeline(Readable.fromWeb(response.body), res, {signal: controller.signal});

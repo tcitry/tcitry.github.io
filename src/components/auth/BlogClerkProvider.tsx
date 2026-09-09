@@ -8,7 +8,8 @@ export function clerkPublishableKey() {
 export default function BlogClerkProvider({children}: {children: ReactNode}) {
   const key = clerkPublishableKey();
   if (!key) return children;
-  return <ClerkProvider publishableKey={key} signInFallbackRedirectUrl="/me/" signUpFallbackRedirectUrl="/me/" afterSignOutUrl={window.location.href}>
+  const currentPage = window.location.href;
+  return <ClerkProvider publishableKey={key} signInFallbackRedirectUrl={currentPage} signUpFallbackRedirectUrl={currentPage} afterSignOutUrl={currentPage}>
     {children}
   </ClerkProvider>;
 }

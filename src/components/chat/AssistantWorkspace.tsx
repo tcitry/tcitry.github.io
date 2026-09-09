@@ -3,41 +3,40 @@ import {useAuth} from '@clerk/react';
 import {CloseButton, Tooltip} from '@heroui/react';
 import {Segment} from '@heroui-pro/react/segment';
 import AccountButton from '../auth/AccountButton';
-import SignInPanel, {AuthLoading, WorkspaceEmpty} from '../auth/SignInPanel';
-import BlogChat from './BlogChat';
+import {AuthLoading} from '../auth/SignInPanel';
+import ConvexSession from '../auth/ConvexSession';
 import {ChatSession} from './ChatSession';
+import type {AssistantView} from '../../scripts/assistant-ui-state.mjs';
 import surface from '../demos/DemoSurface.module.css';
 import '../../styles/chat.css';
 
 const ReaderRoot = lazy(() => import('../reader/ReaderRoot'));
+const AgentChat = lazy(() => import('./AgentChat'));
+const ConsultationsPanel = lazy(() => import('../consultations/ConsultationsPanel'));
+const MembershipPanel = lazy(() => import('../membership/MembershipPanel'));
 const views = [
+  {id: 'chat', label: 'AI 对话'},
   {id: 'consult', label: '咨询'},
-  {id: 'chat', label: '对话'},
   {id: 'reading', label: '阅读'},
+  {id: 'membership', label: '会员'},
 ] as const;
-type View = (typeof views)[number]['id'];
-
-function ChatHistory() {
-  return <WorkspaceEmpty
-    title="对话尚未接入"
-    description="跨页面的对话列表还没有接入。当前提问和草稿留在「咨询」。"
-  />;
-}
-
-function Workspace({onClose, onReady, pathname, title, reading = false}: {
+function Workspace({onClose, onReady, pathname, title, reading = false, initialView, onViewChange}: {
   onClose: () => void; onReady: () => void; pathname?: string; title?: string; reading?: boolean;
+  initialView?: AssistantView; onViewChange?: (view: AssistantView) => void;
 }) {
-  const {isLoaded, userId} = useAuth();
-  const [view, setView] = useState<View>(reading ? 'reading' : 'consult');
-  const [readerOpened, setReaderOpened] = useState(reading);
+  const {isLoaded} = useAuth();
+  const [tooltipContainer, setTooltipContainer] = useState<HTMLDivElement | null>(null);
+  const [view, setView] = useState<AssistantView>(initialView ?? (reading ? 'reading' : 'chat'));
+  const [readerOpened, setReaderOpened] = useState(initialView === 'reading' || reading);
   useEffect(() => { if (isLoaded) onReady(); }, [isLoaded, onReady]);
 
-  return <div className={`${surface.surface} assistant-workspace`}>
+  return <div ref={setTooltipContainer} className={`${surface.surface} assistant-workspace`}>
     <nav className="assistant-workspace__switcher">
       <Segment aria-label="助手功能" size="sm" className="w-auto" selectedKey={view} onSelectionChange={(key) => {
-        const next = String(key) as View;
+        const next = String(key) as AssistantView;
         if (next === 'reading') setReaderOpened(true);
         setView(next);
+        onViewChange?.(next);
       }}>
         {views.map((item) => <Segment.Item key={item.id} id={item.id} className="w-auto">{item.label}</Segment.Item>)}
       </Segment>
@@ -45,44 +44,29 @@ function Workspace({onClose, onReady, pathname, title, reading = false}: {
         <AccountButton />
         <Tooltip delay={400}>
           <CloseButton className="assistant-workspace__close" aria-label="关闭博客助手" onPress={onClose} />
-          <Tooltip.Content className="blog-chat__tooltip" placement="bottom">关闭博客助手</Tooltip.Content>
+          {/* Keep the overlay inside the dialog and its scoped theme tokens. */}
+          <Tooltip.Content className="blog-chat__tooltip" placement="bottom end" offset={8} UNSTABLE_portalContainer={tooltipContainer ?? undefined}>关闭博客助手</Tooltip.Content>
         </Tooltip>
       </div>
     </nav>
-    <div className="assistant-workspace__view" hidden={view !== 'consult'}>
-      {!isLoaded
-        ? view === 'consult' && <AuthLoading label="正在加载登录…" />
-        : userId
-          ? <BlogChat onReady={onReady} />
-          : view === 'consult' && <SignInPanel
-            title="登录后提问"
-            description="登录后可以向博客助手提问。回答仍然只依据已公开的文章。"
-          />}
-    </div>
-    <div className="assistant-workspace__view" hidden={view !== 'chat'}>
-      {view === 'chat' && (!isLoaded
-        ? <AuthLoading label="正在加载登录…" />
-        : <ChatHistory />)}
-    </div>
-    <div className="assistant-workspace__view assistant-workspace__reading" hidden={view !== 'reading'}>
-      {!isLoaded
-        ? view === 'reading' && <AuthLoading label="正在加载登录…" />
-        : userId
-          ? readerOpened && <div className="assistant-workspace__reader">
-            <Suspense fallback={<AuthLoading label="正在加载阅读账户…" />}>
-              <ReaderRoot library pathname={pathname} title={title} />
-            </Suspense>
+    <div className="assistant-workspace__view">
+      <ConvexSession requireAuth>
+        <Suspense fallback={<AuthLoading label="正在加载…" />}>
+          <div className="assistant-workspace__service" hidden={view !== 'chat'}><AgentChat /></div>
+          {view === 'consult' && <ConsultationsPanel />}
+          {view === 'membership' && <MembershipPanel />}
+          <div className="assistant-workspace__reading" hidden={view !== 'reading'}>
+            {readerOpened && <div className="assistant-workspace__reader"><ReaderRoot library pathname={pathname} title={title} /></div>}
           </div>
-          : view === 'reading' && <SignInPanel
-            title="登录后阅读"
-            description="登录后收藏文章、继续上次阅读，并保存仅自己可见的笔记。"
-          />}
+        </Suspense>
+      </ConvexSession>
     </div>
   </div>;
 }
 
 export default function AssistantWorkspace(props: {
   onClose: () => void; onReady: () => void; pathname?: string; title?: string; reading?: boolean;
+  initialView?: AssistantView; onViewChange?: (view: AssistantView) => void;
 }) {
   return <ChatSession onReady={props.onReady} onClose={props.onClose}>
     <Workspace {...props} />

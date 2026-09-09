@@ -1,6 +1,6 @@
 ---
 import ThemeLayout from '@tcitry/astro-book/components/BookLayout';
-import Giscus from '@tcitry/astro-book/components/Giscus';
+import Comments from '../components/comments/Comments.astro';
 import HeadingTree from '@tcitry/astro-book/components/HeadingTree';
 import TermList from '@tcitry/astro-book/components/TermList';
 import type { NavigationItem } from '@tcitry/astro-book/types';
@@ -24,7 +24,7 @@ const index = docs.findIndex((item) => item.id === page.id);
 const pageLink = (item?: ContentPage) => item ? { title: bookTitle(item), url: item.url } : undefined;
 const previous = index >= 0 ? pageLink(docs[index - 1]) : undefined;
 const next = index >= 0 ? pageLink(docs[index + 1]) : undefined;
-// Eligibility and pathname compatibility remain the blog's publishing policy.
+// Only independent public articles get a Convex discussion, after footer navigation.
 const comments = page.kind === 'page' && ['docs', 'posts', 'about', 'weekly', 'links'].includes(page.type);
 const readerArticle = page.kind === 'page' && ['docs', 'posts', 'weekly', 'links'].includes(page.type) && Boolean(page.html);
 const articleSchema = page.kind === 'page' && page.type !== 'reader' ? {
@@ -78,7 +78,7 @@ const site = {
     {tocHTML ? <Fragment set:html={tocHTML} /> : page.headings.length ? <nav id="TableOfContents"><HeadingTree headings={page.headings} /></nav> : <nav><TermList title="Tags" total={tags.length} items={tags.map((term) => ({ label: term.name, href: term.url, count: term.pageIds.length }))} /></nav>}
   </Fragment>
   <Fragment slot="comments">
-    {comments && <Giscus repo="tcitry/tcitry.github.io" repoId="MDEwOlJlcG9zaXRvcnkxNDc2MzI2MTk=" category="Announcements" categoryId="DIC_kwDOCMyx684COMlk" mapping="pathname" lang="zh-CN" theme="preferred_color_scheme" />}
+    {comments && <Comments pathname={page.url} />}
   </Fragment>
   <Fragment slot="overlays">
     {import.meta.env.DEV && page.source && <ObsidianNoteButton source={page.source} client:load />}
