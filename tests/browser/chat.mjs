@@ -183,6 +183,7 @@ try {
   assert.equal(await page.locator('.giscus').count(), 0, 'Chat page has no article comments');
   assert.equal(await launcher(page).count(), 1, 'The page has one native chat launcher');
   assert.equal(await launcher(page).getAttribute('aria-expanded'), 'false');
+  assert.equal(await launcher(page).locator('[data-chat-launcher-icon] svg').count(), 1, 'Unsigned launcher keeps the conversation icon');
   assert.notEqual(await panel(page).getAttribute('data-chat-loaded'), 'true', 'Chat module has not loaded before the first open');
   const existingIslands = await page.locator('astro-island').count();
   assert.equal(await page.locator('astro-island[component-url*="chat"]').count(), 0, 'Chat has no eager island alongside the site navigation');

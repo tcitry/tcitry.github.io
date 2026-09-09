@@ -69,15 +69,17 @@ try {
         const first = document.querySelector(search).getBoundingClientRect();
         const last = document.querySelector(appearance).getBoundingClientRect();
         const svg = document.querySelector(`${appearance} svg`).getBoundingClientRect();
+        const archives = [...document.querySelectorAll('.book-menu-content a')].find((link) => link.textContent.includes('Archives'))?.getBoundingClientRect();
         return {
           sameRow: Math.abs(first.top - last.top) < 1 && Math.abs(first.height - last.height) < 1,
           fit: first.left >= bar.left - 1 && last.right <= bar.right + 1 && last.left >= first.right,
           square: Math.abs(last.width - last.height) < 1,
           visibleIcon: svg.width > 10 && svg.width < last.width && svg.height > 10 && svg.height < last.height,
           documentFits: document.documentElement.scrollWidth <= innerWidth + 1,
+          alignNav: !archives || Math.abs(first.left - archives.left) <= 1,
         };
       }, {search, appearance});
-      assert.deepEqual(bounds, {sameRow: true, fit: true, square: true, visibleIcon: true, documentFits: true});
+      assert.deepEqual(bounds, {sameRow: true, fit: true, square: true, visibleIcon: true, documentFits: true, alignNav: true});
 
       await openAppearance(page);
       assert.equal(await page.getByRole('menuitemradio').count(), 3, 'All three appearance modes are available');

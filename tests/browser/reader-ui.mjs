@@ -68,7 +68,7 @@ try {
     await page.waitForFunction(() => window.__readerFixture.getState().clients.length === 4);
     assert.equal((await state(page)).clients[2].closed, true);
     assert.equal(await page.locator('[data-reader-article]').count(), 0, 'Anonymous state unmounts private reader UI');
-    await page.getByRole('button', {name: '完成登录'}).click();
+    await page.getByRole('button', {name: '登录 / 注册'}).click();
     await page.locator('[data-reader-article]').waitFor();
     console.log('Reader sessions: switching accounts or sessions creates a fresh client, closes old clients and clears private drafts.');
   } finally {await accountContext.close();}

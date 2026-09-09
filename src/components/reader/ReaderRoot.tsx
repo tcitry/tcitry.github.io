@@ -3,10 +3,11 @@ import {useAuth, useClerk} from '@clerk/react';
 import {ConvexReactClient, useConvexAuth} from 'convex/react';
 import {ConvexProviderWithClerk} from 'convex/react-clerk';
 import {Button} from '@heroui/react';
-import SignInPanel from '../auth/SignInPanel';
+import SignInPanel, {AuthLoading} from '../auth/SignInPanel';
 import ArticleReader from './ArticleReader';
 import ReaderLibrary from './ReaderLibrary';
 import surfaceStyles from '../demos/DemoSurface.module.css';
+import './reader.css';
 import './reader-shell.css';
 
 interface ReaderProps {pathname?: string; title?: string; library?: boolean}
@@ -44,7 +45,7 @@ function ReaderAccount(props: ReaderProps) {
     finally { setPending(false); }
   }
 
-  if (!isLoaded) return <p role="status">正在加载登录状态…</p>;
+  if (!isLoaded) return <AuthLoading label="正在加载登录…" />;
 
   return <>
     <div className="reader-account-bar">
@@ -57,7 +58,7 @@ function ReaderAccount(props: ReaderProps) {
     {!userId
       ? <SignInPanel description="登录后收藏文章、继续上次阅读，并保存仅自己可见的笔记。" />
       : isLoading
-        ? <p role="status">{slow ? '连接仍在进行中，请检查网络或稍后刷新。' : '正在连接阅读账户…'}</p>
+        ? <AuthLoading label={slow ? '连接仍在进行中，请检查网络或稍后刷新。' : '正在连接阅读账户…'} />
         : isAuthenticated
           ? <ReaderBoundary key={`${userId}:${sessionId}`}>
             {props.pathname && <ArticleReader pathname={props.pathname} title={props.title!} />}

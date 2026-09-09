@@ -95,6 +95,9 @@ try {
   await page.goto(new URL('/tests/fixtures/chat-ui.html', base).href);
   const root = page.locator('[data-chat-hydrated="true"]');
   await root.waitFor();
+  const launcherButton = page.locator('[data-chat-launcher]');
+  await launcherButton.locator('img').waitFor();
+  assert.equal(await launcherButton.getAttribute('data-signed-in'), '');
   const question = root.getByRole('textbox', {name: '向博客助手提问'});
   await question.fill('博客怎样使用 Astro？');
   await question.press('Enter');
@@ -126,7 +129,9 @@ try {
   await root.getByText('登录后可以向博客助手提问。回答仍然只依据已公开的文章。').waitFor();
   await root.locator('[data-clerk-signin]').waitFor();
   assert.equal(await question.count(), 0, 'Signed-out chat hides the composer');
-  console.log('Chat UI fixture checks passed: Clerk bearer token, streaming, stop, 429, empty results and signed-out gate.');
+  await page.waitForFunction(() => !document.querySelector('[data-chat-launcher][data-signed-in]'));
+  assert.equal(await page.locator('[data-chat-launcher] img').count(), 0, 'Signed-out launcher restores the conversation icon');
+  console.log('Chat UI fixture checks passed: Clerk bearer token, streaming, stop, 429, empty results, signed-out gate and launcher avatar.');
 } finally {
   await browser?.close();
   await server.close();

@@ -1,9 +1,14 @@
 @reference "./tailwind.css";
 @import "tw-animate-css";
 @import "@heroui/styles/components/button.css" layer(components);
+@import "@heroui/styles/components/close-button.css" layer(components);
+@import "@heroui/styles/components/spinner.css" layer(components);
 @import "@heroui/styles/components/textarea.css" layer(components);
 @import "@heroui/styles/components/disclosure.css" layer(components);
 @import "@heroui/styles/components/tooltip.css" layer(components);
+@import "@heroui/styles/components/avatar.css" layer(components);
+@import "@heroui/styles/components/dropdown.css" layer(components);
+@import "@heroui/styles/components/menu-item.css" layer(components);
 @import "@heroui-pro/react/css/components/chat-conversation.css" layer(components);
 @import "@heroui-pro/react/css/components/chat-message.css" layer(components);
 @import "@heroui-pro/react/css/components/chat-message-actions.css" layer(components);
@@ -12,6 +17,7 @@
 @import "@heroui-pro/react/css/components/prompt-input.css" layer(components);
 @import "@heroui-pro/react/css/components/prompt-suggestion.css" layer(components);
 @import "@heroui-pro/react/css/components/code-block.css" layer(components);
+@import "@heroui-pro/react/css/components/segment.css" layer(components);
 
 .blog-chat {
   --link: var(--accent);
@@ -44,14 +50,22 @@
 .reader-shell .blog-chat__auth > p {
   margin: 0;
   color: var(--muted);
+  font-size: .875rem;
   line-height: 1.7;
 }
-.blog-chat__auth .reader-inline-signin { margin-top: 0; width: 100%; }
-.blog-chat__auth :is(.cl-rootBox, .cl-cardBox, .cl-card) {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  box-shadow: none;
+.blog-chat__auth-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  flex: 1;
+  min-height: 0;
+  padding: 2.5rem 1.25rem;
+  color: var(--muted);
+  font-size: .875rem;
+  line-height: 1.6;
+  text-align: center;
 }
 
 .blog-chat__header {

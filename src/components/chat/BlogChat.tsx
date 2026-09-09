@@ -11,6 +11,7 @@ import {Markdown} from '@heroui-pro/react/markdown';
 import {PromptInput} from '@heroui-pro/react/prompt-input';
 import {PromptSuggestion} from '@heroui-pro/react/prompt-suggestion';
 import surface from '../demos/DemoSurface.module.css';
+import {AuthLoading} from '../auth/SignInPanel';
 import {ChatSignIn} from './ChatSession';
 import '../../styles/chat.css';
 
@@ -149,7 +150,7 @@ function Answer({message}: {message: Message}) {
   );
 }
 
-export default function BlogChat({onClose, onReady}: {onClose: () => void; onReady: () => void}) {
+export default function BlogChat({onReady}: {onReady: () => void}) {
   const {isLoaded, userId, getToken} = useAuth();
   const [hydrated, setHydrated] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -300,15 +301,9 @@ export default function BlogChat({onClose, onReady}: {onClose: () => void; onRea
             </Button>
             <Tooltip.Content className="blog-chat__tooltip" placement="bottom" UNSTABLE_portalContainer={chatRoot.current ?? undefined}>新对话</Tooltip.Content>
           </Tooltip>
-          <Tooltip delay={400}>
-            <Button variant="ghost" size="sm" isIconOnly onPress={onClose} aria-label="关闭博客助手">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
-            </Button>
-            <Tooltip.Content className="blog-chat__tooltip" placement="bottom" UNSTABLE_portalContainer={chatRoot.current ?? undefined}>关闭博客助手</Tooltip.Content>
-          </Tooltip>
         </div>
       </div>
-      {!isLoaded ? <p className="blog-chat__notice" role="status">正在加载登录状态…</p> : !userId ? <ChatSignIn /> : <>
+      {!isLoaded ? <AuthLoading label="正在加载登录…" /> : !userId ? <ChatSignIn /> : <>
       <ChatConversation className="blog-chat__conversation" role="region" aria-label="对话记录" tabIndex={0}>
         <ChatConversation.Content className="blog-chat__messages">
           {!messages.length && <PromptSuggestion className="blog-chat__welcome">

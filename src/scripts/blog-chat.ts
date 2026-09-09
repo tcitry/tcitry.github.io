@@ -13,6 +13,7 @@ function initializeChat() {
   const mobile = matchMedia('(max-width: 639px)');
   let loading: Promise<void> | undefined;
   let mount: ReturnType<typeof import('../components/chat/mount-chat')['mountChat']> | undefined;
+  let launcherMount: ReturnType<typeof import('../components/chat/mount-launcher')['mountLauncher']> | undefined;
   let stopped = false;
 
   function syncReadingLayout() {
@@ -105,6 +106,19 @@ function initializeChat() {
   }
 
   launcher.hidden = false;
+  const face = launcher.querySelector<HTMLElement>('[data-chat-launcher-face]');
+  if (face && import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    void (async () => {
+      try {
+        if (import.meta.env.DEV) await import('@vitejs/plugin-react/preamble');
+        const {mountLauncher} = await import('../components/chat/mount-launcher');
+        if (stopped || launcherMount) return;
+        launcherMount = mountLauncher(face, launcher);
+      } catch (error) {
+        if (import.meta.env.DEV) console.error('[blog-chat] Could not load the signed-in launcher.', error);
+      }
+    })();
+  }
   launcher.addEventListener('click', () => panel.open ? close() : open(), {signal});
   panel.addEventListener('click', (event) => {
     const element = event.target as Element;
@@ -141,6 +155,7 @@ function initializeChat() {
     stopped = true;
     close(false);
     events.abort();
+    launcherMount?.destroy();
     mount?.destroy();
   };
 }

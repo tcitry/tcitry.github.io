@@ -1,5 +1,12 @@
 <!doctype html>
 <html lang="zh-CN">
   <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Chat UI test fixture</title></head>
-  <body><div id="root" style="height:100vh"></div><script type="module" src="/tests/fixtures/chat-ui.tsx"></script></body>
+  <body>
+    <button type="button" aria-label="打开博客助手" data-chat-launcher>
+      <span data-chat-launcher-icon><svg viewBox="0 0 24 24" width="25" height="25" aria-hidden="true"><circle cx="12" cy="12" r="8" /></svg></span>
+      <span data-chat-launcher-face></span>
+    </button>
+    <div id="root" style="height:100vh"></div>
+    <script type="module" src="/tests/fixtures/chat-ui.tsx"></script>
+  </body>
 </html>

@@ -1,7 +1,8 @@
-import {ClerkProvider} from '@clerk/react';
-import {Button} from '@heroui/react';
+import {CloseButton, Tooltip} from '@heroui/react';
 import {useEffect, type ReactNode} from 'react';
+import BlogClerkProvider, {clerkPublishableKey} from '../auth/BlogClerkProvider';
 import SignInPanel from '../auth/SignInPanel';
+import '../../styles/chat.css';
 
 function Ready({onReady, children}: {onReady?: () => void; children: ReactNode}) {
   useEffect(() => { onReady?.(); }, [onReady]);
@@ -9,21 +10,21 @@ function Ready({onReady, children}: {onReady?: () => void; children: ReactNode})
 }
 
 export function ChatSession({children, onReady, onClose}: {children: ReactNode; onReady?: () => void; onClose?: () => void}) {
-  const clerkKey = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY ?? '';
-  if (!clerkKey) {
+  if (!clerkPublishableKey()) {
     return <Ready onReady={onReady}>
       <div className="blog-chat">
         <div className="blog-chat__header">
           <div className="blog-chat__identity">博客助手</div>
-          <Button size="sm" variant="ghost" onPress={onClose} aria-label="关闭博客助手">关闭</Button>
+          <Tooltip delay={400}>
+            <CloseButton aria-label="关闭博客助手" onPress={onClose} />
+            <Tooltip.Content className="blog-chat__tooltip" placement="bottom">关闭博客助手</Tooltip.Content>
+          </Tooltip>
         </div>
         <p className="blog-chat__notice" role="status">博客助手需要登录后使用。阅读账户尚未开放。</p>
       </div>
     </Ready>;
   }
-  return <ClerkProvider publishableKey={clerkKey} signInFallbackRedirectUrl="/me/" signUpFallbackRedirectUrl="/me/" afterSignOutUrl={window.location.href}>
-    {children}
-  </ClerkProvider>;
+  return <BlogClerkProvider>{children}</BlogClerkProvider>;
 }
 
 export function ChatSignIn() {
