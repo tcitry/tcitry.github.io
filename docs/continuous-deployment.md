@@ -138,6 +138,17 @@ HeroUI 使用 Dashboard → Overview / Settings 中的 **CI/CD Token**；见 [He
 
 内容凭据只传给私有内容 Git 检出，Pro 凭据只传给本站依赖安装；公开主题构建与页面渲染不接收这些凭据，Cloudflare 部署凭据也不传给内容准备和测试子进程。成功或失败后均清理临时内容。Workers Builds 使用平台配置的部署 token，云端构建不依赖本地 Wrangler 登录。私有内容检出、`.generated` 和安装后的商业组件均不应上传为公开构建附件。
 
+### 访问通知（Worker 运行时 secrets）
+
+静态资源默认不进入 Worker。`wrangler.jsonc` 仅为带尾斜杠的 HTML 页面导航设置 `assets.run_worker_first`，由 `workers/index.js` 在 `waitUntil` 中发送一次 webhook；CSS/JS/图片仍按静态资源直接返回。在 **Workers & Pages → tcitry-blog → Settings → Variables and Secrets** 配置，或使用 `npx wrangler secret put`：
+
+| 名称 | 用途 |
+| --- | --- |
+| `VISIT_WEBHOOK_URL` | HTTPS webhook 地址 |
+| `VISIT_WEBHOOK_AUTHORIZATION` | 完整 `Authorization` 请求头值 |
+
+两个值都存在才发送；缺一则照常提供静态站、不发通知。请求体只有 `path`、可选 `referrer` 和 ISO 时间戳，不含 IP、Cookie 或 User-Agent。不要把 URL 或授权写入 Git、`wrangler.jsonc`、构建 secrets 或 `PUBLIC_*`。
+
 ### Blog 内容更新触发
 
 站点 `main` push 由 Cloudflare Git 集成直接触发构建。Blog 是独立内容仓库，需要一次性配置 [Workers Builds Deploy Hook](https://developers.cloudflare.com/workers/ci-cd/builds/deploy-hooks/)：

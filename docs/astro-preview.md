@@ -108,7 +108,7 @@ npm run verify
 
 ## Cloudflare 生产发布
 
-`wrangler.jsonc` 通过 Workers Static Assets 将 `dist/` 发布到生产 Worker `tcitry-blog`，绑定 `yindongliang.com`。没有主站 Worker 业务代码或后端 API，也不再维护独立预览 Worker。
+`wrangler.jsonc` 通过 Workers Static Assets 将 `dist/` 发布到生产 Worker `tcitry-blog`，绑定 `yindongliang.com`。站点仍按静态资源托管；仅 HTML 页面导航会进入很小的 Worker 入口，用于可选的访问 webhook。不再维护独立预览 Worker。
 
 先构建生产产物并在本地 review，再直接发布这份 `dist/`：
 

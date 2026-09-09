@@ -3,6 +3,7 @@
   "name": "tcitry-blog",
   "account_id": "204c96c4c30f2f25afd657495d67fe4d",
   "compatibility_date": "2026-09-07",
+  "main": "workers/index.js",
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1
@@ -11,7 +12,13 @@
   "routes": [{ "pattern": "yindongliang.com", "custom_domain": true }],
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    // HTML pages keep trailing slashes. Only those navigations invoke the Worker;
+    // CSS/JS/images still skip Worker code. Visit notify secrets are
+    // VISIT_WEBHOOK_URL and VISIT_WEBHOOK_AUTHORIZATION (`wrangler secret put`).
+    // If either is missing, the site is served and no webhook is sent.
     "html_handling": "force-trailing-slash",
-    "not_found_handling": "404-page"
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/", "/*/", "!/cdn-cgi/*", "!/pagefind/*", "!/_astro/*"]
   }
 }
