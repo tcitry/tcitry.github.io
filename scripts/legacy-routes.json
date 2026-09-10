@@ -7710,11 +7710,11 @@
       "parent": "/docs/Cloudflare/",
       "section": "docs",
       "source": "docs/Cloudflare/wrangler-安装方式.md",
-      "title": "",
+      "title": "Wrangler 安装方式",
       "type": "docs",
-      "url": "/docs/Cloudflare/wrangler-%E5%AE%89%E8%A3%85%E6%96%B9%E5%BC%8F/",
+      "url": "/docs/Cloudflare/wrangler-install/",
       "weight": 0,
-      "routeSignature": "{\"url\":null,\"slug\":null}"
+      "routeSignature": "{\"url\":null,\"slug\":\"wrangler-install\"}"
     },
     {
       "aliases": null,
