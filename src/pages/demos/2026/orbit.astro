@@ -1,0 +1,8 @@
+---
+import OrbitLab from '../../../components/demos/OrbitLab';
+import DemoLayout from '../../../layouts/DemoLayout.astro';
+---
+<DemoLayout title="Orbit · 轨道重力实验室" description="轻点放置天体，拖动抛出行星，探索轨道、碰撞与三体编舞。" path="/demos/2026/orbit/">
+  <OrbitLab client:load />
+  <noscript><p>此演示需要启用 JavaScript 和 Canvas 2D。<a href="/docs/Frontend/Tooling/orbit-gravity-lab/">阅读玩法说明</a></p></noscript>
+</DemoLayout>

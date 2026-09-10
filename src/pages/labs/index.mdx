@@ -1,6 +1,6 @@
 ---
 title: Labs
-description: 前端 demo 的统一入口，收录 Three.js、CSS、HeroUI Pro、HeroUI、Svelte 与 Astro 示例。
+description: 前端 demo 的统一入口，收录轨道重力、曼德勃罗集合、Three.js、CSS、HeroUI Pro、HeroUI、Svelte 与 Astro 示例。
 layout: ../../layouts/LabsLayout.astro
 ---
 
@@ -13,6 +13,8 @@ import packageJson from '../../../package.json';
 
 export const demoDirectory = [
   {name: 'Lieflat Charts · 四种数据表达', description: '用 CellSlider 调整数量、时间趋势、100% 构成与前后对比，并查阅完整图型目录。', links: [{label: '数量比较', href: '/docs/Agents/lieflat-charts-best-practices/#tick-rows-example'}, {label: '三种新增示例', href: '/docs/Agents/lieflat-charts-best-practices/#more-chart-examples'}]},
+  {name: 'Orbit · 轨道重力实验室', description: '放置或抛出天体，观察星系、三体编舞与碰撞。', links: [{label: '打开页面', href: '/demos/2026/orbit/'}, {label: '玩法说明', href: '/docs/Frontend/Tooling/orbit-gravity-lab/'}]},
+  {name: '无穷海岸 · 分形探索', description: '全屏探索曼德勃罗集合，切换八个位置与五种配色。', links: [{label: '打开页面', href: '/demos/2026/infinite-coast/'}, {label: '玩法说明', href: '/docs/Frontend/Tooling/infinite-coast/'}]},
   {name: 'Three.js · 3D 场景', description: '换形状、颜色与灯光，拖动查看物体，认识 3D 场景。', links: [{label: '打开页面', href: '/demos/2026/threejs-basics/'}]},
   {name: 'CSS · 圆弧时间线', description: '观察卡片之间的圆弧连接线怎样随页面宽度调整。', links: [{label: '打开页面', href: '/demos/2026/rounded-timeline/'}]},
   {name: 'HeroUI Pro · 选择与评价', description: '试用句子里的选择器和星级评分，查看即时反馈。', links: [{label: '本页体验', href: '#heroui-pro选择与评价'}]},

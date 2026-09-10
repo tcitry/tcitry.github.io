@@ -1,0 +1,40 @@
+@reference "../../styles/tailwind.css";
+.coast {
+  @apply relative h-dvh w-full overflow-hidden bg-[#101415] text-[#eeeae3];
+  --background: #101415;
+  --foreground: #eeeae3;
+  --surface: #202728;
+  --surface-hover: #303939;
+  --default: #303939;
+  --default-foreground: #eeeae3;
+  --accent: #e0d9c9;
+  --accent-foreground: #101415;
+  --focus: #e0d9c9;
+  --field-background: #353d3c;
+  --muted: #b4b6b2;
+  color-scheme: dark;
+}
+.hud {
+  @apply pointer-events-none absolute inset-0 z-20 flex flex-col justify-between gap-3;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+}
+.hud a, .controls, .help { pointer-events: auto; }
+.controls { @apply rounded-2xl border border-white/15 bg-[#101415]/80 p-2 backdrop-blur-md; }
+.controls button { @apply text-xs; }
+.controls button[aria-pressed='true'] { outline: 1px solid #eeeae3; outline-offset: 2px; }
+.iterations { @apply min-w-36 flex-1; }
+.palette { @apply h-9 min-w-0 flex-1 overflow-hidden rounded-md; }
+.palette span { @apply rounded bg-black/60 px-1.5 py-0.5 text-xs text-white; }
+.presets { @apply mt-2 flex gap-1 overflow-x-auto pb-1; }
+.presets button { @apply shrink-0; }
+.help { @apply max-w-sm self-start rounded-xl border border-white/15 bg-[#101415]/90 p-4 backdrop-blur-md; }
+.notice { @apply m-0 self-start rounded-lg bg-[#101415]/85 px-3 py-1 text-xs; }
+@media (max-width: 520px) {
+  .iterations { @apply order-last w-full basis-full; }
+  .controls { @apply p-2; }
+}
+.hud header { text-shadow: 0 1px 5px #000, 0 0 16px #000; }
+.controls button { font-weight: 400; }
+.iterations :global(.slider__track) { height: 6px; margin-block: 8px; border-inline-width: 8px; }
+.iterations :global(.slider__thumb) { width: 18px; height: 18px; border-radius: 50%; }
+.iterations :global(.slider__thumb)::after { width: 12px; height: 12px; border-radius: 50%; }

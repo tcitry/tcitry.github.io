@@ -1,0 +1,43 @@
+@reference "../../styles/tailwind.css";
+.lab {
+  @apply relative h-dvh w-full overflow-hidden bg-[#07080c] text-[#e8eaed];
+  --background: #07080c;
+  --foreground: #e8eaed;
+  --surface: #12151b;
+  --surface-hover: #272c34;
+  --default: #20252d;
+  --default-foreground: #d0d5dc;
+  --accent: #d9dfe7;
+  --accent-foreground: #0d1015;
+  --focus: #d9dfe7;
+  --muted: #a9b0bb;
+  color-scheme: dark;
+}
+.canvas { @apply absolute inset-0 block touch-none; }
+.intro { @apply absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#07080c]/85 px-6 text-center; }
+.header { @apply pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-3 p-3 md:p-4; padding-top: max(12px, env(safe-area-inset-top)); }
+.identity, .stats { @apply rounded-2xl border border-white/10 bg-[#101319]/90 px-3 py-2; }
+.identity { @apply pointer-events-auto; }
+.identity a { @apply text-white/65 underline underline-offset-4; }
+.stats { @apply text-right font-mono text-xs text-white/80; }
+.controls {
+  @apply absolute inset-x-3 bottom-3 z-10 flex flex-col gap-3 rounded-2xl border border-white/10 bg-[#101319]/95 p-3 backdrop-blur-md md:inset-x-auto md:bottom-auto md:left-4 md:top-28 md:w-72 md:p-4;
+  max-height: calc(100dvh - 130px);
+  overflow-y: auto;
+  margin-bottom: env(safe-area-inset-bottom);
+}
+.controls button { @apply min-w-0 rounded-lg px-1 text-xs font-normal; }
+.controls button[aria-pressed='true'] { @apply bg-[#e8eaed] text-[#11141a]; }
+.mass { @apply h-11 flex-col gap-1; }
+.label { @apply m-0 mb-2 text-xs text-white/55; }
+.hint { @apply m-0 mt-2 text-xs leading-5 text-white/55; }
+.time :global(.slider__track) { height: 6px; margin-block: 8px; border-inline-width: 8px; }
+.time :global(.slider__thumb) { width: 18px; height: 18px; border-radius: 50%; }
+.time :global(.slider__thumb)::after { width: 12px; height: 12px; border-radius: 50%; }
+.time :global(.slider__output), .time :global([data-slot='label']) { font-size: 12px; font-weight: 400; }
+@media (max-width: 767px) {
+  .controls { gap: 8px; }
+  .instructions { display: none; }
+  .controls .hint { margin-top: 4px; }
+}
+.controls :global(.grid) > button { width: 100%; }

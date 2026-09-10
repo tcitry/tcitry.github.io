@@ -1,0 +1,8 @@
+---
+import InfiniteCoast from '../../../components/demos/InfiniteCoast';
+import DemoLayout from '../../../layouts/DemoLayout.astro';
+---
+<DemoLayout title="无穷海岸 · 曼德勃罗集合" description="全屏探索曼德勃罗集合：八个位置、五种配色，点击缩放、拖动平移。" path="/demos/2026/infinite-coast/">
+  <InfiniteCoast client:load />
+  <noscript><p>此演示需要启用 JavaScript 和 WebGL。<a href="/docs/Frontend/Tooling/infinite-coast/">阅读玩法说明</a></p></noscript>
+</DemoLayout>
