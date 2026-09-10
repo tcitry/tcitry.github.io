@@ -1,4 +1,12 @@
 items:
+  - title: "September 2026"
+    cardTitle: "astro-book"
+    url: "https://github.com/tcitry/astro-book"
+    tagList: ["Astro", "Theme", "Open Source", "Blog"]
+    cardDetailedText:
+      - "开源的 Astro 静态阅读主题，灵感来自 Hugo Book。提供三栏阅读布局、Markdown / MDX、KaTeX、Mermaid、Pagefind 搜索、明暗主题与可替换组件；以 npm 包 <code>@tcitry/astro-book</code> 发布。"
+      - '文档站：<a href="https://tcitry.github.io/astro-book/">tcitry.github.io/astro-book</a>。本站 yindongliang.com 即基于该主题构建。'
+
   - title: "Nov 2025"
     cardTitle: "Timeline"
     url: "/timeline"
