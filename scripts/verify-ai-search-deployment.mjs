@@ -19,10 +19,12 @@ try {
   const response = await fetch(`https://yindongliang.com/blog-release.json?verify=${release.siteCommit}`, { cache: 'no-store', signal: AbortSignal.timeout(15_000) });
   assert.ok(response.ok && !response.redirected, 'Production release marker is not available');
   assert.deepEqual(await response.json(), local, 'Production has not switched to this reviewed release; retry online verification before syncing');
-  const chat = await fetch('https://yindongliang.com/api/chat', { method: 'GET', signal: AbortSignal.timeout(15_000) });
-  assert.equal(chat.status, 405, 'Production chat API is not routed to the Worker');
+  for (const endpoint of ['/api/chat', '/api/internal/retrieve']) {
+    const response = await fetch(`https://yindongliang.com${endpoint}`, { method: 'GET', signal: AbortSignal.timeout(15_000) });
+    assert.equal(response.status, 404, `Removed legacy API is still available: ${endpoint}`);
+  }
   await writeFile(receipt, JSON.stringify({ version: 1, environment: 'production', releaseHash: sha256(bytes), verifiedAt: new Date().toISOString() }, null, 2) + '\n');
-  console.log('Production revision and chat API verified; article synchronization may proceed.');
+  console.log('Production revision and retired API routes verified; article synchronization may proceed.');
 } catch (error) {
   console.error(error instanceof assert.AssertionError ? error.message.split('\n')[0] : 'Online verification failed; no AI Search sync is authorized for this release. Retry npm run verify:deployment.');
   process.exitCode = 1;

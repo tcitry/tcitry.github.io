@@ -39,8 +39,7 @@ Convex 校验已登录身份并按账户/session 隔离，引用继续核验当�
 新链路不需要在 Convex 配置 `BLOG_RETRIEVAL_URL`、`RAG_BRIDGE_SECRET`、
 `CLOUDFLARE_ACCOUNT_ID` 或 `CLOUDFLARE_API_TOKEN`。后两个变量仍用于本地/CI 的文章索引同步
 及发布，不能全局删除。`.env.local` 不会自动设置 Convex cloud 环境；无真实值的示例见
-[`.env.example`](../.env.example)。旧 Worker `/api/chat` 与受保护检索桥代码暂保留，当前助手
-前端使用 Convex，接入新链路不要求启动旧 bridge 或 tunnel。
+[`.env.example`](../.env.example)。旧 Worker `/api/chat`、受保护检索桥及旧前端组件已经删除；助手只使用 Convex，不需要 bridge 或 tunnel。
 
 ## 业务接口与权限
 

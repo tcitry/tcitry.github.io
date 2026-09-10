@@ -72,7 +72,7 @@ AI 对话使用 `@convex-dev/agent`，以 mutation 保存问题和调度任务�
 
 咨询发起、后续留言和作者回复均支持图片：每条最多 4 张、每张不超过 5 MB，格式为 JPEG、PNG、WebP 或 GIF。允许仅图片消息，新咨询仍需填写主题。发送前预览和移除，失败保留草稿与已成功上传的附件，重试不重复上传；发送后支持点开放大。咨询与评论复用图片组件和 Convex File Storage，但附件用途与归属不可互换。图片通过带 Clerk JWT 的 HTTP endpoint 读取，每次检查评论登录权限或咨询双方身份，返回 private/no-store 响应，不向客户端提供永久公开 Storage URL。未绑定的上传 24 小时后清理；私人附件不进入 AI Search。
 
-Cloudflare AI Search 继续使用既有实例 `tcitry-blog-search`（全小写）、公开文章语料和发布流程。浏览器通过 `PUBLIC_AI_SEARCH_URL` 匿名调用 `/search`；本轮 Convex Agent 改用其 deployment 中的 `AI_SEARCH_PUBLIC_URL` 调用同一实例的公共 `/chat/completions`，模型默认继承实例设置，不再固定旧 Qwen 模型或直接指定 Gateway。实例仍关联既有 `tcitry-blog-chat`，不新建资源。Convex 继续校验登录身份、会话归属和当前公开引用的 key、canonical URL、content hash；私人收藏、咨询、评论和 AI 会话不加入公开文章索引。原 Worker `/api/chat` 与受保护检索桥代码暂保留，当前助手前端只使用 Convex。新调用链已在 development 通过真实首问、追问、核验引用、刷新恢复及旧失败会话重试；生产尚未部署，剩余上游限制见下文验收记录。
+Cloudflare AI Search 继续使用既有实例 `tcitry-blog-search`（全小写）、公开文章语料和发布流程。浏览器通过 `PUBLIC_AI_SEARCH_URL` 匿名调用 `/search`；本轮 Convex Agent 改用其 deployment 中的 `AI_SEARCH_PUBLIC_URL` 调用同一实例的公共 `/chat/completions`，模型默认继承实例设置，不再固定旧 Qwen 模型或直接指定 Gateway。实例仍关联既有 `tcitry-blog-chat`，不新建资源。Convex 继续校验登录身份、会话归属和当前公开引用的 key、canonical URL、content hash；私人收藏、咨询、评论和 AI 会话不加入公开文章索引。旧 Worker `/api/chat`、受保护检索桥及旧前端组件已经删除，助手只使用 Convex。新调用链已在 development 通过真实首问、追问、核验引用、刷新恢复及旧失败会话重试；生产尚未部署，剩余上游限制见下文验收记录。
 
 收藏功能已按用户要求收敛，前端不再监听滚动或离页事件保存进度，后端移除进度和笔记接口。旧存储表暂保留且不再读写；本次不删除既有数据。收藏位于「我的」的二级分类，不重复展示「你的收藏」标题。当前文章收藏移至文末评论数量行，与文章喜欢按钮并列，以空心／实心书签表示状态；未登录点击进入同一 Clerk 登录。收藏列表不重复提供当前文章操作。不提供固定按钮，旧固定缓存不再生效；跨页面默认收起，同页刷新或登录回调可恢复展开状态与当前板块，手动关闭后保持收起。边缘仅保留展开／收起把手，尺寸与点击范围一致，桌面位于分隔线外、全屏手机面板放在屏幕内；收起后可从右侧边缘中部的展开把手回到同一板块，原圆圈入口仍可使用。支持点击、键盘和 Esc，关闭后焦点返回实际打开面板的入口。
 
@@ -138,16 +138,6 @@ Clerk Dashboard 中启用个人 Billing，并配置实际计划。头像菜单�
 
 开发与生产共用既有 AI Search 和 AI Gateway。Search endpoint 可使用默认 Cloudflare 域名或已激活的自定义 HTTPS 域名；前端与 Convex 必须使用同一个配置 hostname，生产发布校验不猜测不同域名是否为别名。真实地址保存在 ignored env / 平台设置中。Gateway 自定义域名用于直接 Gateway 请求，当前 Convex 公共 Search/Chat 链路不调用该域名；它与 Search 的自定义域名分别配置。[Search 自定义域名](https://developers.cloudflare.com/ai-search/configuration/retrieval/public-endpoint/custom-domains/)、[Gateway 自定义域名](https://developers.cloudflare.com/ai-gateway/configuration/custom-domains/)
 
-### 保留的旧本机检索入口
-
-以下仅供维护尚未删除的旧桥代码，不是当前 Convex Agent 的必要配置。`npm run dev:retrieval` 启动本机检索服务，默认监听 `127.0.0.1:4359`；可用 `--port` 指定端口。只有显式运行该旧入口时，才在 Git 忽略的 `.dev.vars` 配置随机 `RAG_BRIDGE_SECRET`（32–512 个非空白字符），并准备已生成的文章引用清单。服务只读取清单，不上传或修改 AI Search 语料。
-
-入口严格限定为 `POST /api/internal/retrieve`，其它路径（包括尾斜线与 query string）返回 404，其它方法返回 405；未授权或错误密钥返回 401，且不会建立 Cloudflare 连接。有效请求复用现有检索 handler 和 `tcitry-blog-search` remote binding，继续验证文章 key 与 content hash。需有可用的本机 Wrangler 登录；该入口不提供网页、Clerk 登录或模型调用，`Ctrl-C` 会关闭服务器并释放 remote binding proxy。
-
-旧桥的访问方必须携带匹配的服务端密钥；不能为绕过本机可达性限制将其改为免认证。当前前端和新 Convex 运行时不依赖此入口，不再以设置 `BLOG_RETRIEVAL_URL` 或创建临时 tunnel 作为联调前置条件。
-
-旧入口回归继续检查其它路径 404、GET 405、匿名或错误密钥 POST 401，以及有效来源属于当前引用清单。`npm run dev:retrieval` 本身不会启动 tunnel、设置远端变量或生成密钥；这些旧桥检查不能代替新 Convex 公共对话链路验收。依据：[Wrangler getPlatformProxy](https://developers.cloudflare.com/workers/wrangler/api/#getplatformproxy)。
-
 ## 侧栏异常恢复
 
 2026-09-10 本地联调确认一次侧栏错误的直接原因：已打开的 preview 页面在重新构建后继续引用上一版动态模块，而 `dist` 已被替换，模块请求失败。该错误来自 React lazy import；不能把它归因于 Convex 断网。原边界会永久替换整棵侧栏且没有关闭、重试入口。
@@ -210,7 +200,7 @@ npm run test:browser:services
 
 本轮后续修复直接删除尚未上线的 `/chat/`、`/me/` 页面，不保留跳转或 sitemap 条目；登录回跳返回当前页面，面板只将公开 pathname 与所选功能保存到 sessionStorage，关闭后清理，不持久化身份或私有正文。关闭按钮 Tooltip 在面板内部渲染，避免局部主题丢失与手机 dialog 遮挡。后续类型检查、206 项 Node 测试、50 项 Convex 测试、构建与产物校验均通过；服务浏览器 fixture 覆盖登录回跳、显式关闭及 973、640、375、320px 提示位置。
 
-生产发布仍遵循 [持续部署](continuous-deployment.md)：先真实登录和权限测试，再独立生产构建和发布。新的后端与前端需作为同一版本协调发布；未完成真实配置和联调时保留本地改动，不推送 production `main`。旧前端在发布窗口仍可能调用原有 reader 或 `/api/chat`，本轮保留兼容入口。
+生产发布仍遵循 [持续部署](continuous-deployment.md)：先真实登录和权限测试，再独立生产构建和发布。新的后端与前端需作为同一版本协调发布；未完成真实配置和联调时保留本地改动，不推送 production `main`。本站尚未上线 Clerk 与 Convex，不保留旧 `/api/chat` 兼容入口。
 
 官方依据：[Clerk 与 Convex integration](https://clerk.com/docs/guides/development/integrations/databases/convex)、[Clerk session tokens](https://clerk.com/docs/guides/sessions/session-tokens)、[Clerk JWT templates](https://clerk.com/docs/guides/sessions/jwt-templates)、[Clerk Billing PricingTable](https://clerk.com/docs/react/reference/components/billing/pricing-table)、[Convex Agent Streaming](https://docs.convex.dev/agents/streaming)、[Cloudflare Workers AI 与 AI Gateway](https://developers.cloudflare.com/ai-gateway/usage/providers/workersai/)。本轮用 Context7 和官方当前页面核对，并以锁定依赖的实际类型检查实现。
 

@@ -46,9 +46,7 @@
     "ai-search:sync": "node scripts/sync-ai-search.mjs",
     "ai-search:bootstrap": "node scripts/bootstrap-ai-search.mjs",
     "verify:deployment": "node scripts/verify-deployment.mjs --env production && node scripts/verify-ai-search-deployment.mjs",
-    "dev:worker": "wrangler dev",
-    "dev:retrieval": "node scripts/dev-retrieval.mjs",
-    "test:browser:chat": "node tests/browser/chat.mjs && node tests/browser/chat-ui.mjs"
+    "dev:worker": "wrangler dev"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "3.0.45",

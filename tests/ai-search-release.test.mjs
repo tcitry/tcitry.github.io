@@ -69,7 +69,7 @@ test('Worker releases seal imported generated references and fail closed when th
   await assert.rejects(assertSealedRelease(context.root, { ...context.release, aiSearch: undefined }), /corpus changed/);
 });
 
-test('online verification does not leave a receipt for a different production revision or an unrouted chat API', async t => {
+test('online verification requires the current revision and retired APIs to remain unavailable', async t => {
   const context = await fixture(t);
   const preload = path.join(context.root, '.generated/mock-fetch.mjs');
   await writeFile(preload, `import { readFileSync } from 'node:fs';
@@ -79,13 +79,13 @@ globalThis.fetch = async url => {
     if (process.env.FIXTURE_BAD_MARKER) marker.siteCommit = 'c'.repeat(40);
     return new Response(JSON.stringify(marker));
   }
-  if (url.endsWith('/api/chat')) return new Response('', {status: process.env.FIXTURE_BAD_CHAT ? 200 : 405});
+  if (url.endsWith('/api/chat') || url.endsWith('/api/internal/retrieve')) return new Response('', {status: process.env.FIXTURE_BAD_API ? 200 : 404});
   throw new Error('Unexpected network request in test');
 };\n`);
   async function run(extra) {
     return execute(process.execPath, ['--import', preload, 'scripts/verify-ai-search-deployment.mjs'], { cwd: context.root, env: { ...process.env, ...extra } });
   }
-  for (const env of [{ FIXTURE_BAD_MARKER: '1' }, { FIXTURE_BAD_CHAT: '1' }]) {
+  for (const env of [{FIXTURE_BAD_MARKER: '1'}, {FIXTURE_BAD_API: '1'}]) {
     await writeFile(context.receiptFile, jsonBytes(context.receipt));
     await assert.rejects(run(env));
     await assert.rejects(readFile(context.receiptFile), { code: 'ENOENT' });
