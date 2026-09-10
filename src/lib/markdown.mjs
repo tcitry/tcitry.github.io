@@ -96,7 +96,7 @@ function normalizeProseMath(text, hasCodeBoundary = false) {
 }
 
 /** Resolve legacy relref only in prose, preserving fenced/inline code examples. */
-export function transformLegacyMarkdown(markdown, source, resolver, warnings = []) {
+export function transformLegacyMarkdown(markdown, source, resolver, warnings = [], { normalizeMath = true } = {}) {
   let fence = null;
   return markdown.split('\n').map((line) => {
     const marker = line.match(/^\s{0,3}(`{3,}|~{3,})/);
@@ -110,7 +110,7 @@ export function transformLegacyMarkdown(markdown, source, resolver, warnings = [
     const pieces = line.split(/(`+[^`]*`+)/g);
     return pieces.map((piece, index) => {
       if (index % 2) return piece;
-      return normalizeProseMath(piece, pieces.length > 1).replace(/(?<!\\)\{\{[<%]\s*relref\s+(?:"([^"]+)"|'([^']+)'|([^\s]+))\s*[>%]\}\}/g, (original, double, single, bare) => {
+      return (normalizeMath ? normalizeProseMath(piece, pieces.length > 1) : piece).replace(/(?<!\\)\{\{[<%]\s*relref\s+(?:"([^"]+)"|'([^']+)'|([^\s]+))\s*[>%]\}\}/g, (original, double, single, bare) => {
         const target = double ?? single ?? bare;
         const url = resolver(target, source);
         if (url) return url;
@@ -137,7 +137,7 @@ export function createReferenceResolver(pages) {
     try { decoded = decodeURI(pathname); } catch { decoded = pathname; }
     const clean = decoded.replace(/^\/+/, '').replace(/^\.\//, '');
     const relative = path.posix.normalize(path.posix.join(path.posix.dirname(current), clean));
-    const candidates = [clean, relative].flatMap((candidate) => [candidate, candidate + '.md', candidate + '/_index.md', candidate + '/index.md']);
+    const candidates = [clean, relative].flatMap((candidate) => [candidate, candidate + '.md', candidate + '.mdx', candidate + '/_index.md', candidate + '/_index.mdx', candidate + '/index.md', candidate + '/index.mdx']);
     const page = candidates.map((candidate) => bySource.get(candidate)).find(Boolean) ?? byRoute.get('/' + clean.replace(/\/?$/, '/')) ?? (baseNames.get(path.posix.basename(clean))?.length === 1 ? baseNames.get(path.posix.basename(clean))[0] : null);
     return page ? page.url + (hash ? '#' + hash : '') : null;
   };

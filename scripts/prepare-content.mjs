@@ -7,6 +7,7 @@ import { createRendererFingerprint } from './renderer-cache.mjs';
 import { addSitePages } from './site-pages.mjs';
 import { collectSources, publicSources, matchLegacySources, asList, lowerKeys, gitDates, isoDate, resolveLegacyRoute, encodeRoute, routePart } from './legacy-content.mjs';
 import { createLegacyMarkdownRenderer, createReferenceResolver, transformLegacyMarkdown, plainText } from '../src/lib/markdown.mjs';
+import { prepareMdx, syncMdxModules } from './lib/mdx-content.mjs';
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url));
 const blogRoot = path.resolve(process.env.BLOG_DIR || path.join(homedir(), 'Blog'));
@@ -15,7 +16,6 @@ await access(blogRoot);
 await mkdir(generated, { recursive: true });
 const candidates = await collectSources(blogRoot);
 const records = publicSources(candidates);
-if (records.some((record) => /\.mdx$/i.test(record.source))) throw new Error('Blog MDX ingestion is not enabled yet. Put interactive MDX demos in src/pages/labs/ so Astro compiles their components; Blog remains read-only.');
 const sources = new Map(records.map((record) => [record.source, record]));
 const modificationDates = gitDates(blogRoot);
 let legacy = { pages: [] };
@@ -29,7 +29,7 @@ const skippedCount = candidates.length - records.length;
 function makePage(record, legacyPage = {}) {
   const data = record.data;
   const isSection = /(?:^|\/)_(?:index)\.mdx?$/.test(record.source);
-  const isHome = record.source === '_index.md';
+  const isHome = /^_index\.mdx?$/.test(record.source);
   const kind = isHome ? 'home' : isSection ? 'section' : 'page';
   const section = isHome ? '' : record.source.includes('/') ? record.source.split('/')[0] : '';
   const title = String(data.title || legacyPage.title || path.posix.basename(isSection ? path.posix.dirname(record.source) : record.source, path.posix.extname(record.source)));
@@ -86,7 +86,7 @@ for (const page of pages) {
   if (!page.parent) {
     const sourceDirectory = page.kind === 'section' ? path.posix.dirname(path.posix.dirname(page.source || page.id.replace('@section:', '') + '/_index.md')) : path.posix.dirname(page.source);
     const parentSource = sourceDirectory === '.' ? '_index.md' : sourceDirectory + '/_index.md';
-    page.parent = pages.find((candidate) => candidate.source === parentSource || candidate.id === '@section:' + sourceDirectory)?.url || '/';
+    page.parent = pages.find((candidate) => candidate.source === parentSource || candidate.source === parentSource + 'x' || candidate.id === '@section:' + sourceDirectory)?.url || '/';
   }
 }
 // Undated Hugo branch sections inherit the newest descendant date. Recompute
@@ -104,18 +104,25 @@ const rendererVersion = await createRendererFingerprint({
   themeEntryFile: new URL(import.meta.resolve('@tcitry/astro-book/markdown')),
   dependencyLockFile: new URL('../package-lock.json', import.meta.url),
 });
+const mdxRendererVersion = createHash('sha256').update(await readFile(new URL('./lib/mdx-content.mjs', import.meta.url))).digest('hex');
 let oldCache = {};
 try { oldCache = JSON.parse(await readFile(path.join(generated, 'render-cache.json'), 'utf8')); } catch { /* First build. */ }
 const cache = {};
 let renderedCount = 0;
+const mdxModules = [];
 for (const page of pages) {
   const sourceNames = page.params.compatibilitySources || (page.source ? [page.source] : []);
   const body = sourceNames.map((source) => sources.get(source)?.body ?? '').filter(Boolean).join('\n\n');
-  const key = createHash('sha256').update(rendererVersion + routeHash + page.source + body).digest('hex');
+  const pageWarnings = [];
+  let mdx;
+  try { if (/\.mdx$/i.test(page.source)) mdx = prepareMdx(body, page.source, resolve, pageWarnings); }
+  catch (error) { throw new Error(`MDX preparation failed for ${page.source}: ${error.message}`, { cause: error }); }
+  if (mdx) { page.mdx = mdx.filename; mdxModules.push(mdx); }
+  const renderBody = mdx?.prose ?? body;
+  const key = createHash('sha256').update(rendererVersion + mdxRendererVersion + routeHash + page.source + body).digest('hex');
   let result = oldCache[key];
   if (!result) {
-    const pageWarnings = [];
-    const transformed = transformLegacyMarkdown(body, page.source, resolve, pageWarnings);
+    const transformed = transformLegacyMarkdown(renderBody, page.source, resolve, pageWarnings);
     try { result = { ...await render(transformed, pathToFileURL(path.join(blogRoot, page.source || '_index.md'))), warnings: pageWarnings }; }
     catch (error) { throw new Error(`Markdown rendering failed for ${page.source}: ${error.message}`, { cause: error }); }
     renderedCount++;
@@ -125,10 +132,11 @@ for (const page of pages) {
   page.html = result.html;
   page.headings = result.headings;
   const plain = plainText(result.html);
-  const beforeSummary = body.split('<!--more-->')[0];
-  page.summary = page.description || (body.includes('<!--more-->') ? plainText((await render(transformLegacyMarkdown(beforeSummary, page.source, resolve), pathToFileURL(path.join(blogRoot, page.source || '_index.md')))).html) : Array.from(plain).slice(0, 220).join(''));
+  const beforeSummary = renderBody.split('<!--more-->')[0];
+  page.summary = page.description || (renderBody.includes('<!--more-->') ? plainText((await render(transformLegacyMarkdown(beforeSummary, page.source, resolve), pathToFileURL(path.join(blogRoot, page.source || '_index.md')))).html) : Array.from(plain).slice(0, 220).join(''));
   page.wordCount = (plain.match(/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]|[\p{L}\p{N}_]+/gu) || []).length;
 }
+await syncMdxModules(path.join(generated, 'mdx'), mdxModules);
 function taxonomy(key) {
   const terms = new Map();
   for (const page of pages) page[key] = page[key].map((name) => {

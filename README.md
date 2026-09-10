@@ -2,7 +2,7 @@
 
 [Live site](https://yindongliang.com) · [Labs](https://yindongliang.com/labs/) · [astro-book](https://github.com/tcitry/astro-book)
 
-A static personal blog built with Astro and the independently maintained `@tcitry/astro-book` theme. Markdown content lives in a separate content workspace and is imported read-only during builds.
+A static personal blog built with Astro and the independently maintained `@tcitry/astro-book` theme. Markdown and MDX content live in a separate content workspace and are imported read-only during builds.
 
 Cloudflare Workers Static Assets serves the site through a single production Worker. Labs contains interactive experiments with React, HeroUI, HeroUI Pro, and Svelte; site-specific pages and components stay in this repository.
 
@@ -17,7 +17,9 @@ BLOG_DIR=/path/to/Blog npm run dev
 
 `setup` installs all locked dependencies, including the published npm theme, with `npm ci`. Use `package.json` as the source of truth for development, build, and deployment commands.
 
-`dev` imports Blog once at startup, then watches its public Markdown and assets. Saving, adding, renaming, or deleting a source updates the running site and reloads the browser. Imports are debounced and run serially; after an import error, fix the source and save again. `BLOG_DIR` stays read-only. The full-text Pagefind index still requires a build; `preview` serves the existing build and does not watch content.
+`dev` imports Blog once at startup, then watches its public Markdown, MDX, and assets. Saving, adding, renaming, or deleting a source updates the running site and reloads the browser. Imports are debounced and run serially; after an import error, fix the source and save again. `BLOG_DIR` stays read-only. The full-text Pagefind index still requires a build; `preview` serves the existing build and does not watch content.
+
+For interactive articles, keep the prose and component calls in Blog MDX and import reusable site components through `@/components/`. Prefer inline examples with server-rendered content and `client:visible`; see [demo authoring](docs/demo-authoring.md#mdx-中嵌入).
 
 ## Verify and publish
 

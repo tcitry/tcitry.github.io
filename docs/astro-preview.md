@@ -62,7 +62,7 @@ Posts 页尾的“相关阅读”由 `src/lib/related-posts.ts` 在构建时从�
 
 BLOG_DIR 始终只读。构建层兼容 relref、前言字段、旧 URL、HTML、公式、代码和 Mermaid。路由基线在 scripts/legacy-routes.json，审计生成到 .generated/，不会发布。 历史 source 路径优先精确匹配；只有旧基线与当前源文件两侧均无大小写歧义时，才允许忽略大小写匹配。这样 Git 干净检出与本机文件名大小写不同时仍保留原 URL；显式修改 slug/url 仍按新配置生效。
 
-现有 Blog 没有 MDX。新增交互文章目前放本站 src/pages/*.mdx，通过 Astro 原生编译；独立页面放 src/pages/，组件放 src/components/。在 Blog 添加 .mdx 会得到明确提示，避免错误地按普通 Markdown 发布。外部 Blog MDX 导入留待下一阶段，示例见 docs/demo-authoring.md。
+Blog 的公开 `.mdx` 通过内容导入器筛选后参与 Astro 原生编译，文章内可直接调用 React 组件。正文、元数据与少量文章数据放 Blog；组件放本站 `src/components/`，通过 `@/components/` 稳定别名引用。生成编译输入、摘要和搜索语料均保存在 Git 忽略目录，`BLOG_DIR` 仍只读。原生站点页面继续放 `src/pages/`；帮助阅读的交互优先嵌入文章，独立页面按实际体验需要选择。写法与兼容性验收见 [Demo 编写指南](demo-authoring.md#mdx-中嵌入)。本地支持不代表已生产发布。
 
 新 UI 优先 Tailwind，其次 CSS Modules。通用 Book 外观兼容层、图标、公式字体和阅读脚本归主题包所有，本站专属页面与徽标配色的样式留在博客。主题保留 Hugo Book MIT 许可与来源。HeroUI 样式在博客局部加载，不向阅读布局引入全局 Tailwind preflight。
 

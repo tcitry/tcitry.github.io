@@ -40,6 +40,23 @@
 .site :global(.links-source) { @apply mb-8; }
 .site :global(.links-source) blockquote { @apply mx-0; }
 
+/* Opt-in wrapping for compact comparison tables in articles. */
+.site :global(.book-page .markdown .reader-table table:where(:not([data-book-island], [data-book-island] *, [data-demo], [data-demo] *))) {
+  display: table;
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+.site :global(.book-page .markdown .reader-table :is(th, td):where(:not([data-book-island], [data-book-island] *, [data-demo], [data-demo] *))) {
+  padding: 0.5rem 0.625rem;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+.site :global(.book-page .markdown .reader-table thead th:first-child:where(:not([data-book-island], [data-book-island] *, [data-demo], [data-demo] *))) {
+  width: 30%;
+}
+
 /* Reader glossaries show English names, Chinese names, and explanations together. */
 .site :global(.book-page .markdown .reader-glossary table:where(:not([data-book-island], [data-book-island] *, [data-demo], [data-demo] *))) {
   display: table;

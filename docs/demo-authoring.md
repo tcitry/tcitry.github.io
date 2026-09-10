@@ -7,13 +7,13 @@
 - `/demos/2026/threejs-basics/`：Three.js 场景与 HeroUI 交互控件。
 - `/demos/2026/rounded-timeline/`：Astro 原生圆弧时间线示例。
 
-演示文件都在站点仓库内，`Blog` 内容保持只读。修改后先在本地 review，再随主站发布到唯一的生产 Worker；旧迁移预览域名已下线，流程见 [本地验收与生产发布](astro-preview.md)。Agent 演示仅播放本地预设数据，不调用模型或后端，也不收集输入。
+演示组件在站点仓库内，文章正文可保存在 Blog；构建对 `BLOG_DIR` 保持只读。修改后先在本地 review，再随主站发布到唯一的生产 Worker；旧迁移预览域名已下线，流程见 [本地验收与生产发布](astro-preview.md)。Agent 演示仅播放本地预设数据，不调用模型或后端，也不收集输入。
 
 本站采用 Astro + `@tcitry/astro-book` + Tailwind CSS v4，并在 React 交互组件中使用 HeroUI。HeroUI Pro 是本站额外接入的商业组件；独立的公开主题不依赖 React、HeroUI 或 HeroUI Pro。主题本身的使用方式见 [英文 README](https://github.com/tcitry/astro-book/blob/main/README.md)、[入门指南](https://github.com/tcitry/astro-book/blob/main/docs/getting-started.md) 与 [公开 API](https://github.com/tcitry/astro-book/blob/main/docs/architecture.md)。
 
 ## 维护 Labs 统一入口
 
-新增、迁移或移除 demo 时，同步维护 `src/pages/labs/index.mdx` 中的 `demoDirectory`，让 `/labs/` 始终提供完整且可用的入口。每项保留名称、一句话说明，以及独立页面地址或本页实际章节锚点；一个示例同时存在两种入口时，合并在同一项中。
+新增、迁移或移除 demo 时，同步维护 `src/pages/labs/index.mdx` 中的 `demoDirectory`，让 `/labs/` 始终提供完整且可用的入口。每项保留名称、一句话说明，以及文章内锚点、本页章节锚点或独立页面地址；一个示例同时存在多种入口时，合并在同一项中。帮助理解正文的参数实验优先链接文章内组件，不要求读者先跳到独立页面。
 
 列表只收录已实现且会进入构建产物的示例。核对 `src/pages/demos/`、`src/pages/labs/`、公开静态资源及 `scripts/prepare-assets.mjs` 的排除清单；已移除的 demo 不重新加入，已由 Astro 接管的旧静态目录不重复列出。不要在页面末尾另建零散入口，也不要为目录复制完整组件展示。
 
@@ -65,15 +65,32 @@ Select 与 InlineSelect 的 Popover 通过 portal 渲染，必须单独应用 `D
 
 ## MDX 中嵌入
 
-```mdx
-import AgentReplay from '../../components/demos/AgentReplay';
-import SvelteCounter from '../../components/demos/SvelteCounter.svelte';
+交互文章优先在 Blog 的既有目录中维护 `.mdx`，可复用实现保留在本站 `src/components/`。导入使用稳定别名 `@/components/`，不绑定内容仓库与站点在本机的相对位置，也不从 Blog 导入其他源文件。导入器只接受这一组件入口；包依赖、相对路径、绝对路径和动态 import 留给站点组件实现，文章可以 export 自己的少量数据。正文直接调用 React 组件，不用 iframe 承载简单参数实验。
 
-<AgentReplay client:visible />
-<SvelteCounter client:visible />
+```mdx
+---
+title: '可交互的图表说明'
+slug: interactive-chart-guide
+date: 2026-09-10
+categories: 2026
+draft: false
+tags:
+  - Design
+  - ByAI
+---
+
+import LieflatTickRows from '@/components/demos/LieflatTickRows';
+
+修改数量，观察刻度、总数和占比一起变化。
+
+<LieflatTickRows client:visible />
 ```
 
 `client:visible` 保留构建期 HTML，并在组件接近可见区域时加载交互运行时。独立演示可以用 `client:load`，两处导入同一份源码。必要时可使用 `client:only="react"` 承载仅浏览器可用的组件，但该区域将失去构建期 HTML，应优先解决模块顶层访问 `window` 等问题。
+
+Blog MDX 沿用原有 front matter、slug、导航、分类、标签和评论 pathname。导入先执行公开内容过滤，再准备 Astro 编译输入；生成文件保留在 Git 忽略目录，不复制到公开静态资源。文章摘要与 AI Search 语料提取正文，忽略组件 import 和实现表达式；图表的重要结论与数据仍应写进可阅读的正文。Pagefind 读取最终构建 HTML，不能用导入成功代替搜索验收。
+
+迁移 `.md` 时保持公开 URL，更新站内引用的扩展名，并核对最终目录锚点、Mermaid、表格、代码块与交互。旧式 `relref` 在 MDX 编译前解析，示范 shortcode 时仍使用转义写法与代码围栏。Lieflat Charts 的本地集成实例位于 `/docs/Agents/lieflat-charts-best-practices/#tick-rows-example`；是否已经上线以实际生产验收为准。
 
 大型 Three.js 场景或完整独立应用可使用点击启动或单独页面。特殊依赖版本的实验再采用独立构建或 iframe。不要为了简单嵌入复制两份组件代码。
 

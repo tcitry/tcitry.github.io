@@ -31,3 +31,4 @@
 @import "@heroui-pro/react/css/components/code-block.css" layer(components);
 @import "@heroui-pro/react/css/components/inline-select.css" layer(components);
 @import "@heroui-pro/react/css/components/rating.css" layer(components);
+@import "@heroui-pro/react/css/components/cell-slider.css" layer(components);

@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { parseArgs } from 'node:util';
+import { parse, parseFragment } from 'parse5';
 import { assertCanonical, assertComments, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects } from './verify-deployment.mjs';
 import { auditContentLinks } from './internal-links.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), output = path.join(root, 'dist');
@@ -34,11 +35,66 @@ function checkPage(html, url) {
   assertHeaderIndexing(headerRules.filter(rule => rule.pattern.test(url)).flatMap(rule => rule.robots).join(', '), environment, url);
   for (const asset of assetReferences(html, url)) assets.add(asset);
 }
+const attributes = node => Object.fromEntries((node.attrs || []).map(({ name, value }) => [name, value]));
+function descendants(node) {
+  return [node, ...(node.childNodes || []).flatMap(descendants)];
+}
+function textContent(node, proseOnly = false) {
+  if (['script', 'style', 'template', ...(proseOnly ? ['pre', 'code'] : [])].includes(node.tagName)) return '';
+  return node.nodeName === '#text' ? node.value : (node.childNodes || []).map(child => textContent(child, proseOnly)).join(' ');
+}
+const normalizeText = value => value.replace(/\s+/g, ' ').trim();
+function assertMdxPage(html, page) {
+  const nodes = descendants(parse(html));
+  const bodies = nodes.filter(node => Object.hasOwn(attributes(node), 'data-blog-mdx'));
+  assert.equal(bodies.length, 1, `Blog MDX must render exactly one article body: ${page.url}`);
+  const body = bodies[0];
+  assert.equal(body.tagName, 'article', `Blog MDX must retain the article container: ${page.url}`);
+  assert.ok(Object.hasOwn(attributes(body), 'data-pagefind-body'), `Blog MDX must retain its search boundary: ${page.url}`);
+  const bodyNodes = descendants(body);
+  const actualText = normalizeText(textContent(body));
+  assert.ok(actualText, `Blog MDX must have server-rendered content: ${page.url}`);
+  assert.ok(page.html?.trim(), `Blog MDX must have searchable metadata prose: ${page.url}`);
+  // Compare original prose segments, allowing components to add their own text.
+  const metadata = descendants(parseFragment(page.html));
+  const samples = metadata.filter(node => node.tagName === 'p').flatMap(node => descendants(node))
+    .filter(node => node.nodeName === '#text').map(node => normalizeText(node.value)).filter(text => text.length >= 32).slice(0, 3);
+  for (const sample of samples) assert.ok(actualText.includes(sample), `Blog MDX lost its static article prose: ${page.url}`);
+  for (const heading of page.headings) {
+    const matches = bodyNodes.filter(node => /^h[1-6]$/.test(node.tagName || '') && attributes(node).id === heading.slug);
+    assert.equal(matches.length, 1, `Blog MDX heading must match metadata exactly once (${heading.slug}): ${page.url}`);
+  }
+  // Code examples may intentionally contain shortcodes or module declarations.
+  const prose = textContent(body, true);
+  assert.doesNotMatch(prose, /\{\{[<%]\s*relref\b/, `Blog MDX contains an unresolved prose relref: ${page.url}`);
+  assert.doesNotMatch(prose, /\bimport\s+[^;\n]{1,160}\s+from\s+['"]@\/components\//, `Blog MDX exposed its module source as prose: ${page.url}`);
+  if (page.params?.slug === 'lieflat-charts-best-practices') {
+    const demos = bodyNodes.filter(node => attributes(node)['data-demo'] === 'lieflat-tick-rows');
+    assert.equal(demos.length, 1, 'The Lieflat article must embed its Tick Rows example exactly once');
+    assert.ok(bodyNodes.some(node => node.tagName === 'astro-island' && descendants(node).includes(demos[0])), 'Tick Rows must retain its hydrated island');
+    assert.ok(!bodyNodes.some(node => node.tagName === 'iframe'), 'The Lieflat article must render its example inline');
+    const chart = descendants(demos[0]);
+    const rows = chart.filter(node => Object.hasOwn(attributes(node), 'data-chart-row'));
+    assert.deepEqual(rows.map(node => Number(attributes(node)['data-value'])), [18, 12, 6, 4], 'Tick Rows must retain the four teaching-data counts before hydration');
+    assert.equal(new Set(rows.map(node => attributes(node)['data-name']).filter(Boolean)).size, 4, 'Tick Rows must label all four categories');
+    for (const row of rows) {
+      assert.equal(descendants(row).filter(node => Object.hasOwn(attributes(node), 'data-tick')).length, Number(attributes(row)['data-value']), 'Each Tick Rows mark must encode exactly one completed task');
+    }
+    assert.equal(chart.filter(node => Object.hasOwn(attributes(node), 'data-tick')).length, 40, 'Tick Rows must render all 40 data marks on the server');
+    for (const type of ['f2', 'l14', 'f12']) {
+      assert.equal(bodyNodes.filter(node => attributes(node)['data-demo'] === `lieflat-${type}`).length, 1, `Lieflat ${type} must appear exactly once`);
+      assert.equal(bodyNodes.filter(node => attributes(node).id === `lieflat-${type}`).length, 1, `Lieflat ${type} must have a stable catalog anchor`);
+    }
+    assert.equal(bodyNodes.filter(node => Object.hasOwn(attributes(node), 'data-daily-point')).length, 14, 'F2 must preserve all 14 daily readings');
+    assert.equal(bodyNodes.filter(node => Object.hasOwn(attributes(node), 'data-unit-dot')).length, 100, 'L14 must represent exactly 100 percentage points');
+    assert.equal(bodyNodes.filter(node => Object.hasOwn(attributes(node), 'data-difference-bead')).length, 21, 'F12 default differences must total 21 minutes');
+  }
+}
 const urls = new Set(routes.map(route => route.url));
 const legacyURLs = new Set(legacy.pages.map(page => page.url));
 const missing = [...legacyURLs].filter(url => !urls.has(url));
 assert.deepEqual(missing, [], 'Every original public route must remain available');
-const counts = { routes: routes.length, originalRoutes: legacyURLs.size, comments: 0, math: 0, mermaid: 0, code: 0 };
+const counts = { routes: routes.length, originalRoutes: legacyURLs.size, comments: 0, math: 0, mermaid: 0, code: 0, blogMdx: 0 };
 const pages = new Map(content.pages.map(page => [page.id, page]));
 for (const route of routes) {
   const html = await readFile(htmlPath(route.url), 'utf8');
@@ -51,10 +107,12 @@ for (const route of routes) {
   assertComments(html, expectedComments, route.url);
   if (expectedComments) counts.comments++;
   const page = pages.get(route.id);
+  if (page?.mdx) { assertMdxPage(html, page); counts.blogMdx++; }
   for (const [feature, pattern] of [['math', 'class="katex"'], ['mermaid', 'class="mermaid"'], ['code', 'data-blog-code-language=']]) {
     if (page?.html.includes(pattern)) { assert.ok(html.includes(pattern), `${feature} lost in ${route.url}`); counts[feature]++; }
   }
 }
+assert.equal(counts.blogMdx, content.pages.filter(page => page.mdx).length, 'Every public Blog MDX page must have a verified final route');
 assert.ok(counts.code > 0, 'Article code blocks must retain static source for the blog Pro renderer');
 assert.ok(counts.math > 0 && counts.mermaid > 0, 'Math and Mermaid must survive the build');
 for (const url of ['/', '/archives/', '/modified/', '/posts/', '/weekly/', '/timeline/', '/portfolio/', '/links/', '/tags/', '/categories/', '/about/', '/docs/']) assert.ok(urls.has(url), `Core route missing: ${url}`);
@@ -165,4 +223,4 @@ async function inspect(directory) {
 }
 await inspect(output); assert.deepEqual(errors, [], 'Only public generated artifacts can be deployed');
 await writeFile(path.join(root, '.generated/verification.json'), JSON.stringify({ environment, ...counts, contentLinks: links.checkedLinks, feeds: feeds.size, redirects: redirects.length, assets: assets.size, indexedPages, checkedAt: new Date().toISOString() }, null, 2));
-console.log(`Verified ${counts.routes} rendered routes; all ${counts.originalRoutes} original URLs retained; ${counts.comments} Convex comment pages, ${counts.math} math pages, ${counts.mermaid} Mermaid pages, ${counts.code} code pages. ${links.checkedLinks} internal article links, ${feeds.size} feeds, ${redirects.length} redirects, ${assets.size} assets, search, existing demos, MDX/React/Svelte and ${environment} indexing policy passed.`);
+console.log(`Verified ${counts.routes} rendered routes; all ${counts.originalRoutes} original URLs retained; ${counts.comments} Convex comment pages, ${counts.math} math pages, ${counts.mermaid} Mermaid pages, ${counts.code} code pages, ${counts.blogMdx} imported Blog MDX pages. ${links.checkedLinks} internal article links, ${feeds.size} feeds, ${redirects.length} redirects, ${assets.size} assets, search, existing demos, MDX/React/Svelte and ${environment} indexing policy passed.`);

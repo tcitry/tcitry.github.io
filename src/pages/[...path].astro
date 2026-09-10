@@ -8,6 +8,9 @@ import type { PageView } from '../lib/types';
 import { parse } from 'yaml';
 import portfolioSource from '../../data/portfolio.yaml?raw';
 import { writeFileSync } from 'node:fs';
+import type { MDXInstance } from 'astro';
+
+const mdxModules = import.meta.glob<MDXInstance<Record<string, unknown>>>('../../.generated/mdx/*.mdx');
 
 export function getStaticPaths() {
   const views = buildViews();
@@ -19,6 +22,11 @@ export function getStaticPaths() {
 }
 interface Props { view: PageView }
 const { view } = Astro.props;
+const mdxLoader = view.page.mdx ? mdxModules[`../../.generated/mdx/${view.page.mdx}`] : undefined;
+if (view.page.mdx && !mdxLoader) throw new Error(`Missing compiled MDX module for ${view.page.source}; run prepare:content.`);
+const mdx = mdxLoader ? await mdxLoader() : undefined;
+const MdxContent = mdx?.Content;
+if (mdx) view.page.headings = mdx.getHeadings();
 const portfolio = parse(portfolioSource).items;
 const common = {
   view, allPages: content.pages, tags: content.tags, categories: content.categories, portfolio,
@@ -26,6 +34,6 @@ const common = {
 };
 ---
 <BookLayout page={view.page} navigation={navigation} tags={content.tags} categories={content.categories}>
-  <PageContent {...common} />
+  {MdxContent ? <PageContent {...common}><MdxContent /></PageContent> : <PageContent {...common} />}
   <Fragment slot="toc"><PageToc {...common} /></Fragment>
 </BookLayout>

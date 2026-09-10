@@ -1,0 +1,38 @@
+.frame {
+  --background:#F0EFEB; --foreground:#1C1C1A; --surface:#F0EFEB;
+  --surface-secondary:#DEDDD6; --surface-tertiary:#DEDDD6;
+  --accent:#1C1C1A; --accent-foreground:#F0EFEB;
+  --accent-soft:#D3D2CC; --accent-soft-foreground:#1C1C1A;
+  --focus:#1C1C1A; --muted:#4A4944; --border:#B0AFA9;
+  --color-accent:#1C1C1A; --color-accent-soft:#D3D2CC;
+  --color-accent-soft-foreground:#1C1C1A;
+  background:#F0EFEB; color:#1C1C1A; border-radius:24px;
+  padding:clamp(12px,3vw,24px); margin:24px 0; min-width:0;
+  container-type:inline-size; font-family:Inter,system-ui,"PingFang SC",sans-serif;
+}
+.eyebrow {margin:0 0 6px; color:#4A4944; font-size:12px; letter-spacing:.04em;}
+.title {margin:0; font-size:22px; font-weight:700; line-height:1.4;}
+.description,.legend,.source,.range {color:#4A4944; font-size:13px; line-height:1.7;}
+.description {margin:8px 0 16px;}
+.fields {display:grid; grid-template-columns:minmax(0,1fr); gap:12px;}
+.field {min-width:0; --color-default:#D3D2CC; --color-foreground:#1C1C1A;}
+.track {height:48px; border-inline:var(--border-width-field,1px) solid currentColor; background:#E6E5DF; color:#1C1C1A; box-shadow:none;}
+.label {font-size:13px; color:#1C1C1A; max-width:calc(100% - 68px); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.output {font-size:14px; color:#1C1C1A; font-variant-numeric:tabular-nums;}
+.range {display:block; margin:3px 4px 0; font-size:11px;}
+.actions {display:flex; flex-wrap:wrap; gap:8px; margin:14px 0;}
+.actions button,.prompt button {min-height:36px; color:#1C1C1A; box-shadow:none; font-size:12px;}
+.summary {font-size:16px; font-weight:650; line-height:1.65; margin:16px 0 6px;}
+.legend {margin:0 0 8px;}
+.visual {min-width:0;}
+.visual svg {display:block; width:100%; height:auto; max-height:390px; overflow:visible;}
+.visual svg text {font-family:inherit;}
+.visual button:focus-visible,.frame :is(button,input,a,summary):focus-visible {outline:2px solid currentColor; outline-offset:3px;}
+.prompt {margin-top:12px; font-size:13px;}
+.prompt summary {cursor:pointer; padding:8px 0; font-weight:600;}
+.prompt pre {white-space:pre-wrap; overflow-wrap:anywhere; background:#E6E5DF; padding:14px; border-radius:12px; font:13px/1.8 ui-monospace,monospace;}
+.prompt span[role=status] {margin-left:8px;}
+.source {margin:12px 0 0; font-size:11px;}
+.source a {color:inherit; text-decoration:underline; text-underline-offset:3px;}
+@container (min-width:520px) {.fields {grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media (prefers-reduced-motion:reduce) {.frame :global(*) {animation:none!important; transition:none!important;}}

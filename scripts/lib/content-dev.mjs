@@ -113,9 +113,10 @@ export function blogContentDev({ root = siteRoot, blogRoot = path.resolve(proces
           if (batch.has('assets')) await prepare('prepare:assets', root, blogRoot, signal);
         },
         onSuccess(batch) {
-          // JSON changes use Astro's HMR hook to invalidate SSR and dynamic routes.
-          // Assets have no module import, so explicitly refresh after copying ends.
-          if (batch.has('assets')) server.ws.send({ type: 'full-reload' });
+          // JSON changes invalidate Astro's SSR/dynamic routes. Refresh after
+          // the complete batch so newly added/removed MDX glob entries and
+          // client component modules are visible together with that snapshot.
+          if (batch.has('content') || batch.has('assets')) server.ws.send({ type: 'full-reload' });
           server.config.logger.info('[blog-content] Updated. Watching for changes.');
         },
         onError(error) { server.config.logger.error(`[blog-content] ${error.message}`); },
@@ -129,12 +130,13 @@ export function blogContentDev({ root = siteRoot, blogRoot = path.resolve(proces
         ...PUBLIC_SECTIONS.map(section => path.join(blogRoot, section)),
         ...[...ROOT_PAGES, ...PUBLIC_DOWNLOADS, 'static'].map(file => path.join(blogRoot, file)),
         staticDir,
+        path.join(generated, 'mdx'),
       ]);
       server.watcher.on('all', changed);
       detach = () => server.watcher.off('all', changed);
       // A reload or manual navigation must not read JSON/assets mid-import.
       server.middlewares.use((_req, _res, next) => { void queue.whenIdle().then(() => next(), next); });
-      server.config.logger.info('[blog-content] Watching Blog Markdown and public assets.');
+      server.config.logger.info('[blog-content] Watching Blog Markdown, MDX and public assets.');
     },
     hotUpdate: {
       order: 'pre',

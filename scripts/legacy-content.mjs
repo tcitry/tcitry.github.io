@@ -5,7 +5,7 @@ import YAML from 'yaml';
 
 export const PUBLIC_SECTIONS = ['docs', 'posts', 'weekly', 'links', 'timeline'];
 export const CONTENT_DENIED = /^(?:private|draft|drafts|template|templates|skills|demo|demos|test|tests|node_modules)$/i;
-export const ROOT_PAGES = new Set(['_index.md', 'about.md', 'archives.md', 'modified.md', 'portfolio.md', 'timeline.md', 'ghstar.md']);
+export const ROOT_PAGES = new Set(['_index', 'about', 'archives', 'modified', 'portfolio', 'timeline', 'ghstar'].flatMap(name => [name + '.md', name + '.mdx']));
 export const lowerKeys = (value) => Object.fromEntries(Object.entries(value ?? {}).map(([key, item]) => [key.toLowerCase(), item]));
 export const asList = (value) => [...new Set((value == null ? [] : Array.isArray(value) ? value : [value]).map(String).map((v) => v.trim()).filter(Boolean))];
 export function frontmatter(text, source = '') {
@@ -59,8 +59,8 @@ export function publicSources(records) {
   return records.flatMap((record) => {
     const parts = record.source.split('/');
     let inherited = {};
-    const ancestors = ['_index.md'];
-    for (let i = 1; i < parts.length; i++) ancestors.push(parts.slice(0, i).join('/') + '/_index.md');
+    const ancestors = ['_index.md', '_index.mdx'];
+    for (let i = 1; i < parts.length; i++) for (const extension of ['md', 'mdx']) ancestors.push(parts.slice(0, i).join('/') + '/_index.' + extension);
     for (const ancestor of ancestors) {
       const parent = bySource.get(ancestor);
       if (parent) inherited = { ...inherited, ...cascadeFor(parent.data, record.source) };
@@ -75,23 +75,24 @@ export function publicSources(records) {
   });
 }
 export function matchLegacySources(records, legacyPages) {
+  const fold = source => source.toLowerCase().replace(/\.mdx$/, '.md');
   const exact = new Map();
   const legacyByFold = new Map();
   const currentCounts = new Map();
   for (const page of legacyPages) {
     if (!page.source) continue;
     exact.set(page.source, page);
-    const key = page.source.toLowerCase();
+    const key = fold(page.source);
     // A null entry marks an ambiguous legacy spelling, including duplicates.
     legacyByFold.set(key, legacyByFold.has(key) ? null : page);
   }
   for (const record of records) {
-    const key = record.source.toLowerCase();
+    const key = fold(record.source);
     currentCounts.set(key, (currentCounts.get(key) ?? 0) + 1);
   }
   const matches = new Map();
   for (const record of records) {
-    const key = record.source.toLowerCase();
+    const key = fold(record.source);
     const page = exact.get(record.source) ?? (currentCounts.get(key) === 1 ? legacyByFold.get(key) : undefined);
     if (page) matches.set(record.source, page);
   }
@@ -131,7 +132,7 @@ export function routePart(value) {
 export function defaultRoute(record) {
   const { data, source } = record;
   if (data.url) return encodeRoute(String(data.url).replace(/\/?$/, String(data.url).match(/\.[a-z0-9]+$/i) ? '' : '/'));
-  if (source === '_index.md') return '/';
+  if (/^_index\.mdx?$/.test(source)) return '/';
   const index = /(?:^|\/)_(?:index)\.mdx?$/.test(source);
   let target = source.replace(/\.mdx?$/i, '').replace(/\/_index$/, '');
   if (source.startsWith('posts/') && !index) target = 'posts/' + (data.slug || path.posix.basename(target));

@@ -13,6 +13,8 @@ export interface ContentPage {
   description: string;
   summary: string;
   html: string;
+  /** Generated, public MDX module filename; never a BLOG_DIR filesystem path. */
+  mdx?: string;
   headings: Heading[];
   tags: string[];
   categories: string[];
