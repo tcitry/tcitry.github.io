@@ -68,6 +68,7 @@ try {
         const bar = document.querySelector('[data-sidebar-tools]').getBoundingClientRect();
         const first = document.querySelector(search).getBoundingClientRect();
         const last = document.querySelector(appearance).getBoundingClientRect();
+        const searchIcon = document.querySelector(`${search} svg`).getBoundingClientRect();
         const svg = document.querySelector(`${appearance} svg`).getBoundingClientRect();
         const archives = [...document.querySelectorAll('.book-menu-content a')].find((link) => link.textContent.includes('Archives'))?.getBoundingClientRect();
         return {
@@ -76,10 +77,13 @@ try {
           square: Math.abs(last.width - last.height) < 1,
           visibleIcon: svg.width > 10 && svg.width < last.width && svg.height > 10 && svg.height < last.height,
           documentFits: document.documentElement.scrollWidth <= innerWidth + 1,
-          alignNav: !archives || Math.abs(first.left - archives.left) <= 1,
+          // The search frame extends up to 4px into the sidebar padding so its
+          // inset icon follows the navigation's visual start, not the frame.
+          alignNavIcon: Boolean(archives) && Math.abs(searchIcon.left - archives.left) <= 3,
+          navFrameOutset: Boolean(archives) && first.left >= archives.left - 5 && first.left <= archives.left + 1,
         };
       }, {search, appearance});
-      assert.deepEqual(bounds, {sameRow: true, fit: true, square: true, visibleIcon: true, documentFits: true, alignNav: true});
+      assert.deepEqual(bounds, {sameRow: true, fit: true, square: true, visibleIcon: true, documentFits: true, alignNavIcon: true, navFrameOutset: true});
 
       await openAppearance(page);
       assert.equal(await page.getByRole('menuitemradio').count(), 3, 'All three appearance modes are available');

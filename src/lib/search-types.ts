@@ -9,4 +9,7 @@ export interface SearchEntry {
 export interface SearchResponse {
   results: SearchEntry[];
   total: number;
+  engine?: 'ai-search' | 'pagefind';
+  updating?: boolean;
+  fallback?: 'ai-unavailable';
 }

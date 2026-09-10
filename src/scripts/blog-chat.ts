@@ -6,13 +6,15 @@ function initializeChat() {
   cleanup?.();
   const widget = document.querySelector<HTMLElement>('[data-blog-chat-widget]');
   const launcher = widget?.querySelector<HTMLButtonElement>('[data-chat-launcher]');
+  const expandHandle = widget?.querySelector<HTMLButtonElement>('[data-chat-expand]');
   const panel = widget?.querySelector<HTMLDialogElement>('#blog-chat-panel');
   const target = panel?.querySelector<HTMLElement>('[data-chat-mount]');
-  if (!widget || !launcher || !panel || !target) return;
+  if (!widget || !launcher || !expandHandle || !panel || !target) return;
 
   const state = assistantUIState(() => window.sessionStorage, window.location.pathname);
   const restoredView = state.restore();
-  let currentView: AssistantView = restoredView ?? (widget.dataset.readerInitial === 'true' ? 'reading' : 'chat');
+  let currentView: AssistantView = restoredView ?? 'my';
+  let opener = launcher;
   const events = new AbortController();
   const {signal} = events;
   const mobile = matchMedia('(max-width: 639px)');
@@ -21,6 +23,8 @@ function initializeChat() {
   let launcherMount: ReturnType<typeof import('../components/chat/mount-launcher')['mountLauncher']> | undefined;
   let stopped = false;
   let preservedCloseEvents = 0;
+  let promptRequest = 0;
+  const overlayEscapes = new WeakSet<KeyboardEvent>();
 
   function syncReadingLayout() {
     const docked = panel!.open && !mobile.matches;
@@ -52,17 +56,20 @@ function initializeChat() {
 
   function syncClosed() {
     launcher!.setAttribute('aria-expanded', 'false');
+    expandHandle!.setAttribute('aria-expanded', 'false');
+    expandHandle!.hidden = false;
     document.documentElement.classList.remove('blog-chat-modal-open');
     syncReadingLayout();
   }
 
   function close(restoreFocus = true, preserveState = false) {
+    promptRequest++;
     if (!preserveState) state.clear();
     if (!panel!.open) return;
     if (preserveState) preservedCloseEvents++;
     panel!.close();
     syncClosed();
-    if (restoreFocus) launcher!.focus({preventScroll: true});
+    if (restoreFocus) opener.focus({preventScroll: true});
   }
 
   function focusChat() {
@@ -105,8 +112,9 @@ function initializeChat() {
     return loading;
   }
 
-  function open() {
+  function open(trigger?: HTMLButtonElement) {
     if (panel!.open) return;
+    if (trigger) opener = trigger;
     syncViewport();
     panel!.setAttribute('aria-modal', String(mobile.matches));
     if (mobile.matches) {
@@ -114,6 +122,8 @@ function initializeChat() {
       document.documentElement.classList.add('blog-chat-modal-open');
     } else panel!.show();
     launcher!.setAttribute('aria-expanded', 'true');
+    expandHandle!.setAttribute('aria-expanded', 'true');
+    expandHandle!.hidden = true;
     state.save(currentView);
     syncReadingLayout();
     if (mount) focusChat();
@@ -121,6 +131,7 @@ function initializeChat() {
   }
 
   launcher.hidden = false;
+  expandHandle.hidden = false;
   const face = launcher.querySelector<HTMLElement>('[data-chat-launcher-face]');
   if (face && import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY) {
     void (async () => {
@@ -134,7 +145,18 @@ function initializeChat() {
       }
     })();
   }
-  launcher.addEventListener('click', () => panel.open ? close() : open(), {signal});
+  launcher.addEventListener('click', () => panel.open ? close() : open(launcher), {signal});
+  expandHandle.addEventListener('click', () => open(expandHandle), {signal});
+  document.addEventListener('blog:ask-ai', (event) => {
+    const prompt = event instanceof CustomEvent && typeof event.detail?.prompt === 'string' ? event.detail.prompt.trim() : '';
+    if (!prompt || prompt.length > 2000) return;
+    const request = ++promptRequest;
+    currentView = 'chat';
+    open();
+    void loadChat().then(() => {
+      if (!stopped && panel.open && request === promptRequest) mount?.requestPrompt(prompt);
+    });
+  }, {signal});
   panel.addEventListener('click', (event) => {
     const element = event.target as Element;
     if (element.closest('[data-chat-close]')) close();
@@ -147,17 +169,29 @@ function initializeChat() {
     state.clear();
     syncClosed();
   }, {signal});
-  // A tooltip inside the assistant must not consume the first Escape. Preserve
-  // the normal overlay priority when keyboard focus is elsewhere on the page.
+  // History, image and Clerk overlays own their first Escape. Remember the event:
+  // either overlay may unmount before the document's bubble handler runs.
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !event.isComposing && panel.open && event.target instanceof Node && panel.contains(event.target)) {
+    if (event.key !== 'Escape' || event.isComposing || !panel.open) return;
+    const clerkModal = document.querySelector<HTMLElement>('.blog-clerk-modal');
+    const clerkModalOpen = Boolean(clerkModal?.getClientRects().length);
+    const imageModalOpen = [...document.querySelectorAll<HTMLElement>('[data-blog-image-modal]:not([data-exiting])')]
+      .some(element => element.getClientRects().length);
+    if (clerkModalOpen || imageModalOpen || panel.querySelector('[data-agent-history-popover]:not([data-exiting])')) {
+      overlayEscapes.add(event);
+      // The overlay still handles the key; prevent the containing mobile dialog
+      // from firing its native cancel action after its child modal closes.
+      if (clerkModalOpen || imageModalOpen) event.preventDefault();
+      return;
+    }
+    if (event.target instanceof Node && panel.contains(event.target)) {
       event.preventDefault();
       close();
     }
   }, {capture: true, signal});
   // The native dialog keeps content mounted when closed, and contains focus on mobile.
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !event.isComposing && panel.open && !event.defaultPrevented) {
+    if (event.key === 'Escape' && !event.isComposing && panel.open && !event.defaultPrevented && !overlayEscapes.has(event)) {
       event.preventDefault();
       close();
     }
@@ -186,4 +220,5 @@ function initializeChat() {
 initializeChat();
 document.addEventListener('astro:page-load', initializeChat);
 document.addEventListener('astro:before-swap', () => cleanup?.());
+window.addEventListener('pageshow', event => { if (event.persisted) initializeChat(); });
 if (import.meta.hot) import.meta.hot.dispose(() => cleanup?.());

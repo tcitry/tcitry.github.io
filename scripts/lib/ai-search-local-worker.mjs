@@ -6,12 +6,18 @@ export default {
       return new Response('Not found', {status: 404});
     }
     const {operation, args = []} = await request.json();
+    if (env.BOOTSTRAP_READ_ONLY === '1' && !['info', 'list', 'get', 'itemInfo'].includes(operation)
+      || env.BOOTSTRAP_NO_SCHEMA_UPDATE === '1' && operation === 'update') {
+      return new Response('Not found', {status: 404});
+    }
     const search = env.BLOG_SEARCH;
     const operations = {
       info: () => search.info(),
       update: () => search.update(...args),
       list: () => search.items.list(...args),
       get: () => search.items.get(...args),
+      itemInfo: () => search.items.get(...args).info(),
+      upload: () => search.items.upload(...args),
       uploadAndPoll: () => search.items.uploadAndPoll(...args),
     };
     if (!Object.hasOwn(operations, operation)) return new Response('Not found', {status: 404});

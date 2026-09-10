@@ -21,6 +21,8 @@ async function fixture(t) {
   const script = path.join(directory, 'scripts', 'workers-build.mjs');
   await copyFile(source, script);
   await copyFile(new URL('../scripts/reader-config.mjs', import.meta.url), path.join(directory, 'scripts/reader-config.mjs'));
+  await mkdir(path.join(directory, 'src/lib'), {recursive: true});
+  await copyFile(new URL('../src/lib/public-ai-search-url.mjs', import.meta.url), path.join(directory, 'src/lib/public-ai-search-url.mjs'));
   const log = path.join(directory, 'commands.jsonl');
   await writeFile(path.join(directory, 'bin', 'git'), `#!${process.execPath}
 const fs = require('node:fs');
@@ -86,6 +88,7 @@ if (process.env.FIXTURE_FAIL === script) process.exit(1);
     CLOUDFLARE_API_TOKEN: 'test-deploy-token-789', GITHUB_TOKEN: 'test-github-token-789',
     PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_live_' + Buffer.from('clerk.test.invalid$').toString('base64'),
     PUBLIC_CONVEX_URL: 'https://production-fixture-123.convex.cloud',
+    PUBLIC_AI_SEARCH_URL: 'https://fixture.search.ai.cloudflare.com/search',
     CONVEX_DEPLOY_KEY: 'prod:production-fixture-123|fixture-convex-secret', CLERK_SECRET_KEY: 'fixture-unused-clerk-secret',
   };
   delete env.PUBLIC_SITE_ENV;
@@ -129,6 +132,8 @@ test('Workers build rejects missing or unsafe configuration before any command r
     [{ PUBLIC_CLERK_PUBLISHABLE_KEY: '' }, 'PUBLIC_CLERK_PUBLISHABLE_KEY'],
     [{ PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_test_anything' }, 'PUBLIC_CLERK_PUBLISHABLE_KEY'],
     [{ PUBLIC_CONVEX_URL: '' }, 'PUBLIC_CONVEX_URL'],
+    [{ PUBLIC_AI_SEARCH_URL: '' }, 'PUBLIC_AI_SEARCH_URL'],
+    [{ PUBLIC_AI_SEARCH_URL: 'https://outside.example/search' }, 'PUBLIC_AI_SEARCH_URL'],
     [{ CONVEX_DEPLOY_KEY: '' }, 'CONVEX_DEPLOY_KEY'],
     [{ CONVEX_DEPLOY_KEY: 'dev:production-fixture-123|secret' }, 'CONVEX_DEPLOY_KEY'],
     [{ CONVEX_DEPLOY_KEY: 'prod:another-deployment|secret' }, 'same production deployment'],

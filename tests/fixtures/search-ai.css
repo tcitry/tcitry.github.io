@@ -1,0 +1,6 @@
+* { box-sizing: border-box; }
+:root { font-family: system-ui, sans-serif; background: #f6f6f5; color: #303338; }
+body { margin: 0; }
+main { padding: 16px; }
+main > button { min-height: 44px; padding: 8px 16px; border: 1px solid #d5d5d2; border-radius: 8px; background: white; font: inherit; }
+h1 { font-size: 20px; overflow-wrap: anywhere; }

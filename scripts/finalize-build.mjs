@@ -2,14 +2,15 @@ import { mkdir, readFile, writeFile, access, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertBuiltReaderConfig } from './reader-build.mjs';
+import { previewBuildOutput } from './build-site.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
+const output = await previewBuildOutput(root, process.env.BLOG_PREVIEW_OUTPUT_DIR, process.env.PUBLIC_SITE_ENV);
 // Preserve Astro's snapshot of the configuration actually compiled into JS.
 // Finalization can validate that snapshot, but must never recreate it from env.
 await rm(path.join(root, '.generated/release.json'), { force: true });
 await rm(path.join(root, '.generated/deployment.json'), { force: true });
 if (process.env.PUBLIC_SITE_ENV === 'production') await assertBuiltReaderConfig(root);
 else await rm(path.join(root, '.generated/reader-build.json'), { force: true });
-const output = path.join(root, 'dist');
 const content = JSON.parse(await readFile(path.join(root, '.generated/content.json'), 'utf8'));
 const routes = JSON.parse(await readFile(path.join(root, '.generated/routes.json'), 'utf8'));
 const origin = 'https://yindongliang.com';

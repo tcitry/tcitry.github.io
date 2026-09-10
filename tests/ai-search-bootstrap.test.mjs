@@ -29,12 +29,14 @@ async function fixture(t) {
     requests.push(url);
     assert.equal(init.redirect, 'error');
     assert.equal(init.cache, 'no-store');
-    if (url === `${SITE_ORIGIN}/sitemap.xml`) return new Response(options.mutateSitemap(sitemap()), { status: options.status });
+    if (url === `${SITE_ORIGIN}/sitemap.xml`) return new Response(options.mutateSitemap(sitemap()), { status: options.status, headers: { 'content-type': 'application/xml' } });
     const page = pages.find(page => `${SITE_ORIGIN}${page.url}` === url);
     assert.ok(page, 'No other URLs may be fetched');
-    const html = `<html><head><link rel="canonical" href="${url}"></head><body><main id="main-content"><h1>${page.title}</h1>
-      <article data-pagefind-body>${page.html}</article></main></body></html>`;
-    return new Response(options.mutateHTML(html), { status: options.status, headers: { 'x-robots-tag': options.headerRobots } });
+    const articleMetadata = {'@type': 'BlogPosting', url, headline: page.title, datePublished: page.date, dateModified: page.lastmod};
+    const tags = page.tags.length ? `<p>相关标签：${page.tags.map(tag => `<a href="/tags/${encodeURIComponent(tag)}/">${tag}</a>`).join(' ')}</p>` : '';
+    const html = `<html><head><link rel="canonical" href="${url}"><meta property="og:title" content="${page.title}"><script type="application/ld+json">${JSON.stringify(articleMetadata)}</script></head><body class="book-kind-page book-type-${page.type}"><main id="main-content"><h1>${page.title}</h1>
+      <article data-pagefind-body>${page.html}</article><div data-pagefind-ignore><h5 class="post-after">文章信息</h5><div>${tags}</div></div></main></body></html>`;
+    return new Response(options.mutateHTML(html), { status: options.status, headers: { 'x-robots-tag': options.headerRobots, 'content-type': 'text/html' } });
   };
   return { directory, corpus, pages, fetchImpl, options, requests };
 }

@@ -1,6 +1,5 @@
 .panel { height: 100%; min-width: 0; display: flex; flex-direction: column; gap: 18px; padding: 22px 20px; overflow-y: auto; }
 .header { display: grid; gap: 8px; }
-.eyebrow { color: var(--muted); font-size: 10px; letter-spacing: .12em; }
 .header h2 { margin: 0; font-size: 21px; font-weight: 650; }
 .header p, .note { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
 .membership { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; }
@@ -10,17 +9,26 @@
 .form label { font-size: 12px; font-weight: 550; }
 .form textarea, .form input { width: 100%; min-width: 0; font: inherit; font-size: 13px; }
 .form textarea { resize: vertical; min-height: 90px; max-height: 300px; }
-.threadList { display: grid; }
-.threadButton { width: 100%; display: grid; gap: 8px; padding: 14px 4px; border: 0; border-bottom: 1px solid var(--border); text-align: left; color: inherit; background: transparent; cursor: pointer; }
-.threadButton:hover { background: color-mix(in srgb, currentColor 4%, transparent); }
-.threadButton:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
-.threadButton > strong { font-size: 13px; line-height: 1.6; font-weight: 550; overflow-wrap: anywhere; }
-.threadButton > span { display: flex; justify-content: space-between; gap: 10px; font-size: 11px; color: var(--muted); }
-.badge { color: var(--muted); font-size: 11px; }
+.threadList { display: grid; margin-inline: -8px; }
+.threadButton { width: 100%; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 16px 10px; border: 0; border-radius: 8px; text-align: left; color: var(--foreground); background: transparent; cursor: pointer; }
+.threadButton + .threadButton { border-top: 1px solid var(--border); }
+.threadButton:hover { background: var(--surface-secondary); }
+.threadButton:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.threadSummary { display: grid; min-width: 0; gap: 6px; }
+.threadTitle { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 15px; line-height: 1.55; font-weight: 550; overflow-wrap: anywhere; }
+.threadMeta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.threadStatus[data-status="replied"] { color: var(--accent); }
+.threadChevron { flex-shrink: 0; color: var(--muted); opacity: .55; }
+.threadButton:is(:hover, :focus-visible) .threadChevron { opacity: 1; color: var(--foreground); }
+.badge { color: var(--muted); font-size: 11px; line-height: 1.5; }
 .empty { color: var(--muted); padding: 30px 8px; text-align: center; font-size: 12px; line-height: 1.8; }
 .conversation { display: flex; flex-direction: column; gap: 18px; min-height: 100%; min-width: 0; }
-.threadHeader { display: grid; gap: 8px; justify-items: start; }
-.threadHeader h3 { margin: 0; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
+.threadHeader { display: flex; align-items: flex-start; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.backButton { width: 32px; height: 32px; min-width: 32px; flex: 0 0 32px; margin-top: -3px; padding: 0; border-radius: 8px; color: var(--muted); }
+.backButton:hover { color: var(--foreground); background: var(--surface-secondary); }
+.threadHeading { min-width: 0; display: grid; gap: 5px; }
+.threadState { min-height: 3.4em; }
+.threadHeader h3 { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
 .messages { display: flex; flex-direction: column; gap: 14px; flex: 1; }
 .message { padding: 14px; border: 1px solid var(--border); border-radius: 12px; }
 .author { background: color-mix(in srgb, currentColor 3%, transparent); }
@@ -28,3 +36,13 @@
 .messageMeta strong { font-weight: 600; color: var(--foreground); }
 .message p { margin: 8px 0 0; font-size: 13px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
 .error { margin: 0; font-size: 12px; line-height: 1.7; color: var(--danger); }
+.attachments { display: grid; gap: 10px; min-width: 0; }
+.attachmentTools { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
+.attachmentTools > button { padding-inline: 8px; }
+.attachmentDrafts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.attachmentDrafts > li { position: relative; min-width: 0; aspect-ratio: 1; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface-secondary); }
+.attachmentDrafts img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.removeImage { position: absolute; inset-block-start: 3px; inset-inline-end: 3px; width: 24px; height: 24px; min-width: 24px; padding: 0; box-shadow: 0 1px 4px #0002; }
+.uploadStatus { position: absolute; inset-inline: 0; inset-block-end: 0; padding: 4px; text-align: center; font-size: 11px; color: white; background: #0009; }
+.attachmentDrafts > li[data-status="failed"] { border-color: var(--danger); }
+.message :global(.blog-comments__images) { margin-block-start: 12px; }

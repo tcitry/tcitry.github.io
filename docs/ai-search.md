@@ -1,20 +1,52 @@
-# 博客助手的文章索引与发布同步
+# 站内搜索、博客助手与文章索引同步
 
-本站只使用一个 AI Gateway `tcitry-blog-chat`。AI Search 实例 `tcitry-blog-search` 位于 `default` namespace，继续关联这个 Gateway；运行时检索与回答生成共用它。文章使用 AI Search 内置存储，发布脚本通过 REST API 上传，站点 Worker 使用 binding 查询。Binding 不会自动监视 Git 仓库或上传本地文件，也无需另外创建 R2 bucket 或网站爬虫。[Cloudflare 内置存储说明](https://developers.cloudflare.com/ai-search/configuration/data-source/built-in-storage/)
+本站复用 AI Search 实例 `tcitry-blog-search`（`default` namespace）及其关联的既有 AI Gateway `tcitry-blog-chat`，不创建第二套资源。文章使用 AI Search 内置存储，发布脚本通过 REST API 上传；左侧匿名搜索通过 Public endpoint `/search` 查询。登录后的 Convex Agent 对话已切换到同一实例的公共 `/chat/completions`，回答模型默认继承实例设置；2026-09-10 development 已通过真实登录首问、追问、刷新恢复及旧失败会话重试，来源与持久化状态均已核验；生产尚未部署本轮改动。旧 Worker binding 检索与 `/api/chat` 代码暂保留，但当前助手前端使用 Convex。Binding 不会自动监视 Git 仓库或上传本地文件，也无需另外创建 R2 bucket 或网站爬虫。[Cloudflare 内置存储说明](https://developers.cloudflare.com/ai-search/configuration/data-source/built-in-storage/)
+
+## 左侧匿名搜索
+
+左侧搜索保留 HeroUI Command、最近更新、快捷键、键盘选择与站内跳转；输入关键词后匿名调用既有 AI Search 的 Public endpoint `/search`，只取文章片段，不生成回答。搜索不要求 Clerk 登录，也不要求 Pro；右下角的 AI Chat 则要求登录，登录后免费使用。两者使用同一公开文章索引，但会话与会员权限仍由各自入口处理。[公共搜索 API](https://developers.cloudflare.com/ai-search/api/search/public-endpoint/)
+
+从实例 Public endpoint 设置复制 origin 或 `/search` URL，放入 Git 忽略的 `.env.local` 的 `PUBLIC_AI_SEARCH_URL`，然后重启开发服务。生产构建在 Cloudflare Build variables 设置同名公开变量；源码和 `.env.example` 不保存真实地址。`check:production-config`、production 构建与发布封存会拒绝缺少配置、非 HTTPS、IP/本地主机、凭据、显式端口或错误 API 路径；封存还会检查它与实际编译值一致，不能编译后换地址直接发布。浏览器请求使用 `credentials: omit`，不发送 Clerk session、账户 ID 或 API token。Authorized hosts 只控制浏览器 CORS，不提供身份认证；本地开发需要允许实际预览 origin，生产需要允许正式站点 origin。[Authorized hosts](https://developers.cloudflare.com/ai-search/configuration/retrieval/public-endpoint/)
+
+`src/lib/search-ai-client.ts` 发送 `query`，关闭 query rewriting、reranking 和 similarity caching，并请求最多 50 个、score 至少 0.4 的 chunks。适配器接受 REST envelope，按文章去重，首次显示 8 篇；“加载更多”复用本次结果，不重新调用嵌入。显示总数是这批安全去重后的文章数，并非整个远端索引的命中总数。150 ms 防抖、输入法组合阶段暂停、AbortController、15 秒超时与最新请求序号共同处理取消、超时和旧响应竞态。只有 HTTP 429、5xx、网络故障或内部超时会临时切换到 Pagefind，并显示“AI 搜索暂不可用，当前显示全文搜索结果”与“重试 AI 搜索”。取消或过时请求不会触发回退；“加载更多”沿用当前结果引擎，主动重试或新查询才重新尝试 AI Search。
+
+静态 `/search/references.json` 只发布本次构建语料的 key、hash、canonical URL、标题、栏目与公开更新时间。它不包含正文、源文件路径或仓库 revision。搜索结果必须匹配该清单的 key、content hash 与站内 canonical URL；标题来自清单，远端 chunk 仅作为纯文本摘要，不能渲染 HTML。被版本校验排除的结果显示“正在更新”，不冒充索引没有匹配。该清单仅用于筛选，不会上传文章，也不是远端索引状态报告。
+
+未设置 `PUBLIC_AI_SEARCH_URL` 时，仅 localhost / loopback 上的非 production 预览继续使用 Pagefind，便于离线开发。配置错误、除 429 外的 4xx、格式错误的成功响应，以及 production 或非本地 origin 缺少配置，均明确报错，不用 Pagefind 掩盖。临时故障回退使用构建时的公开全文索引，不依赖登录；最近更新仍由本地公开文章 metadata 生成，它列出的文章不代表已在 AI Search 中完成索引。
+
+2026-09-10 已导入一批严格核验过的公开文章：原有 3 篇保留，新增 50 篇，其余导入暂停。截至当日最新 Cloudflare Dashboard，远端为 31 indexed、22 errors、53 total，queued 和 processing 均为 0。实际“Convex”查询与原文跳转已通过，但 TOTP 及部分问句仍返回上游 `7073`。索引错误为 capacity / timeout，尚无证据证明它们与查询 `7073` 是同一个根因；不能宣称服务持续稳定或全站全文 AI 索引已齐全。早期快照、实测过程和恢复边界见下文“本次实际执行结果”。匿名搜索及本轮迁移的 Convex 公共对话链路不需要 Cloudflare Account ID / API token；本地/CI 的 REST 文章同步和部署仍使用 `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_API_TOKEN`，不能全局删除这些凭据。
+
+定向验证：`node --test tests/search-client.test.mjs tests/search-ai-client.test.mjs` 检查协议、白名单、恶意 URL、取消、重试与配置分支；`node tests/browser/search-ai.mjs` 使用本地隔离 fixture 验证真实 Command 的匿名请求、纯文本显示、竞态、快捷键和窄屏布局，不调用真实云端。
+
+## 自定义域名与共享资源
+
+开发与生产共用既有 AI Search 实例及其关联 Gateway，Clerk/Convex 的用户与数据环境仍分别隔离。`PUBLIC_AI_SEARCH_URL` 与 `AI_SEARCH_PUBLIC_URL` 可配置默认域名或已激活的自定义 HTTPS 域名，并必须使用同一 hostname；真实值只进入 Git 忽略的本地 env 与平台配置。校验器只接受可信部署配置，拒绝凭据、端口、IP/本地主机、额外路径及 URL 规范化绕过；请求拒绝重定向，文章 key、canonical URL、hash 校验保持。配置合法不等于域名已通过 Cloudflare 验证，仍需真实请求验收。
+
+Cloudflare 的 Search 自定义域名保留 `/search` 与 `/chat/completions`；如果关闭默认域名，继续请求旧 hostname 会返回 `60018`，因此切换时须协调前端构建变量与 Convex 环境变量。生产构建平台变量和 production Convex 配置必须在实际发布时分别同步，本地 `.env.production.local` 不会自动改变平台。[Search 自定义域名](https://developers.cloudflare.com/ai-search/configuration/retrieval/public-endpoint/custom-domains/)
+
+AI Gateway 自定义域名是另一个入口：用于直接 Gateway provider-native 或 `/compat/chat/completions` 请求，其 hostname 替代路径中的 account/gateway ID。当前 Convex 使用 AI Search 公共 Chat，由 Search 实例的既有关联选择 Gateway，不直接请求这个 Gateway 域名；不能把它填进 Search 配置。Gateway 的域名状态也不决定已经可用的 Search 自定义域名是否能回答。[Gateway 自定义域名](https://developers.cloudflare.com/ai-gateway/configuration/custom-domains/)
+
+2026-09-10 按用户最终指定的 Search 自定义域名再次无凭据 probe：公开查询 Convex 返回 HTTP 200、8 chunks（约 4.1 秒），全部通过当前 key/hash/canonical/source-kind 校验，对应 1 篇文章；使用通过核验的 hash 限定公共 Chat 检索，收到 HTTP 200 SSE（约 1.1 秒），8 个来源 chunks 全部匹配、84 字回答及 `[DONE]`，模型继承实例设置。已同步 ignored 本地预览/生产构建 env 和 development `AI_SEARCH_PUBLIC_URL`，域名校验代码已部署 development；未改变生产云端配置。此项证明新域名的公共接口可用，不替代切换后站内登录、持久化和生产发布验收。
 
 ## 聊天入口与本地体验
 
 全站右下角的圆形按钮打开博客助手，导航侧边栏不再提供聊天入口。交互参考 HeroUI Agents 的 sidebar 模式：桌面打开右侧整高栏，正文使用剩余空间，背景仍可滚动、交互，点击背景保持助手打开；小于 640px 时打开全屏模态面板，锁定背景滚动并限制键盘焦点。关闭按钮和 Esc 将焦点还给入口，收起保留本页草稿；新 AI 对话和消息由 Convex Agent 持久化，可在导航或刷新后从会话列表继续，未发送草稿不承诺跨页面保存。[官方 Appearance 规范](https://heroui.pro/docs/agents/configure/appearance)
 
-首屏只输出原生按钮和轻量控制脚本，首次点击再加载 React 与 HeroUI Pro 聊天组件。面板使用原生 dialog，让加载失败时仍可关闭和重试，同时保留收起后的 React 状态。窄屏高度跟随可视视口，避免软键盘盖住输入区。登录、AI 对话、阅读、咨询和会员都从右下圆圈进入。尚未上线的 `/chat/` 与 `/me/` 开发页面已经删除，无需兼容跳转，也不进入 sitemap。文章评论保留正文页内入口。
+首屏只输出原生按钮和轻量控制脚本，首次点击再加载 React 与 HeroUI Pro 聊天组件。面板使用原生 dialog，让加载失败时仍可关闭和重试，同时保留收起后的 React 状态。窄屏高度跟随可视视口，避免软键盘盖住输入区。登录、AI 对话、收藏、咨询和会员都从右下圆圈进入。尚未上线的 `/chat/` 与 `/me/` 开发页面已经删除，无需兼容跳转，也不进入 sitemap。文章评论保留正文页内入口。
 
-HeroUI Agents SDK 是独立的托管产品；本站仅参考其交互规范。2026-09-09 新助手面板改用 Convex Agent 保存会话和生成状态，Clerk 登录后才能读写。Convex 通过带服务端密钥的 `/api/internal/retrieve` 请求当前 Worker 检索，再经 Cloudflare REST API 与唯一 Gateway 生成；配置和验收边界见 [账户服务](member-services.md)。浏览器不能提交模型、Gateway、自定义系统提示或其他用户的历史。旧 `/api/chat/` 继续兼容此前客户端，Worker 仍校验普通 Clerk session JWT。[HeroUI Agents 概览](https://heroui.pro/docs/agents)
+HeroUI Agents SDK 是独立的托管产品；本站仅参考其交互规范。助手面板使用 Convex Agent 保存会话和生成状态，Clerk 登录后才能读写。新对话链路在对应 Convex deployment 配置 `AI_SEARCH_PUBLIC_URL`，指向浏览器 `PUBLIC_AI_SEARCH_URL` 使用的同一公开实例，由后端调用 `/chat/completions`；不再要求先经 Worker 检索桥、配置 Cloudflare 模型调用凭据或固定旧 Qwen 模型。Convex 仍校验会话归属与当前公开引用的 key、canonical URL、content hash；浏览器不能提交模型、Gateway、自定义系统提示或其他用户的历史。公共 endpoint 本身没有 Clerk 鉴权，不替代站内权限检查。development 已通过首问、追问、刷新恢复及旧失败会话重试，核验了每轮来源与持久化状态，生产配置与部署未改动；配置和边界见 [账户服务](member-services.md#验收与发布)。旧 `/api/chat/` 代码保留且继续校验 Clerk session JWT，当前助手前端不调用它。[HeroUI Agents 概览](https://heroui.pro/docs/agents)
 
-`npm run dev` 已通过 `scripts/lib/chat-dev.mjs` 的 Vite 插件处理 `/api/chat/`，复用生产的 `worker/chat.mjs`，无需另外运行 `dev:worker`。适配器在请求通过格式与来源校验后才加载云端绑定，并将回答流直接传给浏览器。`getPlatformProxy` 根据 `wrangler.jsonc` 中的 `remote: true` 配置连接唯一的 AI Search 实例 `tcitry-blog-search` 和 Workers AI；检索与生成仍共用唯一的 Gateway `tcitry-blog-chat`。[Wrangler 编程接口](https://developers.cloudflare.com/workers/wrangler/api/)、[AI Search Workers binding](https://developers.cloudflare.com/ai-search/api/search/workers-binding/)
+本轮最终 development 实测：新会话首问 3.424 秒、追问 7.737 秒，均为 completed 且各有 2 个来源；刷新后两轮完整回答及 4 个引用入口恢复。保留原失败记录的旧会话再次提问，也在 3.696 秒完成并返回 2 个来源。生成上下文只使用同一账户、同一会话的完整成功问答，失败和取消轮次不再替代原话题；失败会先持久结算，再进入 Agent SDK 清理，避免等待 120 秒才显示结果。34 项定向测试与 Convex 类型检查通过。这是已测路径的结果，不代表上游错误或索引覆盖问题已全部消失。
 
-本地开发所用的 Wrangler OAuth 登录需要 `ai:write`、`ai-search:write` 和 `ai-search:run` 权限；重新登录时也要保留既有 Worker 发布所需的 scopes。开发适配器通过 Wrangler 登录取得远端绑定访问权限。文章同步 CLI 仍要求显式设置 `CLOUDFLARE_API_TOKEN`，不会自动使用 Wrangler OAuth；重新登录 Wrangler 不会自动满足同步 CLI 的 token 要求，详见下文“认证和 API”。
+以下仅描述保留的旧 Worker 路径，不是新 Convex 对话的配置步骤：`npm run dev` 通过 `scripts/lib/chat-dev.mjs` 的 Vite 插件处理 `/api/chat/`，复用 `worker/chat.mjs`，无需另外运行 `dev:worker`。适配器在请求通过格式与来源校验后才加载云端绑定。`getPlatformProxy` 根据 `wrangler.jsonc` 中的 `remote: true` 配置连接既有 AI Search 实例与 Workers AI。[Wrangler 编程接口](https://developers.cloudflare.com/workers/wrangler/api/)、[AI Search Workers binding](https://developers.cloudflare.com/ai-search/api/search/workers-binding/)
 
-2026-09-08 本地验收：Wrangler OAuth 权限、真实 AI Search 检索、经唯一 Gateway 的固定模型生成、流式回答和文章引用已打通。首次仅索引了下文列出的三篇公开样本，全量文章同步和生产发布尚未执行。入口不会生成演示回答；权限不足或连接失败时显示错误，检索不到有效资料时明确说明依据不足。`npm run test:browser:chat` 的合成流只注入测试浏览器，用于验证引用、停止、错误和限流提示；真实云端验收另外发送公开文章问题完成。
+显式联调旧 Worker remote binding 时，Wrangler OAuth 登录需要 `ai:write`、`ai-search:write` 和 `ai-search:run` 权限；重新登录时也要保留既有 Worker 发布所需的 scopes。新 Convex 公共 endpoint 链路不依赖这套本机绑定登录。文章同步 CLI 仍要求显式设置 `CLOUDFLARE_API_TOKEN`，不会自动使用 Wrangler OAuth；重新登录 Wrangler 不会自动满足同步 CLI 的 token 要求，详见下文“认证和 API”。
+
+2026-09-08 本地验收针对当时的 Worker 聊天链路：Wrangler OAuth 权限、真实 AI Search 检索、经唯一 Gateway 的固定模型生成、流式回答和文章引用已打通。这不代表随后改用的 Convex Agent 链路已通过真实验收。首次仅索引了下文列出的三篇公开样本，全量文章同步和生产发布尚未执行。入口不会生成演示回答；权限不足或连接失败时显示错误，检索不到有效资料时明确说明依据不足。`npm run test:browser:chat` 的合成流只注入测试浏览器，用于验证引用、停止、错误和限流提示；真实云端验收另外发送公开文章问题完成。
+
+2026-09-09 只读复核：既有 AI Search 实例的内置存储仍只有三篇样本，状态均为 `completed`；本地导出的 878 篇文章并未全量上传。三篇远端 key 均在当前本地引用清单中，但只有一篇的 `content_hash` 匹配；另两篇即使被搜索命中，也会被当前版本校验排除。远端没有 Convex 文章。`completed` 只证明远端该版本已索引，不证明它与当前构建一致，更不证明完整 RAG 可用；不应通过去掉 hash 校验来掩盖语料版本差异。
+
+查看实际数据时，在 Cloudflare AI Search 的 `tcitry-blog-search` 实例中检查 Items 的数量、状态和 metadata，再核对本地引用清单。模型生成请求另在 AI Gateway `tcitry-blog-chat` 的 Logs 查看；AI Search 的检索嵌入请求和聊天生成请求须按模型区分。Convex 会话与失败状态的验证入口见 [账户服务验收](member-services.md#验收与发布)。
 
 ## 控制台配置
 
@@ -26,14 +58,14 @@ HeroUI Agents SDK 是独立的托管产品；本站仅参考其交互规范。20
 | 数据源 | 内置存储，不再为同批文章添加 Website 或 R2 |
 | Embedding model | 保持 `@cf/qwen/qwen3-embedding-0.6b` |
 | Chunk size / overlap | 保持 1,024 tokens / 10%，用真实中文问题评估后再调 |
-| Vector search / keyword search | 首版 Worker 明确使用 Vector；保留向量索引。中文和技术词召回评估后再考虑 Hybrid |
+| Vector search / keyword search | 按现有实例及实际请求设置核验召回；旧 Worker 的 Vector 设置不作为新公共对话链路的固定要求 |
 | Query rewriting / reranking | 首轮建议关闭，先测原始检索，减少每问模型调用次数 |
-| Public endpoint | 关闭，读者经本站 Worker 访问 |
+| Public endpoint | 左侧匿名搜索调用 `/search`；Convex Agent 调用同一实例的 `/chat/completions`，聊天权限仍由本站后端校验；development 已通过真实生成，生产未部署本轮改动 |
 | Similarity caching | 首轮关闭，便于验证刚发布的内容和检索质量 |
 
-旧入口的生成模型在 `worker/chat.mjs`、新 Agent 的模型在 `convex/assistantModel.ts` 固定为 `@cf/qwen/qwen3-30b-a3b-fp8`，每次生成明确指定 Gateway `tcitry-blog-chat`，最大输出 2,048 tokens。AI Search 只做检索，不调用它自带的回答生成接口。浏览器不能提交模型、Gateway 或自定义系统提示。
+本轮公共对话链路的回答模型默认继承 AI Search 实例设置；Convex 不再固定传入旧 Qwen 模型或 Gateway，浏览器也不提供模型列表、选模或自定义系统提示。旧 `worker/chat.mjs` 保留的固定模型设置只属于旧 `/api/chat` 路径，不能据此判断新 Convex Agent 的实际回答模型。本轮已验证公共对话路径真实生成；具体回答模型名称仍以实例配置及请求日志为准，不能由旧代码推断。
 
-**固定聊天模型不等于把网关中的所有请求都改成这个模型。** 嵌入继续使用 `@cf/qwen/qwen3-embedding-0.6b`；不要用 Gateway 路由规则将 embedding 强制改写成聊天模型。[固定生成模型](https://developers.cloudflare.com/workers-ai/models/qwen3-30b-a3b-fp8/)
+实例中的 embedding 与回答模型承担不同职责；修改回答模型不应把 embedding 请求强制路由到聊天模型。保留实例与既有 Gateway 的关联，不为这次迁移创建第二个 Gateway。
 
 Custom Metadata 配置以下五个字段。上传前同步脚本会检查字段名称和类型；缺少字段时停止，不会带着不完整的 schema 上传。Cloudflare 的五字段限制、修改 schema 会重新索引等行为见[元数据文档](https://developers.cloudflare.com/ai-search/configuration/indexing/metadata/)。
 
@@ -45,7 +77,7 @@ Custom Metadata 配置以下五个字段。上传前同步脚本会检查字段�
 | `source_kind` | `text` | `author` 或 `ai-assisted`，保留 ByAI 的来源边界 |
 | `content_hash` | `text` | 导出文档的 SHA-256，避免重复索引并识别旧版本 |
 
-标题已在文档首行和 Worker 引用清单中，不再占一个远端 metadata 字段。调用方应从当前部署的引用清单取标题与链接，不能采用模型编造的 URL。
+标题已在文档首行和构建生成的引用清单中，不再占一个远端 metadata 字段。调用方应从当前部署的引用清单取标题与链接，不能采用模型编造的 URL。
 
 ## 分层控制与单 Gateway 的取舍
 
@@ -54,12 +86,12 @@ Custom Metadata 配置以下五个字段。上传前同步脚本会检查字段�
 | 层次 | 控制内容 | 当前配置 / 后续建议 |
 | --- | --- | --- |
 | 聊天界面 | 登录后同一会话只生成一条回答，支持停止并保留输入 | 默认 |
-| Worker 输入/输出 | 每问 2,000 字、最近四轮完整问答、请求体 32 KiB、输出 2,048 tokens | 默认；这是单次请求边界，不是频率限流 |
+| 旧 Worker 输入/输出 | `/api/chat` 每问 2,000 字、最近四轮完整问答、请求体 32 KiB、输出 2,048 tokens | 仅保留路径；新 Convex Agent 以实际后端校验为准 |
 | Worker Rate Limiting binding | 只在 `/api/chat` 检索前按已登录用户的哈希 key 限制提交频率 | 暂未配置。后续可从 10 次 / 60 秒开始 |
 | 文章同步 | 串行上传，每篇完成索引后再上传下一篇；API 请求至少间隔 1 秒 | 默认 |
 | AI Gateway Rate limiting | 统一限制这个 Gateway 的模型调用，索引和聊天共享 | **关闭** |
 | AI Gateway Caching | 缓存模型响应；AI Search 嵌入使用该 Gateway | **关闭** |
-| AI Search Public endpoint 的 Rate limiting | 所有启用公共端点共享，默认 fixed / 120 次每分钟 | **关闭整个 Public endpoint**；Worker binding 不经过这一公共入口 |
+| AI Search Public endpoint 的 Rate limiting | 具体窗口与额度以实例设置为准 | 左侧匿名搜索及新 Convex 对话经过此入口；搜索遇到 429 显示全文回退提示，对话保留可恢复失败；旧 Worker binding 不经过此入口 |
 | WAF Rate limiting rule | 根据域名和 HTTP 路径在 Worker 前拦截请求 | 首版不新增，避免与 Worker 入口规则重复维护 |
 | 平台/模型配额 | Cloudflare 或模型服务自身的速率与容量限制 | 仍然生效，关闭自定义限流不能关闭平台配额 |
 
@@ -67,7 +99,7 @@ Gateway 的计数单位是模型调用，不是独立访客或提问。一次提
 
 后续开 Gateway 限流的配置起点：先记录首次索引及日常问答的 60 秒模型请求峰值，以峰值约两倍试运行，窗口选择 **sliding / 60 秒**。例如实测峰值 40 次，才考虑从 **100 次 / 60 秒**开始。这是工程起点，不是 Cloudflare 官方推荐阈值；文章索引或查询出现 429 时应提高阈值或关闭，并重新运行失败的同步。
 
-若后续先启用博客入口限流，可在 `wrangler.jsonc` 加以下顶层配置并重新部署，代码已有 `CHAT_RATE_LIMIT` 分支：
+若后续需要维护旧 `/api/chat` 入口的限流，可在 `wrangler.jsonc` 加以下顶层配置并重新部署，代码已有 `CHAT_RATE_LIMIT` 分支；它不控制当前 Convex 助手请求：
 
 ```json
 {
@@ -100,7 +132,7 @@ Gateway 的计数单位是模型调用，不是独立访客或提问。一次提
 | 文件 | 内容和用途 |
 | --- | --- |
 | `.generated/ai-search/documents/<id>.md` | 单篇已公开正文和少量元数据，供同步上传 |
-| `.generated/ai-search/references.json` | 当前部署可信的引用白名单：URL、显示标题、版本 hash 等；Worker 打包使用，不含正文 |
+| `.generated/ai-search/references.json` | 当前部署可信的引用白名单：URL、显示标题、版本 hash 等；同次构建供 Convex Agent、公开 `/search/references.json` 和保留的 Worker 路径使用，不含正文 |
 | `.generated/ai-search/manifest.json` | 引用清单、生产/预览标记、站点和内容提交、语料 hash |
 | `.generated/ai-search-sync.json` | 本轮完整同步成功后的记录，失败不推进 |
 
@@ -124,6 +156,51 @@ npm run dev
 
 当前锁定 Wrangler 没有 `ai-search items upload` 命令；这里在实际 Workers 运行时内部调用官方 `items.list()`、`items.uploadAndPoll()`，配置更新使用实例 `update()`。Node 侧通过受限 JSON 桥调用它们；不直接使用 `getPlatformProxy` 访问嵌套的 `items.*`，因为当前 Node 代理不能保留这一嵌套 RPC 路径。代码提供可注入 binding 的 `bootstrapAISearch()`，便于复用已建立的官方连接和执行离线测试。[Wrangler 编程接口](https://developers.cloudflare.com/workers/wrangler/api/)、[Items binding](https://developers.cloudflare.com/ai-search/api/items/workers-binding/)、[实例 binding](https://developers.cloudflare.com/ai-search/api/instances/workers-binding/)
 
+### 扩大已发布内容覆盖：只新增
+
+```sh
+npm run ai-search:bootstrap -- --published-only --dry-run
+# 审阅新文章、冲突和未核验数量后，再执行写入：
+npm run ai-search:bootstrap -- --published-only --apply
+```
+
+`--published-only` 遍历当前导出，但只允许与生产 HTML 和 sitemap 一致的文章：核对 canonical、实际标题、正文、公开日期、栏目、ByAI 标记与内容 hash。检查不通过只表示本轮无法证明一致，不据此判定文章尚未发布，也不放松 Posts / Weekly 的正文比对规则。dry-run 通过同一临时 binding 只读查询实例和所有来源的完整分页；运行时禁止上传及修改配置。原命令不带该参数时仍固定三篇样本。
+
+apply 要求实例已具有完全一致的五字段 schema，绝不初始化或修改 schema；任何来源已占用的 key 都不会上传，同 key 不同 hash、状态未完成或 metadata 不同均单独报告。Cloudflare 返回的 `datetime` metadata 使用 epoch 毫秒时，只接受与原 ISO 日期完全相同的时刻。每 50 篇为一批，在批前后完整读取所有来源的库存并核验 schema；批前刷新 sitemap，批内每篇写前重新读取当前 HTML、检查本地快照与文档 hash，并对照本批 sitemap 和已知 key 集合。批次串行，批内最多并发处理三个不同的唯一 key，已提交 key 立即加入集合，不与分页或状态查询并发。
+
+`items.upload()` 立即返回 id/key；批后用完整库存核验自己提交的 id、key、metadata 和状态，全部批次结束后仅对仍未完成的条目调用 `items.get(id).info()`。只有全部完成才报告成功。没有无依据的逐篇固定等待；索引失败、限流或读取不确定时停止领取新工作，等待已开始请求结束并记录已确认与不确定数量，保留已提交内容，不盲目重试上传、删除或回滚。
+
+执行期间必须让该进程独占实例写入，包括其他检出目录和控制台操作：本地锁仅能阻止同一目录并发，官方 Items API 没有文档化的条件创建参数。列表只使用官方支持的排序；发生分页重排时最多重新读取完整列表三次，仍不一致则停止。若中断后锁仍存在，先确认原进程已结束；再次 dry-run 检查当前状态，再处理剩余项。此入口不改 `dist/`，不生成生产发布回执，也不替代后续受发布回执约束的完整同步。
+
+### 本次实际执行结果（2026-09-10）
+
+本次 dry-run 和 apply 的逐篇公开性核验使用同一份构建快照。878 篇导出中，635 篇通过严格核验：632 篇远端不存在，Git 基本使用 1 篇已存在且 hash 一致，Contract Testing 与 DataStore 2 篇已存在但 hash 不同，按保护规则保留。另有 243 篇未通过本轮核验而排除：218 篇正文不一致、18 篇 SEO 标题不一致、6 篇请求发生跳转、1 篇公开修改日期不一致。排除表示当前证据不足，不等于这些文章都未上线；本次未放松 Posts / Weekly 正文或元数据规则。
+
+`--published-only --apply` 在第一批收到 50 次新增上传的确认后，因真实索引错误停止；没有不确定的上传结果，其余 582 篇尚未上传。首次导入结束时，只读完整分页与 metadata 复核得到以下历史快照：
+
+| 范围 | 数量与状态 | 核验结果 |
+| --- | --- | --- |
+| 原有样本 | 3 篇，均 `completed` | 本次未向这些 key 发送任何写入；Git 匹配当前 hash，另两篇仍保留原版本 |
+| 本次新增 | 19 篇 `completed` | key 和 `content_hash` 均匹配本次导入快照 |
+| 本次新增 | 31 篇 `error` | key 和 `content_hash` 均匹配本次导入快照；30 个 `workers_ai_out_of_capacity_error`、1 个 `workers_ai_timeout_error` |
+| 远端总计 | 53 篇：22 `completed`、31 `error` | 读取时没有 `queued` / `running` 条目，失败条目的 `next_action` 均为 `null` |
+
+该次读取中实例未暂停，Embedding model 仍为 `@cf/qwen/qwen3-embedding-0.6b`，Gateway 关联和五字段 schema 保持原样。本次没有覆盖、删除、重新上传失败条目，也没有变更模型、配置、凭据权限或部署站点。官方将这两个错误分别解释为 Workers AI 容量不足与请求超时；最后一次读取没有发现已安排的后续动作，不能声称后台正在自动重试。[索引错误码](https://developers.cloudflare.com/ai-search/troubleshooting/indexing-error-codes/)
+
+对新增且 `completed` 的 Kubernetes 调度、TanStack Query 与 MDX 入门三篇文章，按当前前端请求格式匿名调用 Public `/search`，三次均返回 HTTP 500。`completed` 只证明对应版本完成索引，本轮没有取得这三次查询的成功返回，不能把新增的 19 篇称为已通过真实搜索验收，也不能仅凭 HTTP 500 判定与索引失败是同一个根因。
+
+同日稍后，最终构建的实际页面查询“Convex”获得两条经过当前引用清单验证的 AI Search 结果，点击《以 ClawHub 为例：如何在真实流量下优化 Convex》正常打开原文；该次没有启用 Pagefind 回退。临时故障回退、重试恢复、取消与分页一致性另通过 24 项定向单元测试及 1440px / 320px 浏览器 fixture。上表保留该次导入的错误快照；未因单次查询恢复就继续批量写入。
+
+截至 2026-09-10 最新 Cloudflare Dashboard，53 个条目中为 **31 indexed、22 errors**，queued 和 processing 均为 0。此快照与首次导入结束时的 22 `completed` / 31 `error` 不同，不能继续把早期错误数当作当前值。索引错误仍为 capacity / timeout，尚未证明全量公开文章已完成索引。
+
+同日较早阶段，公共对话新链路已部署到 Convex development，并在真实登录页面完成首问 Convex 的完整回答和一篇核验来源；刷新后恢复回答与引用，再追问“它和 Durable Objects 有什么区别？”仍得到完整回答和该轮引用。对应 `AI_SEARCH_PUBLIC_URL` 已配置，四个旧 Convex 运行时变量已移除；移除后从真实登录页面再次提问 Convex，仍得到完整回答及来源。生产环境未改动。详细测试与环境边界见 [账户服务验收](member-services.md#验收与发布)。实际上游仍有 TOTP 及部分问句返回 `7073`，不能从索引 capacity / timeout 错误直接推定查询失败的根因，也不能把成功问答推广为所有查询稳定可用。
+
+查看或人工处理时，进入 [Cloudflare 控制台](https://dash.cloudflare.com/) → **AI → AI Search → `tcitry-blog-search` → Items**，检查失败条目的状态、错误及 metadata。官方确认这里可查看和管理文件；本轮未核验控制台是否提供单条或批量重试按钮，因此不记录未经证实的按钮路径。[Items 控制台说明](https://developers.cloudflare.com/ai-search/configuration/data-source/built-in-storage/#upload-and-manage-files)
+
+官方单条重新索引 API 为 `PATCH /accounts/{account_id}/ai-search/namespaces/{name}/instances/{id}/items/{item_id}`，请求体为 `{"next_action":"INDEX","wait_for_completion":true}`。它针对已存条目，不需要重新上传正文。首次导入复核阶段只核验了文档，没有执行该操作：现有 REST token 的先前只读请求返回 403，当前官方 Workers binding 与锁定的 Wrangler CLI 未提供对应调用入口；不读取 Wrangler 认证文件、不扩大 token 权限或猜测 API。恢复前需先具备已授权且可用的正式调用方式，核对目标是本次新增且 hash 一致的失败条目，从单篇开始验证；剩余 582 篇继续暂停。[单条 Sync API](https://developers.cloudflare.com/api/resources/ai_search/subresources/namespaces/subresources/instances/subresources/items/methods/sync/)
+
+上传入口的定向回归已通过：24 项 bootstrap、只新增导入和本地桥测试，加上 10 项语料与同步测试。覆盖现有 key 保护、严格 metadata、公开页面核验、完整分页、快照变化、并发停止后等待已开始请求结束及无盲目重传。临时本地 Workers 运行时均随检查结束关闭，导入进程已退出并释放本地锁；这些验证不代表云端搜索恢复或生产发布完成。
+
 ## 发布与同步流程
 
 所有入口维护在 `package.json`。本地可以先查看导出，不进行远端写入：
@@ -143,7 +220,7 @@ npm run verify:release
 npm run deploy:verified
 ```
 
-`deploy:verified` 已包含同步：发布前检查显式 token、远端实例配置与完整分页；发布后完成既有全站线上检查，核对 `/blog-release.json` 中的生产版本和 `/api/chat` 路由，再写部署回执并执行 `--apply`。环境中的 `BLOG_DIR` 必须指向已审查的独立内容检出，`BLOG_CONTENT_COMMIT` 固定对应提交。不要在生产发布目录重建，或从其他任务仍可能写入的共享 `dist/` 上传。
+`deploy:verified` 已包含同步：发布前检查显式 token、远端实例配置与完整分页，并读取目标 Convex production 的 `AI_SEARCH_PUBLIC_URL`，验证它与封存的 `PUBLIC_AI_SEARCH_URL` 指向同一公共实例（origin、`/search` 或 `/chat/completions` 可归一化为等价地址）；缺少、非法或不一致时在部署前停止，不自动写入配置，也不输出原始配置值；发布后完成既有全站线上检查，核对 `/blog-release.json` 中的生产版本和 `/api/chat` 路由，再写部署回执并执行 `--apply`。环境中的 `BLOG_DIR` 必须指向已审查的独立内容检出，`BLOG_CONTENT_COMMIT` 固定对应提交。不要在生产发布目录重建，或从其他任务仍可能写入的共享 `dist/` 上传。
 
 若站点已发布而线上核验/同步失败，修复原因后在同一封存目录重试：
 
@@ -165,7 +242,7 @@ npm run ai-search:sync -- --apply
 
 同步仅管理 builtin 数据源中符合本站完整 key 格式的对象，不会删除手工上传的其他文件或外部数据源内容。新增和更新文章全部索引完成后，才删除不再公开的旧文章，并确认它们已经从 Items 消失。远端分页总数变化、重复项、哈希不一致、429 耗尽重试或索引未完成都会使同步停止，不会把部分操作标成完整成功。已成功上传的文章保留，下次运行读取远端 hash 后继续；不需要复制上次发布目录里的本地状态文件。
 
-撤回文章在新 Worker 引用白名单中会立即消失；即使远端删除尚在排队，聊天也不能引用该文章。正文更新到索引生效之间可能暂时没有足够资料，界面应明确表示公开文章中未找到充分依据。
+撤回文章在本次构建的引用白名单中会消失；即使远端删除尚在排队，搜索和聊天也不能展示未通过当前白名单校验的引用。正文更新到索引生效之间可能暂时没有足够资料，界面应明确表示公开文章中未找到充分依据。
 
 ## 认证和 API
 

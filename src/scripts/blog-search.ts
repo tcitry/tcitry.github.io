@@ -49,7 +49,11 @@ function initializeSearch() {
       library ??= import('../components/search/SearchCommand');
       const module = await library;
       if (events.signal.aborted || request !== generation) return;
-      mount ??= module.mountSearchCommand(mountHost, restoreFocus);
+      mount ??= module.mountSearchCommand(mountHost, restoreFocus, document.querySelector('[data-blog-chat-widget]') ? (prompt) => {
+        // The assistant takes focus after the search modal releases its focus scope.
+        cancelAnimationFrame(focusFrame);
+        document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt}}));
+      } : undefined);
       mount.open();
     } catch (error) {
       library = undefined;

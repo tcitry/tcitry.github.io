@@ -1,7 +1,7 @@
-/** @typedef {'chat' | 'consult' | 'reading' | 'membership'} AssistantView */
+/** @typedef {'chat' | 'consult' | 'my' | 'messages' | 'admin'} AssistantView */
 
 const storageKey = 'blog-assistant-ui';
-const views = new Set(['chat', 'consult', 'reading', 'membership']);
+const views = new Set(['chat', 'consult', 'my', 'messages', 'admin']);
 
 /**
  * Only the public page and selected tab survive a full-page sign-in callback.
@@ -15,7 +15,11 @@ export function assistantUIState(storage, pathname) {
     restore() {
       try {
         const state = JSON.parse(storage().getItem(storageKey) || 'null');
-        return state?.pathname === pathname && views.has(state.view) ? state.view : undefined;
+        if (!state || !views.has(state.view) || typeof state.pathname !== 'string') return undefined;
+        if (state.pathname === pathname) return state.view;
+        // Back navigation must not resurrect a panel closed by navigation.
+        storage().removeItem(storageKey);
+        return undefined;
       } catch { return undefined; }
     },
     /** @param {AssistantView} view */

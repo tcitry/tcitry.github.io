@@ -47,7 +47,7 @@ export default function SidebarTools({label = '搜索博客'}: {label?: string})
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
         <circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" />
       </svg>
-      <span>Search</span>
+      <span className={styles.triggerLabel}>Search</span>
       <Kbd className={styles.shortcut} aria-hidden="true">
         <Kbd.Abbr keyValue={modifier} /><Kbd.Content>K</Kbd.Content>
       </Kbd>

@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { assertSealedRelease, assetHashes } from './release-manifest.mjs';
-import { assertClerkIssuer, assertProductionDeployKey, loadReaderEnvironment, readProductionReaderConfig, withoutReaderSecrets } from './reader-config.mjs';
+import { assertClerkIssuer, assertConvexSearchURL, assertProductionDeployKey, loadReaderEnvironment, readProductionReaderConfig, withoutReaderSecrets } from './reader-config.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const execute = promisify(execFile);
@@ -60,8 +60,17 @@ try {
   await writeFile(convexEnvFile, `CONVEX_DEPLOY_KEY=${configured.CONVEX_DEPLOY_KEY}\n`, { mode: 0o600, flag: 'wx' });
   const convex = ['node_modules/convex/bin/main.js'];
   const issuer = await run('Checking the production Clerk issuer in Convex',
-    [...convex, 'env', 'get', 'CLERK_JWT_ISSUER_DOMAIN', '--env-file', convexEnvFile], convexEnv, true);
+    [...convex, 'env', 'get', 'CLERK_FRONTEND_API_URL', '--env-file', convexEnvFile], convexEnv, true);
   assertClerkIssuer(issuer.trim(), reader);
+  let publicSearchEndpoint;
+  try {
+    const output = await run('Checking the production AI Search endpoint in Convex',
+      [...convex, 'env', 'get', 'AI_SEARCH_PUBLIC_URL', '--env-file', convexEnvFile], convexEnv, true);
+    // env get prints one line terminator. Preserve whitespace in the stored
+    // value so malformed runtime configuration cannot pass by being trimmed.
+    publicSearchEndpoint = output.replace(/\r?\n$/, '');
+  } catch { /* The same explicit configuration error covers an unreadable value. */ }
+  assertConvexSearchURL(publicSearchEndpoint, manifest.reader);
   await run('Deploying the verified Convex backend', [...convex, 'deploy', '--yes', '--typecheck', 'enable', '--codegen', 'disable',
     '--env-file', convexEnvFile, '--cmd', 'node scripts/verify-convex-target.mjs',
     '--cmd-url-env-var-name', 'CONVEX_DEPLOYMENT_URL'], convexEnv);

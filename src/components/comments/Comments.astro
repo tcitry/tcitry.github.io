@@ -1,11 +1,19 @@
 ---
-import CommentsRoot from './CommentsRoot';
 import './comments.css';
-interface Props {pathname: string}
-const {pathname} = Astro.props;
+interface Props {pathname: string; title?: string; bookmarkable?: boolean}
+const {pathname, title, bookmarkable = false} = Astro.props;
 ---
-<section id="comments" class="blog-comments" data-convex-comments data-comment-pathname={pathname} data-pagefind-ignore data-sentry-mask aria-labelledby="comments-heading">
+<section id="comments" class="blog-comments" data-convex-comments data-comment-pathname={pathname} data-comment-title={title} data-comment-bookmarkable={String(bookmarkable)} data-pagefind-ignore data-sentry-mask aria-labelledby="comments-heading">
   <h2 id="comments-heading">评论</h2>
-  <CommentsRoot pathname={pathname} client:visible />
+  <div data-comments-placeholder>
+    <p class="blog-comments__hint" role="status" data-comments-load-status></p>
+    <div class="blog-comments__load-actions">
+      <button type="button" data-comments-retry hidden>重新加载</button>
+      <button type="button" data-comments-refresh hidden>刷新页面</button>
+    </div>
+  </div>
+  <div data-comments-mount hidden></div>
   <noscript>启用 JavaScript 并登录后可查看评论和参与讨论。</noscript>
 </section>
+
+<script>import '../../scripts/blog-comments';</script>

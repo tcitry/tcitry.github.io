@@ -1,0 +1,17 @@
+@reference "../../styles/tailwind.css";
+@import "tw-animate-css";
+@import "@heroui/styles/components/button.css" layer(components);
+@import "@heroui/styles/components/close-button.css" layer(components);
+@import "@heroui/styles/components/modal.css" layer(components);
+
+.blog-comments__images { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; max-width: 34rem; margin-top: .875rem; }
+.blog-comments__images[data-single-image] { grid-template-columns: minmax(0, 1fr); max-width: 26rem; }
+.blog-comments__image { min-width: 0; }
+.blog-comments__image-trigger { display: block; width: 100%; height: auto; min-width: 0; padding: 0; overflow: hidden; border-radius: .625rem; background: var(--surface-secondary); }
+.blog-comments__image-trigger img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; margin: 0; }
+.blog-comments__images[data-single-image] .blog-comments__image-trigger img { aspect-ratio: auto; max-height: 24rem; object-fit: contain; }
+.blog-comments__image-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5rem; min-height: 8rem; border-radius: .625rem; background: var(--surface-secondary); color: var(--muted); font-size: .8125rem; }
+.blog-comments__image-backdrop { z-index: 1100; }
+.blog-comments__image-dialog { max-width: min(60rem, calc(100vw - 2rem)); }
+.blog-comments__image-dialog .modal__body { padding: 3rem .875rem .875rem; }
+.blog-comments__image-full { display: block; width: 100%; max-height: calc(100dvh - 7rem); object-fit: contain; margin: 0; }

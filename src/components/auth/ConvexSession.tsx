@@ -1,8 +1,11 @@
-import {Component, useCallback, useEffect, useState, type ReactNode} from 'react';
+import {useCallback, type ReactNode} from 'react';
 import {useAuth} from '@clerk/react';
-import {ConvexReactClient, useConvexAuth} from 'convex/react';
+import {useConvexAuth} from 'convex/react';
 import {ConvexProviderWithClerk} from 'convex/react-clerk';
 import SignInPanel, {AuthLoading} from './SignInPanel';
+import useSessionConvexClient from './useSessionConvexClient';
+import ServiceBoundary from './ServiceBoundary';
+export {default as ServiceBoundary} from './ServiceBoundary';
 
 function useConvexClerkAuth() {
   const auth = useAuth();
@@ -25,17 +28,7 @@ function useConvexClerkAuth() {
   return {...auth, getToken};
 }
 
-class ServiceBoundary extends Component<{children: ReactNode}, {failed: boolean}> {
-  state = {failed: false};
-  static getDerivedStateFromError() { return {failed: true}; }
-  render() {
-    return this.state.failed
-      ? <p role="alert">暂时无法连接，请刷新页面后重试。</p>
-      : this.props.children;
-  }
-}
-
-function SessionContent({children, requireAuth}: {children: ReactNode; requireAuth: boolean}) {
+export function ConvexAuthGate({children, requireAuth = true}: {children: ReactNode; requireAuth?: boolean}) {
   const {isLoaded, userId} = useAuth();
   const {isLoading, isAuthenticated} = useConvexAuth();
   if (!isLoaded || (requireAuth && isLoading)) return <AuthLoading label="正在连接…" />;
@@ -45,18 +38,23 @@ function SessionContent({children, requireAuth}: {children: ReactNode; requireAu
 }
 
 function Client({url, children, requireAuth}: {url: string; children: ReactNode; requireAuth: boolean}) {
-  const [client] = useState(() => new ConvexReactClient(url));
-  useEffect(() => () => { void client.close(); }, [client]);
+  const client = useSessionConvexClient(url);
   return <ConvexProviderWithClerk client={client} useAuth={useConvexClerkAuth}>
-    <ServiceBoundary><SessionContent requireAuth={requireAuth}>{children}</SessionContent></ServiceBoundary>
+    <ConvexAuthGate requireAuth={requireAuth}>{children}</ConvexAuthGate>
   </ConvexProviderWithClerk>;
 }
 
 // A new Clerk session gets a fresh client and query cache before children render.
 // The wrapper lives under BlogClerkProvider; comment data also requires authentication.
-export default function ConvexSession({children, requireAuth = false}: {children: ReactNode; requireAuth?: boolean}) {
+export default function ConvexSession({children, requireAuth = false, disableBoundary = false, onErrorClose}: {
+  children: ReactNode; requireAuth?: boolean; disableBoundary?: boolean; onErrorClose?: () => void;
+}) {
   const {userId, sessionId} = useAuth();
   const url = import.meta.env.PUBLIC_CONVEX_URL ?? '';
   if (!url) return <p role="status">账户服务尚未开放，请稍后再来。</p>;
-  return <Client key={`${userId ?? 'anonymous'}:${sessionId ?? ''}`} url={url} requireAuth={requireAuth}>{children}</Client>;
+  const sessionKey = `${userId ?? 'anonymous'}:${sessionId ?? ''}`;
+  const content = <Client key={sessionKey} url={url} requireAuth={requireAuth}>{children}</Client>;
+  // An outer retry must also replace a failed/closed client. Local boundaries
+  // inside a healthy provider can retry one private view without replacing it.
+  return disableBoundary ? content : <ServiceBoundary key={sessionKey} onClose={onErrorClose}>{content}</ServiceBoundary>;
 }

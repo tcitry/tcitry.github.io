@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parseEnv } from 'node:util';
+import { publicAIEndpoint } from '../src/lib/public-ai-search-url.mjs';
 
 const wranglerPublicNames = ['PUBLIC_CLERK_PUBLISHABLE_KEY', 'PUBLIC_CONVEX_URL'];
 
@@ -42,7 +43,16 @@ export function readProductionReaderConfig(env) {
   const rawUrl = env.PUBLIC_CONVEX_URL;
   assert.ok(typeof rawUrl === 'string' && /^https:\/\/[a-z0-9]+(?:-[a-z0-9]+)*\.convex\.cloud\/?$/.test(rawUrl),
     'Set PUBLIC_CONVEX_URL to the production Convex HTTPS deployment URL (*.convex.cloud).');
-  return { clerkPublishableKey: key, clerkIssuerDomain, convexUrl: rawUrl.replace(/\/$/, '') };
+  return { clerkPublishableKey: key, clerkIssuerDomain, convexUrl: rawUrl.replace(/\/$/, ''),
+    aiSearchUrl: readProductionSearchURL(env) };
+}
+
+// Keep production failures at build/preflight time, before a broken anonymous
+// search can be deployed. The browser adapter validates this boundary as well.
+export function readProductionSearchURL(env) {
+  const value = env.PUBLIC_AI_SEARCH_URL;
+  const message = 'Set PUBLIC_AI_SEARCH_URL to the existing AI Search HTTPS Public endpoint origin or /search URL before a production build.';
+  try { return publicAIEndpoint(value); } catch { assert.fail(message); }
 }
 
 export function assertProductionDeployKey(env, config = readProductionReaderConfig(env)) {
@@ -54,7 +64,15 @@ export function assertProductionDeployKey(env, config = readProductionReaderConf
 
 export function assertClerkIssuer(issuer, config) {
   assert.ok(typeof issuer === 'string' && issuer.trim().replace(/\/$/, '') === config.clerkIssuerDomain,
-    'Set CLERK_JWT_ISSUER_DOMAIN in the target Convex production deployment to the Clerk production Frontend API URL matching PUBLIC_CLERK_PUBLISHABLE_KEY.');
+    'Set CLERK_FRONTEND_API_URL in the target Convex production deployment to the Clerk production Frontend API URL matching PUBLIC_CLERK_PUBLISHABLE_KEY.');
+}
+
+export function assertConvexSearchURL(value, config) {
+  const message = 'Set AI_SEARCH_PUBLIC_URL in the target Convex production deployment to the same AI Search Public endpoint as the sealed PUBLIC_AI_SEARCH_URL (origin, /search or /chat/completions).';
+  let normalized;
+  try { normalized = publicAIEndpoint(value, {allowChatPath: true}); }
+  catch { assert.fail(message); }
+  assert.ok(normalized === config.aiSearchUrl, message);
 }
 
 export function withoutReaderSecrets(env) {

@@ -1,8 +1,9 @@
 import {Component, useEffect, useState, type ReactNode} from 'react';
 import {useAuth} from '@clerk/react';
-import {ConvexReactClient, useConvexAuth} from 'convex/react';
+import {useConvexAuth} from 'convex/react';
 import {ConvexProviderWithClerk} from 'convex/react-clerk';
 import SignInPanel, {AuthLoading} from '../auth/SignInPanel';
+import useSessionConvexClient from '../auth/useSessionConvexClient';
 import ArticleReader from './ArticleReader';
 import ReaderLibrary from './ReaderLibrary';
 import surfaceStyles from '../demos/DemoSurface.module.css';
@@ -16,7 +17,7 @@ class ReaderBoundary extends Component<{children: ReactNode}, {failed: boolean}>
   static getDerivedStateFromError() { return {failed: true}; }
   render() {
     return this.state.failed
-      ? <p role="alert">阅读账户暂时无法连接。请稍后刷新页面重试，文章仍可正常阅读。</p>
+      ? <p role="alert">收藏暂时无法加载，请稍后刷新页面重试。</p>
       : this.props.children;
   }
 }
@@ -35,29 +36,25 @@ function ReaderAccount(props: ReaderProps) {
   if (!isLoaded) return <AuthLoading label="正在加载登录…" />;
 
   return <>
-    <div className="reader-account-bar">
-      <span className="reader-account-caption">{props.library ? '你的私人阅读空间' : '阅读账户'}</span>
-    </div>
     {!userId
       ? <SignInPanel
-        title="登录后阅读"
-        description="登录后收藏文章、继续上次阅读，并保存仅自己可见的笔记。"
+        title="登录后收藏"
+        description="登录后收藏文章，并查看你的收藏。"
         action
       />
       : isLoading
-        ? <AuthLoading label={slow ? '连接仍在进行中，请检查网络或稍后刷新。' : '正在连接阅读账户…'} />
+        ? <AuthLoading label={slow ? '连接仍在进行中，请检查网络或稍后刷新。' : '正在加载收藏…'} />
         : isAuthenticated
           ? <ReaderBoundary key={`${userId}:${sessionId}`}>
             {props.pathname && <ArticleReader pathname={props.pathname} title={props.title!} />}
             {props.library && <ReaderLibrary />}
           </ReaderBoundary>
-          : <p className="reader-account-hint">阅读数据暂时无法同步，请稍后刷新或重新登录。</p>}
+          : <p className="reader-account-hint">收藏暂时无法同步，请稍后刷新或重新登录。</p>}
   </>;
 }
 
 function SessionClient({convexUrl, ...props}: ReaderProps & {convexUrl: string}) {
-  const [client] = useState(() => new ConvexReactClient(convexUrl));
-  useEffect(() => () => { void client.close(); }, [client]);
+  const client = useSessionConvexClient(convexUrl);
   return <ConvexProviderWithClerk client={client} useAuth={useAuth}>
     <ReaderAccount {...props} />
   </ConvexProviderWithClerk>;
@@ -73,12 +70,12 @@ function SessionReader(props: ReaderProps & {convexUrl: string}) {
 export default function ReaderRoot(props: ReaderProps) {
   const clerkKey = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY ?? '';
   const convexUrl = import.meta.env.PUBLIC_CONVEX_URL ?? '';
-  return <section className={`${surfaceStyles.surface} reader-shell`} aria-label={props.library ? '我的阅读账户' : '文章阅读工具'}
+  return <section className={`${surfaceStyles.surface} reader-shell`} aria-label={props.library ? '收藏' : '文章收藏工具'}
     data-book-island data-reader-root data-pagefind-ignore data-sentry-mask>
     <ReaderBoundary>
       {clerkKey && convexUrl
         ? <SessionReader {...props} convexUrl={convexUrl} />
-        : <p className="reader-account-hint">阅读账户尚未开放。你可以继续阅读全部公开文章。</p>}
+        : <p className="reader-account-hint">收藏功能尚未开放。</p>}
     </ReaderBoundary>
   </section>;
 }

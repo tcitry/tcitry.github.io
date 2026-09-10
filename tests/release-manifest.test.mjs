@@ -18,9 +18,11 @@ async function fixture(t) {
   for (const subdirectory of [content, site, 'site/scripts', 'site/dist', 'site/.generated', 'site/node_modules/wrangler/bin', 'site/node_modules/convex/bin']) {
     await mkdir(path.isAbsolute(subdirectory) ? subdirectory : path.join(directory, subdirectory), { recursive: true });
   }
-  for (const file of ['release-manifest.mjs', 'verify-release.mjs', 'deploy-verified.mjs', 'theme-package.mjs', 'reader-config.mjs', 'reader-build.mjs', 'finalize-build.mjs', 'verify-convex-target.mjs']) {
+  for (const file of ['release-manifest.mjs', 'verify-release.mjs', 'deploy-verified.mjs', 'theme-package.mjs', 'reader-config.mjs', 'reader-build.mjs', 'finalize-build.mjs', 'build-site.mjs', 'verify-convex-target.mjs']) {
     await copyFile(new URL(`../scripts/${file}`, import.meta.url), path.join(site, 'scripts', file));
   }
+  await mkdir(path.join(site, 'src/lib'), {recursive: true});
+  await copyFile(new URL('../src/lib/public-ai-search-url.mjs', import.meta.url), path.join(site, 'src/lib/public-ai-search-url.mjs'));
   await writeFile(path.join(site, '.gitignore'), 'dist/\n.generated/\nnode_modules/\n.env*\n');
   await writeFile(path.join(site, 'package.json'), '{"type":"module"}');
   await writeFile(path.join(site, 'wrangler.jsonc'), '{"name":"test-worker","assets":{"directory":"./dist"}}');
@@ -33,6 +35,7 @@ async function fixture(t) {
   const reader = {
     clerkPublishableKey: 'pk_live_' + Buffer.from('clerk.test.invalid$').toString('base64'),
     clerkIssuerDomain: 'https://clerk.test.invalid', convexUrl: 'https://production-fixture-123.convex.cloud',
+    aiSearchUrl: 'https://fixture.search.ai.cloudflare.com/search',
   };
   await writeFile(path.join(site, '.generated/reader-build.json'), JSON.stringify(reader));
   await writeFile(path.join(content, 'post.md'), 'Reviewed content');
@@ -63,8 +66,16 @@ fs.appendFileSync('.generated/convex-env.jsonl', JSON.stringify({ args, deployTo
   envFileMatches: fs.readFileSync(args[args.indexOf('--env-file') + 1], 'utf8') === 'CONVEX_DEPLOY_KEY=' + process.env.CONVEX_DEPLOY_KEY + '\\n',
   envFileMode: fs.statSync(args[args.indexOf('--env-file') + 1]).mode & 0o777 }) + '\\n');
 if (args[0] === 'env') {
-  if (process.env.FIXTURE_CONVEX_FAIL === 'issuer-command') process.exit(1);
-  console.log(process.env.FIXTURE_ISSUER || 'https://clerk.test.invalid');
+  if (args[2] === 'AI_SEARCH_PUBLIC_URL') {
+    if (process.env.FIXTURE_CONVEX_FAIL === 'search-command') {
+      console.error('fixture-upstream-private-value', process.env.CONVEX_DEPLOY_KEY);
+      process.exit(1);
+    }
+    console.log(process.env.FIXTURE_AI_SEARCH_URL ?? 'https://fixture.search.ai.cloudflare.com/search');
+  } else {
+    if (process.env.FIXTURE_CONVEX_FAIL === 'issuer-command') process.exit(1);
+    console.log(process.env.FIXTURE_ISSUER || 'https://clerk.test.invalid');
+  }
 } else {
   const result = cp.spawnSync(process.execPath, ['scripts/verify-convex-target.mjs'], { stdio: 'inherit', env: {
     ...process.env, CONVEX_DEPLOYMENT_URL: process.env.FIXTURE_TARGET_URL || 'https://production-fixture-123.convex.cloud' } });
@@ -88,6 +99,7 @@ if (args[0] === 'env') {
     CLOUDFLARE_API_TOKEN: 'fixture-deploy-secret', BLOG_READ_TOKEN: 'fixture-content-secret',
     HEROUI_AUTH_TOKEN: 'fixture-pro-secret', BLOG_CONTENT_REPOSITORY: 'fixture/private',
     PUBLIC_CLERK_PUBLISHABLE_KEY: reader.clerkPublishableKey, PUBLIC_CONVEX_URL: reader.convexUrl,
+    PUBLIC_AI_SEARCH_URL: reader.aiSearchUrl,
     CONVEX_DEPLOY_KEY: 'prod:production-fixture-123|fixture-convex-secret',
     CONVEX_DEPLOYMENT: 'dev:development-fixture', CLERK_SECRET_KEY: 'fixture-unused-clerk-secret' };
   return { directory, site, content, contentCommit, git,
@@ -127,17 +139,21 @@ test('A sealed release deploys exactly its assets without needing the temporary 
     assert.ok(!JSON.stringify(manifest).includes(privateValue));
   }
   await rm(context.content, { recursive: true });
-  const deployed = await context.run('deploy-verified.mjs', { BLOG_DIR: '' });
+  const deployed = await context.run('deploy-verified.mjs', { BLOG_DIR: '',
+    FIXTURE_AI_SEARCH_URL: 'https://fixture.search.ai.cloudflare.com/chat/completions/' });
   assert.equal(deployed.code, 0, deployed.stderr);
   const deployment = JSON.parse(await readFile(path.join(context.site, '.generated/deploy-env.json'), 'utf8'));
   assert.deepEqual(deployment, { args: ['deploy'], deployToken: true, contentToken: false, proToken: false, repository: false, convexToken: false, clerkSecret: false });
   const convexCommands = (await readFile(path.join(context.site, '.generated/convex-env.jsonl'), 'utf8')).trim().split('\n').map(JSON.parse);
-  assert.equal(convexCommands.length, 2);
+  assert.equal(convexCommands.length, 3);
   assert.ok(convexCommands.every(command => command.convexToken && !command.deployToken && !command.clerkSecret && !command.contentToken && !command.proToken && !command.developmentSelection));
   assert.ok(convexCommands.every(command => command.envFileMatches && command.envFileMode === 0o600));
-  assert.ok(convexCommands[1].args.includes('--codegen'));
-  assert.ok(convexCommands[1].args.includes('disable'));
-  assert.ok(convexCommands[1].args.includes('--cmd-url-env-var-name'));
+  assert.deepEqual(convexCommands.slice(0, 2).map(command => command.args.slice(0, 3)), [
+    ['env', 'get', 'CLERK_FRONTEND_API_URL'], ['env', 'get', 'AI_SEARCH_PUBLIC_URL'],
+  ]);
+  assert.ok(convexCommands[2].args.includes('--codegen'));
+  assert.ok(convexCommands[2].args.includes('disable'));
+  assert.ok(convexCommands[2].args.includes('--cmd-url-env-var-name'));
   await assert.rejects(readFile(path.join(context.site, '.generated/convex-release.env')), { code: 'ENOENT' });
   assert.match(deployed.stdout, /without rebuilding/);
   await writeFile(path.join(context.site, 'dist/index.html'), 'unverified changes');
@@ -187,6 +203,8 @@ test('Backend failures, a mismatched canonical target or issuer stop Worker uplo
     { CONVEX_DEPLOY_KEY: 'dev:production-fixture-123|fixture-secret' },
     { PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_test_fixture' },
     { PUBLIC_CONVEX_URL: 'https://another-deployment.convex.cloud' },
+    { PUBLIC_AI_SEARCH_URL: '' },
+    { PUBLIC_AI_SEARCH_URL: 'https://other.search.ai.cloudflare.com/search' },
   ]) {
     const context = await fixture(t);
     assert.equal((await context.run('verify-release.mjs')).code, 0);
@@ -198,11 +216,42 @@ test('Backend failures, a mismatched canonical target or issuer stop Worker uplo
   }
 });
 
+test('Missing, unreadable or mismatched Convex Search configuration stops both deployments without logging values', async t => {
+  const context = await fixture(t);
+  assert.equal((await context.run('verify-release.mjs')).code, 0);
+  for (const overrides of [
+    {FIXTURE_AI_SEARCH_URL: ''},
+    {FIXTURE_CONVEX_FAIL: 'search-command'},
+    {FIXTURE_AI_SEARCH_URL: 'https://other.search.ai.cloudflare.com/search'},
+    {FIXTURE_AI_SEARCH_URL: 'https://fixture.search.ai.cloudflare.com/other/../search'},
+    {FIXTURE_AI_SEARCH_URL: 'https://fixture.search.ai.cloudflare.com/search\n'},
+    {FIXTURE_AI_SEARCH_URL: 'https://user:fixture-upstream-private-value@fixture.search.ai.cloudflare.com/search'},
+    {FIXTURE_AI_SEARCH_URL: 'https://fixture.search.ai.cloudflare.com/search?token=fixture-upstream-private-value'},
+  ]) {
+    await rm(path.join(context.site, '.generated/convex-env.jsonl'), {force: true});
+    const rejected = await context.run('deploy-verified.mjs', overrides);
+    assert.equal(rejected.code, 1);
+    assert.match(rejected.stderr, /Set AI_SEARCH_PUBLIC_URL.*same AI Search Public endpoint.*sealed PUBLIC_AI_SEARCH_URL/);
+    assert.doesNotMatch(rejected.stdout + rejected.stderr, /fixture-convex-secret|fixture-upstream-private-value/);
+    const commands = (await readFile(path.join(context.site, '.generated/convex-env.jsonl'), 'utf8')).trim().split('\n').map(JSON.parse);
+    assert.deepEqual(commands.map(command => command.args.slice(0, 3)), [
+      ['env', 'get', 'CLERK_FRONTEND_API_URL'], ['env', 'get', 'AI_SEARCH_PUBLIC_URL'],
+    ], 'Only read-only environment checks run; neither environment writes nor Convex deploy start');
+    for (const file of ['convex-deployed', 'deploy-env.json', 'convex-release.env']) {
+      await assert.rejects(readFile(path.join(context.site, '.generated', file)), {code: 'ENOENT'});
+    }
+  }
+});
+
 test('Production sealing rejects configuration changes after the build', async t => {
   const context = await fixture(t);
   const rejected = await context.run('verify-release.mjs', { PUBLIC_CONVEX_URL: 'https://another-deployment.convex.cloud' });
   assert.equal(rejected.code, 1);
   assert.match(rejected.stderr, /differs from the compiled assets/);
+  await assert.rejects(context.manifest(), { code: 'ENOENT' });
+  const searchChanged = await context.run('verify-release.mjs', { PUBLIC_AI_SEARCH_URL: 'https://other.search.ai.cloudflare.com/search' });
+  assert.equal(searchChanged.code, 1);
+  assert.match(searchChanged.stderr, /differs from the compiled assets/);
   await assert.rejects(context.manifest(), { code: 'ENOENT' });
 });
 

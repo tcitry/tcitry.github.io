@@ -1,11 +1,12 @@
-import {Agent, abortStream, createThread, listMessages, listStreams, listUIMessages, saveMessage, syncStreams, vStreamArgs} from '@convex-dev/agent';
+import {Agent, abortStream, createThread, listStreams, listUIMessages, saveMessage, syncStreams, vStreamArgs} from '@convex-dev/agent';
 import {RateLimiter} from '@convex-dev/rate-limiter';
 import {paginationOptsValidator, type PaginationOptions} from 'convex/server';
 import {ConvexError, v} from 'convex/values';
 import {components, internal} from './_generated/api';
 import type {Doc, Id} from './_generated/dataModel';
 import {env, internalAction, internalMutation, internalQuery, mutation, query, type MutationCtx, type QueryCtx} from './_generated/server';
-import {gatewayModel, instructions, NO_SOURCES, parseRetrieval, retrievalEndpoint, SAFE_ERROR} from './assistantModel';
+import {publicChatModel, instructions, NO_SOURCES, SAFE_ERROR, type GenerationEvent} from './assistantModel';
+import {retrievePublicSources} from './assistantPublicSearch';
 
 const sourceValidator = v.object({id: v.string(), title: v.string(), url: v.string(), sourceKind: v.union(v.literal('author'), v.literal('ai-assisted'))});
 const limiter = new RateLimiter(components.rateLimiter, {
@@ -186,6 +187,52 @@ export const isActive = internalQuery({
   },
 });
 
+function completedText(content: unknown): string | null {
+  if (typeof content === 'string') return content.trim() ? content : null;
+  if (!Array.isArray(content) || !content.length || content.some(part => !part || typeof part !== 'object'
+      || part.type !== 'text' || typeof part.text !== 'string')) return null;
+  const text = content.map(part => part.text).join('');
+  return text.trim() ? text : null;
+}
+
+// Failed/canceled attempts remain in the transcript but must not displace the
+// last successful topic or contribute partial answers to the next model call.
+export const completedContext = internalQuery({
+  args: {runId: v.id('assistantRuns')},
+  returns: v.union(v.null(), v.object({previousQuestion: v.union(v.string(), v.null()),
+    messages: v.array(v.object({role: v.union(v.literal('user'), v.literal('assistant')), content: v.string()}))})),
+  handler: async (ctx, {runId}) => {
+    const run = await ctx.db.get('assistantRuns', runId);
+    if (!run || run.status !== 'running') return null;
+    const conversation = await ctx.db.get('assistantConversations', run.conversationId);
+    if (!conversation || conversation.activeRunId !== runId) return null;
+    if (conversation.owner !== run.owner) throw new Error(SAFE_ERROR);
+    const recent = await ctx.db.query('assistantRuns').withIndex('by_conversationId_and_promptOrder', q =>
+      q.eq('conversationId', run.conversationId).lt('promptOrder', run.promptOrder)).order('desc').take(32);
+    const candidates = recent.filter(candidate => candidate.status === 'completed' && candidate.owner === run.owner).slice(0, 4);
+    const pairs: {question: string; answer: string}[] = [];
+    for (const candidate of candidates) {
+      const response = await ctx.runQuery(components.agent.messages.listMessagesByThreadId, {
+        threadId: conversation.threadId, upToAndIncludingMessageId: candidate.promptMessageId,
+        statuses: ['success'], excludeToolMessages: true, order: 'desc', paginationOpts: {cursor: null, numItems: 10},
+      });
+      const round = response.page.filter(message => message.threadId === conversation.threadId
+        && message.order === candidate.promptOrder && message.status === 'success');
+      const prompt = round.find(message => message._id === candidate.promptMessageId && message.message?.role === 'user');
+      const answers = round.filter(message => message.message?.role === 'assistant' && prompt && message.stepOrder > prompt.stepOrder);
+      if (!prompt || answers.length !== 1) continue;
+      const question = completedText(prompt.message?.content);
+      const answer = completedText(answers[0].message?.content);
+      if (!question || !answer || question.length > 2000 || answer.length > 12_000) continue;
+      pairs.push({question, answer});
+    }
+    const previousQuestion = pairs[0]?.question ?? null;
+    return {previousQuestion, messages: pairs.reverse().flatMap(({question, answer}) => [
+      {role: 'user' as const, content: question}, {role: 'assistant' as const, content: answer},
+    ])};
+  },
+});
+
 export const setSources = internalMutation({
   args: {runId: v.id('assistantRuns'), sources: v.array(sourceValidator)}, returns: v.boolean(),
   handler: async (ctx, {runId, sources}) => {
@@ -216,6 +263,18 @@ export const generate = internalAction({
   handler: async (ctx, {runId}) => {
     const run: {threadId: string; promptMessageId: string; promptOrder: number; deadlineAt: number} | null = await ctx.runMutation(internal.assistant.start, {runId});
     if (!run) return null;
+    const startedAt = Date.now();
+    const trace = (event: GenerationEvent | {stage: 'retrieval_start' | 'retrieval_complete' | 'agent_start' | 'agent_persisted' | 'completed' | 'no_sources' | 'failed' | 'settle_failed'}) => {
+      // Fixed stages, elapsed time, status/error codes and protocol field names. Never pass an
+      // exception, prompt, URL, source text or account identifier to the logger.
+      console.info('assistant_generation', {...event, elapsedMs: Date.now() - startedAt});
+    };
+    let failure: Promise<void> | undefined;
+    const fail = () => failure ??= (async () => {
+      trace({stage: 'failed'});
+      try { await ctx.runMutation(internal.assistant.finish, {runId, failed: true}); }
+      catch { trace({stage: 'settle_failed'}); throw new Error(SAFE_ERROR); }
+    })();
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(new Error(SAFE_ERROR)), Math.max(1, run.deadlineAt - Date.now() - 1000));
     const assertActive = async () => {
@@ -223,38 +282,45 @@ export const generate = internalAction({
       if (!await ctx.runQuery(internal.assistant.isActive, {runId})) { controller.abort(new Error('已停止生成。')); throw new Error('已停止生成。'); }
     };
     try {
-      if (!env.BLOG_RETRIEVAL_URL || !env.RAG_BRIDGE_SECRET || env.RAG_BRIDGE_SECRET.length < 32 || !env.CLOUDFLARE_ACCOUNT_ID || !env.CLOUDFLARE_API_TOKEN) throw new Error(SAFE_ERROR);
+      if (!env.AI_SEARCH_PUBLIC_URL) throw new Error(SAFE_ERROR);
       await assertActive();
       const prompts = await ctx.runQuery(components.agent.messages.getMessagesByIds, {messageIds: [run.promptMessageId]});
       const prompt = prompts[0]?.message;
       if (!prompt || prompt.role !== 'user' || typeof prompt.content !== 'string') throw new Error(SAFE_ERROR);
-      const history = await listMessages(ctx, components.agent, {threadId: run.threadId, paginationOpts: {cursor: null, numItems: 6}, excludeToolMessages: true});
-      const previous = history.page.filter(message => message.order < run.promptOrder && message.message?.role === 'user')
-        .sort((a, b) => b.order - a.order)[0]?.message?.content;
+      const context = await ctx.runQuery(internal.assistant.completedContext, {runId});
+      if (!context) return null;
+      const previous = context.previousQuestion;
       const retrievalQuery = typeof previous === 'string' && prompt.content.length <= 1500
         ? `上一个问题：${previous.slice(0, 400)}\n当前问题：${prompt.content}` : prompt.content;
-      const response = await fetch(retrievalEndpoint(env.BLOG_RETRIEVAL_URL), {method: 'POST', redirect: 'error',
-        headers: {'content-type': 'application/json', authorization: `Bearer ${env.RAG_BRIDGE_SECRET}`},
-        body: JSON.stringify({query: retrievalQuery}), signal: controller.signal});
-      if (!response.ok) { await response.body?.cancel(); throw new Error(SAFE_ERROR); }
-      const raw = await response.text();
-      if (raw.length > 100_000) throw new Error(SAFE_ERROR);
-      const retrieved = parseRetrieval(JSON.parse(raw));
+      trace({stage: 'retrieval_start'});
+      const retrieved = await retrievePublicSources(env.AI_SEARCH_PUBLIC_URL, retrievalQuery, controller.signal);
+      trace({stage: 'retrieval_complete'});
+      await assertActive();
       if (!await ctx.runMutation(internal.assistant.setSources, {runId, sources: retrieved.sources})) return null;
-      if (!retrieved.sources.length) { await ctx.runMutation(internal.assistant.finish, {runId, failed: false, noSources: true}); return null; }
+      if (!retrieved.sources.length) {
+        await ctx.runMutation(internal.assistant.finish, {runId, failed: false, noSources: true});
+        trace({stage: 'no_sources'}); return null;
+      }
       const agent = new Agent(components.agent, {name: '博客助手',
-        languageModel: gatewayModel(env.CLOUDFLARE_ACCOUNT_ID, env.CLOUDFLARE_API_TOKEN, assertActive),
-        instructions: instructions(retrieved.snippets), contextOptions: {recentMessages: 8, excludeToolMessages: true, searchOtherThreads: false},
+        languageModel: publicChatModel(env.AI_SEARCH_PUBLIC_URL, retrieved.approvedReferences, assertActive, {retrievalQuery, observe: trace, onFailure: fail}),
+        // Read the saved current prompt; contextHandler replaces all other SDK history.
+        instructions: instructions(retrieved.snippets), contextOptions: {recentMessages: 1, excludeToolMessages: true, searchOtherThreads: false},
       });
+      trace({stage: 'agent_start'});
       const result = await agent.streamText(ctx, {threadId: run.threadId}, {
         promptMessageId: run.promptMessageId, maxOutputTokens: 2048, temperature: 0.3, maxRetries: 0,
         abortSignal: controller.signal,
-      }, {saveStreamDeltas: {throttleMs: 250}});
+      }, {saveStreamDeltas: {throttleMs: 250}, contextHandler: async (_ctx, {threadId, inputPrompt}) => {
+        if (threadId !== run.threadId || inputPrompt.length !== 1 || inputPrompt[0].role !== 'user') throw new Error(SAFE_ERROR);
+        return [...context.messages, ...inputPrompt];
+      }});
       await result.consumeStream();
+      trace({stage: 'agent_persisted'});
       if (!(await result.text).trim() || (await result.finishReason) !== 'stop') throw new Error(SAFE_ERROR);
       await ctx.runMutation(internal.assistant.finish, {runId, failed: false});
+      trace({stage: 'completed'});
     } catch {
-      await ctx.runMutation(internal.assistant.finish, {runId, failed: true});
+      await fail();
     } finally { clearTimeout(timeout); }
     return null;
   },

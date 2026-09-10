@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import {flushSync} from 'react-dom';
 import {createRoot} from 'react-dom/client';
 import {Command} from '@heroui-pro/react/command';
+import {Button, Skeleton} from '@heroui/react';
 import {searchContent} from '../../lib/search-client';
 import {loadRecentUpdates} from '../../lib/search-recent-client';
 import {captureFeatureError, withFeatureSpan} from '../../lib/monitoring';
@@ -19,6 +20,7 @@ const sectionNames: Record<string, string> = {
 
 interface Props {
   onClose: () => void;
+  onAskAI?: (prompt: string) => void;
 }
 
 interface ResultState extends SearchResponse {
@@ -26,7 +28,7 @@ interface ResultState extends SearchResponse {
   limit: number;
 }
 
-function SearchCommand({onClose}: Props) {
+function SearchCommand({onClose, onAskAI}: Props) {
   const [recent, setRecent] = useState<SearchEntry[]>([]);
   const [recentState, setRecentState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [recentRetry, setRecentRetry] = useState(0);
@@ -92,9 +94,10 @@ function SearchCommand({onClose}: Props) {
     }
     setBusy(true);
     setFailed(false);
+    const controller = new AbortController();
     const timer = window.setTimeout(() => {
       void withFeatureSpan('search', 'query', async () => {
-        try { return await searchContent(normalizedQuery, limit); }
+        try { return await searchContent(normalizedQuery, limit, controller.signal); }
         catch (error) {
           // Superseded queries must not become reported failures or failed spans.
           if (requestVersion.current !== version) return;
@@ -119,6 +122,7 @@ function SearchCommand({onClose}: Props) {
     return () => {
       window.clearTimeout(timer);
       requestVersion.current += 1;
+      controller.abort();
     };
   }, [query, limit, retry, composing]);
 
@@ -147,17 +151,26 @@ function SearchCommand({onClose}: Props) {
   const status = composing ? '正在输入…'
     : busy ? (entries.length ? '正在加载更多…' : '正在搜索…')
     : failed ? '搜索暂时不可用，请重试。'
-    : normalizedQuery ? `找到 ${activeResult?.total ?? 0} 条结果${hasMore ? `，已显示 ${entries.length} 条` : ''}`
+    : normalizedQuery ? activeResult?.updating && !entries.length ? '相关结果正在更新，请稍后重试。'
+      : `找到 ${activeResult?.total ?? 0} 条结果${hasMore ? `，已显示 ${entries.length} 条` : ''}${activeResult?.updating ? ' · 部分结果正在更新' : ''}`
     : recentState === 'loading' ? '正在加载最近更新…'
     : recentState === 'error' ? '最近更新暂时不可用，仍可输入关键词搜索。'
     : `最近更新 · ${entries.length} 篇`;
   const emptyMessage = composing ? '完成输入后即可搜索。'
     : busy ? '正在搜索…'
     : failed ? '暂时无法搜索，请稍后重试。'
-    : normalizedQuery ? '没有找到匹配内容，试试其他关键词。'
+    : normalizedQuery ? activeResult?.updating ? '相关结果正在更新，请稍后再试。' : '没有找到匹配内容，试试其他关键词。'
     : recentState === 'loading' ? '正在加载最近更新…'
     : recentState === 'error' ? '暂时无法加载最近更新，可以重试或直接搜索。'
     : '暂无最近更新的文章。';
+  const retryAISearch = () => {
+    requestVersion.current += 1;
+    setResult(null);
+    setFailed(false);
+    setBusy(true);
+    setLimit(PAGE_SIZE);
+    setRetry(value => value + 1);
+  };
 
   return <Command>
     <Command.Backdrop
@@ -190,7 +203,8 @@ function SearchCommand({onClose}: Props) {
             </Command.InputGroup.Prefix>
             <Command.InputGroup.Input
               aria-label="搜索博客"
-              placeholder="Search"
+              placeholder="搜索文章，或描述你的问题…"
+              maxLength={2000}
               enterKeyHint="search"
               autoComplete="off"
               className={styles.input}
@@ -223,6 +237,12 @@ function SearchCommand({onClose}: Props) {
             </Command.InputGroup.Suffix>
           </Command.InputGroup>
 
+          <div className={styles.source} data-search-engine={normalizedQuery ? activeResult?.engine : undefined}>
+            {normalizedQuery && activeResult?.engine
+              ? activeResult.engine === 'ai-search' ? '基于 Cloudflare AI Search' : '基于 Pagefind · 全文搜索'
+              : '搜索公开文章 · 无需登录'}
+          </div>
+
           <Command.List
             aria-label={normalizedQuery ? '搜索结果' : '最近更新'}
             aria-busy={busy || (!normalizedQuery && recentState === 'loading') || undefined}
@@ -244,7 +264,12 @@ function SearchCommand({onClose}: Props) {
               }
               queueMicrotask(onClose);
             }}
-            renderEmptyState={() => <div className={styles.empty}>{emptyMessage}</div>}
+            renderEmptyState={() => busy || (!normalizedQuery && recentState === 'loading')
+              ? <div className={styles.loading} aria-hidden="true">{[0, 1, 2].map(index => <div key={index}>
+                <Skeleton animationType="none" className={styles.loadingTitle} />
+                <Skeleton animationType="none" className={styles.loadingExcerpt} />
+              </div>)}</div>
+              : <div className={styles.empty}>{emptyMessage}</div>}
           >
             {entries.length > 0 && <Command.Group heading={normalizedQuery ? '搜索结果' : '最近更新'}>
               {entries.map((entry) => {
@@ -262,6 +287,19 @@ function SearchCommand({onClose}: Props) {
               })}
             </Command.Group>}
           </Command.List>
+
+          {onAskAI && normalizedQuery && !composing && <div className={styles.ask}>
+            <Button variant="ghost" className={styles.askButton} aria-label="用这个问题问 AI" onPress={() => onAskAI(normalizedQuery)} data-search-ask-ai>
+              <span className={styles.askLabel}>用这个问题问 AI</span>
+              <span className={styles.askHint}>登录后免费</span>
+              <span className={styles.askArrow} aria-hidden="true">→</span>
+            </Button>
+          </div>}
+
+          {activeResult?.fallback === 'ai-unavailable' && <div className={styles.fallback} data-search-fallback>
+            <span role="status">AI 搜索暂不可用，当前显示全文搜索结果</span>
+            <button type="button" className={styles.action} disabled={busy} onClick={retryAISearch}>重试 AI 搜索</button>
+          </div>}
 
           <Command.Footer className={styles.footer}>
             <span role="status" aria-live="polite" aria-atomic="true" className={styles.status} data-search-status>{status}</span>
@@ -283,7 +321,7 @@ export interface SearchCommandController {
 }
 
 /** The caller imports and mounts this module only on the first search request. */
-export function mountSearchCommand(host: HTMLElement, onClose: () => void): SearchCommandController {
+export function mountSearchCommand(host: HTMLElement, onClose: () => void, onAskAI?: (prompt: string) => void): SearchCommandController {
   const root = createRoot(host, {
     onUncaughtError: (error) => captureFeatureError(error, 'search', 'render'),
     onCaughtError: (error) => captureFeatureError(error, 'search', 'render'),
@@ -307,7 +345,11 @@ export function mountSearchCommand(host: HTMLElement, onClose: () => void): Sear
       if (opened || destroyed) return;
       opened = true;
       const current = ++session;
-      root.render(<SearchCommand onClose={() => { if (session === current) close(); }} />);
+      root.render(<SearchCommand onClose={() => { if (session === current) close(); }} onAskAI={onAskAI ? (prompt) => {
+        if (session !== current) return;
+        close();
+        onAskAI(prompt);
+      } : undefined} />);
     },
     close,
     destroy() {

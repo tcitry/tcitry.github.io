@@ -6,7 +6,7 @@ const bundle = await build({
   entryPoints: [new URL('../src/lib/search-client.ts', import.meta.url).pathname],
   bundle: true, platform: 'node', format: 'esm', write: false,
 });
-const {createSearchClient} = await import('data:text/javascript;base64,' + Buffer.from(bundle.outputFiles[0].text).toString('base64'));
+const {createSearchClient, createConfiguredSearchClient} = await import('data:text/javascript;base64,' + Buffer.from(bundle.outputFiles[0].text).toString('base64'));
 const origin = 'https://example.com';
 const result = (url, title = 'Article', excerpt = 'A body-only match.', more = {}) => ({
   data: async () => ({url, meta: {title}, plain_excerpt: excerpt, ...more}),
@@ -101,4 +101,148 @@ test('a late failed query cannot reset the engine after a newer successful query
   rejectOld(new Error('Old request failed'));
   await assert.rejects(old, /Old request failed/);
   assert.equal(resets, 0);
+});
+
+test('unconfigured local previews use Pagefind but missing production or invalid configuration remains an error', async () => {
+  let loads = 0;
+  const loadPagefind = async () => { loads++; return {search: async () => ({results: [result('/docs/page/')]})}; };
+  const options = {siteOrigin: origin, localOrigin: 'http://127.0.0.1:4321', production: false, loadPagefind};
+  const local = await createConfiguredSearchClient(options)('query');
+  assert.equal(local.total, 1);
+  assert.equal(local.engine, 'pagefind');
+  assert.equal(loads, 1);
+  for (const overrides of [{production: true}, {localOrigin: origin}]) {
+    await assert.rejects(createConfiguredSearchClient({...options, ...overrides})('query'), /not configured/);
+  }
+  assert.throws(() => createConfiguredSearchClient({...options, endpoint: 'https://evil.example/search'}), /invalid/);
+  assert.equal(loads, 1);
+});
+
+const endpoint = 'https://fixture.search.ai.cloudflare.com/search';
+const references = Array.from({length: 12}, (_, index) => ({
+  key: `tcitry-blog/articles/${String(index).padStart(64, '0')}.md`, hash: 'a'.repeat(64),
+  url: `${origin}/docs/ai-${index}/`, title: `AI article ${index}`, section: 'docs',
+}));
+const successfulAI = () => Response.json({success: true, result: {chunks: references.map(reference => ({
+  score: 0.8, text: 'AI retrieved passage.', item: {key: reference.key, metadata: {content_hash: reference.hash, canonical_url: reference.url}},
+}))}});
+function configuredFixture(search, extra = {}) {
+  const calls = {requests: [], pagefind: [], loads: 0};
+  const client = createConfiguredSearchClient({endpoint, siteOrigin: origin, localOrigin: origin, production: true,
+    loadPagefind: async () => {
+      calls.loads++;
+      return {search: async query => {
+        calls.pagefind.push(query);
+        return {results: Array.from({length: 12}, (_, index) => result(`/docs/fulltext-${index}/`, `Full-text article ${index}`))};
+      }};
+    },
+    fetcher: async (url, options) => {
+      calls.requests.push({url, options});
+      return url === endpoint ? search(JSON.parse(options.body).query, options) : Response.json({documents: references});
+    }, ...extra,
+  });
+  return {client, calls};
+}
+
+test('healthy configured AI pagination never loads full-text search or sends credentials', async () => {
+  const {client, calls} = configuredFixture(successfulAI);
+  const first = await client('healthy');
+  assert.equal(first.results.length, 8);
+  assert.equal(first.total, 12);
+  assert.equal(first.engine, 'ai-search');
+  assert.equal(first.fallback, undefined);
+  assert.equal((await client('healthy', 16)).results.length, 12);
+  assert.equal(calls.requests.filter(call => call.url === endpoint).length, 1);
+  assert.equal(calls.loads, 0);
+  for (const {options} of calls.requests) {
+    assert.equal(options.credentials, 'omit');
+    assert.equal(new Headers(options.headers).has('Authorization'), false);
+    assert.equal(new Headers(options.headers).has('Cookie'), false);
+  }
+});
+
+test('only temporary HTTP and network failures activate the explicitly marked full-text fallback', async () => {
+  for (const status of [429, 500, 502, 503, 504, 'network']) {
+    const {client, calls} = configuredFixture(() => {
+      if (status === 'network') throw new TypeError('Failed to fetch');
+      return new Response('', {status});
+    });
+    const response = await client(`failure-${status}`);
+    assert.equal(response.fallback, 'ai-unavailable', String(status));
+    assert.equal(response.engine, 'pagefind', String(status));
+    assert.equal(response.results.length, 8);
+    assert.equal(response.total, 12);
+    assert.ok(response.results.every(entry => entry.title.startsWith('Full-text article')));
+    assert.equal(calls.loads, 1);
+    assert.deepEqual(calls.pagefind, [`failure-${status}`]);
+  }
+});
+
+test('request and protocol failures remain visible and never activate fallback', async () => {
+  for (const status of [400, 401, 403, 404, 'invalid-json', 'invalid-envelope']) {
+    const {client, calls} = configuredFixture(() => status === 'invalid-json'
+      ? new Response('{broken', {headers: {'Content-Type': 'application/json'}})
+      : status === 'invalid-envelope' ? Response.json({success: true, result: {}}) : new Response('', {status}));
+    await assert.rejects(client('query'));
+    assert.equal(calls.loads, 0, String(status));
+  }
+});
+
+test('fallback pagination remains full-text until explicit first-page retry restores AI', async () => {
+  let outage = true;
+  const {client, calls} = configuredFixture(() => outage ? new Response('', {status: 503}) : successfulAI());
+  assert.equal((await client('same query')).fallback, 'ai-unavailable');
+  outage = false;
+  const more = await client('same query', 16);
+  assert.equal(more.fallback, 'ai-unavailable');
+  assert.equal(more.engine, 'pagefind');
+  assert.equal(more.results.length, 12);
+  assert.equal(calls.requests.filter(call => call.url === endpoint).length, 1, 'Loading more never mixes a recovered AI page into full-text results');
+  const retry = await client('same query', 8);
+  assert.equal(retry.fallback, undefined);
+  assert.equal(retry.engine, 'ai-search');
+  assert.equal(retry.results.length, 8);
+  assert.ok(retry.results.every(entry => entry.title.startsWith('AI article')));
+  assert.equal((await client('same query', 16)).results.length, 12);
+  assert.deepEqual(calls.pagefind, ['same query', 'same query']);
+  assert.equal(calls.requests.filter(call => call.url === endpoint).length, 2);
+});
+
+test('a new query retries AI instead of inheriting the previous fallback engine', async () => {
+  const {client, calls} = configuredFixture(query => query === 'old' ? new Response('', {status: 500}) : successfulAI());
+  assert.equal((await client('old')).fallback, 'ai-unavailable');
+  assert.equal((await client('new')).fallback, undefined);
+  assert.deepEqual(calls.pagefind, ['old']);
+});
+
+test('timeouts fall back, but caller cancellation and superseded transport failures do not', async () => {
+  const timed = configuredFixture((_query, options) => new Promise((_, reject) => {
+    options.signal.addEventListener('abort', () => reject(options.signal.reason), {once: true});
+  }), {timeoutMs: 5});
+  assert.equal((await timed.client('timeout')).fallback, 'ai-unavailable');
+  assert.deepEqual(timed.calls.pagefind, ['timeout']);
+  for (const cancel of [true, false]) {
+    let finishOld;
+    let markReady;
+    const ready = new Promise(resolve => {markReady = resolve;});
+    const {client, calls} = configuredFixture(query => {
+      if (query !== 'old') return successfulAI();
+      markReady();
+      return new Promise(resolve => {finishOld = () => resolve(new Response('', {status: 503}));});
+    });
+    const controller = new AbortController();
+    const old = client('old', 8, controller.signal);
+    await ready;
+    if (cancel) controller.abort();
+    await client('latest');
+    finishOld();
+    await assert.rejects(old, {name: 'AbortError'});
+    assert.equal(calls.loads, 0, cancel ? 'Cancelled failures cannot activate fallback' : 'A superseded query cannot activate fallback even without a caller signal');
+    assert.equal((await client('latest', 16)).fallback, undefined);
+    assert.equal(calls.requests.filter(call => call.url === endpoint).length, 2, 'Late failures cannot replace the latest AI pagination cache');
+  }
+  const neverStarted = configuredFixture(successfulAI);
+  await assert.rejects(neverStarted.client('cancelled', 8, AbortSignal.abort()), {name: 'AbortError'});
+  assert.equal(neverStarted.calls.requests.length, 0);
+  assert.equal(neverStarted.calls.loads, 0);
 });

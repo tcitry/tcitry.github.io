@@ -1,25 +1,92 @@
 @reference "../../styles/tailwind.css";
+@import "tw-animate-css";
 @import "@heroui/styles/components/button.css" layer(components);
-@import "@heroui/styles/components/input.css" layer(components);
+@import "@heroui/styles/components/spinner.css" layer(components);
 @import "@heroui/styles/components/textarea.css" layer(components);
 @import "@heroui/styles/components/textfield.css" layer(components);
 @import "@heroui/styles/components/label.css" layer(components);
 @import "@heroui/styles/components/description.css" layer(components);
+@import "@heroui/styles/components/avatar.css" layer(components);
+@import "@heroui/styles/components/tooltip.css" layer(components);
+@import "@heroui-pro/react/css/components/drop-zone.css" layer(components);
 
 .blog-comments { margin-top: 2.5rem; border-top: 1px solid var(--book-border-color, #ddd); padding-top: 1.5rem; min-width: 0; text-align: start; }
-.blog-comments h2 { font-size: 1.15rem; margin: 0 0 1rem; }
-.blog-comments__content { font-size: .875rem; }
-.blog-comments__hint, .blog-comments__notice { color: var(--color-muted); line-height: 1.7; }
-.blog-comments__list { list-style: none; margin: 0; padding: 0; }
-.blog-comments__item { padding: 1.1rem 0; border-bottom: 1px solid var(--color-border); }
-.blog-comments__meta { display: flex; flex-wrap: wrap; gap: .4rem .75rem; align-items: baseline; overflow-wrap: anywhere; }
-.blog-comments__meta time, .blog-comments__reply { color: var(--color-muted); font-size: .75rem; }
-.blog-comments__body { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.8; margin: .6rem 0; }
-.blog-comments__actions { display: flex; flex-wrap: wrap; gap: .3rem; align-items: center; margin-top: .4rem; font-size: .75rem; }
-.blog-comments__composer { padding-top: 1.25rem; }
-.blog-comments__form { display: grid; gap: 1rem; }
-.blog-comments__form input, .blog-comments__form textarea { width: 100%; min-width: 0; }
-.blog-comments__submit, .blog-comments__signin, .blog-comments__reply-target { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: space-between; align-items: center; }
-.blog-comments__submit span { color: var(--color-muted); font-size: .75rem; }
-.blog-comments__error { color: var(--color-danger); }
+/* Leave the final action clear of the assistant launcher and device home indicator. */
+.blog-comments { padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)); }
+.blog-comments h2 { font-size: 1.15rem; margin: 0 0 .75rem; }
+.blog-comments__root { font-size: .9375rem; line-height: 1.65; }
+.blog-comments__content { container: comment-content / inline-size; }
+.blog-comments .blog-chat__auth-status { display: flex; flex-wrap: wrap; align-items: center; gap: .625rem; padding: .75rem 0; color: var(--muted, inherit); font-size: .875rem; }
+.blog-comments__summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.blog-comments__article-actions { display: flex; align-items: center; gap: .25rem; flex-shrink: 0; }
+.blog-comments__count { color: var(--muted); font-size: .8125rem; }
+.blog-comments__like { display: inline-flex; gap: .375rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.blog-comments__like[aria-pressed="true"] { color: var(--accent); }
+.blog-comments__hint, .blog-comments__notice, .blog-comments__empty { color: var(--muted); line-height: 1.7; }
+.blog-comments__notice, .blog-comments__error { margin: .75rem 0; }
 .blog-comments__notice:empty { display: none; }
+.blog-comments__error { color: var(--danger); }
+.blog-comments__empty { padding: 1.5rem 0; font-size: .875rem; }
+.blog-comments__signin { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; }
+.blog-comments__signin p { margin: 0; }
+.blog-comments__composer { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .875rem 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: .875rem; background: var(--surface); transition: border-color .15s ease; }
+/* The tooltip's portal wrapper must not create an empty grid row and row-gap. */
+.blog-comments__composer > [data-overlay-container] { display: contents; }
+.blog-comments__composer:has(textarea:focus-visible) { border-color: var(--accent); }
+.blog-comments__composer-author, .blog-comments__author-row { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+.blog-comments__composer-author { grid-column: 1 / -1; font-size: .875rem; }
+.blog-comments__composer-author strong, .blog-comments__meta strong { font-weight: 600; overflow-wrap: anywhere; }
+.blog-comments__composer .textfield { grid-column: 1 / -1; min-width: 0; }
+.blog-comments__composer textarea { display: block; width: 100%; min-width: 0; min-height: 6.5rem; padding: .125rem 0; border: 0; box-shadow: none; border-radius: 0; outline: none; background: transparent; font-size: .9375rem; line-height: 1.75; resize: vertical; }
+.blog-comments__composer textarea::placeholder { color: var(--muted); }
+.blog-comments__reply-target { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; padding: .25rem .625rem; border-left: 2px solid var(--accent); background: var(--surface-secondary); border-radius: .25rem; font-size: .8125rem; }
+.blog-comments__uploads { align-self: center; min-width: 0; }
+.blog-comments__drop-area { display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: start; gap: .25rem; min-height: 0; padding: 0; border: 0; border-radius: .375rem; background: transparent; }
+.blog-comments__drop-area[data-drop-target] { outline: 2px solid var(--accent); outline-offset: .25rem; background: var(--accent-soft); }
+.blog-comments__uploads .drop-zone__trigger { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; min-width: 2.5rem; min-height: 2.5rem; margin: 0; padding: 0; border: 0; border-radius: var(--radius-md); background: transparent; color: var(--muted); text-decoration: none; cursor: var(--cursor-interactive, pointer); }
+.blog-comments__uploads .drop-zone__trigger > svg { flex-shrink: 0; width: 1.25rem; height: 1.25rem; margin: 0; }
+.blog-comments__uploads .drop-zone__trigger:hover { background: var(--surface-hover); }
+.blog-comments__uploads .drop-zone__trigger:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.blog-comments__uploads .drop-zone__trigger[data-disabled] { opacity: .5; cursor: default; }
+.blog-comments__image-count { color: var(--muted); font-size: .6875rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.blog-comments__upload-tooltip { max-width: min(15rem, calc(100vw - 2rem)); font-size: .75rem; line-height: 1.5; }
+.blog-comments__submit { display: flex; flex-wrap: nowrap; justify-content: end; gap: .5rem; align-items: center; }
+.blog-comments__submit > span { color: var(--muted); font-size: .6875rem; font-variant-numeric: tabular-nums; }
+.blog-comments__submit > .button { min-height: 2.75rem; padding-inline: 1rem; }
+.blog-comments__draft-images { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-column: 1 / -1; gap: .5rem; }
+.blog-comments__draft-image { position: relative; min-width: 0; }
+.blog-comments__draft-image > img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: .5rem; margin: 0; background: var(--surface-secondary); }
+.blog-comments__draft-image > [role="status"] { display: block; color: var(--muted); font-size: .6875rem; margin-top: .25rem; }
+.blog-comments__draft-image > [role="status"]:empty { display: none; }
+.blog-comments__remove-image { position: absolute; top: .25rem; right: .25rem; border-radius: 50%; min-width: 1.75rem; width: 1.75rem; height: 1.75rem; background: var(--surface); box-shadow: 0 1px 4px #0002; }
+.blog-comments__list { list-style: none; margin: 1.5rem 0 0; padding: 0; }
+.blog-comments__item { padding: 1.25rem 0; border-bottom: 1px solid var(--border); scroll-margin-top: 5rem; }
+.blog-comments__item:target { background: var(--accent-soft); border-radius: .5rem; }
+.blog-comments__item:focus { outline: none; }
+.blog-comments__item:focus-visible { outline: 2px solid var(--accent); outline-offset: .25rem; }
+.blog-comments__item[data-reply] { padding-left: .875rem; border-left: 1px solid var(--border); }
+.blog-comments__avatar { flex-shrink: 0; }
+.blog-comments__meta { display: flex; flex-direction: column; min-width: 0; gap: .0625rem; font-size: .875rem; }
+.blog-comments__meta time { color: var(--muted); font-size: .75rem; font-variant-numeric: tabular-nums; }
+.blog-comments__reply { margin: .75rem 0 .25rem 2.75rem; color: var(--muted); font-size: .8125rem; }
+.blog-comments__reply a { color: inherit; text-decoration: none; }
+.blog-comments__reply a:hover { color: var(--accent); text-decoration: underline; }
+.blog-comments__body { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.8; margin: .75rem 0 .625rem 2.75rem; font-size: .9375rem; }
+.blog-comments__deleted { color: var(--muted); font-size: .875rem; }
+.blog-comments__item > .blog-comments__images { margin-left: 2.75rem; }
+.blog-comments__actions { display: flex; flex-wrap: wrap; gap: .125rem; align-items: center; margin: .5rem 0 0 2.25rem; color: var(--muted); font-size: .8125rem; }
+.blog-comments__actions > .button { font-size: .8125rem; color: inherit; }
+.blog-comments__actions > .blog-comments__like[aria-pressed="true"] { color: var(--accent); }
+.blog-comments__sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.blog-comments__load-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.blog-comments__load-actions button { padding: .375rem .75rem; border: 1px solid var(--book-border-color, #ddd); border-radius: .5rem; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.blog-comments__load-actions button:focus-visible { outline: 2px solid var(--color-link, #0055bb); outline-offset: 3px; }
+@container comment-content (max-width: 34rem) {
+  .blog-comments__composer { padding: .875rem; column-gap: .5rem; }
+  .blog-comments__draft-images { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .blog-comments__body, .blog-comments__reply, .blog-comments__item > .blog-comments__images { margin-left: 0; }
+  .blog-comments__actions { margin-left: -.5rem; }
+}
+@media (prefers-reduced-motion: reduce) { .blog-comments__composer { transition: none; } }

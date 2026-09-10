@@ -28,9 +28,15 @@ export async function verifyChatSession(request, env) {
   const origin = request.headers.get('origin') || new URL(request.url).origin;
   try {
     const {payload} = await jwtVerify(token, await verifyMaterial(env, issuer), {
-      issuer, algorithms: ['RS256'], clockTolerance: 5,
+      issuer, algorithms: ['RS256'], clockTolerance: 5, requiredClaims: ['exp'],
     });
-    if (payload.aud === 'convex' || payload.sts === 'pending') throw new Error('rejected');
+    // Clerk's Convex integration adds this audience to the default v2 session
+    // token. A template token without session claims is still not accepted.
+    if (payload.aud !== undefined && (
+      payload.aud !== 'convex' || payload.v !== 2
+      || typeof payload.sid !== 'string' || !payload.sid.trim()
+    )) throw new Error('aud');
+    if (payload.sts === 'pending') throw new Error('rejected');
     if (payload.azp && payload.azp !== origin) throw new Error('azp');
     if (typeof payload.sub !== 'string' || !payload.sub) throw new Error('sub');
     return {userId: payload.sub};

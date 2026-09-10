@@ -4,28 +4,53 @@
   @apply min-w-0 text-sm leading-relaxed;
 }
 
-.toolbar {
-  @apply flex flex-wrap items-center gap-2;
+.currentArticle {
+  @apply pb-4;
 }
 
-.muted {
-  @apply text-xs text-muted;
+.currentRow {
+  @apply grid grid-cols-[minmax(0,1fr)_2.75rem] items-center gap-3;
 }
 
-.note {
-  @apply mt-4 min-w-0 border-t border-separator pt-4;
+.currentText {
+  @apply min-w-0;
 }
 
-.noteLabel {
-  @apply mb-2 block text-sm font-medium;
+.currentLabel {
+  @apply text-xs leading-5 text-muted;
 }
 
-.textarea {
-  @apply block min-h-36 w-full resize-y text-sm leading-relaxed;
+.currentTitle {
+  @apply m-0 mt-1 line-clamp-2 text-sm font-medium leading-6 [overflow-wrap:anywhere];
 }
 
-.noteFooter {
-  @apply mt-2 flex flex-wrap items-center justify-between gap-3;
+.bookmarkButton {
+  @apply size-11 min-h-11 min-w-11 shrink-0 text-muted;
+}
+
+.bookmarkAction { position: relative; flex-shrink: 0; }
+.bookmarkError {
+  position: absolute;
+  z-index: 10;
+  inset-inline-end: 0;
+  top: calc(100% + .25rem);
+  width: max-content;
+  max-width: min(17rem, 75vw);
+  padding: .5rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--danger);
+  background: var(--surface);
+  font-size: .8125rem;
+  line-height: 1.5;
+}
+
+.bookmarkButton[aria-pressed='true'] {
+  @apply text-accent;
+}
+
+.tooltip {
+  @apply rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs text-foreground shadow-sm;
 }
 
 .message {
@@ -36,38 +61,44 @@
   @apply text-danger-soft-foreground;
 }
 
-.conflict {
-  @apply my-3 rounded-lg border border-border bg-surface-secondary p-3 text-sm;
-}
-
-.remoteNote {
-  @apply my-3 max-h-52 overflow-auto whitespace-pre-wrap rounded-md border border-border bg-surface p-3 text-xs [overflow-wrap:anywhere];
-  font-family: inherit;
-}
-
 .list {
   @apply m-0 list-none p-0;
 }
 
 .item {
-  @apply flex min-w-0 flex-col gap-1 border-b border-separator py-4;
+  @apply min-w-0;
 }
 
 .itemLink {
-  @apply w-fit max-w-full text-base font-medium text-accent underline-offset-4 hover:underline [overflow-wrap:anywhere];
+  @apply flex min-w-0 flex-col gap-1 rounded-lg px-2 py-3 text-foreground no-underline hover:bg-surface-hover;
 }
 
-.excerpt {
-  @apply my-1 line-clamp-3 whitespace-pre-wrap text-sm text-muted [overflow-wrap:anywhere];
+.itemTitle {
+  @apply text-sm font-medium leading-6 [overflow-wrap:anywhere];
+}
+
+.itemLink:hover .itemTitle {
+  @apply underline underline-offset-4;
+}
+
+.itemDate {
+  @apply text-xs leading-5 text-muted;
 }
 
 .empty {
-  @apply py-10 text-sm text-muted;
+  @apply py-4 text-sm leading-6 text-muted;
 }
 
-.libraryPanel {
-  @apply min-w-0 pt-2;
+.skeleton {
+  @apply flex flex-col gap-3 px-2 py-4;
 }
+
+.skeleton span {
+  @apply block h-3 rounded bg-surface-tertiary;
+}
+
+.skeleton span:nth-child(2) { width: 72%; }
+.skeleton span:last-child { width: 30%; height: .5rem; }
 
 .loadMore {
   @apply mt-5;

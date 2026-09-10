@@ -23,28 +23,40 @@
 - Posts 的“相关阅读”属于文末推荐，不加入桌面或移动端文章 TOC；文章目录只展示正文结构。
 - Weekly 列表每页显示 40 期，桌面 4 列时每页 10 行，使用 HeroUI Pagination，保留可在无 JavaScript 时导航的真实页面链接；首页为 `/weekly/`，后续页使用 `/weekly/page/<页码>/`，各页继续按日期倒序排列。
 - 侧栏搜索使用明确的 Command 触发按钮，与外观菜单并排放在品牌下方。按 HeroUI design taste 与站点中性色统一尺寸、对齐和交互；外观保留跟随系统、浅色和深色三种模式，图标按钮提供 Tooltip、可访问名称与当前选中状态。
-- 除文章评论外，登录认证、AI 对话、阅读（收藏、阅读进度、私有笔记）、咨询、会员及账户操作统一从右下圆圈按钮打开的右侧面板进入。圆圈入口使用对话气泡类图标，不使用 sparkle / 星芒图标。导航和正文不再提供“我的阅读”、博客助手或其他独立账户服务入口。`/chat/` 与 `/me/` 只是尚未上线的开发页面，直接删除，不保留兼容跳转、别名、说明页或 sitemap 条目，不人为加入历史 URL 基线。登录完成后返回当前页面并保留面板体验；评论继续使用文章页内入口。
+- 除文章页内评论与收藏操作外，登录认证、AI 对话、个人内容、咨询、会员及账户操作统一从右下圆圈按钮打开的右侧面板进入。圆圈入口使用对话气泡类图标，不使用 sparkle / 星芒图标。导航和正文不再提供“我的阅读”、博客助手或其他独立账户服务入口。`/chat/` 与 `/me/` 只是尚未上线的开发页面，直接删除，不保留兼容跳转、别名、说明页或 sitemap 条目，不人为加入历史 URL 基线。登录完成后返回当前页面并保留面板体验；评论继续使用文章页内入口。侧栏边缘仅保留展开／收起把手，两种状态采用相同尺寸与点击范围；桌面收起把手位于左侧分割线外，全屏手机面板放在屏幕内侧。不提供固定侧栏按钮或跨页固定偏好。当前文章收藏位于文末评论数量行，紧邻文章喜欢按钮，以空心／实心书签表示状态；未登录点击打开同一 Clerk 登录，登录后才写入 Convex。跨页面默认收起，忽略已停用的旧固定缓存；同页刷新或登录回调仍可恢复当前板块与展开状态。手动关闭清除本次展开状态，不在后续页面自动展开。收藏列表不重复提供当前文章按钮；收起时在页面右侧边缘中部提供展开把手，复用同一面板并保留当前板块。保留 Esc 关闭，关闭后焦点返回实际使用的圆圈或边缘入口。
 - 博客助手的 AI Chat 侧边栏样式参考用户提供的 HeroUI Agents demos，使用现有 HeroUI Pro 聊天组件，保持紧凑的单行顶部栏、中性背景与用户气泡、底部圆角输入框和清楚的文章出处。操作入口只展示已实现的能力，不因参考图包含附件、模型选择或语音控件就添加无效按钮。
+- 全站滚动条不预留轨道空间；正文、导航、助手面板、输入框和浮层使用覆盖内容的浮动滚动条，仅在滚动期间显示，停止后淡出，保持原生滚轮、触摸、键盘滚动与拖动能力。
+- AI 会话标题须有清楚的文字层级，长标题截断；新对话用带可访问名称和 Tooltip 的加号按钮。历史列表以浮层展示，不挤占消息和输入框空间；历史打开时首次 Esc 只关闭历史。
 - 空正文栏目入口由 `scripts/site-pages.mjs` 维护，Blog 不再需要 `archives.md`、`ghstar.md`、`modified.md`、`portfolio.md`、`timeline.md` 占位；栏目 URL 与既有元数据继续保持兼容。
 - 修改主题或渲染后，运行站点 build、check、tests 和 verify；生产验收使用对应的 production 命令。保持旧 URL 基线和评论 canonical pathname。
 - 生产发布使用独立检出、独立依赖与缓存、独立 `dist/`，内容固定到已审查提交。不得从其他任务仍可能构建的共享工作区发布；`verify:release` 校验生产产物并记录来源与哈希，`deploy:verified` 只上传该份已验收产物；Wrangler 上传期间不能重建或改写资产目录。发现产物被并行改写时，中止上传，确认线上版本，再从独立目录重建、复验和发布。
 - `tcitry-blog` 的远端 `main` 是 production 发布入口；推送站点 `main` 即发起生产发布，包含同一提交中的 Convex schema/functions 与 Clerk 客户端生产配置，不能把随手提交、推送当作保存进度。只有完成本地功能验收、类型检查、权限测试、构建验证和脱敏检查后，才允许提交并推送 `main`；配置缺失或真实登录链路未验收时，保留本地改动，不推送。主题改动先在主题仓库发布 npm 版本，再更新本站准确依赖版本与 lockfile。Blog 内容仓库可以继续独立、随时提交 `main`，不要求同步提交站点代码。
 - 本站是开源仓库。真实环境配置只能保存在 Git 忽略的 `.env.local`、`.env.production.local`、`.dev.vars` 等本地文件，或 Cloudflare / Convex 的环境设置中；Git 中只保留无真实值的 `.env.example`。Secret Key、Deploy Key、访问令牌、凭据、本机绝对路径、私有内容、生成产物和安装后的商业组件源码不得入 Git。即使 Publishable Key 允许进入客户端产物，也通过环境变量注入，不硬编码进源码。提交前运行 `npm run check:public` 并人工 review diff；该模式检查不能替代人工脱敏。
-- 读者功能采用静态 Astro + React Client Island + Clerk + Convex，仍只有一个 Cloudflare Worker；个人收藏、阅读进度和私有笔记继续保留；后续会员、会话、咨询和评论遵循下文统一账户规则。博客助手 `/api/chat` 必须带有已登录的 Clerk session JWT，Worker 用 `CLERK_JWT_ISSUER`（及可选的 `CLERK_JWT_KEY`）校验，不在 Worker 配置 `CLERK_SECRET_KEY`。Clerk 开发与生产实例、Convex development 与 production deployment 分离。`PUBLIC_CLERK_PUBLISHABLE_KEY` 和 `PUBLIC_CONVEX_URL` 属于构建时公开配置；`CONVEX_DEPLOY_KEY` 仅提供给部署步骤，`CLERK_JWT_ISSUER_DOMAIN` 分别配置在 Convex 两个环境，并与 Worker 的 `CLERK_JWT_ISSUER` 使用同一 Frontend API URL。生产后端和前端发布不具备跨平台原子性，schema/API 变更必须兼容仍在线的前端，发布后核验真实登录与私有数据隔离。
+- 读者功能采用静态 Astro + React Client Island + Clerk + Convex，仍只有一个 Cloudflare Worker；「我的」排在侧栏第一项，并作为没有恢复记录时的默认页面；个人功能集中在「我的」内，提供收藏、喜欢和本人评论三个分类；不提供阅读进度、继续阅读或私有笔记，也不自动记录进度。当前助手前端使用 Convex；保留的旧 Worker `/api/chat` 必须带有已登录的 Clerk session JWT，Worker 从 `PUBLIC_CLERK_PUBLISHABLE_KEY` 推导 issuer，也支持显式 `CLERK_JWT_ISSUER` 覆盖及可选的 `CLERK_JWT_KEY`，不在 Worker 配置 `CLERK_SECRET_KEY`。Clerk 开发与生产实例、Convex development 与 production deployment 分离。`PUBLIC_CLERK_PUBLISHABLE_KEY` 和 `PUBLIC_CONVEX_URL` 属于构建时公开配置；`CONVEX_DEPLOY_KEY` 仅提供给部署步骤。Convex 两个环境分别配置 `CLERK_FRONTEND_API_URL`，与对应 Worker 信任同一 Clerk Frontend API URL；名称遵循 Clerk 当前集成指南。启用 Clerk Convex integration 后使用 audience 为 `convex` 的 session token，无需另建 JWT template；Convex 仍须配置可信 issuer，并保留 `applicationID: "convex"` 校验 audience。生产后端和前端发布不具备跨平台原子性，schema/API 变更必须兼容仍在线的前端，发布后核验真实登录与私有数据隔离。
 - Astro 的评论入口与页面适用条件位于 `src/layouts/BookLayout.astro`，按下文 Convex 评论规则维护。旧 Hugo / Giscus 实现仅作为历史迁移参考。
 
 ## Clerk、会员与会话（2026-09-09 用户确认）
 
-- 站内统一使用 Clerk 登录；会员 Billing 使用 Clerk Billing，价格、周期和套餐内容从 Clerk 配置读取，不在前端编造价格或服务承诺。Convex 后端从已验证身份出发核验付费权益，不能信任浏览器提交的 `isPro`、角色或用户 ID。
-- AI 会话与历史记录使用 Convex Agent Component；公开文章检索复用既有 Cloudflare AI Search `tcitry-blog-search`（全小写），模型请求通过既有 AI Gateway `tcitry-blog-chat`，不创建第二套资源。检索必须保留当前已发布文章的 key 与 content hash 校验；私人阅读记录、咨询和评论不进入公开文章索引。
+- 站内统一使用 Clerk 登录；会员 Billing 使用 Clerk Billing，价格、周期和套餐内容从 Clerk 配置读取，不在前端编造价格或服务承诺。Convex 在咨询实际写入的 mutation 中，从已验证身份的 Clerk v2 session `pla` claim 精确匹配包含个人 scope（`u`、`ou` 或 `uo`）且 slug 等于 `CLERK_PRO_PLAN_SLUG` 的 Pro 套餐；仅组织 scope `o` 的套餐不能冒充个人套餐，未知 scope、缺失或无效 claim 均不授予 Pro 权限。不能信任浏览器参数提交的 claims、`isPro`、角色或用户 ID。权益变化随短期 token 刷新生效；JWT `exp` 不代表订阅到期日，账期详情由 Clerk 账户组件呈现。
+- AI 会话与历史记录使用 Convex Agent Component；公开文章复用既有 Cloudflare AI Search `tcitry-blog-search`（全小写），实例继续关联既有 AI Gateway `tcitry-blog-chat`，不创建第二套资源。新 Agent 对话通过公共 `/chat/completions`，回答模型默认继承实例设置，不由 Convex 固定旧 Qwen 模型或直接指定 Gateway。引用必须保留当前已发布文章的 key、canonical URL 与 content hash 校验；私人收藏、咨询、评论和会话不进入公开文章索引。此次运行时迁移的完成度以本轮代码及真实验收为准，不因规则更新就认定已接通或发布。
+- AI Search 是免登录的搜索功能，浏览器通过 `PUBLIC_AI_SEARCH_URL` 调用既有实例的公共 `/search`；登录后的免费 AI Chat 由 Convex 的 `AI_SEARCH_PUBLIC_URL` 指定同一公共实例，不能要求 Pro。Pro 权限只用于真人咨询的新留言。公开 Cloudflare endpoint 自身不具备 Clerk 鉴权，应用内 AI 对话仍由 Convex 校验身份并隔离会话。
+- 开发与生产共用上述唯一 AI Search 实例及其 AI Gateway，不为测试创建第二套资源；Clerk 与 Convex 的环境隔离规则仍保持。AI Search 支持已激活的自定义 HTTPS 域名，前端与对应 Convex 必须配置同一 hostname，真实地址只放 Git 忽略文件或平台设置。端点只能来自可信部署配置，不接受用户输入；保留路径、凭据、IP/本地主机、重定向及文章 key/hash 校验。Gateway 自定义域名用于直接 Gateway 请求，不能替代 Search 的 `/search` 或 `/chat/completions`；当前 Convex 不直接配置 Gateway hostname。
+- 新 Convex 对话运行时不需要 `BLOG_RETRIEVAL_URL`、`RAG_BRIDGE_SECRET`、`CLOUDFLARE_ACCOUNT_ID` 或 `CLOUDFLARE_API_TOKEN`，不要求启动旧检索桥或 tunnel。Cloudflare Account ID 与 API token 仍用于本地/CI 文章索引同步和部署，不能全局删除；旧 Worker `/api/chat` 与受保护检索桥代码暂保留，不得误称当前助手前端仍在调用它们。真实 endpoint 只放被忽略的环境文件或平台配置，不写入 Git 示例。
 - Pro 真人咨询采用站内异步私聊：用户留言、作者本人回复。访问仅限所属用户与明确配置的作者身份；作者角色由后端校验，不能由客户端指定。UI 明确区分 AI 对话与真人回复。订阅失效后保留用户自己的历史读取，新付费留言须重新核验权益。
-- 所有私人 React 数据缓存按 Clerk 用户和 session 隔离，退出或切换账户同步丢弃旧 client，禁止显示上一账户的数据。密钥仅在对应平台环境，Clerk Secret Key 只供 Convex Billing 后端使用，不进入 Worker 或浏览器。
+- 读者发起咨询、继续留言和作者回复均支持 Convex File Storage 图片附件，提供上传预览、移除、失败重试和点开放大。文件上传归属与实际读取均在服务端鉴权，仅会话双方可访问；不返回可绕过登录的永久公开文件链接，不进入评论附件查询或公开 AI Search。
+- 顶部 Tabs 为「我的」「AI 对话」「咨询」；已验证的作者额外显示「管理」。「消息」使用头像左侧的铃铛入口与未读圆点，点击展示现有消息列表，不占用 Tabs。「我的」下分收藏、喜欢、评论，展示本人收藏、喜欢的文章及自己发表的评论和回复。「消息」向已登录读者提供收到的评论回复与咨询回复通知，点击定位原评论或咨询；「管理」专门收取和回复读者咨询。「咨询」始终展示当前账户自己发起的咨询。后端分别校验通知收件人、本人列表/发送与作者收件箱/回复权限。账号或 session 切换时清空私人列表、选中会话和草稿，普通账户不能恢复作者视图或读取收件箱。
+- 不保留单独「会员」tab。会员状态与订阅管理合并到现有 Clerk 头像菜单，「管理订阅」直接打开 Clerk Billing；不常驻套餐卡、重复状态标题、刷新按钮或未实现的权益说明。状态不可用时明确显示错误并提供重试，不能误显示成免费账户。
+- 用户明确要求的 Google One Tap 是圆圈登录入口之外的提示式登录方式；复用同一 Clerk 账户，仅在生产配置且未登录时展示，每页只挂载一次，登录后回当前页面，不为此创建独立认证服务。
+- 「咨询」进入时自动核验权益，同样不展示常驻「刷新会员状态」按钮；读取失败时才提供重试，发送时仍须后端鉴权。
+- 所有私人 React 数据缓存按 Clerk 用户和 session 隔离，退出或切换账户同步丢弃旧 client，禁止显示上一账户的数据。当前认证与 Pro 授权使用已验证 session claims，不要求配置 Clerk Secret Key，也不通过 Clerk Backend API 查询订阅。模型与检索密钥仅配置在实际调用它们的平台环境，不进入浏览器。
 
 ## Convex 评论（2026-09-09 用户确认）
 
-- 评论使用 Convex，放弃 Giscus。只有 Clerk 登录后才能查看和参与，未登录只显示「登录后查看评论」等简短提示；所有列表、单条、数量查询与写入均须后端鉴权，不能只隐藏 UI。
+- 评论使用 Convex，放弃 Giscus。未登录可查看文章的评论总数、喜欢总数和简短登录提示；公开查询只返回聚合数字。登录后才显示实际评论列表和输入框，禁止匿名发布；所有正文、回复、图片及个人喜欢状态的查询和写入均须后端鉴权，不能只隐藏 UI。每条新评论绑定已验证 Clerk 账户，不接受客户端指定归属。
 - 评论位于页脚前后篇导航之后，保留 `page.kind === 'page'` 条件，仅对 `docs`、`posts`、`about`、`weekly`、`links` 独立内容页启用。分区、分类、标签和业务索引页不启用。
-- 评论使用 canonical pathname 关联文章。路径变动仍需审计已有评论关联；页面标题不作为评论主键。评论者主动填写公开昵称，不自动公开 Clerk 账户中的邮箱或私人姓名。
+- 评论使用 canonical pathname 关联文章。路径变动仍需审计已有评论关联；页面标题不作为评论主键。评论直接使用 Clerk 账户中的用户名，不再要求另填公开昵称；用户在 Clerk 账户设置中维护用户名，不使用邮箱或私有身份 ID 作显示兜底。
+- 文章与每条评论均支持「喜欢」，使用心形图标、数量与明确的选中状态；登录后可以喜欢或取消，幂等写入并按账户去重。未登录不开放写入。
+- 评论支持回复与连续讨论，清楚展示回复对象和层级；删除父评论时清除原正文及附件，保留讨论链的删除占位。图片通过 Convex 存储，上传、附件归属和读取在服务端校验；提供上传预览、移除、失败重试和点开放大，失败保留文字草稿。不得把评论或附件加入公开 AI Search 语料。
 - 历史 GitHub Discussions 保留原状。用户要求待新功能与数据结构稳定后单独做历史评论迁移，当前不导入、不删除、不改写。后续迁移保留原公开作者、时间、回复关系与来源标记，不按同名认领到 Clerk 账户。
 - `BLOG_DIR` 中的旧 Giscus compatibility Skill 只用于历史映射审计；其保留 Giscus 或改 Discussion 标题的旧流程不适用于新评论系统。
 - 规则表示产品方向，完成度仍以本地、真实账户和生产验收区分，不把本地实现视为上线。

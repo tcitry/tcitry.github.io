@@ -1,0 +1,32 @@
+/* Site preference: native tracks must never change the available content width.
+   The scroll listener paints a separate, transient thumb over the content. */
+html, * { scrollbar-gutter: auto !important; scrollbar-width: none !important; }
+html::-webkit-scrollbar, *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+
+.blog-scroll-thumb {
+  position: fixed;
+  z-index: 2147483646;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 3px;
+  border: 0;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 140ms ease;
+  touch-action: none;
+  user-select: none;
+  cursor: default;
+}
+.blog-scroll-thumb::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--scrollbar-thumb-active, #7779);
+}
+.blog-scroll-thumb[data-visible] { opacity: 1; }
+.blog-scroll-thumb:not([data-visible]) { pointer-events: none; }
+.blog-scroll-thumb[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { .blog-scroll-thumb { transition: none; } }
+@media (forced-colors: active) { .blog-scroll-thumb::before { background: CanvasText; } }

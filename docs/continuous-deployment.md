@@ -4,7 +4,7 @@
 
 `tcitry-blog` 是公开仓库。站点 `main` push 是一次生产发布决定：必须先完成本地验收，再推送；Clerk 与 Convex 的生产配置、后端 schema 和 functions 也属于这次发布。Blog 内容仓库仍可独立、随时提交 `main`，不能把站点功能的未完成工作随内容更新推送。真实密钥、实例配置和本机路径只放在被 Git 忽略的 `.env*` 文件或相应平台配置中；示例文件只保留空值与说明。
 
-2026-09-08 新增的读者功能保留静态 Astro + 单 Worker，通过 React island 使用 Clerk 登录并直接连接 Convex，提供收藏、阅读进度与私有笔记。2026-09-09 的后续开发将评论改为 Convex，统一使用 Clerk 登录且登录后才能查看；历史 Giscus 评论暂缓迁移。会员、AI 会话与真人咨询的配置和本地验收见 [账户服务](member-services.md)。初次接入必须先配置下文的 development / production 值；未配置 Clerk 或 Convex 时可以构建本地预览，生产构建会明确失败，不会静默发布未配置的登录功能。
+2026-09-08 新增的读者功能保留静态 Astro + 单 Worker，通过 React island 使用 Clerk 登录并直接连接 Convex，最初提供收藏、阅读进度与私有笔记；当前按用户要求仅保留收藏，已停止进度记录并移除笔记功能。2026-09-09 的后续开发将评论改为 Convex，统一使用 Clerk 登录且登录后才能查看；历史 Giscus 评论暂缓迁移。会员、AI 会话与真人咨询的配置和本地验收见 [账户服务](member-services.md)。初次接入必须先配置下文的 development / production 值；未配置 Clerk 或 Convex 时可以构建本地预览，生产构建会明确失败，不会静默发布未配置的登录功能。
 
 2026-09-07 的首轮生产 HTTP 验收已检查 23 个页面、34 条跳转和 23 项资源。公开主题 CI 继续运行，但不会构建或发布完整博客。
 
@@ -77,7 +77,7 @@ BLOG_DIR=/path/to/Blog npm run verify:release
 npm run deploy:verified
 ```
 
-`verify:release` 要求站点与内容检出都干净，运行生产校验并在忽略目录 `.generated/release.json` 记录站点、内容、主题版本、构建时的 Clerk / Convex public 配置和产物哈希。`deploy:verified` 复核这些信息，读取 Convex production 的 `CLERK_JWT_ISSUER_DOMAIN` 并核对 Clerk 实例；然后执行锁定版本的 Convex CLI，最后才执行 Wrangler，不重复构建。它可以在云端内容临时目录已清理后运行。记录文件不含私有仓库 URL、绝对路径或 secret。
+`verify:release` 要求站点与内容检出都干净，运行生产校验并在忽略目录 `.generated/release.json` 记录站点、内容、主题版本、构建时的 Clerk / Convex public 配置和产物哈希。`deploy:verified` 复核这些信息，读取 Convex production 的 `CLERK_FRONTEND_API_URL` 并核对 Clerk 实例；然后执行锁定版本的 Convex CLI，最后才执行 Wrangler，不重复构建。它可以在云端内容临时目录已清理后运行。记录文件不含私有仓库 URL、绝对路径或 secret。
 
 Astro integration 在开始构建时清除旧 seal，并在成功构建后记录实际传入 `vite.define` 的读者配置。finalize 与 release verification 只比对这份快照，不从后来变化的 `.env` 重新生成它；编译期间切换配置会导致验证失败，必须重新构建。
 
@@ -143,6 +143,7 @@ node scripts/verify-deployment.mjs --env production
 | `HEROUI_AUTH_TOKEN` | Secret | HeroUI Pro 的 CI/CD Token |
 | `PUBLIC_CLERK_PUBLISHABLE_KEY` | Text | 可选。未设时生产构建读取 `wrangler.jsonc` vars 中的 `pk_live_` |
 | `PUBLIC_CONVEX_URL` | Text | 可选。未设时生产构建读取 `wrangler.jsonc` vars 中的 Convex URL |
+| `PUBLIC_AI_SEARCH_URL` | Text | 必填。既有 AI Search 公共 origin 或 `/search` URL，可用已激活的自定义 HTTPS 域名；真实值不提交 Git |
 | `CONVEX_DEPLOY_KEY` | Secret | 上述 Convex production deployment 的 `prod:<deployment>\|…` deploy key |
 
 **日常不配置 `BLOG_CONTENT_COMMIT`**。如果曾经添加，请删除此变量，而非留空。仅在回滚或复现时可临时填写内容 `main` 历史中的完整 40 位 SHA；脚本校验其归属，完成后删除覆盖值，即恢复自动选择最新内容。解析结果写入本次忽略的发布记录，并在验证前后核对检出版本。
@@ -166,18 +167,22 @@ HeroUI 使用 Dashboard → Overview / Settings 中的 **CI/CD Token**；见 [He
 | `wrangler.jsonc` `vars` | `PUBLIC_CONVEX_URL` | 生产 Convex Deployment URL；前端构建回退读取 |
 | `.env.production.local`，已被忽略 | 上两项 | 仅在本地覆盖 wrangler 生产公开值时使用 |
 | Cloudflare → Settings → Builds → Build variables and secrets | `CONVEX_DEPLOY_KEY` 等 secret | 云端发布；`CONVEX_DEPLOY_KEY` 必须选择 Secret |
-| Convex Dashboard → development deployment → Settings → Environment Variables | `CLERK_JWT_ISSUER_DOMAIN` | Clerk development Frontend API URL，如 `https://<instance>.clerk.accounts.dev` |
-| Convex Dashboard → production deployment → Settings → Environment Variables | `CLERK_JWT_ISSUER_DOMAIN` | Clerk production Frontend API URL，必须匹配 production publishable key 中的实例 |
+| Convex Dashboard → development deployment → Settings → Environment Variables | `CLERK_FRONTEND_API_URL` | Clerk development Frontend API URL，如 `https://<instance>.clerk.accounts.dev` |
+| Convex Dashboard → production deployment → Settings → Environment Variables | `CLERK_FRONTEND_API_URL` | Clerk production Frontend API URL，必须匹配 production publishable key 中的实例 |
+| `.env.local` / `.env.production.local`，已被忽略；Cloudflare Build variables | `PUBLIC_AI_SEARCH_URL` | 开发、生产均使用既有同一 AI Search 实例的默认域名或已激活自定义域名 |
+| Convex Dashboard → 对应 development / production deployment → Settings → Environment Variables | `AI_SEARCH_PUBLIC_URL` | 与前端同一 hostname；Convex 归一化后调用 `/search` 和 `/chat/completions` |
+
+AI Search 与关联 Gateway 由开发、生产共用，Clerk/Convex 仍隔离。生产构建会拒绝缺失或非法 Search 配置；发布前还会只读检查 production Convex 的 Search 地址与封存前端完全匹配，不自动替换平台值。改自定义域名后应同时更新上述平台变量并重新构建；只修改 ignored `.env.production.local` 不会修改云端。Gateway 的自定义域名不填写在这两个 Search 变量中。配置与真实验收见 [AI Search](ai-search.md#自定义域名与共享资源)。
 
 模板见 [`.env.example`](../.env.example)。Secret Key、Deploy Key 和 token 不得写入 `wrangler.jsonc`、源码、模板、README 或 Git。本站只有一个生产 Worker：`wrangler.jsonc` 的 `vars.PUBLIC_CLERK_PUBLISHABLE_KEY` 维护生产 `pk_live_`，供 `/api/chat` 推导 issuer；本地 `wrangler dev` 用忽略的 `.dev.vars` 覆盖为 `pk_test_`。前端登录仍由构建时的 `PUBLIC_CLERK_PUBLISHABLE_KEY` 注入静态 JS。publishable key 不提供 Clerk 管理权限，Convex URL 不提供数据库管理权限，数据权限由后端检查。
 
-1. 在 Clerk development 与 production 实例中分别启用 **Convex integration**，将各自的 Frontend API URL 填入相应 Convex deployment 的 `CLERK_JWT_ISSUER_DOMAIN`。production 使用自己的域名与 Clerk 实例，不复制 development issuer。
+1. 在 Clerk development 与 production 实例中分别启用 **Convex integration**，将各自的 Frontend API URL 填入相应 Convex deployment 的 `CLERK_FRONTEND_API_URL`。客户端直接使用 audience 为 `convex` 的 session token，无需另建 JWT template；`auth.config.ts` 仍以该 URL 作为可信 issuer，并保持 `applicationID: "convex"`。production 使用自己的域名与 Clerk 实例，不复制 development issuer。变量名采用 [Clerk 当前集成指南](https://clerk.com/docs/guides/development/integrations/databases/convex) 的 `CLERK_FRONTEND_API_URL`。
 2. 把 development 的两项 public 配置补到 `.env.local`。已完成的 Convex 初始化无需重建项目，保留当前 development deployment；运行 `npm run convex:dev` 同步本地 schema / functions 到 development，并启动 `npm run dev` 验收登录与读者功能。
 3. 在 `.env.production.local` 填好两项 production public 配置，运行生产配置检查与本地生产构建。该文件无需 production deploy key 即可做静态构建；日常不要把 production deploy key 放进 `.env.local`。
 4. 在 Cloudflare **Build variables and secrets** 添加 production 两项 public 值与 `CONVEX_DEPLOY_KEY`，并在 Convex production 配好 issuer。首次生产接入要在站点 `main` push 前完成这些配置。
 5. 如确需手动备用发布，可把 production deploy key 临时存入被忽略的 `.env.production.local`，从独立、干净的 release checkout 执行 `deploy:verified`；脚本仅向 Convex deploy 子进程传递该 key，日志会遮蔽凭据。
 
-静态客户端与 Worker 不使用 Clerk Secret Key。新增 Clerk Billing 后端需要在对应 Convex 环境配置 `CLERK_SECRET_KEY`，不能放入 Worker 或前端；其余账户服务配置见 [账户服务](member-services.md)。Cloudflare Worker 的控制台变量不能给已经生成的静态 JS 注入值；读者功能的 publishable key 仍在构建变量里。`/api/chat` 在 Worker 运行时校验 Clerk session JWT：生产从 `wrangler.jsonc` 的 `PUBLIC_CLERK_PUBLISHABLE_KEY` 推导 issuer，不必在控制台再维护 `CLERK_JWT_ISSUER`。可选 secret `CLERK_JWT_KEY`（PEM 公钥）做无网络校验。`CLERK_JWT_ISSUER_DOMAIN` 仍在 Convex 环境配置。
+当前认证与 Pro 授权不需要 `CLERK_SECRET_KEY`：Convex 从已验证的 Clerk v2 session claims 中匹配个人 Pro 套餐，在实际咨询写入中核验；缺失或无效 claim 拒绝新增付费留言。权益变化随短期 token 刷新生效，详细订阅账期由 Clerk 账户组件呈现；其余账户服务配置见 [账户服务](member-services.md)。Cloudflare Worker 的控制台变量不能给已经生成的静态 JS 注入值；读者功能的 publishable key 仍在构建变量里。`/api/chat` 在 Worker 运行时校验 Clerk session JWT：生产从 `wrangler.jsonc` 的 `PUBLIC_CLERK_PUBLISHABLE_KEY` 推导 issuer，不必在控制台再维护 `CLERK_JWT_ISSUER`。可选 secret `CLERK_JWT_KEY`（PEM 公钥）做无网络校验。`CLERK_FRONTEND_API_URL` 仍在 Convex 环境配置。
 
 读者配置按 `.env` → `.env.local` → `.env.<mode>` → `.env.<mode>.local` 读取，显式进程环境优先；`PUBLIC_SITE_ENV=production` 时使用 production 模式，普通本地构建与开发服务器使用 development 模式。preview 展示已构建的静态产物，不重新选择后端。配置值用完整字面量，不在这些配置中使用 `$VAR` 展开。调试页面配置时仅报告变量是否存在与所属环境，不打印 key 或 secret 值。
 

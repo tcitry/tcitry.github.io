@@ -1,8 +1,12 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
-// Use an independently built preview with its Pagefind index; never build here.
+// Use an independently built preview; detect its actual search requests rather
+// than guessing from local environment files. AI Search stays fully mocked.
 const base = new URL(process.env.BLOG_TEST_URL ?? 'http://127.0.0.1:4321');
+const expectedBackend = process.env.AI_SEARCH_EXPECT_BACKEND;
+assert.ok(expectedBackend === undefined || ['ai-search', 'pagefind'].includes(expectedBackend),
+  'AI_SEARCH_EXPECT_BACKEND must be ai-search or pagefind when supplied');
 const selectors = {
   trigger: '[data-blog-search-trigger]',
   command: '[data-blog-command]',
@@ -11,16 +15,62 @@ const selectors = {
 };
 const browser = await chromium.launch({ headless: true });
 let checked = 0;
+let backend;
+let builtSearchEndpoint;
+
+function isMockableSearchEndpoint(url) {
+  const labels = url.hostname.split('.');
+  return url.protocol === 'https:' && !url.username && !url.password && !url.port && !url.search && !url.hash
+    && url.pathname === '/search' && url.hostname.length <= 253 && labels.length >= 2
+    && labels.every(label => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label))
+    && /[a-z]/.test(labels.at(-1)) && !['localhost', 'local', 'internal'].includes(labels.at(-1));
+}
 
 async function fixture(width, mockModule) {
   const context = await browser.newContext({
     serviceWorkers: 'block',
     viewport: { width, height: 900 },
   });
-  // Allow only this preview. Analytics, comments and other third parties stay offline.
-  await context.route('**/*', (route) => new URL(route.request().url()).origin === base.origin
-    ? route.continue()
-    : route.abort());
+  const aiRequests = [];
+  let aiReference;
+  // Permit only this preview plus mocked public AI Search. Reading the built
+  // reference metadata proves the adapter and its exact build agree on sources.
+  // Identify the configured endpoint from an actual AI Search request, then pin
+  // that exact URL across viewports. Custom HTTPS hosts need no provider suffix.
+  // Every external request is either fulfilled here or aborted, never forwarded.
+  await context.route('**/*', async (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    if (url.origin === base.origin) {await route.continue(); return;}
+    if (!isMockableSearchEndpoint(url)) {await route.abort(); return;}
+    if (builtSearchEndpoint) assert.ok(url.href === builtSearchEndpoint, 'The built search endpoint remains identical across requests and viewports');
+    const headers = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type'};
+    if (request.method() === 'OPTIONS') {await route.fulfill({status: 204, headers}); return;}
+    if (request.method() !== 'POST' || request.resourceType() !== 'fetch') {await route.abort(); return;}
+    let body;
+    try {body = request.postDataJSON();} catch {await route.abort(); return;}
+    if (typeof body?.query !== 'string' || !body.ai_search_options?.retrieval) {await route.abort(); return;}
+    assert.equal(body.ai_search_options.retrieval.max_num_results, 50, 'The recognized request uses the built AI Search retrieval contract');
+    builtSearchEndpoint ??= url.href;
+    assert.equal(request.headers().authorization, undefined, 'The built anonymous search sends no Authorization header');
+    assert.equal(request.headers().cookie, undefined, 'The built anonymous search sends no session cookie');
+    aiRequests.push(body.query);
+    if (!aiReference) {
+      const response = await context.request.get(new URL('/search/references.json', base).href);
+      assert.equal(response.status(), 200, 'Configured AI Search has a built public reference manifest');
+      const references = await response.json();
+      await response.dispose();
+      assert.ok(Array.isArray(references.documents), 'The built reference manifest has documents');
+      aiReference = references.documents.find(ref => typeof ref.key === 'string' && typeof ref.hash === 'string'
+        && typeof ref.title === 'string' && /^\/(docs|posts|weekly)\/.+\/$/.test(new URL(ref.url).pathname));
+      assert.ok(aiReference, 'The built reference manifest contains a public article');
+    }
+    const chunks = body.query.includes('zzzzcodexnomatch') ? [] : [{score: 0.9,
+      text: 'Offline browser fixture checks this built article source.',
+      item: {key: aiReference.key, metadata: {content_hash: aiReference.hash, canonical_url: aiReference.url}},
+    }];
+    await route.fulfill({status: 200, headers, contentType: 'application/json', body: JSON.stringify({success: true, result: {chunks}})});
+  });
   if (mockModule) {
     await context.route('**/pagefind/pagefind.js', (route) => new URL(route.request().url()).origin === base.origin
       ? route.fulfill({ status: 200, contentType: 'text/javascript', body: mockModule })
@@ -44,7 +94,7 @@ async function fixture(width, mockModule) {
   }
   const trigger = page.locator(`${selectors.trigger}:visible`).first();
   await trigger.waitFor({ state: 'visible' });
-  return { context, page, trigger, errors, requests };
+  return { context, page, trigger, errors, requests, aiRequests };
 }
 
 async function waitState(page, state) {
@@ -172,7 +222,7 @@ async function waitMockResult(page, query) {
 
 try {
   for (const width of [1440, 375, 320]) {
-    const { context, page, trigger, errors, requests } = await fixture(width);
+    const { context, page, trigger, errors, requests, aiRequests } = await fixture(width);
     const label = `Search at ${width}px`;
     try {
       await assertNoLegacySearch(page, requests, label);
@@ -190,7 +240,16 @@ try {
       await input.fill('Astro');
       await waitState(page, 'results');
       await assertResults(page, `${label}, Astro query`);
-      assert.ok(requests.some((path) => path.endsWith('/pagefind/pagefind.js')), `${label}: a query loads the real Pagefind module`);
+      const pagefindLoaded = requests.some((path) => path.endsWith('/pagefind/pagefind.js'));
+      const actualBackend = aiRequests.length > 0 ? 'ai-search' : pagefindLoaded ? 'pagefind' : undefined;
+      assert.ok(actualBackend, `${label}: a completed query must use a recognized search backend`);
+      if (expectedBackend) assert.equal(actualBackend, expectedBackend, `${label}: the actual build uses the expected search backend`);
+      if (backend) assert.equal(actualBackend, backend, `${label}: all viewports use the same built search configuration`);
+      else {backend = actualBackend; console.log(`Search build backend: ${backend}.`);}
+      if (backend === 'ai-search') {
+        assert.equal(pagefindLoaded, false, `${label}: configured AI Search never loads Pagefind`);
+        if (width === 1440) await assertRecentDestinations(page, `${label}, built AI Search source`);
+      } else assert.ok(pagefindLoaded, `${label}: a local fallback query loads the real Pagefind module`);
       await assertBounds(page, `${label}, query results`);
       const more = page.getByRole('button', { name: '加载更多', exact: true });
       if (await more.isVisible()) {
@@ -203,7 +262,7 @@ try {
         await assertBounds(page, `${label}, more results`);
       }
 
-      // Quote the phrase: Pagefind may legitimately fuzzy-match random tokens.
+      // Quote the phrase: the local Pagefind fallback may fuzzy-match tokens.
       await input.fill('"zzzzcodexnomatch20260908xyz"');
       await waitState(page, 'results');
       assert.equal(await page.locator(selectors.result).count(), 0, `${label}: an unmatched query has no results`);
@@ -241,6 +300,13 @@ try {
     }
   }
 
+  if (backend === 'ai-search') {
+    // Backend-specific race/error/security checks use the real component and
+    // adapter in an isolated fixture; they never contact the configured endpoint.
+    await import('./search-ai.mjs');
+    checked++;
+  } else {
+  assert.equal(backend, 'pagefind', 'Pagefind-specific checks require an observed local fallback');
   // A slow or unavailable recent-updates feed must not block the search input.
   {
     const { context, page, trigger, errors } = await fixture(1440, mockModule);
@@ -429,6 +495,7 @@ try {
     checked++;
   } finally {
     await context.close();
+  }
   }
   console.log(`Search browser regression passed (${checked} viewport/scenario checks).`);
 } finally {

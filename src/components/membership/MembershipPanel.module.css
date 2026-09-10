@@ -1,9 +1,0 @@
-.panel { display: flex; flex-direction: column; gap: 18px; min-width: 0; padding: 22px 20px; overflow-y: auto; height: 100%; }
-.header { display: grid; gap: 8px; }
-.eyebrow { color: var(--muted); font-size: 10px; letter-spacing: .12em; }
-.header h2 { margin: 0; font-size: 21px; font-weight: 650; }
-.header p, .note, .status p { margin: 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
-.status { padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 13px; line-height: 1.7; }
-.actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.pricing { min-width: 0; max-width: 100%; overflow-x: auto; }
-.error { font-size: 12px; color: var(--danger); margin: 0; }

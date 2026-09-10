@@ -1,9 +1,9 @@
 ---
 import '../../styles/chat-widget.css';
-interface Props {pathname?: string; title?: string; reading?: boolean}
-const {pathname, title, reading = false} = Astro.props;
+interface Props {pathname?: string; title?: string}
+const {pathname, title} = Astro.props;
 ---
-<div class="blog-chat-widget" data-blog-chat-widget data-chat-appearance="sidebar" data-reader-pathname={pathname} data-reader-title={title} data-reader-initial={reading ? 'true' : undefined}>
+<div class="blog-chat-widget" data-blog-chat-widget data-chat-appearance="sidebar" data-reader-pathname={pathname} data-reader-title={title}>
   <button class="blog-chat-widget__launcher" type="button" aria-label="打开博客助手" aria-haspopup="dialog" aria-expanded="false" aria-controls="blog-chat-panel" data-chat-launcher hidden>
     <span data-chat-launcher-icon>
       <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -14,11 +14,15 @@ const {pathname, title, reading = false} = Astro.props;
     <span data-chat-launcher-face></span>
     <span class="blog-chat-widget__tooltip" aria-hidden="true">博客助手</span>
   </button>
+  <button class="blog-chat-widget__expand" type="button" aria-label="展开博客助手" aria-haspopup="dialog" aria-expanded="false" aria-controls="blog-chat-panel" data-chat-expand hidden>
+    <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.5 5-5 5 5 5" /></svg>
+    <span class="blog-chat-widget__tooltip" aria-hidden="true">展开侧栏</span>
+  </button>
   <dialog id="blog-chat-panel" class="blog-chat-widget__panel" aria-label="博客助手" data-chat-loaded="false">
     <div class="blog-chat-widget__mount" data-chat-mount>
       <div class="blog-chat-widget__loading-header">
         <strong>博客助手</strong>
-        <button type="button" class="blog-chat-widget__close" aria-label="关闭博客助手" data-chat-close>×</button>
+        <button type="button" class="blog-chat-widget__close" aria-label="关闭博客助手" data-chat-close><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7.5 5 5 5-5 5" /></svg></button>
       </div>
       <div class="blog-chat-widget__loading">
         <p role="status" data-chat-load-status>正在打开博客助手…</p>

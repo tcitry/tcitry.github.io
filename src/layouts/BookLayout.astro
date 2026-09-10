@@ -7,10 +7,12 @@ import type { NavigationItem } from '@tcitry/astro-book/types';
 import type { ContentPage, NavigationNode, TaxonomyTerm } from '../lib/types';
 import { bookTitle, headTitle, dateText, flattenNavigation, includesPage, param } from '../components/book/helpers';
 import '../styles/tailwind.css';
+import '../styles/floating-scrollbars.css';
 import blogStyles from '../styles/blog.module.css';
 import codeStyles from '../components/code/BlogCode.module.css';
 import BlogSearch from '../components/search/BlogSearch.astro';
 import BlogChatWidget from '../components/chat/BlogChatWidget.astro';
+import GoogleOneTapPrompt from '../components/auth/GoogleOneTapPrompt';
 import ObsidianNoteButton from '../components/book/ObsidianNoteButton';
 interface Props { page: ContentPage; navigation: NavigationNode[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[] }
 const { page, navigation, tags } = Astro.props;
@@ -78,11 +80,12 @@ const site = {
     {tocHTML ? <Fragment set:html={tocHTML} /> : page.headings.length ? <nav id="TableOfContents"><HeadingTree headings={page.headings} /></nav> : <nav><TermList title="Tags" total={tags.length} items={tags.map((term) => ({ label: term.name, href: term.url, count: term.pageIds.length }))} /></nav>}
   </Fragment>
   <Fragment slot="comments">
-    {comments && <Comments pathname={page.url} />}
+    {comments && <Comments pathname={page.url} title={bookTitle(page)} bookmarkable={readerArticle} />}
   </Fragment>
   <Fragment slot="overlays">
+    {production && <GoogleOneTapPrompt client:only="react" />}
     {import.meta.env.DEV && page.source && <ObsidianNoteButton source={page.source} client:load />}
-    <BlogChatWidget pathname={readerArticle ? page.url : undefined} title={readerArticle ? bookTitle(page) : undefined} reading={page.type === 'reader'} />
-    <script>import '../scripts/site'; import '../scripts/blog-code';</script>
+    <BlogChatWidget pathname={readerArticle ? page.url : undefined} title={readerArticle ? bookTitle(page) : undefined} />
+    <script>import '../scripts/site'; import '../scripts/blog-code'; import '../scripts/floating-scrollbars';</script>
   </Fragment>
 </ThemeLayout>

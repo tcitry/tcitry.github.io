@@ -7,12 +7,17 @@ function fixture() {
   const calls = [];
   const session = randomUUID();
   const search = {items: {}};
-  for (const operation of ['info', 'update', 'list', 'get', 'uploadAndPoll', 'delete']) {
+  for (const operation of ['info', 'update', 'list', 'get', 'uploadAndPoll', 'upload', 'delete']) {
     const receiver = ['info', 'update'].includes(operation) ? search : search.items;
     receiver[operation] = function (...args) {
       assert.equal(this, receiver, 'Remote binding methods retain their receiver');
       calls.push({operation, args});
-      return Promise.resolve({operation, args});
+      const result = Promise.resolve({operation, args});
+      if (operation === 'get') result.info = function () {
+        calls.push({operation: 'itemInfo', args});
+        return Promise.resolve({operation: 'itemInfo', args});
+      };
+      return result;
     };
   }
   const env = {BOOTSTRAP_SESSION: session, BLOG_SEARCH: search};
@@ -83,6 +88,8 @@ test('authorized local bootstrap forwards only the supported operations and pres
     {operation: 'update', args: [{custom_metadata: [{field_name: 'content_hash', field_type: 'text'}]}]},
     {operation: 'list', args: [{page: 2, per_page: 50, source: 'builtin'}]},
     {operation: 'get', args: ['sample-item']},
+    {operation: 'itemInfo', args: ['sample-item']},
+    {operation: 'upload', args: ['tcitry-blog/articles/sample.md', '# 公开文章\n', {metadata: {content_hash: 'current-hash'}}]},
     {operation: 'uploadAndPoll', args: ['tcitry-blog/articles/sample.md', '# 公开文章\n\n正文与代码\n', {
       metadata: {content_hash: 'current-hash'}, pollIntervalMs: 10000, timeoutMs: 120000,
     }]},
@@ -93,7 +100,8 @@ test('authorized local bootstrap forwards only the supported operations and pres
     assert.match(response.headers.get('content-type'), /^application\/json/);
     assert.deepEqual(await response.json(), body);
   }
-  assert.deepEqual(calls, operations);
+  assert.deepEqual(calls, operations.flatMap(entry => entry.operation === 'itemInfo'
+    ? [{operation: 'get', args: entry.args}, entry] : [entry]));
 });
 
 test('local bootstrap returns only error classification, never provider error bodies or credentials', async () => {
@@ -111,4 +119,36 @@ test('local bootstrap returns only error classification, never provider error bo
     assert.deepEqual(JSON.parse(body), {name: 'ProviderError', status: 403, code: 10000});
     assert.doesNotMatch(body, /private-provider|credential|Provider rejected|"body"|"response"|"details"|"stack"/);
   }
+});
+
+test('read-only bootstrap runtime exposes instance and item reads but blocks every mutation', async () => {
+  const {calls, env, request} = fixture();
+  const readonly = {...env, BOOTSTRAP_READ_ONLY: '1'};
+  for (const operation of ['update', 'uploadAndPoll', 'upload', 'delete']) {
+    const response = await worker.fetch(request({body: {operation, args: []}}), readonly);
+    assert.equal(response.ok, false);
+    assert.ok([403, 404].includes(response.status), 'Read-only mutation attempts are explicitly denied');
+  }
+  assert.deepEqual(calls, [], 'Denied operations never reach the remote binding');
+  for (const operation of ['info', 'list', 'get', 'itemInfo']) {
+    assert.equal((await worker.fetch(request({body: {operation, args: []}}), readonly)).status, 200);
+  }
+  assert.deepEqual(calls.map(call => call.operation), ['info', 'list', 'get', 'get', 'itemInfo']);
+});
+
+test('schema-locked bootstrap runtime cannot update metadata while retaining the permitted upload method', async () => {
+  const {calls, env, request} = fixture();
+  const locked = {...env, BOOTSTRAP_NO_SCHEMA_UPDATE: '1'};
+  assert.equal((await worker.fetch(request({body: {operation: 'update', args: [{custom_metadata: []}]}}), locked)).ok, false);
+  assert.equal((await worker.fetch(request({body: {operation: 'delete', args: ['existing-item']}}), locked)).status, 404);
+  assert.deepEqual(calls, []);
+  assert.equal((await worker.fetch(request({body: {operation: 'info'}}), locked)).status, 200);
+  assert.equal((await worker.fetch(request({body: {operation: 'uploadAndPoll', args: ['fixture-key', 'public body', {}]}}), locked)).status, 200);
+  assert.equal((await worker.fetch(request({body: {operation: 'upload', args: ['fixture-key', 'public body', {}]}}), locked)).status, 200);
+  assert.equal((await worker.fetch(request({body: {operation: 'itemInfo', args: ['fixture-item']}}), locked)).status, 200);
+  assert.deepEqual(calls.map(call => call.operation), ['info', 'uploadAndPoll', 'upload', 'get', 'itemInfo']);
+  const both = {...locked, BOOTSTRAP_READ_ONLY: '1'};
+  assert.equal((await worker.fetch(request({body: {operation: 'uploadAndPoll', args: []}}), both)).ok, false);
+  assert.equal((await worker.fetch(request({body: {operation: 'upload', args: []}}), both)).ok, false);
+  assert.equal(calls.length, 5, 'Read-only remains the stricter capability when both locks are set');
 });

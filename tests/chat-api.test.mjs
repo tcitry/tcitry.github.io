@@ -116,6 +116,16 @@ test('chat can derive the Clerk issuer from a publishable key', async () => {
   assert.equal(calls.search.length, 1);
 });
 
+test('chat accepts the default v2 session token after enabling the Convex integration', async () => {
+  const { env, calls } = environment();
+  const session = await clerk.headers({ aud: 'convex', v: 2, sid: 'sess_integration_test' });
+  const response = await handleChat(request(question, { headers: session }), env, references);
+  assert.equal(response.status, 200);
+  assert.equal(visibleText(await events(response)), '回答 [1]');
+  assert.equal(calls.search.length, 1);
+  assert.equal(calls.run.length, 1);
+});
+
 test('HTTP method and cross-origin checks reject before searching', async () => {
   const { env, calls } = environment();
   const wrongMethod = await handleChat(request(undefined, { method: 'GET' }), env, references);

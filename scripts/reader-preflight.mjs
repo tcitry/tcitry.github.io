@@ -4,7 +4,7 @@ import { loadReaderEnvironment, readProductionReaderConfig } from './reader-conf
 
 try {
   readProductionReaderConfig(loadReaderEnvironment(fileURLToPath(new URL('../', import.meta.url))));
-  console.log('Production reader public configuration is valid. Remote Convex deployment and Clerk issuer are checked again before deployment.');
+  console.log('Production reader and public AI Search configuration is valid. Remote Convex deployment and Clerk issuer are checked again before deployment.');
 } catch (error) {
   console.error(error instanceof assert.AssertionError ? error.message.split('\n')[0] : 'Could not read the local production reader configuration.');
   process.exitCode = 1;

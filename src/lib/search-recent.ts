@@ -22,7 +22,7 @@ function routeKey(value: string): string | undefined {
   }
 }
 
-/** Initial suggestions use public article metadata; Pagefind owns query results. */
+/** Initial suggestions use public article metadata independently of the search backend. */
 export function getRecentUpdates(pages: ContentPage[], limit = 6): SearchEntry[] {
   const count = Number.isFinite(limit) ? Math.max(0, Math.floor(limit)) : 0;
   if (!count) return [];

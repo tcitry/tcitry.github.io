@@ -18,8 +18,6 @@ const libraryItem = v.object({
   pathname: v.string(),
   title: v.string(),
   updatedAt: v.number(),
-  progress: v.optional(v.number()),
-  note: v.optional(v.string()),
 });
 
 async function requireOwner(ctx: QueryCtx | MutationCtx) {
@@ -83,24 +81,13 @@ export const getPage = query({
   args: pageArgs,
   returns: v.object({
     bookmarked: v.boolean(),
-    progress: v.union(v.number(), v.null()),
-    note: v.string(),
-    noteUpdatedAt: v.union(v.number(), v.null()),
   }),
   handler: async (ctx, args) => {
     const owner = await requireOwner(ctx);
     const pathname = canonicalPathname(args.pathname);
-    const [bookmark, progress, note] = await Promise.all([
-      ctx.db.query("bookmarks").withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique(),
-      ctx.db.query("readingProgress").withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique(),
-      ctx.db.query("privateNotes").withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique(),
-    ]);
-    return {
-      bookmarked: bookmark !== null,
-      progress: progress?.progress ?? null,
-      note: note?.note ?? "",
-      noteUpdatedAt: note?.updatedAt ?? null,
-    };
+    const bookmark = await ctx.db.query("bookmarks")
+      .withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique();
+    return { bookmarked: bookmark !== null };
   },
 });
 
@@ -124,80 +111,15 @@ export const setBookmark = mutation({
   },
 });
 
-// Progress is the furthest point reached. Opening a page at the top on another
-// device cannot reset it; clearPage explicitly removes saved progress.
-export const saveProgress = mutation({
-  args: { ...pageWriteArgs, progress: v.number() },
-  returns: v.number(),
-  handler: async (ctx, args) => {
-    const owner = await requireOwner(ctx);
-    const pathname = canonicalPathname(args.pathname);
-    const title = pageTitle(args.title);
-    if (!Number.isFinite(args.progress) || args.progress < 0 || args.progress > 100) {
-      invalid("阅读进度须介于 0 和 100 之间。");
-    }
-    const progress = Math.round(args.progress * 100) / 100;
-    const existing = await ctx.db.query("readingProgress")
-      .withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique();
-    if (existing && existing.progress >= progress) return existing.progress;
-    if (!existing && progress === 0) return 0;
-    await limitWrite(ctx, owner);
-    if (existing) {
-      await ctx.db.patch("readingProgress", existing._id, { progress, title, updatedAt: Date.now() });
-    } else {
-      await ctx.db.insert("readingProgress", { owner, pathname, title, progress, updatedAt: Date.now() });
-    }
-    return progress;
-  },
-});
-
-export const saveNote = mutation({
-  args: {
-    ...pageWriteArgs,
-    note: v.string(),
-    expectedUpdatedAt: v.union(v.number(), v.null()),
-  },
-  returns: v.object({ note: v.string(), updatedAt: v.union(v.number(), v.null()) }),
-  handler: async (ctx, args) => {
-    const owner = await requireOwner(ctx);
-    const pathname = canonicalPathname(args.pathname);
-    const title = pageTitle(args.title);
-    if (args.note.length > 10_000 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(args.note)) {
-      invalid("笔记最多 10,000 个字符，不能包含控制字符。");
-    }
-    const note = args.note.trim();
-    const existing = await ctx.db.query("privateNotes")
-      .withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique();
-    if ((existing?.updatedAt ?? null) !== args.expectedUpdatedAt) {
-      throw new ConvexError({ code: "NOTE_CONFLICT", message: "笔记已在其他页面或设备更新，请先载入最新版本。" });
-    }
-    if ((existing?.note ?? "") === note) return { note, updatedAt: existing?.updatedAt ?? null };
-    await limitWrite(ctx, owner);
-    if (!note) {
-      if (existing) await ctx.db.delete("privateNotes", existing._id);
-      return { note: "", updatedAt: null };
-    }
-    const updatedAt = Math.max(Date.now(), (existing?.updatedAt ?? 0) + 1);
-    if (existing) {
-      await ctx.db.patch("privateNotes", existing._id, { note, title, updatedAt });
-    } else {
-      await ctx.db.insert("privateNotes", { owner, pathname, title, note, updatedAt });
-    }
-    return { note, updatedAt };
-  },
-});
-
 export const listLibrary = query({
   args: {
-    kind: v.union(v.literal("bookmarks"), v.literal("notes"), v.literal("progress")),
     paginationOpts: paginationOptsValidator,
   },
   returns: paginationResultValidator(libraryItem),
   handler: async (ctx, args) => {
     const owner = await requireOwner(ctx);
     validatePagination(args.paginationOpts);
-    const table = args.kind === "notes" ? "privateNotes" : args.kind === "progress" ? "readingProgress" : "bookmarks";
-    const result = await ctx.db.query(table)
+    const result = await ctx.db.query("bookmarks")
       .withIndex("by_owner_and_updatedAt", q => q.eq("owner", owner))
       .order("desc")
       .paginate(args.paginationOpts);
@@ -207,25 +129,7 @@ export const listLibrary = query({
         pathname: row.pathname,
         title: row.title,
         updatedAt: row.updatedAt,
-        ...("progress" in row ? { progress: row.progress } : {}),
-        ...("note" in row ? { note: row.note } : {}),
       })),
     };
-  },
-});
-
-export const clearPage = mutation({
-  args: pageArgs,
-  returns: v.null(),
-  handler: async (ctx, args) => {
-    const owner = await requireOwner(ctx);
-    const pathname = canonicalPathname(args.pathname);
-    await limitWrite(ctx, owner);
-    for (const table of ["bookmarks", "readingProgress", "privateNotes"] as const) {
-      const row = await ctx.db.query(table)
-        .withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique();
-      if (row) await ctx.db.delete(table, row._id);
-    }
-    return null;
   },
 });

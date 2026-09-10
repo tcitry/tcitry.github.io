@@ -11,13 +11,24 @@ test('the same public page restores only its chosen UI tab and explicit close cl
   const session = storage();
   const state = assistantUIState(() => session, '/about/');
   assert.equal(state.restore(), undefined);
-  state.save('membership');
-  assert.deepEqual(JSON.parse([...session.values.values()][0]), {pathname: '/about/', view: 'membership'});
-  assert.equal(assistantUIState(() => session, '/about/').restore(), 'membership');
+  state.save('consult');
+  assert.deepEqual(JSON.parse([...session.values.values()][0]), {pathname: '/about/', view: 'consult'});
+  assert.equal(assistantUIState(() => session, '/about/').restore(), 'consult');
   assert.equal(assistantUIState(() => session, '/posts/other/').restore(), undefined);
+  assert.equal(state.restore(), undefined, 'Back must not restore a stale open record');
   state.clear();
   assert.equal(state.restore(), undefined);
   assert.equal(session.values.size, 0);
+});
+
+test('another browser tab does not inherit the current page open state', () => {
+  const session = storage();
+  const first = assistantUIState(() => session, '/about/');
+  first.save('chat');
+  assert.equal(first.restore(), 'chat');
+  assert.equal(assistantUIState(() => storage(), '/about/').restore(), undefined);
+  first.clear();
+  assert.equal(first.restore(), undefined);
 });
 
 test('unknown tabs, malformed storage and blocked sessionStorage never reopen or break the panel', () => {
@@ -25,7 +36,7 @@ test('unknown tabs, malformed storage and blocked sessionStorage never reopen or
   const state = assistantUIState(() => session, '/about/');
   state.save('chat');
   const [key] = session.values.keys();
-  for (const value of ['{', 'null', JSON.stringify({pathname: '/about/', view: 'private-message'})]) {
+  for (const value of ['{', 'null', ...['private-message', 'bookmarks', 'likes'].map(view => JSON.stringify({pathname: '/about/', view}))]) {
     session.setItem(key, value);
     assert.equal(state.restore(), undefined);
   }
@@ -33,4 +44,17 @@ test('unknown tabs, malformed storage and blocked sessionStorage never reopen or
   assert.equal(blocked.restore(), undefined);
   assert.doesNotThrow(() => blocked.save('consult'));
   assert.doesNotThrow(() => blocked.clear());
+});
+
+test('the personal area, messages and author management store only a top-level tab name', () => {
+  const session = storage();
+  const state = assistantUIState(() => session, '/about/');
+  for (const view of ['my', 'messages', 'admin']) {
+    state.save(view);
+    assert.equal(state.restore(), view);
+    assert.deepEqual(JSON.parse([...session.values.values()][0]), {pathname: '/about/', view});
+  }
+  // Authorization is checked by the workspace/backend, not inferred from this record.
+  state.clear();
+  assert.equal(state.restore(), undefined);
 });

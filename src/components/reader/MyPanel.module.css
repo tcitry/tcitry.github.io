@@ -1,0 +1,9 @@
+@reference "../../styles/tailwind.css";
+
+.panel { @apply min-w-0 text-sm leading-relaxed; }
+.navigation { @apply mb-4 flex min-w-0 justify-center; }
+.navigation :global(.segment) { @apply w-auto; }
+.navigation :global(.segment__item) { @apply px-4 text-sm; }
+.commentBody { @apply line-clamp-3 whitespace-pre-wrap text-sm font-normal leading-6 text-foreground [overflow-wrap:anywhere]; }
+.commentMeta { @apply flex flex-wrap items-center gap-x-2 text-xs leading-5 text-muted; }
+.imageCount { @apply inline-flex items-center gap-1; }

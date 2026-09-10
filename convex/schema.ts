@@ -20,6 +20,7 @@ export default defineSchema({
     threadId: v.id("consultationThreads"),
     sender: v.union(v.literal("member"), v.literal("author")),
     content: v.string(), createdAt: v.number(), requestId: v.string(), senderIdentity: v.string(),
+    imageIds: v.optional(v.array(v.id("commentImages"))),
   }).index("by_threadId_and_createdAt", ["threadId", "createdAt"])
     .index("by_senderIdentity_and_requestId", ["senderIdentity", "requestId"]),
   assistantConversations: defineTable({
@@ -38,7 +39,30 @@ export default defineSchema({
   comments: defineTable({
     pathname: v.string(), authorName: v.string(), body: v.string(), createdAt: v.number(),
     parentId: v.optional(v.id("comments")), owner: v.string(),
-  }).index("by_pathname_and_createdAt", ["pathname", "createdAt"]),
+    deletedAt: v.optional(v.number()), likeCount: v.optional(v.number()),
+    imageIds: v.optional(v.array(v.id("commentImages"))),
+  }).index("by_pathname_and_createdAt", ["pathname", "createdAt"])
+    .index("by_owner_and_deletedAt_and_createdAt", ["owner", "deletedAt", "createdAt"]),
+  commentStats: defineTable({pathname: v.string(), commentCount: v.number(), likeCount: v.number()})
+    .index("by_pathname", ["pathname"]),
+  articleLikes: defineTable({pathname: v.string(), owner: v.string(), title: v.optional(v.string()), createdAt: v.optional(v.number())})
+    .index("by_pathname_and_owner", ["pathname", "owner"])
+    .index("by_owner_and_createdAt", ["owner", "createdAt"]),
+  notifications: defineTable({
+    recipient: v.string(), kind: v.union(v.literal("comment_reply"), v.literal("consultation_reply")),
+    createdAt: v.number(), readAt: v.optional(v.number()),
+    commentId: v.optional(v.id("comments")), threadId: v.optional(v.id("consultationThreads")),
+    messageId: v.optional(v.id("consultationMessages")),
+  }).index("by_recipient_and_createdAt", ["recipient", "createdAt"])
+    .index("by_recipient_and_readAt", ["recipient", "readAt"]),
+  commentLikes: defineTable({commentId: v.id("comments"), owner: v.string()})
+    .index("by_commentId_and_owner", ["commentId", "owner"]),
+  commentImages: defineTable({
+    owner: v.string(), storageId: v.id("_storage"), contentType: v.string(), size: v.number(),
+    purpose: v.union(v.literal("comment"), v.literal("consultation")),
+    createdAt: v.number(), commentId: v.optional(v.id("comments")),
+    threadId: v.optional(v.id("consultationThreads")), messageId: v.optional(v.id("consultationMessages")),
+  }).index("by_owner_and_createdAt", ["owner", "createdAt"]),
   bookmarks: defineTable(pageFields)
     .index("by_owner_and_pathname", ["owner", "pathname"])
     .index("by_owner_and_updatedAt", ["owner", "updatedAt"]),

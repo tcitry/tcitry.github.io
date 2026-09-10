@@ -1,15 +1,10 @@
-import { createClerkClient } from "@clerk/backend";
-import { RateLimiter } from "@convex-dev/rate-limiter";
 import type { UserIdentity } from "convex/server";
 import { ConvexError, v } from "convex/values";
-import { components, internal } from "./_generated/api";
-import { action, env, internalMutation, query, type ActionCtx, type MutationCtx, type QueryCtx } from "./_generated/server";
+import { action, env, query, type ActionCtx, type MutationCtx, type QueryCtx } from "./_generated/server";
 
-const billingLimiter = new RateLimiter(components.rateLimiter, {
-  billingChecks: { kind: "token bucket", rate: 30, period: 60_000, capacity: 10 },
-});
+type IdentityContext = Pick<ActionCtx | QueryCtx | MutationCtx, "auth">;
 
-export async function requireMemberIdentity(ctx: Pick<ActionCtx | QueryCtx | MutationCtx, "auth">) {
+export async function requireMemberIdentity(ctx: IdentityContext) {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) throw new ConvexError({ code: "UNAUTHENTICATED", message: "请先登录。" });
   return identity;
@@ -24,77 +19,44 @@ export function consultationConfigured() {
   return Boolean(env.CONSULTATION_ADMIN_TOKEN_IDENTIFIER?.trim());
 }
 
-// These are Clerk Backend API fields, whose timestamps are milliseconds.
-// A free trial is an active item with isFreeTrial, not a "trialing" status.
-type Subscription = {
-  subscriptionItems: {
-    plan: { slug: string } | null;
-    status: string;
-    periodStart: number;
-    periodEnd: number | null;
-    endedAt: number | null;
-  }[];
-};
-
-export function proEntitlement(subscription: Subscription, slug: string, now: number) {
-  let validUntil: number | null = null;
-  if (!slug.trim()) return { isPro: false, validUntil };
-  for (const item of subscription.subscriptionItems) {
-    if (item.plan?.slug !== slug || !["active", "canceled"].includes(item.status)) continue;
-    if (!Number.isFinite(item.periodStart) || item.periodStart > now) continue;
-    if (item.endedAt !== null && item.endedAt <= now) continue;
-    // Paid access needs a current, bounded period. Canceled subscriptions keep
-    // access until that period ends; ended/past-due/upcoming items never grant it.
-    if (item.periodEnd === null || !Number.isFinite(item.periodEnd) || item.periodEnd <= now) continue;
-    validUntil = Math.max(validUntil ?? 0, item.periodEnd);
-  }
-  return { isPro: validUntil !== null, validUntil };
+function claimsUnavailable(): never {
+  throw new ConvexError({ code: "CLAIMS_UNAVAILABLE", message: "暂时无法核验会员状态，请刷新登录状态后重试。" });
 }
 
-export const limitLookup = internalMutation({
-  args: {},
-  returns: v.null(),
-  handler: async (ctx) => {
-    const identity = await requireMemberIdentity(ctx);
-    await billingLimiter.limit(ctx, "billingChecks", { key: identity.tokenIdentifier, throws: true });
-    return null;
-  },
-});
+// Convex has verified the Clerk JWT before exposing this identity. Only the
+// default v2 session's active-plan claim grants membership; client flags and
+// custom publicMetadata are never authorization inputs. Clerk's scope encoding
+// uses u for users, o for organizations, and ou/uo for both.
+export function hasPersonalProPlan(identity: UserIdentity, slug: string) {
+  if (identity.v !== 2 || typeof identity.sid !== "string" || !identity.sid.trim()
+    || (identity.sts !== undefined && identity.sts !== "active")
+    || typeof identity.pla !== "string" || !identity.pla.trim()) claimsUnavailable();
+  const plans = identity.pla.split(",").map(plan => plan.trim());
+  if (plans.some(plan => !/^(u|o|ou|uo):[a-zA-Z0-9_-]+$/.test(plan))) claimsUnavailable();
+  return plans.some(plan => ["u", "ou", "uo"].some(scope => plan === `${scope}:${slug}`));
+}
 
-export async function verifiedMembership(ctx: ActionCtx) {
+export async function verifiedMembership(ctx: IdentityContext) {
   const identity = await requireMemberIdentity(ctx);
-  const secretKey = env.CLERK_SECRET_KEY?.trim();
   const slug = env.CLERK_PRO_PLAN_SLUG?.trim();
   const base = {
     isAdmin: isConsultationAuthor(identity),
     consultationsReady: consultationConfigured(),
   };
-  if (!secretKey || !slug) return { ...base, configured: false, isPro: false, validUntil: null };
-  await ctx.runMutation(internal.membership.limitLookup, {});
-  try {
-    // Never take userId or entitlement assertions from the browser. Convex has
-    // verified the JWT issuer before exposing this subject.
-    const clerk = createClerkClient({ secretKey });
-    const subscription = await clerk.billing.getUserBillingSubscription(identity.subject);
-    return { ...base, configured: true, ...proEntitlement(subscription, slug, Date.now()) };
-  } catch (error) {
-    if (typeof error === "object" && error !== null && "status" in error && error.status === 404) {
-      return { ...base, configured: true, isPro: false, validUntil: null };
-    }
-    // The upstream error can contain request details; return only a safe error.
-    throw new ConvexError({ code: "BILLING_UNAVAILABLE", message: "暂时无法核验会员状态，请稍后重试。" });
-  }
+  if (!slug || !/^[a-zA-Z0-9_-]+$/.test(slug)) return { ...base, configured: false, isPro: false, validUntil: null };
+  // Session claims express current access, not the subscription's period end.
+  // In particular, JWT expiry must never be displayed as membership expiry.
+  return { ...base, configured: true, isPro: hasPersonalProPlan(identity, slug), validUntil: null };
 }
 
-export async function requireProMembership(ctx: ActionCtx) {
+export async function requireProMembership(ctx: IdentityContext) {
   const membership = await verifiedMembership(ctx);
   if (!membership.configured || !membership.consultationsReady) {
     throw new ConvexError({ code: "CONSULTATION_UNAVAILABLE", message: "私人咨询尚未开放，请稍后再来。" });
   }
-  if (!membership.isPro || membership.validUntil === null) {
+  if (!membership.isPro) {
     throw new ConvexError({ code: "PRO_REQUIRED", message: "发送私人咨询需要有效的 Pro 会员。已有对话仍可查看。" });
   }
-  return membership.validUntil;
 }
 
 export const getMyMembership = action({
