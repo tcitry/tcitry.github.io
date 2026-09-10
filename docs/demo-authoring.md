@@ -175,7 +175,7 @@ npm run verify
 npm run preview -- --port 4321
 ```
 
-在 [本地服务](http://127.0.0.1:4321/) review 以下交互，通过后按 [生产发布说明](astro-preview.md#cloudflare-生产发布) 构建并验收生产产物，再发布到 [yindongliang.com](https://yindongliang.com)。
+在 [本地服务](http://127.0.0.1:4321/) review 以下交互，通过后按 [生产发布说明](continuous-deployment.md#手动生产发布) 构建并验收生产产物，再发布到 [yindongliang.com](https://yindongliang.com)。
 
 检查 `/labs/` 与 `/labs/agent-replay/`：
 
