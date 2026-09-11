@@ -15,7 +15,7 @@
 
 | 位置 | 配置 | 用途 |
 | --- | --- | --- |
-| `.env.local` | `PUBLIC_CLERK_PUBLISHABLE_KEY`、`PUBLIC_CONVEX_URL`、`PUBLIC_AI_SEARCH_URL` | 本地 development |
+| `.env.local` | `PUBLIC_CLERK_PUBLISHABLE_KEY`、`PUBLIC_CONVEX_URL`、`AI_SEARCH_PUBLIC_URL` | 本地 development |
 | `.env.production.local` | 同名公开变量 | 手动生产构建的本地覆盖 |
 | Cloudflare Build variables | 三项 `PUBLIC_*` | 云端生产构建 |
 | Cloudflare Build secrets | `CONVEX_DEPLOY_KEY`、同步或发布所需 secret | 云端部署步骤 |
@@ -25,7 +25,7 @@
 规则：
 
 - Clerk 和 Convex 的 development / production 必须分别配置。
-- 前端 `PUBLIC_AI_SEARCH_URL` 与对应 Convex `AI_SEARCH_PUBLIC_URL` 必须指向同一 AI Search public endpoint hostname。
+- 前端 `AI_SEARCH_PUBLIC_URL` 与对应 Convex `AI_SEARCH_PUBLIC_URL` 必须指向同一 AI Search public endpoint hostname。
 - Clerk 启用 Convex integration；Convex `auth.config.ts` 校验 audience `convex`。
 - Secret、Deploy Key、API token 和真实 endpoint 不进入 Git；模板只维护 `.env.example`。
 - 本地 env 不会自动更新 Cloudflare 或 Convex Dashboard。

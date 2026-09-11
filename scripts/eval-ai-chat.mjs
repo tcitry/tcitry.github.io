@@ -13,8 +13,8 @@ async function loadEnv() {
   try { text = await readFile(path.join(root, '.env.local'), 'utf8'); } catch {}
   try { text += '\n' + await readFile(path.join(root, '.env.production.local'), 'utf8'); } catch {}
   const env = parseEnv(text);
-  const endpoint = env.PUBLIC_AI_SEARCH_URL;
-  assert.ok(endpoint, 'Set PUBLIC_AI_SEARCH_URL in .env.local or .env.production.local');
+  const endpoint = env.AI_SEARCH_PUBLIC_URL;
+  assert.ok(endpoint, 'Set AI_SEARCH_PUBLIC_URL in .env.local or .env.production.local');
   return endpoint.replace(/\/$/, '');
 }
 

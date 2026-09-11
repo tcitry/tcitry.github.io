@@ -16,7 +16,7 @@ const readerEnv = loadReaderEnvironment(fileURLToPath(new URL('.', import.meta.u
 const readerConfig = production ? readProductionReaderConfig(readerEnv) : {
   clerkPublishableKey: readerEnv.PUBLIC_CLERK_PUBLISHABLE_KEY || '',
   convexUrl: readerEnv.PUBLIC_CONVEX_URL || readerEnv.CONVEX_URL || '',
-  aiSearchUrl: readerEnv.PUBLIC_AI_SEARCH_URL || '',
+  aiSearchUrl: readerEnv.AI_SEARCH_PUBLIC_URL || '',
 };
 const uploadSourceMaps = production && Boolean(readerEnv.SENTRY_AUTH_TOKEN && readerEnv.SENTRY_ORG && readerEnv.SENTRY_PROJECT);
 const release = readerEnv.SENTRY_RELEASE || `tcitry-blog@${execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()}`;

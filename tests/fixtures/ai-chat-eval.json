@@ -50,9 +50,9 @@
     {
       "id": "q06",
       "category": "technical-term",
-      "turns": ["解释一下 `AI_SEARCH_PUBLIC_URL` 和 `PUBLIC_AI_SEARCH_URL` 的区别。"],
-      "requiredFacts": ["前端使用 PUBLIC_AI_SEARCH_URL", "Convex 使用 AI_SEARCH_PUBLIC_URL", "必须指向同一 hostname"],
-      "forbiddenClaims": ["两者可以不同", "AI_SEARCH_PUBLIC_URL 用于前端"],
+      "turns": ["`AI_SEARCH_PUBLIC_URL` 用在哪里？"],
+      "requiredFacts": ["构建脚本和 Convex 后端使用", "不暴露给浏览器", "必须指向同一 hostname"],
+      "forbiddenClaims": ["前端直接调用", "匿名搜索使用", "两者可以不同"],
       "expectedSourcePatterns": ["/docs/ai-search"]
     },
     {

@@ -27,7 +27,7 @@ const server = await createServer({
   define: {
     'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify('fixture-public-key'),
     'import.meta.env.PUBLIC_CONVEX_URL': JSON.stringify('https://fixture.convex.cloud'),
-    'import.meta.env.PUBLIC_AI_SEARCH_URL': JSON.stringify(endpoint),
+    'import.meta.env.AI_SEARCH_PUBLIC_URL': JSON.stringify(endpoint),
     'import.meta.env.SITE': JSON.stringify('https://yindongliang.com'),
   },
   server: {host: '127.0.0.1', port: 0}, logLevel: 'warn',

@@ -8,7 +8,7 @@ import { assertClerkIssuer, assertConvexSearchURL, assertProductionDeployKey, lo
 const env = {
   PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_live_' + Buffer.from('clerk.test.invalid$').toString('base64'),
   PUBLIC_CONVEX_URL: 'https://production-fixture-123.convex.cloud',
-  PUBLIC_AI_SEARCH_URL: 'https://fixture.search.ai.cloudflare.com/search',
+  AI_SEARCH_PUBLIC_URL: 'https://fixture.search.ai.cloudflare.com/search',
   CONVEX_DEPLOY_KEY: 'prod:production-fixture-123|fixture-secret',
 };
 
@@ -35,15 +35,15 @@ test('Production deploy key must identify the same production deployment as the 
 });
 
 test('Production requires a public AI Search endpoint before compilation or deployment', () => {
-  assert.equal(readProductionReaderConfig(env).aiSearchUrl, env.PUBLIC_AI_SEARCH_URL);
-  assert.equal(readProductionSearchURL({...env, PUBLIC_AI_SEARCH_URL: 'https://fixture.search.ai.cloudflare.com'}), env.PUBLIC_AI_SEARCH_URL);
-  assert.equal(readProductionSearchURL({...env, PUBLIC_AI_SEARCH_URL: 'https://search.example.com'}), 'https://search.example.com/search');
+  assert.equal(readProductionReaderConfig(env).aiSearchUrl, env.AI_SEARCH_PUBLIC_URL);
+  assert.equal(readProductionSearchURL({...env, AI_SEARCH_PUBLIC_URL: 'https://fixture.search.ai.cloudflare.com'}), env.AI_SEARCH_PUBLIC_URL);
+  assert.equal(readProductionSearchURL({...env, AI_SEARCH_PUBLIC_URL: 'https://search.example.com'}), 'https://search.example.com/search');
   for (const value of [undefined, '', ' ', '\n', 'https://fixture.search.ai.cloudflare.com/search\n',
     'http://fixture.search.ai.cloudflare.com/search', 'https://outside.example/search',
     'https://fixture.search.ai.cloudflare.com.evil.example/search', 'https://user:password@fixture.search.ai.cloudflare.com/search',
     'https://fixture.search.ai.cloudflare.com/chat/completions', 'https://fixture.search.ai.cloudflare.com/search?token=private',
     'https://fixture.search.ai.cloudflare.com/search#hash']) {
-    assert.throws(() => readProductionReaderConfig({...env, PUBLIC_AI_SEARCH_URL: value}), /PUBLIC_AI_SEARCH_URL/);
+    assert.throws(() => readProductionReaderConfig({...env, AI_SEARCH_PUBLIC_URL: value}), /AI_SEARCH_PUBLIC_URL/);
   }
 });
 
@@ -68,7 +68,7 @@ test('Convex public Search must match the sealed frontend instance using a suppo
     origin + '/search?', origin + '/search#', origin + '\\search',
     origin + '/search?token=fixture-private-value', 'https://user:fixture-private-value@fixture.search.ai.cloudflare.com/search']) {
     assert.throws(() => assertConvexSearchURL(value, config), error => {
-      assert.match(error.message, /Set AI_SEARCH_PUBLIC_URL.*same AI Search Public endpoint.*sealed PUBLIC_AI_SEARCH_URL/);
+      assert.match(error.message, /Set AI_SEARCH_PUBLIC_URL.*same AI Search Public endpoint.*build AI_SEARCH_PUBLIC_URL/);
       assert.ok(!error.message.includes('fixture-private-value'));
       return true;
     });
@@ -76,9 +76,9 @@ test('Convex public Search must match the sealed frontend instance using a suppo
 });
 
 test('the sealed custom domain must also be used by Convex, without implicit alias substitution', () => {
-  const config = readProductionReaderConfig({...env, PUBLIC_AI_SEARCH_URL: 'https://search.example.com/search'});
+  const config = readProductionReaderConfig({...env, AI_SEARCH_PUBLIC_URL: 'https://search.example.com/search'});
   assert.doesNotThrow(() => assertConvexSearchURL('https://search.example.com/chat/completions', config));
-  for (const value of ['https://other.example.com/search', env.PUBLIC_AI_SEARCH_URL, 'https://127.0.0.1/search']) {
+  for (const value of ['https://other.example.com/search', env.AI_SEARCH_PUBLIC_URL, 'https://127.0.0.1/search']) {
     assert.throws(() => assertConvexSearchURL(value, config), /same AI Search Public endpoint/);
   }
 });

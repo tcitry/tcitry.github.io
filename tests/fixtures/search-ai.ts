@@ -11,7 +11,7 @@ type SearchRequest = {
 
 const calls: SearchRequest[] = [];
 const originalFetch = window.fetch.bind(window);
-const searchEndpoint = new URL(import.meta.env.PUBLIC_AI_SEARCH_URL ?? '').href;
+const searchEndpoint = new URL(import.meta.env.AI_SEARCH_PUBLIC_URL ?? '').href;
 window.fetch = async (input, init) => {
   const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
   if (new URL(url, location.origin).href !== searchEndpoint) return originalFetch(input, init);

@@ -50,8 +50,8 @@ export function readProductionReaderConfig(env) {
 // Keep production failures at build/preflight time, before a broken anonymous
 // search can be deployed. The browser adapter validates this boundary as well.
 export function readProductionSearchURL(env) {
-  const value = env.PUBLIC_AI_SEARCH_URL;
-  const message = 'Set PUBLIC_AI_SEARCH_URL to the existing AI Search HTTPS Public endpoint origin or /search URL before a production build.';
+  const value = env.AI_SEARCH_PUBLIC_URL;
+  const message = 'Set AI_SEARCH_PUBLIC_URL to the existing AI Search HTTPS Public endpoint origin or /search URL before a production build.';
   try { return publicAIEndpoint(value); } catch { assert.fail(message); }
 }
 
@@ -68,7 +68,7 @@ export function assertClerkIssuer(issuer, config) {
 }
 
 export function assertConvexSearchURL(value, config) {
-  const message = 'Set AI_SEARCH_PUBLIC_URL in the target Convex production deployment to the same AI Search Public endpoint as the sealed PUBLIC_AI_SEARCH_URL (origin, /search or /chat/completions).';
+  const message = 'Set AI_SEARCH_PUBLIC_URL in the target Convex production deployment to the same AI Search Public endpoint as the build AI_SEARCH_PUBLIC_URL (origin, /search or /chat/completions).';
   let normalized;
   try { normalized = publicAIEndpoint(value, {allowChatPath: true}); }
   catch { assert.fail(message); }

@@ -34,7 +34,7 @@ const server = await createServer({
   plugins: [react(), tailwind()],
   optimizeDeps: {entries: ['tests/fixtures/search-ai.html']},
   define: {
-    'import.meta.env.PUBLIC_AI_SEARCH_URL': JSON.stringify(endpoint),
+    'import.meta.env.AI_SEARCH_PUBLIC_URL': JSON.stringify(endpoint),
     'import.meta.env.SITE': JSON.stringify(site),
   },
   server: {host: '127.0.0.1', port: 0}, logLevel: 'warn',

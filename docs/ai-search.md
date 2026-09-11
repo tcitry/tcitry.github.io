@@ -6,15 +6,12 @@
 
 ### 匿名站内搜索
 
-浏览器通过构建变量 `PUBLIC_AI_SEARCH_URL` 调用 public endpoint `/search`：
+匿名站内搜索使用构建时生成的 Pagefind 本地索引，不再调用 AI Search public endpoint：
 
 - 不要求 Clerk 登录，不发送账户 token 或 Cloudflare API token；
-- 关闭 query rewrite、reranking 和 similarity cache；
-- 返回结果必须匹配当前构建的 key、content hash 和 canonical URL；
-- 标题、链接和 source kind 来自本地发布引用清单，远端 chunk 只作为纯文本摘要；
-- 临时网络错误、429 或 5xx 可回退到构建时全文搜索，配置错误和协议错误保持可见。
-
-本地未配置 public endpoint 时，loopback 的非生产预览可以使用全文搜索。生产构建缺少或使用非法 endpoint 时必须失败。
+- 浏览器懒加载 `/pagefind/pagefind.js`；
+- 结果由本地索引过滤，URL、section 和 excerpt 在返回前再次校验；
+- 空查询、危险 URL 和未索引路径直接拒绝。
 
 ### 登录后 AI 对话
 
@@ -31,11 +28,11 @@ Convex Agent 通过对应 deployment 的 `AI_SEARCH_PUBLIC_URL`：
 
 ## Public endpoint 与自定义域名
 
-前端 `PUBLIC_AI_SEARCH_URL` 和对应 Convex `AI_SEARCH_PUBLIC_URL` 必须使用同一 hostname。可以配置 Cloudflare 默认域名或已经激活的 AI Search 自定义 HTTPS 域名；校验拒绝：
+构建脚本和 Convex `AI_SEARCH_PUBLIC_URL` 必须使用同一 hostname。可以配置 Cloudflare 默认域名或已经激活的 AI Search 自定义 HTTPS 域名；校验拒绝：
 
 - HTTP、IP、localhost、显式端口或内嵌凭据；
 - 不支持的额外路径、query、fragment 或重定向；
-- 前端与 Convex 指向不同实例的配置。
+- 构建与 Convex 指向不同实例的配置。
 
 Search 自定义域名保留 `/search` 和 `/chat/completions`。AI Gateway 自定义域名是直接 Gateway 请求入口，不能填入 Search 配置。
 

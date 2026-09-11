@@ -36,7 +36,7 @@ Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录�
        → Convex 保存消息、来源和流式状态
 ```
 
-对应 Convex deployment 的 `AI_SEARCH_PUBLIC_URL` 与前端 `PUBLIC_AI_SEARCH_URL` 指向同一实例。回答模型和 Gateway 由 AI Search 实例配置决定；浏览器不能提交模型、Gateway 或系统提示。
+对应 Convex deployment 的 `AI_SEARCH_PUBLIC_URL` 与前端 `AI_SEARCH_PUBLIC_URL` 指向同一实例。回答模型和 Gateway 由 AI Search 实例配置决定；浏览器不能提交模型、Gateway 或系统提示。
 
 每次回答只采用当前发布引用清单中通过 key、canonical URL、content hash 和 source kind 校验的公开文章。没有可信来源时不生成无依据回答。私人会话、评论、咨询、收藏和附件不进入索引。
 
@@ -91,7 +91,7 @@ Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录�
 | `CONSULTATION_ADMIN_TOKEN_IDENTIFIER` | 作者的完整 `tokenIdentifier` |
 | `AI_SEARCH_PUBLIC_URL` | 与前端相同的 AI Search public endpoint |
 
-前端构建配置 `PUBLIC_CLERK_PUBLISHABLE_KEY`、`PUBLIC_CONVEX_URL` 和 `PUBLIC_AI_SEARCH_URL`。当前认证和 Pro 授权不使用 `CLERK_SECRET_KEY` 或 Clerk Backend API。
+前端构建配置 `PUBLIC_CLERK_PUBLISHABLE_KEY`、`PUBLIC_CONVEX_URL` 和 `AI_SEARCH_PUBLIC_URL`。当前认证和 Pro 授权不使用 `CLERK_SECRET_KEY` 或 Clerk Backend API。
 
 真实值只放 Git 忽略的 env 或平台设置；`.env.example` 只维护字段说明。本地文件不会自动设置 Convex cloud 环境。
 

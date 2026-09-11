@@ -99,7 +99,7 @@ if (args[0] === 'env') {
     CLOUDFLARE_API_TOKEN: 'fixture-deploy-secret', BLOG_READ_TOKEN: 'fixture-content-secret',
     HEROUI_AUTH_TOKEN: 'fixture-pro-secret', BLOG_CONTENT_REPOSITORY: 'fixture/private',
     PUBLIC_CLERK_PUBLISHABLE_KEY: reader.clerkPublishableKey, PUBLIC_CONVEX_URL: reader.convexUrl,
-    PUBLIC_AI_SEARCH_URL: reader.aiSearchUrl,
+    AI_SEARCH_PUBLIC_URL: reader.aiSearchUrl,
     CONVEX_DEPLOY_KEY: 'prod:production-fixture-123|fixture-convex-secret',
     CONVEX_DEPLOYMENT: 'dev:development-fixture', CLERK_SECRET_KEY: 'fixture-unused-clerk-secret' };
   return { directory, site, content, contentCommit, git,
@@ -203,8 +203,8 @@ test('Backend failures, a mismatched canonical target or issuer stop Worker uplo
     { CONVEX_DEPLOY_KEY: 'dev:production-fixture-123|fixture-secret' },
     { PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_test_fixture' },
     { PUBLIC_CONVEX_URL: 'https://another-deployment.convex.cloud' },
-    { PUBLIC_AI_SEARCH_URL: '' },
-    { PUBLIC_AI_SEARCH_URL: 'https://other.search.ai.cloudflare.com/search' },
+    { AI_SEARCH_PUBLIC_URL: '' },
+    { AI_SEARCH_PUBLIC_URL: 'https://other.search.ai.cloudflare.com/search' },
   ]) {
     const context = await fixture(t);
     assert.equal((await context.run('verify-release.mjs')).code, 0);
@@ -231,7 +231,7 @@ test('Missing, unreadable or mismatched Convex Search configuration stops both d
     await rm(path.join(context.site, '.generated/convex-env.jsonl'), {force: true});
     const rejected = await context.run('deploy-verified.mjs', overrides);
     assert.equal(rejected.code, 1);
-    assert.match(rejected.stderr, /Set AI_SEARCH_PUBLIC_URL.*same AI Search Public endpoint.*sealed PUBLIC_AI_SEARCH_URL/);
+    assert.match(rejected.stderr, /Set AI_SEARCH_PUBLIC_URL.*same AI Search Public endpoint.*build AI_SEARCH_PUBLIC_URL/);
     assert.doesNotMatch(rejected.stdout + rejected.stderr, /fixture-convex-secret|fixture-upstream-private-value/);
     const commands = (await readFile(path.join(context.site, '.generated/convex-env.jsonl'), 'utf8')).trim().split('\n').map(JSON.parse);
     assert.deepEqual(commands.map(command => command.args.slice(0, 3)), [
@@ -249,7 +249,7 @@ test('Production sealing rejects configuration changes after the build', async t
   assert.equal(rejected.code, 1);
   assert.match(rejected.stderr, /differs from the compiled assets/);
   await assert.rejects(context.manifest(), { code: 'ENOENT' });
-  const searchChanged = await context.run('verify-release.mjs', { PUBLIC_AI_SEARCH_URL: 'https://other.search.ai.cloudflare.com/search' });
+  const searchChanged = await context.run('verify-release.mjs', { AI_SEARCH_PUBLIC_URL: 'https://other.search.ai.cloudflare.com/search' });
   assert.equal(searchChanged.code, 1);
   assert.match(searchChanged.stderr, /differs from the compiled assets/);
   await assert.rejects(context.manifest(), { code: 'ENOENT' });
