@@ -4,6 +4,7 @@
 @import "@heroui/styles/components/spinner.css" layer(components);
 @import "@heroui/styles/components/textarea.css" layer(components);
 @import "@heroui/styles/components/textfield.css" layer(components);
+@import "@heroui/styles/components/input.css" layer(components);
 @import "@heroui/styles/components/label.css" layer(components);
 @import "@heroui/styles/components/description.css" layer(components);
 @import "@heroui/styles/components/avatar.css" layer(components);
@@ -35,6 +36,11 @@
 .blog-comments__composer:has(textarea:focus-visible) { border-color: var(--accent); }
 .blog-comments__composer-author, .blog-comments__author-row { display: flex; align-items: center; gap: .75rem; min-width: 0; }
 .blog-comments__composer-author { grid-column: 1 / -1; font-size: .875rem; }
+.blog-comments__username { grid-column: 1 / -1; display: grid; gap: .625rem; }
+.blog-comments__username-copy { margin: 0; color: var(--muted); font-size: .8125rem; line-height: 1.7; }
+.blog-comments__username .textfield { grid-column: auto; }
+.blog-comments__username input { width: 100%; min-width: 0; }
+.blog-comments__username-actions { display: flex; justify-content: start; }
 .blog-comments__composer-author strong, .blog-comments__meta strong { font-weight: 600; overflow-wrap: anywhere; }
 .blog-comments__composer .textfield { grid-column: 1 / -1; min-width: 0; }
 .blog-comments__composer textarea { display: block; width: 100%; min-width: 0; min-height: 6.5rem; padding: .125rem 0; border: 0; box-shadow: none; border-radius: 0; outline: none; background: transparent; font-size: .9375rem; line-height: 1.75; resize: vertical; }

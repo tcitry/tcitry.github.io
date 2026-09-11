@@ -13,6 +13,7 @@ export function useAuth() {
     ...current,
     isLoaded: true,
     isSignedIn: Boolean(current.userId),
+    sessionClaims: current.userId ? {aud: 'convex'} : null,
     getToken: async () => current.userId ? 'fixture-session-token' : null,
   };
 }
@@ -29,6 +30,14 @@ export function useUser() {
       username: 'fixture',
       imageUrl: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><rect width="56" height="56" fill="%23347"/></svg>',
     } : null,
+  };
+}
+export function useSession() {
+  const current = useSyncExternalStore((listener) => {listeners.add(listener); return () => listeners.delete(listener);}, currentFixtureAuth);
+  return {
+    isLoaded: true,
+    isSignedIn: Boolean(current.userId),
+    session: current.userId ? {id: current.sessionId, reload: async () => {}} : null,
   };
 }
 export function useClerk() {
