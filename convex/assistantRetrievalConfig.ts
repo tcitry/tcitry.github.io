@@ -10,7 +10,7 @@ export const RERANKING = {
   model: '@cf/baai/bge-reranker-base' as const,
 };
 
-export const QUERY_REWRITE = {enabled: true as const};
+export const QUERY_REWRITE = {enabled: false as const};
 export const CACHE = {enabled: true as const};
 
 export function chatRetrievalOptions(approvedHashes: string[]) {

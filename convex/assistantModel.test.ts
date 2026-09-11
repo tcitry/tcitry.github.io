@@ -209,7 +209,7 @@ describe('public AI Search language model', () => {
       {role: 'assistant', content: '上一回答'}, {role: 'user', content: '当前追问'},
     ]);
     expect(body.ai_search_options.retrieval.filters).toEqual({content_hash: {$in: [approved.hash]}});
-    expect(body.ai_search_options).toMatchObject({query_rewrite: {enabled: true}, reranking: {enabled: true}, cache: {enabled: true}});
+    expect(body.ai_search_options).toMatchObject({query_rewrite: {enabled: false}, reranking: {enabled: true}, cache: {enabled: true}});
     expect(body.stream).toBe(true);
   });
 
@@ -238,7 +238,7 @@ describe('public AI Search language model', () => {
       retrieval_type: 'hybrid', match_threshold: 0.4, return_on_failure: false,
       filters: {content_hash: {$in: [approved.hash]}}, max_num_results: 10,
     });
-    expect(body.ai_search_options).toMatchObject({query_rewrite: {enabled: true}, reranking: {enabled: true}, cache: {enabled: true}});
+    expect(body.ai_search_options).toMatchObject({query_rewrite: {enabled: false}, reranking: {enabled: true}, cache: {enabled: true}});
     expect(body).not.toHaveProperty('model');
     expect(body).not.toHaveProperty('user');
     expect(onFailure).not.toHaveBeenCalled();

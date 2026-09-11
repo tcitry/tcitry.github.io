@@ -70,7 +70,7 @@ describe('public retrieval projection', () => {
     expect(Array.from(new Headers(init?.headers as HeadersInit).entries())).toEqual([['content-type', 'application/json']]);
     expect(JSON.parse(String(init?.body))).toEqual({query: 'Convex', ai_search_options: {
       retrieval: {retrieval_type: 'hybrid', max_num_results: 10, match_threshold: 0.4, return_on_failure: false},
-      query_rewrite: {enabled: true}, reranking: {enabled: true, model: '@cf/baai/bge-reranker-base'}, cache: {enabled: true},
+      query_rewrite: {enabled: false}, reranking: {enabled: true, model: '@cf/baai/bge-reranker-base'}, cache: {enabled: true},
     }});
   });
 
