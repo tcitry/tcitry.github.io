@@ -8,8 +8,7 @@ import ConvexSession from '../auth/ConvexSession';
 import CommentThread from './CommentThread';
 import CommentQueryLoading, {useCommentQueryRetry} from './CommentQueryLoading';
 import {HeartIcon} from './CommentIcons';
-import {panelClerkRedirect} from '../auth/clerk-signin';
-import {AuthLoading} from '../auth/SignInPanel';
+import {AuthLoading, panelClerkRedirect} from '../auth/SignInPanel';
 import surface from '../demos/DemoSurface.module.css';
 import BookmarkButton from '../reader/BookmarkButton';
 

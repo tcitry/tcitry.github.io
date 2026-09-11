@@ -2,7 +2,6 @@ import {ClerkFailed, ClerkLoaded, ClerkLoading, SignInButton} from '@clerk/react
 import {Button, Spinner} from '@heroui/react';
 import {EmptyState} from '@heroui-pro/react/empty-state';
 import {useEffect, useState, type ReactNode} from 'react';
-import {panelClerkRedirect} from './clerk-signin';
 
 export function AuthLoading({label = '正在加载登录…'}: {label?: string}) {
   const [timedOut, setTimedOut] = useState(false);
@@ -18,6 +17,13 @@ export function AuthLoading({label = '正在加载登录…'}: {label?: string})
     <Spinner size="sm" color="current" />
     <span>{label}</span>
   </div>;
+}
+
+export function panelClerkRedirect() {
+  return {
+    forceRedirectUrl: window.location.href,
+    signUpForceRedirectUrl: window.location.href,
+  };
 }
 
 export function WorkspaceEmpty({title, description, children}: {

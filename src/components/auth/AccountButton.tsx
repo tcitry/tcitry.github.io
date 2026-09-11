@@ -3,7 +3,7 @@ import {ArrowRotateRight, CreditCard} from '@gravity-ui/icons';
 import {Button} from '@heroui/react';
 import {useConvexAuth} from 'convex/react';
 import {useMembership} from '../membership/useMembership';
-import {panelClerkRedirect} from './clerk-signin';
+import {panelClerkRedirect} from './SignInPanel';
 
 type MembershipStatus = 'pending' | 'unavailable' | 'pro' | 'free';
 const membershipLabels: Record<MembershipStatus, string> = {
