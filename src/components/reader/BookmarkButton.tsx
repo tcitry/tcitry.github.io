@@ -4,7 +4,7 @@ import {Bookmark, BookmarkFill} from '@gravity-ui/icons';
 import {Button, Spinner, Tooltip} from '@heroui/react';
 import {useConvexAuth, useMutation, useQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
-import {openClerkSignIn} from '../auth/clerk-signin';
+import {panelClerkRedirect} from '../auth/SignInPanel';
 import styles from './ReaderPanel.module.css';
 import './reader.css';
 
@@ -12,7 +12,7 @@ export default function BookmarkButton({pathname, title, tooltipContainer, descr
   pathname: string; title: string; tooltipContainer: HTMLElement | null; describedBy?: string;
 }) {
   const {isLoaded, userId} = useAuth();
-  const clerk = useClerk();
+  const {openSignIn} = useClerk();
   const {isAuthenticated, isLoading} = useConvexAuth();
   const page = useQuery(api.reader.getPage, isAuthenticated ? {pathname} : 'skip');
   const setBookmark = useMutation(api.reader.setBookmark);
@@ -21,7 +21,7 @@ export default function BookmarkButton({pathname, title, tooltipContainer, descr
   const loading = !isLoaded || Boolean(userId && (isLoading || (isAuthenticated && !page)));
 
   async function toggle() {
-    if (!userId) {openClerkSignIn(clerk); return;}
+    if (!userId) {openSignIn(panelClerkRedirect()); return;}
     if (!page || saving) return;
     setSaving(true);
     setError('');
