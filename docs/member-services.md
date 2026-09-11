@@ -4,7 +4,7 @@
 
 ## 架构
 
-- Clerk：登录、账户资料和 Billing UI。
+- Clerk：登录、账户资料和 Billing UI。站点登录入口使用 sign-in-or-up：已有账户直接登录；首次 GitHub/Google OAuth 转到注册并补全必填用户名，而不是停在 Account Portal 的 `external_account_not_found`。
 - Convex：认证与授权、评论、喜欢、收藏、通知、咨询、附件、AI 会话和流式状态。
 - `@convex-dev/agent`：AI thread、message 和 stream delta 持久化。
 - Cloudflare AI Search：公开文章检索与回答生成；不保存私人账户数据。
