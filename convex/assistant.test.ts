@@ -278,7 +278,7 @@ describe('assistant retrieval and generation lifecycle', () => {
     generation = t.action(internal.assistant.generate, {runId: retry});
     await vi.advanceTimersByTimeAsync(1000); await generation;
     expect((await t.run(ctx => ctx.db.get('assistantRuns', retry)))?.status).toBe('completed');
-    const query = '上一个问题：原始完整主题是什么？\n当前问题：再解释一下原因';
+    const query = '针对主题「」的追问。上文：原始完整主题是什么？。当前问题：再解释一下原因';
     expect(searchQueries.at(-1)).toBe(query);
     const messages = chatBodies.at(-1)!.messages;
     expect(messages.map(message => message.role)).toEqual(['system', 'user', 'assistant', 'user']);

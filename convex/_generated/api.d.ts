@@ -11,6 +11,7 @@
 import type * as assistant from "../assistant.js";
 import type * as assistantModel from "../assistantModel.js";
 import type * as assistantPublicSearch from "../assistantPublicSearch.js";
+import type * as assistantRetrievalConfig from "../assistantRetrievalConfig.js";
 import type * as commentImages from "../commentImages.js";
 import type * as commentShared from "../commentShared.js";
 import type * as comments from "../comments.js";
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   assistant: typeof assistant;
   assistantModel: typeof assistantModel;
   assistantPublicSearch: typeof assistantPublicSearch;
+  assistantRetrievalConfig: typeof assistantRetrievalConfig;
   commentImages: typeof commentImages;
   commentShared: typeof commentShared;
   comments: typeof comments;

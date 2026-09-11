@@ -49,11 +49,15 @@ export default defineConfig({
     // The optimizer keeps metadata in memory. Another Astro process replacing
     // its files leaves the running dev server serving 504s for lazy imports.
     cacheDir: `./node_modules/.vite/astro-${process.pid}`,
+    // Only expose the PUBLIC_ prefixes the client actually needs. The AI Search
+    // endpoint is used only by build scripts and Convex, never by the browser.
+    envPrefix: ['PUBLIC_CLERK_', 'PUBLIC_CONVEX_', 'PUBLIC_SENTRY_', 'PUBLIC_SITE_'],
     define: {
       'import.meta.env.PUBLIC_SENTRY_RELEASE': JSON.stringify(release),
       'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify(readerConfig.clerkPublishableKey),
       'import.meta.env.PUBLIC_CONVEX_URL': JSON.stringify(readerConfig.convexUrl),
-      'import.meta.env.PUBLIC_AI_SEARCH_URL': JSON.stringify(readerConfig.aiSearchUrl),
+      'import.meta.env.PUBLIC_CONVEX_SITE_URL': JSON.stringify(readerEnv.PUBLIC_CONVEX_SITE_URL ?? ''),
+      'import.meta.env.PUBLIC_SITE_ENV': JSON.stringify(readerEnv.PUBLIC_SITE_ENV ?? ''),
     },
     plugins: [tailwindcss(), blogContentDev()],
     // These renderers are imported on demand, including on pages without React islands.

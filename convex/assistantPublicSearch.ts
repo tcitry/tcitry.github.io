@@ -1,6 +1,7 @@
 import exportedReferences from '../.generated/ai-search/references.json';
 import {publicAIEndpoint} from '../src/lib/public-ai-search-url.mjs';
 import type {Source, Snippet} from './assistantModel';
+import {searchRetrievalOptions} from './assistantRetrievalConfig';
 
 export type PublicSearchReference = {
   id: string; key: string; hash: string; title: string; url: string;
@@ -9,7 +10,9 @@ export type PublicSearchReference = {
 
 const ERROR = '文章检索暂时无法完成，请稍后重试。';
 const MAX_RESPONSE_BYTES = 512 * 1024;
-const MIN_SCORE = 0.45;
+const MIN_SCORE = 0.4;
+// The AI Search instance has hybrid search, query rewrite and cache enabled in
+// the dashboard. Keep the request-level settings in sync with the console.
 const record = (value: unknown): Record<string, unknown> | undefined =>
   value !== null && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : undefined;
 
@@ -92,10 +95,7 @@ export async function retrievePublicSources(endpoint: string, query: string, sig
     const response = await (options.fetcher ?? fetch)(url, {
       method: 'POST', credentials: 'omit', redirect: 'error', signal,
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({query: query.trim(), ai_search_options: {
-        retrieval: {retrieval_type: 'vector', max_num_results: 8, match_threshold: MIN_SCORE, return_on_failure: false},
-        query_rewrite: {enabled: false}, reranking: {enabled: false}, cache: {enabled: false},
-      }}),
+      body: JSON.stringify({query: query.trim(), ai_search_options: searchRetrievalOptions()}),
     });
     if (signal.aborted) {await response.body?.cancel().catch(() => {}); signal.throwIfAborted();}
     if (!response.ok || response.redirected) {await response.body?.cancel().catch(() => {}); throw new Error(ERROR);}

@@ -209,7 +209,7 @@ describe('public AI Search language model', () => {
       {role: 'assistant', content: '上一回答'}, {role: 'user', content: '当前追问'},
     ]);
     expect(body.ai_search_options.retrieval.filters).toEqual({content_hash: {$in: [approved.hash]}});
-    expect(body.ai_search_options).toMatchObject({query_rewrite: {enabled: false}, reranking: {enabled: false}, cache: {enabled: false}});
+    expect(body.ai_search_options).toMatchObject({query_rewrite: {enabled: true}, reranking: {enabled: true}, cache: {enabled: true}});
     expect(body.stream).toBe(true);
   });
 
@@ -235,10 +235,10 @@ describe('public AI Search language model', () => {
       {role: 'assistant', content: '原始回答'}, {role: 'user', content: contextual},
     ]);
     expect(body.ai_search_options.retrieval).toEqual({
-      retrieval_type: 'vector', match_threshold: 0.45, return_on_failure: false,
-      filters: {content_hash: {$in: [approved.hash]}}, max_num_results: 8,
+      retrieval_type: 'hybrid', match_threshold: 0.4, return_on_failure: false,
+      filters: {content_hash: {$in: [approved.hash]}}, max_num_results: 10,
     });
-    expect(body.ai_search_options).toMatchObject({query_rewrite: {enabled: false}, reranking: {enabled: false}, cache: {enabled: false}});
+    expect(body.ai_search_options).toMatchObject({query_rewrite: {enabled: true}, reranking: {enabled: true}, cache: {enabled: true}});
     expect(body).not.toHaveProperty('model');
     expect(body).not.toHaveProperty('user');
     expect(onFailure).not.toHaveBeenCalled();
@@ -247,7 +247,10 @@ describe('public AI Search language model', () => {
       [{stage: 'chat_request_shape', messageRoles: ['system', 'user', 'assistant', 'user'],
         contentKinds: ['text', 'text', 'text', 'text'], contentLengths: ['原始系统规则', '原始首问', '原始回答', contextual].map(text => text.length)}],
       [{stage: 'chat_headers', httpStatus: 200}],
-      [{stage: 'chat_sources_verified'}], [{stage: 'chat_done'}],
+      [{stage: 'chat_sources_verified'}],
+      [{stage: 'chat_model', model: 'configured-instance-model'}],
+      [{stage: 'chat_done'}],
+      [{stage: 'chat_finish', finishReason: 'stop', tokenCount: 8}],
     ]);
     expect(JSON.stringify(observe.mock.calls)).not.toMatch(/原始|当前问题|上一个问题|公开回答|search\.example|content_hash/);
   });

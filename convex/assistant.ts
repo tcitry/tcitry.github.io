@@ -9,6 +9,20 @@ import {publicChatModel, instructions, NO_SOURCES, SAFE_ERROR, type GenerationEv
 import {retrievePublicSources} from './assistantPublicSearch';
 
 const sourceValidator = v.object({id: v.string(), title: v.string(), url: v.string(), sourceKind: v.union(v.literal('author'), v.literal('ai-assisted'))});
+
+function extractTopicTerms(messages: {role: string; content: string}[]) {
+  const text = messages.map(message => message.content).join(' ');
+  const terms = new Set<string>();
+  // Code/identifiers inside backticks.
+  for (const match of text.matchAll(/`([^`\s]{2,80})`/g)) terms.add(match[1]);
+  // Path-like or camel/kebab identifiers.
+  for (const match of text.matchAll(/(?:[a-zA-Z0-9_-]+\/[a-zA-Z0-9._-]+|[A-Z][a-zA-Z0-9]+[A-Z][a-zA-Z0-9]+|[A-Z0-9]{2,}|[a-zA-Z][a-zA-Z0-9_-]{2,})/g)) {
+    const term = match[0];
+    if (/^(a|an|the|is|are|was|were|be|been|this|that|these|those|and|or|but|of|to|in|on|at|for|with|as|it|its|from|by)$/i.test(term)) continue;
+    terms.add(term);
+  }
+  return [...terms].slice(0, 12).join(' ').slice(0, 200);
+}
 const limiter = new RateLimiter(components.rateLimiter, {
   assistantQuestions: {kind: 'token bucket', rate: 12, period: 60_000, capacity: 4},
   assistantThreads: {kind: 'token bucket', rate: 6, period: 60_000, capacity: 3},
@@ -264,7 +278,7 @@ export const generate = internalAction({
     const run: {threadId: string; promptMessageId: string; promptOrder: number; deadlineAt: number} | null = await ctx.runMutation(internal.assistant.start, {runId});
     if (!run) return null;
     const startedAt = Date.now();
-    const trace = (event: GenerationEvent | {stage: 'retrieval_start' | 'retrieval_complete' | 'agent_start' | 'agent_persisted' | 'completed' | 'no_sources' | 'failed' | 'settle_failed'}) => {
+    const trace = (event: {stage: string} & Partial<Omit<GenerationEvent, 'stage'>>) => {
       // Fixed stages, elapsed time, status/error codes and protocol field names. Never pass an
       // exception, prompt, URL, source text or account identifier to the logger.
       console.info('assistant_generation', {...event, elapsedMs: Date.now() - startedAt});
@@ -290,11 +304,14 @@ export const generate = internalAction({
       const context = await ctx.runQuery(internal.assistant.completedContext, {runId});
       if (!context) return null;
       const previous = context.previousQuestion;
-      const retrievalQuery = typeof previous === 'string' && prompt.content.length <= 1500
-        ? `上一个问题：${previous.slice(0, 400)}\n当前问题：${prompt.content}` : prompt.content;
+      const current = prompt.content;
+      const topicTerms = extractTopicTerms(context.messages);
+      const retrievalQuery = typeof previous === 'string' && current.length <= 1500
+        ? `针对主题「${topicTerms}」的追问。上文：${previous.slice(0, 300)}。当前问题：${current}`
+        : current;
       trace({stage: 'retrieval_start'});
       const retrieved = await retrievePublicSources(env.AI_SEARCH_PUBLIC_URL, retrievalQuery, controller.signal);
-      trace({stage: 'retrieval_complete'});
+      trace({stage: 'retrieval_complete', chunkCount: retrieved.snippets.length, sourceCount: retrieved.sources.length});
       await assertActive();
       if (!await ctx.runMutation(internal.assistant.setSources, {runId, sources: retrieved.sources})) return null;
       if (!retrieved.sources.length) {
@@ -318,7 +335,7 @@ export const generate = internalAction({
       trace({stage: 'agent_persisted'});
       if (!(await result.text).trim() || (await result.finishReason) !== 'stop') throw new Error(SAFE_ERROR);
       await ctx.runMutation(internal.assistant.finish, {runId, failed: false});
-      trace({stage: 'completed'});
+      trace({stage: 'completed', sourceCount: retrieved.sources.length});
     } catch {
       await fail();
     } finally { clearTimeout(timeout); }

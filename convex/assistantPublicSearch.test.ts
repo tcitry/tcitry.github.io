@@ -67,10 +67,10 @@ describe('public retrieval projection', () => {
     const [url, init] = fetcher.mock.calls[0];
     expect(url).toBe(endpoint + '/search');
     expect(init).toMatchObject({method: 'POST', credentials: 'omit', redirect: 'error'});
-    expect([...new Headers(init?.headers)]).toEqual([['content-type', 'application/json']]);
+    expect(Array.from(new Headers(init?.headers as HeadersInit).entries())).toEqual([['content-type', 'application/json']]);
     expect(JSON.parse(String(init?.body))).toEqual({query: 'Convex', ai_search_options: {
-      retrieval: {retrieval_type: 'vector', max_num_results: 8, match_threshold: 0.45, return_on_failure: false},
-      query_rewrite: {enabled: false}, reranking: {enabled: false}, cache: {enabled: false},
+      retrieval: {retrieval_type: 'hybrid', max_num_results: 10, match_threshold: 0.4, return_on_failure: false},
+      query_rewrite: {enabled: true}, reranking: {enabled: true, model: '@cf/baai/bge-reranker-base'}, cache: {enabled: true},
     }});
   });
 
@@ -104,12 +104,12 @@ describe('public retrieval projection', () => {
   });
 
   test('empty or rejected matches produce an explicit no-source result without remote text', async () => {
-    for (const chunks of [[], [chunk(reference(), 'low', 0.449), chunk(reference(), '   '), chunk(reference(2), 'unknown'),
+    for (const chunks of [[], [chunk(reference(), 'low', 0.399), chunk(reference(), '   '), chunk(reference(2), 'unknown'),
       {...chunk(), score: null}, {...chunk(), text: {unsafe: 'not text'}},
       {...chunk(), item: {...chunk().item, metadata: {...chunk().item.metadata, content_hash: 'stale'}}}]]) {
       expect(await retrievePublicSources(endpoint, '文章', signal(), options(chunks))).toEqual({sources: [], snippets: [], approvedReferences: []});
     }
-    expect((await retrievePublicSources(endpoint, '文章', signal(), options([chunk(reference(), '边界', 0.45)]))).sources).toHaveLength(1);
+    expect((await retrievePublicSources(endpoint, '文章', signal(), options([chunk(reference(), '边界', 0.4)]))).sources).toHaveLength(1);
   });
 
   test('rejects HTTP and malformed envelopes with a safe error instead of an empty success', async () => {
