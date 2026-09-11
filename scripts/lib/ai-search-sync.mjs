@@ -27,6 +27,11 @@ export function retryDelay(retryAfter, attempt, now = Date.now()) {
   return suggested > 60000 ? null : Math.max(1000, suggested);
 }
 
+/** 429, 500, 502, 503, 504, and Cloudflare AI Search 7001 Internal Error; still bounded by maxAttempts and Retry-After. */
+export function isRetryableAISearchFailure(status, code = '') {
+  return [429, 500, 502, 503, 504].includes(Number(status)) || String(code) === '7001';
+}
+
 /** One request at a time; callers may inject auth without writing credentials to disk. */
 export function createAISearchClient({ accountId, namespace = 'default', instance = 'tcitry-blog-search', token,
   authorize, fetchImpl = fetch, wait = sleep, now = Date.now, intervalMs = 1000, maxAttempts = 4 } = {}) {
@@ -55,7 +60,7 @@ export function createAISearchClient({ accountId, namespace = 'default', instanc
         continue;
       }
       if (response.status === 404 && allow404) return null;
-      if ([429, 502, 503, 504].includes(response.status) && attempt + 1 < maxAttempts) {
+      if (isRetryableAISearchFailure(response.status) && attempt + 1 < maxAttempts) {
         const delay = retryDelay(response.headers.get('retry-after'), attempt, now());
         await response.body?.cancel();
         if (delay === null) throw new AISearchAPIError(response.status);
@@ -67,6 +72,12 @@ export function createAISearchClient({ accountId, namespace = 'default', instanc
       try { payload = await response.json(); } catch { throw new AISearchAPIError(response.status); }
       if (!response.ok || payload.success === false) {
         const code = String(payload.errors?.[0]?.code ?? '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 32);
+        if (isRetryableAISearchFailure(response.status, code) && attempt + 1 < maxAttempts) {
+          const delay = retryDelay(response.headers.get('retry-after'), attempt, now());
+          if (delay === null) throw new AISearchAPIError(response.status, code);
+          await wait(delay);
+          continue;
+        }
         throw new AISearchAPIError(response.status, code);
       }
       return payload;

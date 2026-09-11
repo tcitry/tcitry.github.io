@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createCorpus } from '../scripts/lib/ai-search-corpus.mjs';
-import { applySync, createAISearchClient, planSync, retryDelay, assertInstanceConfiguration, CUSTOM_METADATA } from '../scripts/lib/ai-search-sync.mjs';
+import { applySync, createAISearchClient, planSync, retryDelay, isRetryableAISearchFailure, assertInstanceConfiguration, CUSTOM_METADATA } from '../scripts/lib/ai-search-sync.mjs';
 
 const documents = createCorpus(['one', 'two'].map(slug => ({ kind: 'page', type: 'posts', url: `/posts/${slug}/`, title: slug, html: '<p>hello</p>', date: '2026-09-01', tags: [] }))).documents;
 const item = (document, extra = {}) => ({ id: document.id, key: document.key, source_id: 'builtin', status: 'completed', next_action: 'INDEX', metadata: { content_hash: document.hash }, ...extra });
@@ -36,6 +36,51 @@ test('list follows all pages and refuses inconsistent snapshots before planning 
   let calls = 0;
   const broken = createAISearchClient({ ...options, fetchImpl: async () => new Response(JSON.stringify({ success: true, result: [item(documents[0])], result_info: { total_count: ++calls === 1 ? 2 : 3 } })) });
   await assert.rejects(broken.listItems(), /changed while listing/);
+});
+
+test('500 and 7001 retry with bounded backoff then succeed, and fail after maxAttempts', async () => {
+  const delays = [];
+  let calls = 0;
+  const client = createAISearchClient({ ...options, wait: async delay => delays.push(delay), fetchImpl: async () => {
+    if (++calls < 3) return new Response(JSON.stringify({ success: false, errors: [{ code: 7001 }] }), { status: 500 });
+    return ok(item(documents[0]));
+  } });
+  assert.equal((await client.getItem('id')).status, 'completed');
+  assert.equal(calls, 3);
+  assert.deepEqual(delays, [2000, 4000]);
+  assert.equal(isRetryableAISearchFailure(500, '7001'), true);
+
+  let envelopeCalls = 0;
+  const envelope = createAISearchClient({ ...options, wait: async () => {}, fetchImpl: async () => {
+    if (++envelopeCalls < 2) return new Response(JSON.stringify({ success: false, errors: [{ code: 7001 }] }));
+    return ok(item(documents[0]));
+  } });
+  assert.equal((await envelope.getItem('id')).status, 'completed');
+  assert.equal(envelopeCalls, 2);
+
+  let failCalls = 0;
+  const failure = createAISearchClient({ ...options, wait: async () => {}, fetchImpl: async () => {
+    failCalls += 1;
+    return new Response('', { status: 500 });
+  } });
+  await assert.rejects(failure.getItem('id'), error => error.status === 500 && /HTTP 500/.test(error.message));
+  assert.equal(failCalls, 4);
+
+  let codeFails = 0;
+  const codeFailure = createAISearchClient({ ...options, wait: async () => {}, fetchImpl: async () => {
+    codeFails += 1;
+    return new Response(JSON.stringify({ success: false, errors: [{ code: 7001 }] }));
+  } });
+  await assert.rejects(codeFailure.getItem('id'), error => /7001/.test(error.message));
+  assert.equal(codeFails, 4);
+
+  let longCalls = 0;
+  const longRetry = createAISearchClient({ ...options, wait: async () => {}, fetchImpl: async () => {
+    longCalls += 1;
+    return new Response('', { status: 500, headers: { 'Retry-After': '120' } });
+  } });
+  await assert.rejects(longRetry.getItem('id'), /HTTP 500/);
+  assert.equal(longCalls, 1);
 });
 
 test('429 honors bounded Retry-After and masks provider messages and credentials', async () => {
