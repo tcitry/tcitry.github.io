@@ -182,7 +182,9 @@ test('Workers build defaults to the fetched main commit with full history, scope
   assert.ok(result.commands.every(command => !command.deployToken));
   assert.ok(result.commands.every(command => !command.convexToken && !command.clerkSecret));
   assert.ok([resolve, checkout, revision, remote].every(command => !command.contentToken && !command.proToken));
-  assert.ok(result.commands.every(command => command.siteEnvironment === 'production'));
+  const testStep = steps.find(step => step.args.at(-1) === 'test');
+  assert.equal(testStep.siteEnvironment, undefined);
+  assert.ok(result.commands.filter(command => command !== testStep).every(command => command.siteEnvironment === 'production'));
   assert.ok(steps.every(step => step.contentExists));
   assert.equal(new Set(steps.map(step => step.blog)).size, 1);
   assert.deepEqual(await readdir(path.join(context.directory, 'tmp')), ['unrelated']);
@@ -224,8 +226,10 @@ test('Workers build preserves explicit production through the final verification
   const context = await fixture(t);
   const result = await context.run({ PUBLIC_SITE_ENV: 'production' });
   assert.equal(result.code, 0, result.output);
-  assert.ok(result.commands.every(command => command.siteEnvironment === 'production'));
   const steps = result.commands.filter(command => command.command === 'npm');
+  const testStep = steps.find(step => step.args.at(-1) === 'test');
+  assert.equal(testStep.siteEnvironment, undefined);
+  assert.ok(result.commands.filter(command => command !== testStep).every(command => command.siteEnvironment === 'production'));
   assert.deepEqual(steps.map(step => step.args.at(-1)), ['setup', 'build', 'check', 'test', 'verify:release']);
   assert.deepEqual(steps.map(step => step.proToken), [true, false, false, false, false]);
   assert.ok(steps.every(step => !step.contentToken && !step.repository));

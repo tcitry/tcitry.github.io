@@ -116,7 +116,9 @@ async function main() {
       if (script === 'verify:release') await verifyRevisions();
       const args = script === 'test' ? ['test'] : ['run', script];
       const commandEnv = script === 'setup' ? { ...env, HEROUI_AUTH_TOKEN: proToken }
-        : script === 'verify:release' ? { ...env, BLOG_CONTENT_COMMIT: contentCommit } : env;
+        : script === 'verify:release' ? { ...env, BLOG_CONTENT_COMMIT: contentCommit }
+        : script === 'test' ? { ...env } : env;
+      if (script === 'test') delete commandEnv.PUBLIC_SITE_ENV;
       await run(`Running npm ${args.join(' ')}`, process.env.npm_execpath ? process.execPath : 'npm',
         process.env.npm_execpath ? [process.env.npm_execpath, ...args] : args, commandEnv);
     }
