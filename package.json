@@ -108,7 +108,7 @@
     "playwright": "1.62.1",
     "typescript": "6.0.3",
     "vitest": "5.0.0",
-    "wrangler": "4.129.0"
+    "wrangler": "4.131.0"
   },
   "overrides": {
     "heroui-pro": {
