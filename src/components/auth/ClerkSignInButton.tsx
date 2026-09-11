@@ -4,7 +4,10 @@ import {panelClerkRedirect, rememberClerkReturnUrl} from './clerk-signin';
 
 export default function ClerkSignInButton({children}: {children: ReactNode}) {
   return (
-    <span onClickCapture={rememberClerkReturnUrl} onPointerDownCapture={rememberClerkReturnUrl}>
+    <span
+      onClickCapture={() => rememberClerkReturnUrl(window.location)}
+      onPointerDownCapture={() => rememberClerkReturnUrl(window.location)}
+    >
       <SignInButton mode="modal" {...panelClerkRedirect()}>
         {children}
       </SignInButton>

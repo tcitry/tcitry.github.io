@@ -150,6 +150,69 @@ test('return URL restore rejects open redirects and blocked storage', async () =
   assert.doesNotThrow(() => restoreClerkReturnUrl(home, blocked));
 });
 
+test('rememberClerkReturnUrl ignores click events that lack a page href', async () => {
+  const {rememberClerkReturnUrl, clerkReturnUrlStorageKey} = await importBundle(
+    new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
+  );
+  withPage(session => {
+    rememberClerkReturnUrl({type: 'click', currentTarget: {}, preventDefault() {}});
+    assert.equal(session.getItem(clerkReturnUrlStorageKey), null,
+      'capture events must not be treated as a return URL location');
+    rememberClerkReturnUrl();
+    assert.equal(session.getItem(clerkReturnUrlStorageKey), currentPage);
+  });
+});
+
+test('ClerkSignInButton capture handlers persist window.location instead of the event', async () => {
+  globalThis.__clerkSignInSpans = [];
+  const {default: ClerkSignInButton} = await importBundle(
+    new URL('../src/components/auth/ClerkSignInButton.tsx', import.meta.url),
+    [{
+      name: 'clerk-signin-button-fixture',
+      setup(build) {
+        build.onResolve({filter: /^@clerk\/react$/}, () => ({path: 'clerk', namespace: 'signin-button-fixture'}));
+        build.onLoad({filter: /.*/, namespace: 'signin-button-fixture'}, () => ({
+          contents: `
+            export function SignInButton(props) {
+              return props.children ?? null;
+            }
+          `,
+        }));
+      },
+    }, {
+      name: 'capture-jsx',
+      setup(plugin) {
+        plugin.onResolve({filter: /^react\/jsx-runtime$/}, () => ({path: 'jsx', namespace: 'capture-jsx'}));
+        plugin.onLoad({filter: /.*/, namespace: 'capture-jsx'}, () => ({
+          contents: `
+            import {createElement, Fragment} from 'react';
+            export {Fragment};
+            export function jsx(type, props, key) {
+              if (type === 'span' && props?.onClickCapture) {
+                globalThis.__clerkSignInSpans.push(props);
+              }
+              return createElement(type, key == null ? props : {...props, key});
+            }
+            export const jsxs = jsx;
+          `,
+        }));
+      },
+    }],
+  );
+  withPage(session => {
+    renderToStaticMarkup(createElement(ClerkSignInButton, null, '登录 / 注册'));
+    assert.equal(globalThis.__clerkSignInSpans.length, 1);
+    const props = globalThis.__clerkSignInSpans[0];
+    const event = {type: 'click', currentTarget: {}, preventDefault() {}};
+    props.onClickCapture(event);
+    assert.equal(session.getItem('blog-clerk-return-url'), currentPage);
+    session.removeItem('blog-clerk-return-url');
+    props.onPointerDownCapture(event);
+    assert.equal(session.getItem('blog-clerk-return-url'), currentPage);
+  });
+  delete globalThis.__clerkSignInSpans;
+});
+
 test('SignInPanel modal entry spreads the shared sign-in-or-up options', async () => {
   globalThis.__clerkSignInFixture = {buttons: []};
   const {default: SignInPanel} = await importBundle(
@@ -284,7 +347,10 @@ test('every production SignInButton and openSignIn entry uses the shared sign-in
   assert.match(sources['src/components/auth/clerk-signin.ts'], /transferable:\s*true/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /rememberClerkReturnUrl\(\)/);
   assert.match(sources['src/components/auth/ClerkSignInButton.tsx'], /\{...panelClerkRedirect\(\)\}/);
-  assert.match(sources['src/components/auth/ClerkSignInButton.tsx'], /rememberClerkReturnUrl/);
+  assert.match(sources['src/components/auth/ClerkSignInButton.tsx'], /onClickCapture=\{\(\) => rememberClerkReturnUrl\(window\.location\)\}/);
+  assert.match(sources['src/components/auth/ClerkSignInButton.tsx'], /onPointerDownCapture=\{\(\) => rememberClerkReturnUrl\(window\.location\)\}/);
+  assert.doesNotMatch(sources['src/components/auth/ClerkSignInButton.tsx'], /onClickCapture=\{rememberClerkReturnUrl\}/);
+  assert.doesNotMatch(sources['src/components/auth/ClerkSignInButton.tsx'], /onPointerDownCapture=\{rememberClerkReturnUrl\}/);
   assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /restoreClerkReturnUrl\(\)/);
   assert.match(sources['src/components/reader/BookmarkButton.tsx'], /openClerkSignIn\(clerk\)/);
   assert.equal([...callers.matchAll(/<ClerkSignInButton\b/g)].length, 4);
