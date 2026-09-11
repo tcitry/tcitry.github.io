@@ -16,8 +16,17 @@ async function importBundle(entryUrl, plugins = []) {
   const bundle = await build({
     entryPoints: [entryUrl.pathname],
     bundle: true, platform: 'node', format: 'esm', write: false, jsx: 'automatic',
-    loader: {'.css': 'empty'},
-    plugins,
+    plugins: [...plugins, {
+      name: 'css-stub',
+      setup(plugin) {
+        plugin.onLoad({filter: /\.css$/}, () => ({contents: 'export default {};', loader: 'js'}));
+      },
+    }, {
+      name: 'external-react',
+      setup(plugin) {
+        plugin.onResolve({filter: /^react($|\/)/}, ({path}) => ({path: import.meta.resolve(path), external: true}));
+      },
+    }],
   });
   return import('data:text/javascript;base64,' + Buffer.from(bundle.outputFiles[0].text).toString('base64'));
 }
