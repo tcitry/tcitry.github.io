@@ -103,7 +103,7 @@ npm run ai-search:sync -- --apply
 - 读取远端完整分页并比较 key 与 content hash；
 - 先完成新增和更新索引，再删除不再公开的本站托管 key；
 - 不删除手工上传或其他数据源内容；
-- 429 遵守 `Retry-After` 并有限退避；
+- 429、500、502、503、504 以及错误码 7001（Internal Error）遵守 `Retry-After` 并有限退避；超长 `Retry-After` 视为停止信号，用尽次数后仍失败；
 - 上传成功后继续等待索引完成；
 - 任一分页、hash、状态或限流异常都不写完整成功记录。
 
