@@ -2,7 +2,7 @@ import {useEffect, useId, useRef, useState, type SubmitEvent} from 'react';
 import {useAuth, useSession, useUser} from '@clerk/react';
 import {Avatar, Button, Label, TextArea, TextField, Tooltip} from '@heroui/react';
 import {DropZone} from '@heroui-pro/react';
-import {useConvexAuth, useMutation, usePaginatedQuery} from 'convex/react';
+import {useMutation, usePaginatedQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
 import type {Id} from '../../../convex/_generated/dataModel';
 import {useRefreshConvexToken} from '../auth/convex-token-refresh';
@@ -13,7 +13,7 @@ import CommentQueryLoading, {useCommentQueryRetry} from './CommentQueryLoading';
 import CommentUsernameForm from './CommentUsernameForm';
 import {
   clerkUsernameErrorMessage, commentUsernameClientError, convexErrorMessage,
-  isUsernameUnavailableError, normalizeCommentUsername, saveClerkUsername,
+  isUsernameUnavailableError, normalizeCommentUsername, saveClerkUsername, waitForConvexUsernameToken,
 } from './comment-username';
 import surface from '../demos/DemoSurface.module.css';
 
@@ -47,7 +47,6 @@ export default function CommentThread({pathname}: {pathname: string}) {
   const {getToken, sessionClaims} = useAuth();
   const {session} = useSession();
   const {user} = useUser();
-  const {isAuthenticated, isLoading} = useConvexAuth();
   const refreshConvexToken = useRefreshConvexToken();
   const listQuery = useCommentQueryRetry();
   const {results, status, loadMore} = usePaginatedQuery(api.comments.list, listQuery.skip ? 'skip' : {pathname}, {initialNumItems: 20});
@@ -69,8 +68,6 @@ export default function CommentThread({pathname}: {pathname: string}) {
   const [usernameError, setUsernameError] = useState('');
   const [usernamePending, setUsernamePending] = useState(false);
   const [usernameUnavailable, setUsernameUnavailable] = useState(false);
-  const [usernameSync, setUsernameSync] = useState(0);
-  const postAfterUsername = useRef(false);
   const imageDescriptionId = useId();
   const [tooltipContainer, setTooltipContainer] = useState<HTMLFormElement | null>(null);
   const [commentTarget, setCommentTarget] = useState(linkedComment);
@@ -104,7 +101,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
     else if (status === 'CanLoadMore') setNotice('这条回复尚未加载，可以继续加载更早的评论。');
   }, [commentTarget, results, status, loadMore, firstPageLoading]);
   useEffect(() => {
-    if (accountUsername && usernameDraft !== accountUsername && !usernamePending) setUsernameDraft(accountUsername);
+    if (accountUsername) setUsernameDraft(accountUsername);
   }, [accountUsername]);
 
   async function persistUsername() {
@@ -127,16 +124,16 @@ export default function CommentThread({pathname}: {pathname: string}) {
     } finally {if (active.current) setUsernamePending(false);}
   }
 
-  function queueCommentAfterUsername() {
-    postAfterUsername.current = true;
-    setUsernameSync(value => value + 1);
+  async function postAfterUsernameSaved() {
+    await waitForConvexUsernameToken();
+    if (active.current) await submitComment();
   }
 
   async function saveUsername() {
     if (pending || usernamePending) return;
     const saved = await persistUsername();
     if (!saved || !active.current) return;
-    if (body.trim() || images.length) queueCommentAfterUsername();
+    if (body.trim() || images.length) await postAfterUsernameSaved();
     else setNotice('用户名已保存，可以发布评论了。');
   }
 
@@ -203,12 +200,6 @@ export default function CommentThread({pathname}: {pathname: string}) {
     } finally {if (active.current) setPending(false); upload.current = null;}
   }
 
-  useEffect(() => {
-    if (!postAfterUsername.current || isLoading || !isAuthenticated || !accountUsername) return;
-    postAfterUsername.current = false;
-    void submitComment();
-  }, [isLoading, isAuthenticated, accountUsername, usernameSync]);
-
   async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (pending || usernamePending) return;
@@ -216,7 +207,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
       if (!body.trim() && images.length === 0) {await saveUsername(); return;}
       const saved = await persistUsername();
       if (!saved || !active.current) return;
-      queueCommentAfterUsername();
+      await postAfterUsernameSaved();
       return;
     }
     if (!body.trim() && images.length === 0) return;

@@ -12,7 +12,7 @@ const bundle = await build({
 });
 const {
   clerkUsernameErrorMessage, commentUsernameClientError, convexErrorMessage,
-  isUsernameUnavailableError, normalizeCommentUsername, saveClerkUsername,
+  isUsernameUnavailableError, normalizeCommentUsername, saveClerkUsername, waitForConvexUsernameToken,
 } = await import('data:text/javascript;base64,' + Buffer.from(bundle.outputFiles[0].text).toString('base64'));
 
 test('comment username client validation matches Clerk length and charset defaults', () => {
@@ -68,4 +68,8 @@ test('saveClerkUsername requests the convex JWT template when session aud is not
     sessionClaims: {aud: 'something-else'},
   });
   assert.deepEqual(tokens, [{template: 'convex', skipCache: true}]);
+});
+
+test('waitForConvexUsernameToken resolves after a paint/timeout turn', async () => {
+  await waitForConvexUsernameToken();
 });

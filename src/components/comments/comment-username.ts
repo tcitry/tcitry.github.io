@@ -83,3 +83,13 @@ export async function saveClerkUsername(options: {
   await refreshClerkConvexToken(options.getToken, options.sessionClaims);
   options.refreshConvexToken?.();
 }
+
+export function waitForConvexUsernameToken() {
+  // ConvexProviderWithClerk rebuilds fetchAccessToken after the sessionId epoch
+  // bump. Yield so that setAuth can pick up the skipCache-warmed Clerk JWT.
+  return new Promise<void>(resolve => {
+    const finish = () => setTimeout(resolve, 0);
+    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(finish);
+    else setTimeout(finish, 0);
+  });
+}
