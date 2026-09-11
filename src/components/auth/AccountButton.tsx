@@ -1,9 +1,9 @@
-import {Show, SignInButton, UserButton, useClerk} from '@clerk/react';
+import {Show, UserButton, useClerk} from '@clerk/react';
 import {ArrowRotateRight, CreditCard} from '@gravity-ui/icons';
 import {Button} from '@heroui/react';
 import {useConvexAuth} from 'convex/react';
 import {useMembership} from '../membership/useMembership';
-import {panelClerkRedirect} from './clerk-signin';
+import ClerkSignInButton from './ClerkSignInButton';
 
 type MembershipStatus = 'pending' | 'unavailable' | 'pro' | 'free';
 const membershipLabels: Record<MembershipStatus, string> = {
@@ -54,12 +54,11 @@ function SignedInAccount() {
 }
 
 export default function AccountButton() {
-  const redirect = panelClerkRedirect();
   return <>
     <Show when="signed-out">
-      <SignInButton mode="modal" {...redirect}>
+      <ClerkSignInButton>
         <Button size="sm" variant="secondary">登录 / 注册</Button>
-      </SignInButton>
+      </ClerkSignInButton>
     </Show>
     <Show when="signed-in">
       <SignedInAccount />

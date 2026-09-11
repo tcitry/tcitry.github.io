@@ -1,5 +1,5 @@
 import {Component, useState, type ReactNode} from 'react';
-import {SignInButton, useAuth} from '@clerk/react';
+import {useAuth} from '@clerk/react';
 import {Button} from '@heroui/react';
 import {useConvexAuth, useMutation, useQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
@@ -9,7 +9,7 @@ import CommentThread from './CommentThread';
 import CommentQueryLoading, {useCommentQueryRetry} from './CommentQueryLoading';
 import {HeartIcon} from './CommentIcons';
 import {AuthLoading} from '../auth/SignInPanel';
-import {panelClerkRedirect} from '../auth/clerk-signin';
+import ClerkSignInButton from '../auth/ClerkSignInButton';
 import surface from '../demos/DemoSurface.module.css';
 import BookmarkButton from '../reader/BookmarkButton';
 
@@ -57,14 +57,14 @@ function CommentsView({pathname, title, bookmarkable}: CommentsProps) {
     <div className="blog-comments__summary">
       <span className="blog-comments__count" role="status">{summary.commentCount.toLocaleString()} 条评论</span>
       <div className="blog-comments__article-actions">
-        {!userId ? <SignInButton mode="modal" {...panelClerkRedirect()}>{likeButton}</SignInButton> : likeButton}
+        {!userId ? <ClerkSignInButton>{likeButton}</ClerkSignInButton> : likeButton}
         {bookmarkable && title && <BookmarkButton pathname={pathname} title={title} tooltipContainer={tooltipContainer} />}
       </div>
     </div>
     {error && <p className="blog-comments__error" role="alert">{error}</p>}
     {!userId ? <div className="blog-comments__signin">
       <p className="blog-comments__hint">登录后查看评论与参与讨论。</p>
-      <SignInButton mode="modal" {...panelClerkRedirect()}><Button size="sm" variant="secondary">登录 / 注册</Button></SignInButton>
+      <ClerkSignInButton><Button size="sm" variant="secondary">登录 / 注册</Button></ClerkSignInButton>
     </div> : isLoading ? <AuthLoading label="正在连接登录状态…" />
       : isAuthenticated ? <CommentThread pathname={pathname} />
         : <p role="alert" className="blog-comments__error">登录状态暂时无法同步，请稍后刷新或重新登录。</p>}

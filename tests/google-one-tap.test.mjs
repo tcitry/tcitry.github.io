@@ -19,12 +19,18 @@ async function componentFor(siteEnvironment, publishableKey) {
           'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify(publishableKey),
         },
         plugins: [{
+          name: 'external-react',
+          setup(build) {
+            build.onResolve({filter: /^react($|\/)/}, ({path}) => ({path: import.meta.resolve(path), external: true}));
+          },
+        }, {
           name: 'clerk-one-tap-fixture',
           setup(build) {
             build.onResolve({filter: /^@clerk\/react$/}, () => ({path: 'clerk', namespace: 'one-tap-fixture'}));
             build.onLoad({filter: /.*/, namespace: 'one-tap-fixture'}, () => ({
               contents: `
                 export function useUser() { return globalThis.__oneTapFixture.auth; }
+                export function useAuth() { return globalThis.__oneTapFixture.auth; }
                 export function ClerkProvider({children}) {
                   globalThis.__oneTapFixture.providers++;
                   return children;
