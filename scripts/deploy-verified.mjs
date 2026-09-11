@@ -39,11 +39,16 @@ try {
       }
       return result.stdout;
     } catch (error) {
-      if (!quiet) {
-        process.stdout.write(redact(error.stdout));
-        process.stderr.write(redact(error.stderr));
-      }
-      throw new Error(`${label} failed`);
+      // Quiet only hides successful env-get values. Failures must still show
+      // redacted CLI output, or Workers Builds cannot diagnose the step.
+      const stdout = redact(error.stdout);
+      const stderr = redact(error.stderr);
+      process.stdout.write(stdout);
+      process.stderr.write(stderr);
+      const snippet = quiet ? [stdout, stderr].map(part => part.trim()).filter(Boolean).join('\n') : '';
+      const failure = new Error(snippet ? `${label} failed\n${snippet}` : `${label} failed`);
+      failure.name = 'DeployStepError';
+      throw failure;
     }
   }
   if (manifest.aiSearch) {
@@ -95,7 +100,13 @@ try {
     await run('Synchronizing verified published articles', ['scripts/sync-ai-search.mjs', '--apply'], env);
   }
 } catch (error) {
-  console.error(error instanceof assert.AssertionError ? error.message.split('\n')[0] : 'Verified deployment failed. Check the Convex/Worker deployment result; the next deployment step did not run.');
+  if (error instanceof assert.AssertionError) {
+    console.error(error.message.split('\n')[0]);
+  } else if (error?.name === 'DeployStepError') {
+    console.error(error.message);
+  } else {
+    console.error('Verified deployment failed. Check the Convex/Worker deployment result; the next deployment step did not run.');
+  }
   process.exitCode = 1;
 } finally {
   await rm(convexEnvFile, { force: true });

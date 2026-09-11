@@ -73,7 +73,10 @@ if (args[0] === 'env') {
     }
     console.log(process.env.FIXTURE_AI_SEARCH_URL ?? 'https://fixture.search.ai.cloudflare.com/search');
   } else {
-    if (process.env.FIXTURE_CONVEX_FAIL === 'issuer-command') process.exit(1);
+    if (process.env.FIXTURE_CONVEX_FAIL === 'issuer-command') {
+      console.error('fixture-clerk-cli-error', process.env.CONVEX_DEPLOY_KEY);
+      process.exit(1);
+    }
     console.log(process.env.FIXTURE_ISSUER || 'https://clerk.test.invalid');
   }
 } else {
@@ -156,6 +159,8 @@ test('A sealed release deploys exactly its assets without needing the temporary 
   assert.ok(convexCommands[2].args.includes('--cmd-url-env-var-name'));
   await assert.rejects(readFile(path.join(context.site, '.generated/convex-release.env')), { code: 'ENOENT' });
   assert.match(deployed.stdout, /without rebuilding/);
+  assert.match(deployed.stdout, /Checking the production Clerk issuer in Convex/);
+  assert.doesNotMatch(deployed.stdout + deployed.stderr, /https:\/\/clerk\.test\.invalid|https:\/\/fixture\.search\.ai\.cloudflare\.com/);
   await writeFile(path.join(context.site, 'dist/index.html'), 'unverified changes');
   await rm(path.join(context.site, '.generated/deploy-env.json'));
   const rejected = await context.run('deploy-verified.mjs');
@@ -216,12 +221,25 @@ test('Backend failures, a mismatched canonical target or issuer stop Worker uplo
   }
 });
 
+test('A quiet Convex env check still reports redacted CLI output when it fails', async t => {
+  const context = await fixture(t);
+  assert.equal((await context.run('verify-release.mjs')).code, 0);
+  const rejected = await context.run('deploy-verified.mjs', { FIXTURE_CONVEX_FAIL: 'issuer-command' });
+  assert.equal(rejected.code, 1);
+  const output = rejected.stdout + rejected.stderr;
+  assert.match(output, /Checking the production Clerk issuer in Convex failed/);
+  assert.match(output, /fixture-clerk-cli-error/);
+  assert.match(output, /\[redacted\]/);
+  assert.doesNotMatch(output, /fixture-convex-secret/);
+  await assert.rejects(readFile(path.join(context.site, '.generated/deploy-env.json')), { code: 'ENOENT' });
+  await assert.rejects(readFile(path.join(context.site, '.generated/convex-release.env')), { code: 'ENOENT' });
+});
+
 test('Missing, unreadable or mismatched Convex Search configuration stops both deployments without logging values', async t => {
   const context = await fixture(t);
   assert.equal((await context.run('verify-release.mjs')).code, 0);
   for (const overrides of [
     {FIXTURE_AI_SEARCH_URL: ''},
-    {FIXTURE_CONVEX_FAIL: 'search-command'},
     {FIXTURE_AI_SEARCH_URL: 'https://other.search.ai.cloudflare.com/search'},
     {FIXTURE_AI_SEARCH_URL: 'https://fixture.search.ai.cloudflare.com/other/../search'},
     {FIXTURE_AI_SEARCH_URL: 'https://fixture.search.ai.cloudflare.com/search\n'},
@@ -240,6 +258,26 @@ test('Missing, unreadable or mismatched Convex Search configuration stops both d
     for (const file of ['convex-deployed', 'deploy-env.json', 'convex-release.env']) {
       await assert.rejects(readFile(path.join(context.site, '.generated', file)), {code: 'ENOENT'});
     }
+  }
+});
+
+test('An unreadable quiet Convex Search env get still reports redacted CLI output and the configuration error', async t => {
+  const context = await fixture(t);
+  assert.equal((await context.run('verify-release.mjs')).code, 0);
+  const rejected = await context.run('deploy-verified.mjs', { FIXTURE_CONVEX_FAIL: 'search-command' });
+  assert.equal(rejected.code, 1);
+  const output = rejected.stdout + rejected.stderr;
+  assert.match(output, /Checking the production AI Search endpoint in Convex/);
+  assert.match(output, /fixture-upstream-private-value/);
+  assert.match(output, /\[redacted\]/);
+  assert.match(rejected.stderr, /Set AI_SEARCH_PUBLIC_URL.*same AI Search Public endpoint.*build AI_SEARCH_PUBLIC_URL/);
+  assert.doesNotMatch(output, /fixture-convex-secret/);
+  const commands = (await readFile(path.join(context.site, '.generated/convex-env.jsonl'), 'utf8')).trim().split('\n').map(JSON.parse);
+  assert.deepEqual(commands.map(command => command.args.slice(0, 3)), [
+    ['env', 'get', 'CLERK_FRONTEND_API_URL'], ['env', 'get', 'AI_SEARCH_PUBLIC_URL'],
+  ]);
+  for (const file of ['convex-deployed', 'deploy-env.json', 'convex-release.env']) {
+    await assert.rejects(readFile(path.join(context.site, '.generated', file)), {code: 'ENOENT'});
   }
 });
 
