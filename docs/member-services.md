@@ -4,7 +4,7 @@
 
 ## 架构
 
-- Clerk：登录、账户资料和 Billing UI。
+- Clerk：登录、账户资料和 Billing UI。站点登录入口使用 sign-in-or-up transfer：已有账户直接登录；首次 GitHub/Google OAuth 转到注册创建账户，而不是停在 Account Portal 的 `external_account_not_found`。用户名可选，可在评论等场景稍后设置。
 - Convex：认证与授权、评论、喜欢、收藏、通知、咨询、附件、AI 会话和流式状态。
 - `@convex-dev/agent`：AI thread、message 和 stream delta 持久化。
 - Cloudflare AI Search：公开文章检索与回答生成；不保存私人账户数据。
@@ -51,7 +51,7 @@ Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录�
 - 未登录：只读取评论数、喜欢数和登录提示。
 - 已登录：读取评论正文、回复、附件和个人状态；可以发布、回复、删除、喜欢和收藏。
 - 所有正文、附件和个人状态查询都必须在 Convex 后端鉴权，不能只依赖 UI 隐藏。
-- 评论显示 Clerk username，不用邮箱或私有身份 ID 兜底。
+- 评论显示 Clerk username，不用邮箱或私有身份 ID 兜底。用户名在注册时可选，可稍后在账户资料中设置。
 - 喜欢与收藏按账户幂等写入；客户端不能指定归属。
 - 删除父评论时清除正文和附件，保留讨论链占位。
 
