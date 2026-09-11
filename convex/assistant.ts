@@ -313,16 +313,21 @@ export const generate = internalAction({
       trace({stage: 'retrieval_start'});
       let retrieved = await retrievePublicSources(env.AI_SEARCH_PUBLIC_URL, retrievalQuery, controller.signal,
         {observe: trace, fallback: false});
+      let usedFallback = false;
       if (!retrieved.sources.length) {
+        usedFallback = true;
         await assertActive();
         trace({stage: 'retrieval_start', fallback: true});
-        retrieved = await retrievePublicSources(env.AI_SEARCH_PUBLIC_URL, retrievalQuery, controller.signal,
+        retrieved = await retrievePublicSources(env.AI_SEARCH_PUBLIC_URL, current, controller.signal,
           {observe: trace, fallback: true, retrievalOptions: searchRetrievalOptions({queryRewrite: false})});
       }
       await assertActive();
       if (!await ctx.runMutation(internal.assistant.setSources, {runId, sources: retrieved.sources})) return null;
+      const chatQuery = retrieved.sources.length
+        ? (usedFallback ? current : retrievalQuery)
+        : undefined;
       const agent = new Agent(components.agent, {name: '博客助手',
-        languageModel: publicChatModel(env.AI_SEARCH_PUBLIC_URL, retrieved.approvedReferences, assertActive, {retrievalQuery, observe: trace, onFailure: fail}),
+        languageModel: publicChatModel(env.AI_SEARCH_PUBLIC_URL, retrieved.approvedReferences, assertActive, {retrievalQuery: chatQuery, observe: trace, onFailure: fail}),
         // Read the saved current prompt; contextHandler replaces all other SDK history.
         instructions: instructions(retrieved.snippets), contextOptions: {recentMessages: 1, excludeToolMessages: true, searchOtherThreads: false},
       });
