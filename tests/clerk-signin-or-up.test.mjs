@@ -6,6 +6,7 @@ import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 
 const currentPage = 'https://example.test/docs/article/?view=full#comments';
+const origin = 'https://example.test';
 const expectedRedirect = {
   forceRedirectUrl: currentPage,
   signUpForceRedirectUrl: currentPage,
@@ -31,11 +32,25 @@ async function importBundle(entryUrl, plugins = []) {
   return import('data:text/javascript;base64,' + Buffer.from(bundle.outputFiles[0].text).toString('base64'));
 }
 
-function withPage(run) {
+function memoryStorage() {
+  const values = new Map();
+  return {
+    values,
+    getItem: key => values.has(key) ? values.get(key) : null,
+    setItem: (key, value) => { values.set(key, String(value)); },
+    removeItem: key => { values.delete(key); },
+  };
+}
+
+function withPage(run, href = currentPage) {
   const previousWindow = globalThis.window;
-  globalThis.window = {location: {href: currentPage}};
+  const session = memoryStorage();
+  globalThis.window = {
+    location: {href, origin: new URL(href).origin},
+    sessionStorage: session,
+  };
   try {
-    return run();
+    return run(session);
   } finally {
     if (previousWindow === undefined) delete globalThis.window;
     else globalThis.window = previousWindow;
@@ -43,15 +58,96 @@ function withPage(run) {
 }
 
 test('shared Clerk sign-in options opt into sign-in-or-up and keep OAuth transferable', async () => {
-  const {panelClerkRedirect, openClerkSignIn} = await importBundle(
+  const {panelClerkRedirect, openClerkSignIn, clerkReturnUrlStorageKey} = await importBundle(
     new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
   );
-  withPage(() => {
+  withPage(session => {
     assert.deepEqual(panelClerkRedirect(), expectedRedirect);
+    assert.equal(session.getItem(clerkReturnUrlStorageKey), null,
+      'building redirect props must not persist a return URL during signed-out render');
     const opened = [];
     openClerkSignIn({openSignIn: (props) => opened.push(props)});
     assert.deepEqual(opened, [{...expectedRedirect, transferable: true}]);
+    assert.equal(session.getItem(clerkReturnUrlStorageKey), currentPage);
   });
+});
+
+test('return URL helper stores, reads, clears and restores only same-origin pages', async () => {
+  const {
+    rememberClerkReturnUrl, readClerkReturnUrl, clearClerkReturnUrl, restoreClerkReturnUrl,
+    clerkReturnUrlStorageKey,
+  } = await importBundle(new URL('../src/components/auth/clerk-signin.ts', import.meta.url));
+
+  const labs = 'https://example.test/labs/?tab=demos#grid';
+  const home = 'https://example.test/';
+  const session = memoryStorage();
+  const replaced = [];
+  const location = {href: labs, origin, replace: url => replaced.push(url)};
+
+  rememberClerkReturnUrl(location, session);
+  assert.equal(readClerkReturnUrl(session), labs);
+  clearClerkReturnUrl(session);
+  assert.equal(readClerkReturnUrl(session), null);
+  assert.equal(session.values.size, 0);
+
+  rememberClerkReturnUrl(location, session);
+  const homeLocation = {href: home, origin, replace: url => replaced.push(url)};
+  assert.equal(restoreClerkReturnUrl(homeLocation, session), true);
+  assert.deepEqual(replaced, [labs]);
+  assert.equal(readClerkReturnUrl(session), null);
+
+  replaced.length = 0;
+  rememberClerkReturnUrl(location, session);
+  assert.equal(restoreClerkReturnUrl(location, session), false, 'already on the stored page');
+  assert.deepEqual(replaced, []);
+  assert.equal(session.getItem(clerkReturnUrlStorageKey), null);
+});
+
+test('return URL restore rejects open redirects and blocked storage', async () => {
+  const {rememberClerkReturnUrl, restoreClerkReturnUrl, clerkReturnUrlStorageKey} = await importBundle(
+    new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
+  );
+  const replaced = [];
+  const home = {href: 'https://example.test/', origin, replace: url => replaced.push(url)};
+
+  const foreign = memoryStorage();
+  foreign.setItem(clerkReturnUrlStorageKey, 'https://evil.test/phish');
+  assert.equal(restoreClerkReturnUrl(home, foreign), false);
+
+  const relative = memoryStorage();
+  relative.setItem(clerkReturnUrlStorageKey, '/labs/?tab=demos#grid');
+  assert.equal(restoreClerkReturnUrl(home, relative), true);
+  assert.deepEqual(replaced, ['https://example.test/labs/?tab=demos#grid']);
+
+  for (const candidate of [
+    'https://example.test.evil.test/labs/',
+    'https://evil.test/labs/',
+    '//evil.test/labs/',
+    'javascript:alert(1)',
+    'data:text/html,phish',
+    'https://user:pass@example.test/labs/',
+    'https://example.test@evil.test/labs/',
+    'http://example.test/labs/',
+    `https://example.test/${'a'.repeat(3000)}`,
+    'https://example.test/labs/\nhttps://evil.test/',
+    '',
+    'not a url',
+  ]) {
+    const session = memoryStorage();
+    session.setItem(clerkReturnUrlStorageKey, candidate);
+    replaced.length = 0;
+    assert.equal(restoreClerkReturnUrl(home, session), false, candidate);
+    assert.deepEqual(replaced, []);
+    assert.equal(session.getItem(clerkReturnUrlStorageKey), null, 'invalid values must be cleared');
+  }
+
+  const blocked = {
+    getItem() { throw new Error('blocked'); },
+    setItem() { throw new Error('blocked'); },
+    removeItem() { throw new Error('blocked'); },
+  };
+  assert.doesNotThrow(() => rememberClerkReturnUrl(home, blocked));
+  assert.doesNotThrow(() => restoreClerkReturnUrl(home, blocked));
 });
 
 test('SignInPanel modal entry spreads the shared sign-in-or-up options', async () => {
@@ -97,7 +193,8 @@ test('SignInPanel modal entry spreads the shared sign-in-or-up options', async (
       },
     }],
   );
-  withPage(() => {
+  withPage(session => {
+    const {clerkReturnUrlStorageKey} = {clerkReturnUrlStorageKey: 'blog-clerk-return-url'};
     renderToStaticMarkup(createElement(SignInPanel, {
       title: '登录后继续', description: '使用同一个账户。', action: true,
     }));
@@ -107,6 +204,8 @@ test('SignInPanel modal entry spreads the shared sign-in-or-up options', async (
     assert.equal(props.withSignUp, true);
     assert.equal(props.forceRedirectUrl, currentPage);
     assert.equal(props.signUpForceRedirectUrl, currentPage);
+    assert.equal(session.getItem(clerkReturnUrlStorageKey), null,
+      'rendering the signed-out button must not overwrite a stored return URL');
   });
   delete globalThis.__clerkSignInFixture;
 });
@@ -151,7 +250,7 @@ test('anonymous bookmark sign-in uses the shared helper instead of a bare openSi
       },
     }],
   );
-  withPage(() => {
+  withPage(session => {
     globalThis.__bookmarkSignIn = {opened: [], press: undefined};
     renderToStaticMarkup(createElement(BookmarkButton, {
       pathname: '/docs/article/', title: '文章', tooltipContainer: null,
@@ -159,6 +258,7 @@ test('anonymous bookmark sign-in uses the shared helper instead of a bare openSi
     assert.equal(typeof globalThis.__bookmarkSignIn.press, 'function');
     globalThis.__bookmarkSignIn.press();
     assert.deepEqual(globalThis.__bookmarkSignIn.opened, [{...expectedRedirect, transferable: true}]);
+    assert.equal(session.getItem('blog-clerk-return-url'), currentPage);
     delete globalThis.__bookmarkSignIn;
   });
 });
@@ -166,19 +266,28 @@ test('anonymous bookmark sign-in uses the shared helper instead of a bare openSi
 test('every production SignInButton and openSignIn entry uses the shared sign-in-or-up helper', async () => {
   const files = [
     'src/components/auth/clerk-signin.ts',
+    'src/components/auth/ClerkSignInButton.tsx',
+    'src/components/auth/BlogClerkProvider.tsx',
     'src/components/auth/SignInPanel.tsx',
     'src/components/auth/AccountButton.tsx',
     'src/components/comments/CommentsRoot.tsx',
     'src/components/reader/BookmarkButton.tsx',
   ];
   const sources = Object.fromEntries(await Promise.all(files.map(async file => [file, await readFile(file, 'utf8')])));
-  const production = files.filter(file => !file.endsWith('clerk-signin.ts')).map(file => sources[file]).join('\n');
+  const callers = [
+    sources['src/components/auth/SignInPanel.tsx'],
+    sources['src/components/auth/AccountButton.tsx'],
+    sources['src/components/comments/CommentsRoot.tsx'],
+    sources['src/components/reader/BookmarkButton.tsx'],
+  ].join('\n');
   assert.match(sources['src/components/auth/clerk-signin.ts'], /withSignUp:\s*true/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /transferable:\s*true/);
+  assert.match(sources['src/components/auth/clerk-signin.ts'], /rememberClerkReturnUrl\(\)/);
+  assert.match(sources['src/components/auth/ClerkSignInButton.tsx'], /\{...panelClerkRedirect\(\)\}/);
+  assert.match(sources['src/components/auth/ClerkSignInButton.tsx'], /rememberClerkReturnUrl/);
+  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /restoreClerkReturnUrl\(\)/);
   assert.match(sources['src/components/reader/BookmarkButton.tsx'], /openClerkSignIn\(clerk\)/);
-  const buttons = [...production.matchAll(/<SignInButton\b[^>]*>/g)].map(match => match[0]);
-  assert.equal(buttons.length, 4);
-  assert.ok(buttons.every(tag => tag.includes('{...panelClerkRedirect()}') || tag.includes('{...redirect}')),
-    'SignInButton callers must spread the shared helper so withSignUp cannot be omitted');
-  assert.doesNotMatch(production, /openSignIn\(/);
+  assert.equal([...callers.matchAll(/<ClerkSignInButton\b/g)].length, 4);
+  assert.doesNotMatch(callers, /<SignInButton\b/);
+  assert.doesNotMatch(callers, /openSignIn\(/);
 });

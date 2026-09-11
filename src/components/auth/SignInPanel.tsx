@@ -1,8 +1,8 @@
-import {ClerkFailed, ClerkLoaded, ClerkLoading, SignInButton} from '@clerk/react';
+import {ClerkFailed, ClerkLoaded, ClerkLoading} from '@clerk/react';
 import {Button, Spinner} from '@heroui/react';
 import {EmptyState} from '@heroui-pro/react/empty-state';
 import {useEffect, useState, type ReactNode} from 'react';
-import {panelClerkRedirect} from './clerk-signin';
+import ClerkSignInButton from './ClerkSignInButton';
 
 export function AuthLoading({label = '正在加载登录…'}: {label?: string}) {
   const [timedOut, setTimedOut] = useState(false);
@@ -44,9 +44,9 @@ export default function SignInPanel({title, description, action = false}: {
       <ClerkLoaded>
         <EmptyState.Content>
           <div data-clerk-signin>
-            <SignInButton mode="modal" {...panelClerkRedirect()}>
+            <ClerkSignInButton>
               <Button>登录 / 注册</Button>
-            </SignInButton>
+            </ClerkSignInButton>
           </div>
         </EmptyState.Content>
       </ClerkLoaded>
