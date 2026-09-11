@@ -6,6 +6,7 @@ import {components, internal} from './_generated/api';
 import type {Doc, Id} from './_generated/dataModel';
 import {env, internalAction, internalMutation, internalQuery, mutation, query, type MutationCtx, type QueryCtx} from './_generated/server';
 import {publicChatModel, instructions, NO_SOURCES, SAFE_ERROR, type GenerationEvent} from './assistantModel';
+import {searchRetrievalOptions} from './assistantRetrievalConfig';
 import {retrievePublicSources} from './assistantPublicSearch';
 
 const sourceValidator = v.object({id: v.string(), title: v.string(), url: v.string(), sourceKind: v.union(v.literal('author'), v.literal('ai-assisted'))});
@@ -310,14 +311,16 @@ export const generate = internalAction({
         ? `针对主题「${topicTerms}」的追问。上文：${previous.slice(0, 300)}。当前问题：${current}`
         : current;
       trace({stage: 'retrieval_start'});
-      const retrieved = await retrievePublicSources(env.AI_SEARCH_PUBLIC_URL, retrievalQuery, controller.signal);
-      trace({stage: 'retrieval_complete', chunkCount: retrieved.snippets.length, sourceCount: retrieved.sources.length});
+      let retrieved = await retrievePublicSources(env.AI_SEARCH_PUBLIC_URL, retrievalQuery, controller.signal,
+        {observe: trace, fallback: false});
+      if (!retrieved.sources.length) {
+        await assertActive();
+        trace({stage: 'retrieval_start', fallback: true});
+        retrieved = await retrievePublicSources(env.AI_SEARCH_PUBLIC_URL, retrievalQuery, controller.signal,
+          {observe: trace, fallback: true, retrievalOptions: searchRetrievalOptions({queryRewrite: false})});
+      }
       await assertActive();
       if (!await ctx.runMutation(internal.assistant.setSources, {runId, sources: retrieved.sources})) return null;
-      if (!retrieved.sources.length) {
-        await ctx.runMutation(internal.assistant.finish, {runId, failed: false, noSources: true});
-        trace({stage: 'no_sources'}); return null;
-      }
       const agent = new Agent(components.agent, {name: '博客助手',
         languageModel: publicChatModel(env.AI_SEARCH_PUBLIC_URL, retrieved.approvedReferences, assertActive, {retrievalQuery, observe: trace, onFailure: fail}),
         // Read the saved current prompt; contextHandler replaces all other SDK history.

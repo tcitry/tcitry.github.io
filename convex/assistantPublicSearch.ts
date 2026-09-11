@@ -1,6 +1,6 @@
 import exportedReferences from '../.generated/ai-search/references.json';
 import {publicAIEndpoint} from '../src/lib/public-ai-search-url.mjs';
-import type {Source, Snippet} from './assistantModel';
+import type {GenerationEvent, Source, Snippet} from './assistantModel';
 import {searchRetrievalOptions} from './assistantRetrievalConfig';
 
 export type PublicSearchReference = {
@@ -87,6 +87,8 @@ async function readJSON(response: Response, signal: AbortSignal): Promise<unknow
 
 export async function retrievePublicSources(endpoint: string, query: string, signal: AbortSignal, options: {
   fetcher?: typeof fetch; references?: readonly PublicSearchReference[];
+  observe?: (event: GenerationEvent) => void; retrievalOptions?: ReturnType<typeof searchRetrievalOptions>;
+  fallback?: boolean;
 } = {}): Promise<{sources: Source[]; snippets: Snippet[]; approvedReferences: PublicSearchReference[]}> {
   const url = publicSearchEndpoint(endpoint, 'search');
   if (typeof query !== 'string' || !query.trim() || query.length > 2000 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(query)) throw new Error(ERROR);
@@ -95,7 +97,7 @@ export async function retrievePublicSources(endpoint: string, query: string, sig
     const response = await (options.fetcher ?? fetch)(url, {
       method: 'POST', credentials: 'omit', redirect: 'error', signal,
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({query: query.trim(), ai_search_options: searchRetrievalOptions()}),
+      body: JSON.stringify({query: query.trim(), ai_search_options: options.retrievalOptions ?? searchRetrievalOptions()}),
     });
     if (signal.aborted) {await response.body?.cancel().catch(() => {}); signal.throwIfAborted();}
     if (!response.ok || response.redirected) {await response.body?.cancel().catch(() => {}); throw new Error(ERROR);}
@@ -128,6 +130,9 @@ export async function retrievePublicSources(endpoint: string, query: string, sig
         ...(reference.updatedAt ? {updatedAt: reference.updatedAt} : {}),
       });
     }
+    options.observe?.({stage: 'retrieval_complete', chunkCount: snippets.length, sourceCount: sources.length,
+      rawChunkCount: result.chunks.length, queryKind: typeof result.query_kind === 'string' ? result.query_kind : 'unknown',
+      fallback: options.fallback});
     return {sources, snippets, approvedReferences};
   } catch {
     signal.throwIfAborted();

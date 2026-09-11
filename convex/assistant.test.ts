@@ -7,7 +7,7 @@ import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest';
 import process from 'node:process';
 import {api, components, internal} from './_generated/api';
 import schema from './schema';
-import {NO_SOURCES, SAFE_ERROR} from './assistantModel';
+import {SAFE_ERROR} from './assistantModel';
 
 const modules = import.meta.glob(['./**/*.ts', './**/*.js', '!./**/*.test.ts']);
 const paginationOpts = {numItems: 20, cursor: null};
@@ -123,20 +123,30 @@ describe('assistant authorization and persisted submissions', () => {
 });
 
 describe('assistant retrieval and generation lifecycle', () => {
-  test('no-source answer is durably saved, without calling a model', async () => {
+  test('no-source answer falls back to the model with empty sources', async () => {
     configured();
-    const fetch = vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) => Response.json({success: true, result: {chunks: []}}));
+    const chatResponse = 'data: ' + JSON.stringify({id: 'fixture', object: 'chat.completion.chunk', created: 1,
+      model: 'configured', choices: [{index: 0, delta: {content: '这是基于通用知识的回答。'}, finish_reason: 'stop'}]}) + '\n\n' +
+      'data: [DONE]\n\n';
+    const fetch = vi.fn(async (input: RequestInfo | URL, _init?: RequestInit) => {
+      if (String(input).endsWith('/chat/completions')) {
+        return new Response(chatResponse, {headers: {'content-type': 'text/event-stream'}});
+      }
+      return Response.json({success: true, result: {chunks: []}});
+    });
     vi.stubGlobal('fetch', fetch);
     const {t, alice} = setup();
     const conversationId = await alice.mutation(api.assistant.createConversation, {});
     const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '问题', requestId});
     await t.action(internal.assistant.generate, {runId});
-    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledTimes(3);
     expect(fetch.mock.calls[0][0]).toBe(publicEndpoint);
+    expect(fetch.mock.calls[1][0]).toBe(publicEndpoint);
+    expect(String(fetch.mock.calls[2][0])).toMatch(/\/chat\/completions$/);
     expect((await t.run(ctx => ctx.db.get('assistantRuns', runId)))?.status).toBe('completed');
     const conversation = await alice.query(api.assistant.getConversation, {conversationId});
     const messages = await alice.query(api.assistant.listThreadMessages, {threadId: conversation.threadId, paginationOpts});
-    expect(messages.page.some(message => message.text === NO_SOURCES)).toBe(true);
+    expect(messages.page.some(message => message.text === '这是基于通用知识的回答。')).toBe(true);
   });
 
   test('retrieval failure is persisted with a safe error and cannot copy provider text into the transcript', async () => {

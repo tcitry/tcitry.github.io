@@ -25,10 +25,10 @@ export function chatRetrievalOptions(approvedHashes: string[]) {
   };
 }
 
-export function searchRetrievalOptions() {
+export function searchRetrievalOptions({queryRewrite}: {queryRewrite?: boolean} = {}) {
   return {
     retrieval: RETRIEVAL,
-    query_rewrite: QUERY_REWRITE,
+    query_rewrite: queryRewrite === false ? {enabled: false as const} : QUERY_REWRITE,
     reranking: RERANKING,
     cache: CACHE,
   };
