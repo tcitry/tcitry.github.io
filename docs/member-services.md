@@ -51,7 +51,7 @@ Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录�
 - 未登录：只读取评论数、喜欢数和登录提示。
 - 已登录：读取评论正文、回复、附件和个人状态；可以发布、回复、删除、喜欢和收藏。
 - 所有正文、附件和个人状态查询都必须在 Convex 后端鉴权，不能只依赖 UI 隐藏。
-- 评论显示 Clerk username，不用邮箱或私有身份 ID 兜底。用户名在注册时可选，可稍后在账户资料中设置。
+- 评论显示 Clerk username，不用邮箱或私有身份 ID 兜底。缺少用户名时，评论区引导通过 Clerk `user.update({ username })` 设置；Convex 只读取 session 中的 `preferred_username` / `nickname`，不接受浏览器提交的作者名。Session claims 在 Clerk Dashboard 映射，本仓库没有 JWT template。
 - 喜欢与收藏按账户幂等写入；客户端不能指定归属。
 - 删除父评论时清除正文和附件，保留讨论链占位。
 

@@ -1,27 +1,25 @@
 import {useEffect, useId, useRef, useState, type SubmitEvent} from 'react';
-import {useAuth, useUser} from '@clerk/react';
+import {useAuth, useSession, useUser} from '@clerk/react';
 import {Avatar, Button, Label, TextArea, TextField, Tooltip} from '@heroui/react';
 import {DropZone} from '@heroui-pro/react';
 import {useMutation, usePaginatedQuery} from 'convex/react';
-import {ConvexError} from 'convex/values';
 import {api} from '../../../convex/_generated/api';
 import type {Id} from '../../../convex/_generated/dataModel';
+import {useRefreshConvexToken} from '../auth/convex-token-refresh';
 import CommentContent, {type CommentItem} from './CommentContent';
 import {HeartIcon, ImageIcon} from './CommentIcons';
 import {commentImageLimit, commentImageTypes, uploadCommentImage} from './comment-image-upload';
 import CommentQueryLoading, {useCommentQueryRetry} from './CommentQueryLoading';
+import CommentUsernameForm from './CommentUsernameForm';
+import {
+  clerkUsernameErrorMessage, commentUsernameClientError, convexErrorMessage,
+  isUsernameUnavailableError, normalizeCommentUsername, saveClerkUsername, waitForConvexUsernameToken,
+} from './comment-username';
 import surface from '../demos/DemoSurface.module.css';
 
 interface DraftImage {key: string; file: File; preview: string; imageId?: Id<'commentImages'>; status: 'ready' | 'uploading' | 'uploaded' | 'failed'}
 const linkedComment = () => /^#comment-[a-zA-Z0-9_-]{1,80}$/.test(window.location.hash) ? window.location.hash.slice(1) : '';
-
-function errorMessage(error: unknown) {
-  if (error instanceof ConvexError && typeof error.data === 'object' && error.data !== null) {
-    if ('kind' in error.data && error.data.kind === 'RateLimited') return '评论操作过于频繁，请稍后再试。';
-    if ('message' in error.data && typeof error.data.message === 'string') return error.data.message;
-  }
-  return '评论未能发布，你的文字和图片仍保留在这里，请稍后重试。';
-}
+const publishFallback = '评论未能发布，你的文字和图片仍保留在这里，请稍后重试。';
 
 function discussionRows(comments: CommentItem[]) {
   const byId = new Map(comments.map(comment => [comment.id, comment]));
@@ -46,8 +44,10 @@ function discussionRows(comments: CommentItem[]) {
 }
 
 export default function CommentThread({pathname}: {pathname: string}) {
-  const {getToken} = useAuth();
+  const {getToken, sessionClaims} = useAuth();
+  const {session} = useSession();
   const {user} = useUser();
+  const refreshConvexToken = useRefreshConvexToken();
   const listQuery = useCommentQueryRetry();
   const {results, status, loadMore} = usePaginatedQuery(api.comments.list, listQuery.skip ? 'skip' : {pathname}, {initialNumItems: 20});
   const firstPageLoading = listQuery.skip || status === 'LoadingFirstPage';
@@ -64,6 +64,10 @@ export default function CommentThread({pathname}: {pathname: string}) {
   const [deleteId, setDeleteId] = useState<Id<'comments'> | null>(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [usernameDraft, setUsernameDraft] = useState(user?.username ?? '');
+  const [usernameError, setUsernameError] = useState('');
+  const [usernamePending, setUsernamePending] = useState(false);
+  const [usernameUnavailable, setUsernameUnavailable] = useState(false);
   const imageDescriptionId = useId();
   const [tooltipContainer, setTooltipContainer] = useState<HTMLFormElement | null>(null);
   const [commentTarget, setCommentTarget] = useState(linkedComment);
@@ -71,6 +75,8 @@ export default function CommentThread({pathname}: {pathname: string}) {
   const previews = useRef(new Set<string>());
   const upload = useRef<AbortController | null>(null);
   const input = useRef<HTMLTextAreaElement | null>(null);
+  const accountUsername = user?.username?.trim() || '';
+  const needsUsername = !accountUsername || usernameUnavailable;
   useEffect(() => {
     active.current = true;
     return () => {active.current = false; upload.current?.abort(); for (const url of previews.current) URL.revokeObjectURL(url); previews.current.clear();};
@@ -94,6 +100,42 @@ export default function CommentThread({pathname}: {pathname: string}) {
     else if (status === 'Exhausted') {setNotice('这条回复已无法查看。'); setCommentTarget('');}
     else if (status === 'CanLoadMore') setNotice('这条回复尚未加载，可以继续加载更早的评论。');
   }, [commentTarget, results, status, loadMore, firstPageLoading]);
+  useEffect(() => {
+    if (accountUsername) setUsernameDraft(accountUsername);
+  }, [accountUsername]);
+
+  async function persistUsername() {
+    if (!user?.update) {setUsernameError('当前账户暂时无法保存用户名，请稍后重试。'); return false;}
+    const username = normalizeCommentUsername(usernameDraft || accountUsername);
+    const clientError = commentUsernameClientError(username);
+    if (clientError) {setUsernameError(clientError); return false;}
+    setUsernamePending(true); setUsernameError(''); setError('');
+    try {
+      await saveClerkUsername({
+        user, username, reloadSession: () => session?.reload() ?? Promise.resolve(),
+        getToken, sessionClaims: sessionClaims as {aud?: unknown} | null | undefined, refreshConvexToken,
+      });
+      if (!active.current) return false;
+      setUsernameUnavailable(false); setUsernameDraft(username);
+      return true;
+    } catch (failure) {
+      if (active.current) setUsernameError(clerkUsernameErrorMessage(failure));
+      return false;
+    } finally {if (active.current) setUsernamePending(false);}
+  }
+
+  async function postAfterUsernameSaved() {
+    await waitForConvexUsernameToken();
+    if (active.current) await submitComment();
+  }
+
+  async function saveUsername() {
+    if (pending || usernamePending) return;
+    const saved = await persistUsername();
+    if (!saved || !active.current) return;
+    if (body.trim() || images.length) await postAfterUsernameSaved();
+    else setNotice('用户名已保存，可以发布评论了。');
+  }
 
   function selectImages(files: File[]) {
     if (pending) return;
@@ -120,8 +162,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
     } catch {if (active.current) setError('图片暂未移除，请稍后重试。');}
   }
 
-  async function submit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function submitComment() {
     if (pending || (!body.trim() && images.length === 0)) return;
     setPending(true); setError(''); setNotice('');
     const controller = new AbortController(); upload.current = controller;
@@ -147,8 +188,30 @@ export default function CommentThread({pathname}: {pathname: string}) {
       setBody(''); setReplyTo(null); setImages([]); setNotice('评论已发布。');
       imageCount.current = 0;
       for (const url of previews.current) URL.revokeObjectURL(url); previews.current.clear();
-    } catch (failure) {if (active.current) setError(errorMessage(failure));}
-    finally {if (active.current) setPending(false); upload.current = null;}
+    } catch (failure) {
+      if (!active.current) return;
+      if (isUsernameUnavailableError(failure)) {
+        setUsernameUnavailable(true);
+        setUsernameError(accountUsername ? '用户名已保存，但当前登录会话尚未同步，请再试一次。' : '请先设置用户名，再发布评论。');
+        setError('');
+        return;
+      }
+      setError(convexErrorMessage(failure, publishFallback));
+    } finally {if (active.current) setPending(false); upload.current = null;}
+  }
+
+  async function submit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (pending || usernamePending) return;
+    if (needsUsername || !accountUsername) {
+      if (!body.trim() && images.length === 0) {await saveUsername(); return;}
+      const saved = await persistUsername();
+      if (!saved || !active.current) return;
+      await postAfterUsernameSaved();
+      return;
+    }
+    if (!body.trim() && images.length === 0) return;
+    await submitComment();
   }
 
   async function deleteComment(id: Id<'comments'>) {
@@ -157,7 +220,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
     try {
       await remove({id}); if (!active.current) return;
       setDeleteId(null); setNotice('评论已删除。'); if (replyTo?.id === id) setReplyTo(null);
-    } catch (failure) {if (active.current) setError(errorMessage(failure));}
+    } catch (failure) {if (active.current) setError(convexErrorMessage(failure, '评论未能删除，请稍后重试。'));}
     finally {if (active.current) setPending(false);}
   }
 
@@ -165,10 +228,12 @@ export default function CommentThread({pathname}: {pathname: string}) {
   return <div className="blog-comments__content">
     <form ref={setTooltipContainer} onSubmit={submit} className="blog-comments__composer">
       <div className="blog-comments__composer-author"><Avatar size="sm">
-        {user?.imageUrl && <Avatar.Image src={user.imageUrl} alt="" />}<Avatar.Fallback>{user?.username?.slice(0, 1) || '我'}</Avatar.Fallback>
-      </Avatar><strong>{user?.username || '当前账户'}</strong></div>
+        {user?.imageUrl && <Avatar.Image src={user.imageUrl} alt="" />}<Avatar.Fallback>{accountUsername.slice(0, 1) || '我'}</Avatar.Fallback>
+      </Avatar><strong>{accountUsername || '设置用户名'}</strong></div>
+      {needsUsername && <CommentUsernameForm username={usernameDraft} onChange={value => {setUsernameDraft(value); setUsernameError('');}}
+        error={usernameError} pending={pending || usernamePending} onSave={() => {void saveUsername();}} />}
       {replyTo && <div className="blog-comments__reply-target"><span>回复 {replyTo.authorName}</span><Button size="sm" variant="ghost" onPress={() => setReplyTo(null)}>取消回复</Button></div>}
-      <TextField value={body} onChange={setBody} isDisabled={pending}>
+      <TextField value={body} onChange={setBody} isDisabled={pending || usernamePending}>
         <Label className="blog-comments__sr-only">你的评论</Label>
         <TextArea ref={input} id="comment-body" maxLength={4_000} rows={4} placeholder="分享你的想法，也可以添加图片…" />
       </TextField>
@@ -197,7 +262,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
         </DropZone.Area>
         <DropZone.Input accept={commentImageTypes.join(',')} multiple onSelect={files => selectImages(Array.from(files))} />
       </DropZone>
-      <div className="blog-comments__submit"><span>{body.length.toLocaleString()} / 4,000</span><Button type="submit" size="sm" isPending={pending} isDisabled={!body.trim() && !images.length}>发布评论</Button></div>
+      <div className="blog-comments__submit"><span>{body.length.toLocaleString()} / 4,000</span><Button type="submit" size="sm" isPending={pending || usernamePending} isDisabled={!body.trim() && !images.length}>发布评论</Button></div>
     </form>
     {error && <p className="blog-comments__error" role="alert">{error}</p>}
     <p className="blog-comments__notice" role="status" aria-live="polite">{notice}</p>

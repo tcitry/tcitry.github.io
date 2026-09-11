@@ -1,4 +1,4 @@
-import {createContext, useContext, useRef, useState, type ReactNode} from 'react';
+import {createContext, useContext, useRef, useState, useSyncExternalStore, type ReactNode} from 'react';
 import {currentFixtureAuth, useAuth, useClerk as useFixtureClerk, useUser as useFixtureUser} from './reader-clerk';
 export * from './reader-clerk';
 
@@ -8,10 +8,36 @@ const CloseMenuContext = createContext<() => void>(() => {});
 const profileRequests: {userId: string | null; options?: Record<string, unknown>}[] = [];
 const profileEscapes: {defaultPrevented: boolean; inNativeDialog: boolean}[] = [];
 let closeProfile: (() => void) | undefined;
-export const fixtureUsername = (userId: string | null) => userId && userId !== 'fixture-no-username' ? `${userId}-username` : null;
+const usernameByUser = new Map<string, string | null>();
+const usernameListeners = new Set<() => void>();
+function clerkError(code: string, message: string) {
+  return Object.assign(new Error(message), {clerkError: true, errors: [{code, message}]});
+}
+export const fixtureUsername = (userId: string | null) => {
+  if (!userId) return null;
+  if (usernameByUser.has(userId)) return usernameByUser.get(userId) ?? null;
+  return userId === 'fixture-no-username' ? null : `${userId}-username`;
+};
+function takenUsernames(exceptUserId: string) {
+  const taken = new Set(['fixture-a-username', 'fixture-b-username']);
+  for (const [userId, username] of usernameByUser) {
+    if (userId !== exceptUserId && username) taken.add(username);
+  }
+  return taken;
+}
 export function useUser() {
   const result = useFixtureUser();
-  return {...result, user: result.user ? {...result.user, username: fixtureUsername(result.user.id)} : null};
+  useSyncExternalStore((listener) => {usernameListeners.add(listener); return () => usernameListeners.delete(listener);}, () => fixtureUsername(currentFixtureAuth().userId));
+  const userId = result.user?.id ?? null;
+  const username = fixtureUsername(userId);
+  return {...result, user: result.user ? {...result.user, username, async update(params: {username?: string}) {
+    const next = params.username?.trim() ?? '';
+    if (next.length < 4 || next.length > 64) throw clerkError('form_username_invalid_length', 'Username must be between 4 and 64 characters.');
+    if (!/^[a-zA-Z0-9_-]+$/.test(next)) throw clerkError('form_username_invalid_character', 'Username can only contain letters, numbers, underscores and hyphens.');
+    if (takenUsernames(userId!).has(next)) throw clerkError('form_identifier_exists', 'That username is taken. Please try another.');
+    usernameByUser.set(userId!, next);
+    usernameListeners.forEach(listener => listener());
+  }} : null};
 }
 
 export function ClerkProvider({children, appearance}: {children: ReactNode; appearance?: {elements?: {modalBackdrop?: string}}}) {

@@ -25,8 +25,9 @@ export async function requireCommentIdentity(ctx: Pick<QueryCtx | MutationCtx | 
   return identity;
 }
 
-// These are signed OIDC claims from the Clerk session, never form fields. The
-// instance must map preferred_username to user.username in its session claims.
+// These are signed OIDC claims from the Clerk Convex session token, never form
+// fields. Map preferred_username and/or nickname to user.username in Clerk
+// Dashboard session claims; this repo has no JWT template of its own.
 export function commentAuthorName(identity: UserIdentity) {
   for (const value of [identity.preferredUsername, identity.nickname]) {
     if (typeof value === "string" && value.trim() && value.trim().length <= 80 && !/[\u0000-\u001f\u007f]/u.test(value)) return value.trim();

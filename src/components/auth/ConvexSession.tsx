@@ -1,14 +1,16 @@
-import {useCallback, type ReactNode} from 'react';
+import {useCallback, useContext, useState, type ReactNode} from 'react';
 import {useAuth} from '@clerk/react';
 import {useConvexAuth} from 'convex/react';
 import {ConvexProviderWithClerk} from 'convex/react-clerk';
 import SignInPanel, {AuthLoading} from './SignInPanel';
 import useSessionConvexClient from './useSessionConvexClient';
 import ServiceBoundary from './ServiceBoundary';
+import {ConvexTokenEpochContext, ConvexTokenRefreshContext} from './convex-token-refresh';
 export {default as ServiceBoundary} from './ServiceBoundary';
 
 function useConvexClerkAuth() {
   const auth = useAuth();
+  const tokenEpoch = useContext(ConvexTokenEpochContext);
   const getToken = useCallback(async (options: Parameters<typeof auth.getToken>[0]) => {
     try {
       const token = await auth.getToken(options);
@@ -25,7 +27,9 @@ function useConvexClerkAuth() {
       throw error;
     }
   }, [auth.getToken]);
-  return {...auth, getToken};
+  // ConvexProviderWithClerk rebuilds fetchAccessToken when sessionId changes.
+  const sessionId = auth.sessionId && tokenEpoch ? `${auth.sessionId}:${tokenEpoch}` : auth.sessionId;
+  return {...auth, getToken, sessionId};
 }
 
 export function ConvexAuthGate({children, requireAuth = true}: {children: ReactNode; requireAuth?: boolean}) {
@@ -39,9 +43,15 @@ export function ConvexAuthGate({children, requireAuth = true}: {children: ReactN
 
 function Client({url, children, requireAuth}: {url: string; children: ReactNode; requireAuth: boolean}) {
   const client = useSessionConvexClient(url);
-  return <ConvexProviderWithClerk client={client} useAuth={useConvexClerkAuth}>
-    <ConvexAuthGate requireAuth={requireAuth}>{children}</ConvexAuthGate>
-  </ConvexProviderWithClerk>;
+  const [tokenEpoch, setTokenEpoch] = useState(0);
+  const refreshConvexToken = useCallback(() => setTokenEpoch(value => value + 1), []);
+  return <ConvexTokenEpochContext.Provider value={tokenEpoch}>
+    <ConvexTokenRefreshContext.Provider value={refreshConvexToken}>
+      <ConvexProviderWithClerk client={client} useAuth={useConvexClerkAuth}>
+        <ConvexAuthGate requireAuth={requireAuth}>{children}</ConvexAuthGate>
+      </ConvexProviderWithClerk>
+    </ConvexTokenRefreshContext.Provider>
+  </ConvexTokenEpochContext.Provider>;
 }
 
 // A new Clerk session gets a fresh client and query cache before children render.
