@@ -43,9 +43,21 @@ export function isRetriableChatLoadError(error) {
  */
 export function chatLoadFailureCopy(error, phase = 'import') {
   if (isClerkLoadError(error)) return '登录服务暂时无法连接，请稍后重试。';
-  if (isAssetLoadError(error)) return '助手未能加载。若页面刚更新，请刷新后再试。';
+  if (needsChatPageRefresh(error, phase)) return '助手未能加载。若页面刚更新，请刷新后再试。';
   if (phase === 'mount' || error instanceof TypeError) return '助手未能打开，请重试。';
   return '助手未能加载，请检查网络后重试。';
+}
+
+/**
+ * Safari often reports a missing hashed chunk as `TypeError: Load failed`
+ * instead of Chrome's "Failed to fetch dynamically imported module".
+ * A retry of the same specifier will not refetch; the page HTML must reload.
+ * @param {unknown} error
+ * @param {'import' | 'mount'} [phase]
+ */
+export function needsChatPageRefresh(error, phase = 'import') {
+  if (isAssetLoadError(error)) return true;
+  return phase === 'import' && error instanceof TypeError;
 }
 
 /**
