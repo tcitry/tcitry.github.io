@@ -122,13 +122,65 @@ test('uploads carry only five declared fields with a stable filename and fresh r
 test('failed or pending indexing prevents deletions and does not return completed state', async () => {
   const [first, second] = documents;
   let deleted = 0;
+  let uploads = 0;
   const client = { upload: async document => item(document, { status: 'error' }), deleteItem: async () => deleted++, wait: async () => {} };
   await assert.rejects(applySync(client, planSync([first], [item(second)])), /indexing failed/);
   assert.equal(deleted, 0);
-  client.upload = async document => item(document, { status: 'running' });
+  client.upload = async document => { uploads++; return item(document, { status: 'running' }); };
   client.getItem = async () => item(first, { status: 'running' });
   await assert.rejects(applySync(client, planSync([first], [item(second)]), { polling: { attempts: 1, pollMs: 0 } }), /still pending/);
+  assert.equal(uploads, 2);
   assert.equal(deleted, 0);
+});
+
+test('new uploads are not blocked by a previously in-flight article', async () => {
+  const [first, second] = documents;
+  const uploads = [];
+  const client = {
+    upload: async document => { uploads.push(document.url); return item(document); },
+    getItem: async id => item(documents.find(document => document.id === id) ?? first),
+    deleteItem: async () => {},
+    wait: async () => {},
+  };
+  const result = await applySync(client, planSync([first, second], [item(first, { status: 'running' })]), { polling: { attempts: 1, pollMs: 0 } });
+  assert.deepEqual(uploads, [second.url]);
+  assert.equal(result.documents.length, 2);
+});
+
+test('a stuck in-flight article is re-uploaded once then can complete', async () => {
+  const [first] = documents;
+  let uploads = 0;
+  const retried = [];
+  const client = {
+    upload: async document => { uploads++; return item(document, { status: 'running' }); },
+    getItem: async () => item(first, { status: uploads ? 'completed' : 'running' }),
+    wait: async () => {},
+    deleteItem: async () => {},
+  };
+  const result = await applySync(client, planSync([first], [item(first, { status: 'running' })]), {
+    polling: { attempts: 1, pollMs: 0 },
+    onRetryUpload: document => retried.push(document.url),
+  });
+  assert.equal(uploads, 1);
+  assert.deepEqual(retried, [first.url]);
+  assert.equal(result.documents.length, 1);
+});
+
+test('a stuck in-flight article still fails after one re-upload remains pending', async () => {
+  const [first] = documents;
+  let uploads = 0;
+  const client = {
+    upload: async () => { uploads++; return item(first, { status: 'running' }); },
+    getItem: async () => item(first, { status: 'running' }),
+    wait: async () => {},
+    deleteItem: async () => {},
+  };
+  await assert.rejects(applySync(client, planSync([first], [item(first, { status: 'running' })]), { polling: { attempts: 1, pollMs: 0 } }), error => {
+    assert.match(error.message, /still pending for /);
+    assert.equal(error.message.includes(first.url), true);
+    return true;
+  });
+  assert.equal(uploads, 1);
 });
 
 test('successful sync waits for indexing then confirms removed items disappear', async () => {

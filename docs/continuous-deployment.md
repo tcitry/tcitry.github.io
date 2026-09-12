@@ -71,6 +71,8 @@ npm run deploy:verified
 
 若站点已上传但线上核验或 AI Search 同步失败，在同一封存目录修复外部条件后运行项目定义的 deployment verify 和同步命令；不要手工制造 deployment receipt。
 
+Workers Builds 的 GitHub check 对应整段 `deploy:verified`：Worker 上传、线上页面核验和 AI Search 同步必须都成功。因此 `/blog-release.json` 的 `siteCommit` 可能已经前进，但 check 仍为失败——这表示语料同步未完成，而不是站点未发布。一条 queued/running 的文章不得阻塞其余新增或更新；该篇重试后仍未完成，check 才保持失败。
+
 ## Workers Builds
 
 Workers Builds 仅构建站点仓库 `main`。`build:workers` 会：
@@ -81,7 +83,7 @@ Workers Builds 仅构建站点仓库 `main`。`build:workers` 会：
 4. 构建并验证生产站点；
 5. 交给 Cloudflare 上传已经封存的产物。
 
-日常不维护 `BLOG_CONTENT_COMMIT`；它只用于回滚或复现。公开主题 CI、GitHub Actions 通知成功或站点构建成功都不等于最终部署成功，应以 Cloudflare 构建状态和线上 release marker 为准。
+`deploy:verified` 随后核验线上站点并同步 AI Search。公开主题 CI、GitHub Actions 通知成功或 `blog-release.json` 已切换都不等于这次 Workers Builds check 已经成功。日常不维护 `BLOG_CONTENT_COMMIT`；它只用于回滚或复现。
 
 ## Blog 内容更新触发
 
