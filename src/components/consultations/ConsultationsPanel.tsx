@@ -1,6 +1,8 @@
 import { Component, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useClerk } from '@clerk/react';
 import { Button, Input, TextArea, Tooltip } from '@heroui/react';
 import { useAction, useMutation, usePaginatedQuery, useQuery } from 'convex/react';
+import type { FunctionReturnType } from 'convex/server';
 import { api } from '../../../convex/_generated/api';
 import type { Id } from '../../../convex/_generated/dataModel';
 import { memberError, useMembership } from '../membership/useMembership';
@@ -12,6 +14,18 @@ import styles from './ConsultationsPanel.module.css';
 const statusLabels = { waiting: '等待回复', replied: '博主已回复', closed: '已结束' } as const;
 const time = (value: number) => new Intl.DateTimeFormat('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(value);
 type SelectedThread = {id: Id<'consultationThreads'>; title?: string};
+type Membership = FunctionReturnType<typeof api.membership.getMyMembership>;
+
+function consultationMembershipNote(role: {ready: boolean} | undefined, membership: Membership | null, pending: boolean, error: string) {
+  if (role === undefined) return '正在加载咨询…';
+  if (!role.ready) return '私人咨询尚未开放。';
+  if (pending || (!membership && !error)) return '正在核验会员状态…';
+  if (error) return '';
+  if (!membership.configured) return '私人咨询尚未开放。';
+  if (membership.isPro) return '等待博主回复。';
+  return '私人咨询仅 Pro 会员可用。已有记录始终可查看。';
+}
+
 interface ConversationProps {threadId: Id<'consultationThreads'>; title?: string; inbox?: boolean; onBack: () => void}
 
 function ConversationHeader({title, status, inbox, onBack, disabled = false}: {
@@ -194,10 +208,15 @@ export function ConsultationInbox() {
 }
 
 export default function ConsultationsPanel({initialThreadId}: {initialThreadId?: Id<'consultationThreads'>}) {
+  const {openUserProfile} = useClerk();
   const role = useQuery(api.membership.getConsultationRole);
   const { membership, pending, error, refresh } = useMembership();
   const [selected, setSelected] = useState<SelectedThread | null>(initialThreadId ? {id: initialThreadId} : null);
   const [composing, setComposing] = useState(false);
+  const checking = pending || (!membership && !error);
+  const canConsult = Boolean(role?.ready && membership?.configured && membership.isPro && !checking && !error);
+  const canUpgrade = Boolean(role?.ready && membership?.configured && !membership.isPro && !checking && !error);
+  const note = consultationMembershipNote(role, membership, pending, error);
   if (selected) return <section className={styles.panel} aria-label="私人咨询" data-consultations-panel data-sentry-mask data-pagefind-ignore>
     <Conversation key={selected.id} threadId={selected.id} title={selected.title} onBack={() => setSelected(null)} />
   </section>;
@@ -208,9 +227,11 @@ export default function ConsultationsPanel({initialThreadId}: {initialThreadId?:
     </header>
     {composing ? <NewConsultation onCreated={(id) => { setComposing(false); setSelected({id}); }} onCancel={() => setComposing(false)} /> : <>
       <div className={styles.membership}>
-        <p>{role === undefined ? '正在加载咨询…' : !role.ready ? '私人咨询尚未开放。' : pending ? '正在核验会员状态…' : membership?.isPro ? 'Pro 会员可发起咨询，等待博主回复。' : 'Pro 会员可以发起和继续咨询，已有记录始终可查看。'}</p>
+        {note ? <p>{note}</p> : null}
         <div className={styles.actions}>
-          <Button size="sm" isDisabled={!role?.ready || !membership?.isPro || pending} onPress={() => setComposing(true)}>发起咨询</Button>
+          {canUpgrade
+            ? <Button size="sm" onPress={() => openUserProfile({__experimental_startPath: '/billing'})}>开通 Pro</Button>
+            : <Button size="sm" isDisabled={!canConsult} onPress={() => setComposing(true)}>发起咨询</Button>}
           {error && <Button size="sm" variant="ghost" onPress={() => { void refresh(); }}>重试</Button>}
         </div>
         {error && <p className={styles.error} role="alert">{error}</p>}
