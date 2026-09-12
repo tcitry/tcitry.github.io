@@ -4,7 +4,7 @@ import {
   allowViteCssPreloadFallback,
   CHAT_LOAD_RETRY_DELAY_MS,
   chatLoadFailureCopy,
-  isAssetLoadError,
+  needsChatPageRefresh,
   isRetriableChatLoadError,
   safeChatErrorDetail,
 } from './module-load-error.mjs';
@@ -116,7 +116,7 @@ function initializeChat() {
       detail.textContent = message;
     }
     if (retry) retry.hidden = false;
-    if (refresh) refresh.hidden = !isAssetLoadError(error);
+    if (refresh) refresh.hidden = !needsChatPageRefresh(error, phase);
     if (import.meta.env.DEV) console.error('[blog-chat] Could not load the chat.', error);
   }
 
@@ -195,8 +195,15 @@ function initializeChat() {
     syncViewport();
     panel!.setAttribute('aria-modal', String(mobile.matches));
     if (mobile.matches) {
-      panel!.showModal();
-      document.documentElement.classList.add('blog-chat-modal-open');
+      try {
+        panel!.showModal();
+        document.documentElement.classList.add('blog-chat-modal-open');
+      } catch {
+        // Safari/iOS: Ask AI runs after an async gap while Command may still own
+        // a native modal. A non-modal dialog still shows the assistant.
+        panel!.show();
+        panel!.setAttribute('aria-modal', 'false');
+      }
     } else panel!.show();
     launcher!.setAttribute('aria-expanded', 'true');
     expandHandle!.setAttribute('aria-expanded', 'true');
@@ -233,7 +240,13 @@ function initializeChat() {
     if (!prompt || prompt.length > 2000) return;
     const request = ++promptRequest;
     currentView = 'chat';
-    open();
+    try {
+      open();
+    } catch (error) {
+      captureFeatureError(error, 'chat', 'mount');
+      showLoadFailure(error, 'mount');
+      return;
+    }
     void loadChat().then(() => {
       if (!stopped && panel.open && request === promptRequest) mount?.requestPrompt(prompt);
     });

@@ -7,6 +7,7 @@ import {
   isClerkLoadError,
   isCssPreloadError,
   isRetriableChatLoadError,
+  needsChatPageRefresh,
   safeChatErrorDetail,
 } from '../src/scripts/module-load-error.mjs';
 
@@ -38,6 +39,9 @@ test('assistant load copy names auth, stale assets, and mount failures instead o
   assert.doesNotMatch(chatLoadFailureCopy(clerk), /检查网络/);
   assert.equal(isRetriableChatLoadError(new TypeError('Failed to fetch dynamically imported module: [url]')), true);
   assert.equal(isRetriableChatLoadError(new Error('network down')), false);
+  assert.equal(needsChatPageRefresh(new TypeError('Load failed'), 'import'), true);
+  assert.match(chatLoadFailureCopy(new TypeError('Load failed'), 'import'), /刷新/);
+  assert.equal(needsChatPageRefresh(new TypeError('Cannot read properties of undefined (reading \'useAuth\')'), 'mount'), false);
 });
 
 test('production error detail is a short sanitized message', () => {

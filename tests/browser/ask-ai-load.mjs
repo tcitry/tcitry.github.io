@@ -153,7 +153,25 @@ try {
   assert.equal(await page.getByRole('button', {name: '重新加载', exact: true}).isVisible(), true);
   assert.equal(await page.getByRole('button', {name: '刷新页面', exact: true}).isVisible(), true);
   assert.equal(await page.getByText('检查网络后重试').count(), 0, 'A missing chunk is not reported as a silent network failure');
-  console.log('Ask AI loader: CSS preload is cancelled, mount retries once, React mount errors are distinct from network, and a missing chunk asks for a refresh.');
+
+  mode = 'ok';
+  await page.setViewportSize({width: 320, height: 720});
+  await page.reload();
+  await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
+  await page.evaluate(() => {
+    Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
+      configurable: true,
+      value() {
+        throw new DOMException('The document already has an open modal dialog', 'InvalidStateError');
+      },
+    });
+  });
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: '移动端 showModal 失败仍应打开'}})));
+  await page.waitForFunction(() => document.querySelector('#blog-chat-panel')?.open === true);
+  await page.locator('.assistant-workspace').waitFor();
+  await page.waitForFunction(() => document.querySelector('textarea[aria-label="向 AI 博客助手提问"]')?.value === '移动端 showModal 失败仍应打开');
+  assert.equal(await page.getByText('助手未能加载').count(), 0);
+  console.log('Ask AI loader: CSS preload is cancelled, mount retries once, React mount errors are distinct from network, a missing chunk asks for a refresh, and a mobile showModal failure still opens the assistant.');
 } finally {
   await browser?.close();
   server.closeAllConnections();
