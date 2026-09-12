@@ -51,10 +51,10 @@ export async function verifiedMembership(ctx: IdentityContext) {
 
 export async function requireProMembership(ctx: IdentityContext) {
   const membership = await verifiedMembership(ctx);
-  if (!membership.configured || !membership.consultationsReady) {
+  if (!membership.consultationsReady) {
     throw new ConvexError({ code: "CONSULTATION_UNAVAILABLE", message: "私人咨询尚未开放，请稍后再来。" });
   }
-  if (!membership.isPro) {
+  if (!membership.configured || !membership.isPro) {
     throw new ConvexError({ code: "PRO_REQUIRED", message: "发送私人咨询需要有效的 Pro 会员。已有对话仍可查看。" });
   }
 }

@@ -9,10 +9,14 @@ const params = new URLSearchParams(location.search);
 const auth = (window as unknown as {__readerAuth: {switchSession: (userId: string, sessionId: string) => void}}).__readerAuth;
 const services = (window as unknown as {__services: {
   failNextMembership: () => void;
+  configureConsultations: (value: boolean) => void;
+  configureMembershipPlan: (value: boolean) => void;
   getState: () => {threads: { _id: string; owner: string; title: string; status: string; createdAt: number; updatedAt: number }[]};
 }}).__services;
 if (params.get('user') === 'fixture-b') auth.switchSession('fixture-b', 'session-b');
 if (params.get('failMembership') === 'true') services.failNextMembership();
+if (params.get('plan') === 'missing') services.configureMembershipPlan(false);
+if (params.get('consult') === 'off') services.configureConsultations(false);
 const threads = services.getState().threads;
 if (!threads.some(thread => thread._id === 'fixture-b-history')) threads.push({
   _id: 'fixture-b-history', owner: 'fixture-b', status: 'waiting',

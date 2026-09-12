@@ -7,7 +7,8 @@ import {fixtureUsername} from './services-clerk';
 type Thread = { _id: string; owner: string; title: string; status: 'waiting' | 'replied' | 'closed'; createdAt: number; updatedAt: number };
 type Message = { _id: string; threadId: string; sender: 'member' | 'author'; content: string; createdAt: number; imageIds?: string[] };
 let revision = 1;
-let configured = true;
+let consultationsReady = true;
+let membershipConfigured = true;
 let rejectNextMembership = false;
 let rejectNextBookmark = false;
 let heldAiSend: Promise<void> | undefined;
@@ -167,7 +168,7 @@ function queryValue(client: ConvexReactClient, name: string, args: Record<string
     if (!userId) throw new Error('Services fixture: anonymous image URL query');
     return commentImages.find(image => image.id === args.imageId && (image.owner === userId || image.attached))?.url ?? null;
   }
-  if (name === 'membership:getConsultationRole') return {isAdmin: isAuthor(userId), ready: configured};
+  if (name === 'membership:getConsultationRole') return {isAdmin: isAuthor(userId), ready: consultationsReady};
   if (name === 'consultations:getThread') {
     const thread = getThread(String(args.threadId), userId);
     const readState = threadReadStates.get(thread._id);
@@ -266,8 +267,8 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
     if (name === 'membership:getMyMembership') {
       if (rejectNextMembership) {rejectNextMembership = false; throw new Error('Fixture membership request failed');}
       return {
-        configured, isPro: configured && pro.has(userId), isAdmin: isAuthor(userId), consultationsReady: configured,
-        validUntil: null,
+        configured: membershipConfigured, isPro: membershipConfigured && pro.has(userId), isAdmin: isAuthor(userId),
+        consultationsReady, validUntil: null,
       };
     }
     if (name === 'assistant:createConversation') {
@@ -297,7 +298,8 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
       conversation.activeRun = null; publish(); return null;
     }
     if (name === 'consultations:start') {
-      if (!configured || !pro.has(userId)) throw new ConvexError({code: 'PRO_REQUIRED', message: '发送私人咨询需要有效的 Pro 会员。已有对话仍可查看。'});
+      if (!consultationsReady) throw new ConvexError({code: 'CONSULTATION_UNAVAILABLE', message: '私人咨询尚未开放，请稍后再来。'});
+      if (!membershipConfigured || !pro.has(userId)) throw new ConvexError({code: 'PRO_REQUIRED', message: '发送私人咨询需要有效的 Pro 会员。已有对话仍可查看。'});
       if (rejectNextConsultation) {rejectNextConsultation = false; throw new Error('Fixture consultation save failed');}
       const id = `thread_${nextId++}`;
       const imageIds = (args.imageIds ?? []) as string[];
@@ -309,7 +311,8 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
     if (name === 'consultations:send') {
       const thread = getThread(String(args.threadId), userId);
       if (thread.owner !== userId) throw new ConvexError({code: 'FORBIDDEN', message: '只能向自己的咨询发送消息。'});
-      if (!configured || !pro.has(userId)) throw new ConvexError({code: 'PRO_REQUIRED', message: '发送私人咨询需要有效的 Pro 会员。已有对话仍可查看。'});
+      if (!consultationsReady) throw new ConvexError({code: 'CONSULTATION_UNAVAILABLE', message: '私人咨询尚未开放，请稍后再来。'});
+      if (!membershipConfigured || !pro.has(userId)) throw new ConvexError({code: 'PRO_REQUIRED', message: '发送私人咨询需要有效的 Pro 会员。已有对话仍可查看。'});
       if (thread.status === 'closed') throw new ConvexError({code: 'CLOSED', message: '这条咨询已结束。'});
       if (rejectNextConsultation) {rejectNextConsultation = false; throw new Error('Fixture consultation save failed');}
       const id = `message_${nextId++}`;
@@ -451,7 +454,9 @@ Object.assign(window, {__services: {
     });
     publish();
   },
-  configure: (value: boolean) => {configured = value; publish();},
+  configure: (value: boolean) => {consultationsReady = value; membershipConfigured = value; publish();},
+  configureConsultations: (value: boolean) => {consultationsReady = value; publish();},
+  configureMembershipPlan: (value: boolean) => {membershipConfigured = value; publish();},
   failNextMembership: () => {rejectNextMembership = true;},
   failNextBookmark: () => {rejectNextBookmark = true;},
   holdNextAiSend: () => {heldAiSend = new Promise(resolve => {releaseAiSend = resolve;});},

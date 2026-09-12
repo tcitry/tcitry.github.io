@@ -62,6 +62,7 @@ try {
   await open('?user=fixture-b');
   await panel.getByText('私人咨询仅 Pro 会员可用。已有记录始终可查看。', {exact: true}).waitFor();
   assert.equal(await panel.getByText('等待博主回复。', {exact: true}).count(), 0);
+  assert.equal(await panel.getByText('私人咨询尚未开放。', {exact: true}).count(), 0);
   assert.equal(await panel.getByRole('button', {name: '发起咨询', exact: true}).count(), 0);
   const upgrade = panel.getByRole('button', {name: '开通 Pro', exact: true});
   await upgrade.waitFor();
@@ -76,8 +77,31 @@ try {
   await page.screenshot({path: join(screenshotDir, 'consultations-free-member-upgrade.png')});
   await profile.getByRole('button', {name: '关闭账户弹窗', exact: true}).click();
   await profile.waitFor({state: 'hidden'});
+
+  await open('?plan=missing');
+  await panel.getByText('私人咨询仅 Pro 会员可用。已有记录始终可查看。', {exact: true}).waitFor();
+  assert.equal(await panel.getByText('私人咨询尚未开放。', {exact: true}).count(), 0);
+  assert.equal(await panel.getByRole('button', {name: '发起咨询', exact: true}).count(), 0, 'A missing plan slug must not leave a disabled start button');
+  const missingPlanUpgrade = panel.getByRole('button', {name: '开通 Pro', exact: true});
+  await missingPlanUpgrade.waitFor();
+  assert.equal(await missingPlanUpgrade.isDisabled(), false);
+  await panel.screenshot({path: join(screenshotDir, 'consultations-missing-plan-slug.png')});
+  await missingPlanUpgrade.click();
+  const missingPlanProfile = page.getByRole('dialog', {name: 'Clerk 账户与订阅（测试）', exact: true});
+  await missingPlanProfile.waitFor();
+  assert.deepEqual((await page.evaluate(() => window.__servicesClerk.getState().profileRequests)).at(-1).options,
+    {__experimental_startPath: '/billing'});
+  await missingPlanProfile.getByRole('button', {name: '关闭账户弹窗', exact: true}).click();
+  await missingPlanProfile.waitFor({state: 'hidden'});
+
+  await open('?consult=off');
+  await panel.getByText('私人咨询尚未开放。', {exact: true}).waitFor();
+  assert.equal(await panel.getByRole('button', {name: '发起咨询', exact: true}).count(), 0, 'Global-off consultations have no fake start button');
+  assert.equal(await panel.getByRole('button', {name: '开通 Pro', exact: true}).count(), 0);
+  await panel.screenshot({path: join(screenshotDir, 'consultations-globally-off.png')});
+
   assert.equal(errors.length, 0, errors.join('\n'));
-  console.log('Consultation membership: Pro start, failed check retry, free-user Pro-only copy and Billing upgrade.');
+  console.log('Consultation membership: Pro start, failed check retry, free-user and missing-plan Billing upgrade, global-off without a fake start.');
 } finally {
   await browser?.close();
   await server.close();
