@@ -41,6 +41,7 @@
     "test:browser:reader": "node tests/browser/reader.mjs",
     "test:browser:reader-ui": "node tests/browser/reader-ui.mjs",
     "test:browser:services": "node tests/browser/services.mjs",
+    "test:browser:consultations": "node tests/browser/consultations-membership.mjs",
     "check:local": "npm run check && npm test && npm run build && npm run verify",
     "ai-search:export": "node scripts/export-ai-search.mjs",
     "ai-search:sync": "node scripts/sync-ai-search.mjs",

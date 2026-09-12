@@ -25,6 +25,7 @@ function consultationMembershipNote(role: {ready: boolean} | undefined, membersh
   if (membership.isPro) return '等待博主回复。';
   return '私人咨询仅 Pro 会员可用。已有记录始终可查看。';
 }
+
 interface ConversationProps {threadId: Id<'consultationThreads'>; title?: string; inbox?: boolean; onBack: () => void}
 
 function ConversationHeader({title, status, inbox, onBack, disabled = false}: {
