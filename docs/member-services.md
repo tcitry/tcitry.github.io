@@ -23,7 +23,7 @@
 
 会员状态和订阅管理位于 Clerk 头像菜单，不设置独立会员 tab。切换用户或 session 时销毁旧 Convex client，并清空私人列表、选择状态和草稿，防止上一账户数据短暂可见。
 
-Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录时展示；登录后返回当前页面。
+Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录时展示。首次 Google 用户与 modal 一样走 sign-in-or-up transfer，避免 Account Portal 的 `external_account_not_found`；当前页写入 `sessionStorage`，登录后同源恢复。
 
 ## AI 对话
 

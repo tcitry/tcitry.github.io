@@ -143,3 +143,107 @@ export function openClerkSignIn(clerk: ClerkSignInOpener) {
     transferable: true,
   });
 }
+
+export function googleOneTapRedirect() {
+  const currentPage = window.location.href;
+  return {
+    signInForceRedirectUrl: currentPage,
+    signUpForceRedirectUrl: currentPage,
+  };
+}
+
+type GoogleOneTapVerification = {
+  status?: string | null;
+  error?: {code?: string} | null;
+};
+
+export type GoogleOneTapAttempt = {
+  status?: string | null;
+  identifier?: unknown;
+  missingFields?: unknown;
+  firstFactorVerification?: GoogleOneTapVerification | null;
+};
+
+type GoogleOneTapClerk = {
+  authenticateWithGoogleOneTap: (params: {token: string}) => Promise<unknown>;
+  handleGoogleOneTapCallback: (
+    signInOrUp: unknown,
+    params?: Record<string, unknown>,
+    customNavigate?: (to: string) => Promise<unknown>,
+  ) => Promise<unknown>;
+  client?: {
+    signUp?: {
+      create: (params: {transfer?: boolean; strategy?: string; token?: string}) => Promise<unknown>;
+    };
+  };
+};
+
+const installedGoogleOneTapClerks = new WeakSet<object>();
+
+export function googleOneTapClerkTargets(clerk: object | null | undefined) {
+  if (!clerk) return [];
+  const loaded = (clerk as {clerkjs?: object | null}).clerkjs;
+  return loaded && loaded !== clerk ? [clerk, loaded] : [clerk];
+}
+
+export function googleOneTapNeedsSignUp(result: GoogleOneTapAttempt | null | undefined) {
+  if (!result || result.status === 'complete') return false;
+  // SignUp resources expose missingFields; do not re-transfer those.
+  if (Array.isArray(result.missingFields)) return false;
+  const verification = result.firstFactorVerification;
+  if (!verification) return false;
+  return verification.status === 'transferable'
+    || verification.error?.code === 'external_account_not_found';
+}
+
+export async function transferGoogleOneTapIfNeeded(
+  clerk: GoogleOneTapClerk,
+  result: unknown,
+  token?: string,
+) {
+  if (!googleOneTapNeedsSignUp(result as GoogleOneTapAttempt)) return result;
+  const signUp = clerk.client?.signUp;
+  if (!signUp) return result;
+  if (token) {
+    try {
+      return await signUp.create({strategy: 'google_one_tap', token});
+    } catch {
+      // Fall through to the transferable sign-up ticket from the failed sign-in.
+    }
+  }
+  return signUp.create({transfer: true});
+}
+
+function installGoogleOneTapSignInOrUpOn(clerk: object) {
+  const instance = clerk as GoogleOneTapClerk;
+  if (!instance.authenticateWithGoogleOneTap || !instance.handleGoogleOneTapCallback) return;
+  if (installedGoogleOneTapClerks.has(instance)) return;
+  installedGoogleOneTapClerks.add(instance);
+
+  const authenticate = instance.authenticateWithGoogleOneTap.bind(instance);
+  const handleCallback = instance.handleGoogleOneTapCallback.bind(instance);
+
+  instance.authenticateWithGoogleOneTap = async (params) => {
+    rememberClerkReturnUrl();
+    const result = await authenticate(params);
+    try {
+      return await transferGoogleOneTapIfNeeded(instance, result, params.token);
+    } catch {
+      return result;
+    }
+  };
+
+  instance.handleGoogleOneTapCallback = (signInOrUp, params, customNavigate) => {
+    const needsSignUp = googleOneTapNeedsSignUp(signInOrUp as GoogleOneTapAttempt);
+    return handleCallback(signInOrUp, {
+      ...params,
+      transferable: true,
+      ...(needsSignUp ? {continuation: 'transfer_to_sign_up'} : {}),
+    }, customNavigate);
+  };
+}
+
+export function installGoogleOneTapSignInOrUp(clerk: object | null | undefined) {
+  // `<GoogleOneTap>` authenticates on Clerk JS, not the React proxy from useClerk().
+  for (const target of googleOneTapClerkTargets(clerk)) installGoogleOneTapSignInOrUpOn(target);
+}
