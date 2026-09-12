@@ -1,5 +1,6 @@
 import {createContext, useContext, useEffect, type ReactNode} from 'react';
 import {ClerkProvider, useAuth} from '@clerk/react';
+import type {ClerkProp, HeadlessBrowserClerk} from '@clerk/react';
 import {restoreClerkReturnUrl} from './clerk-signin';
 
 const BlogClerkTreeContext = createContext(false);
@@ -17,9 +18,13 @@ function ClerkReturnUrlRestorer() {
   return null;
 }
 
-function loadedClerkInstance() {
-  const clerk = (window as Window & {Clerk?: {load?: unknown}}).Clerk;
-  return clerk && typeof clerk.load === 'function' ? clerk : undefined;
+function isLoadedClerk(value: unknown): value is HeadlessBrowserClerk {
+  return Boolean(value) && typeof (value as HeadlessBrowserClerk).load === 'function';
+}
+
+function loadedClerkInstance(): ClerkProp {
+  const clerk = (window as Window & {Clerk?: unknown}).Clerk;
+  return isLoadedClerk(clerk) ? clerk : undefined;
 }
 
 export default function BlogClerkProvider({children}: {children: ReactNode}) {
