@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import {readFile} from 'node:fs/promises';
 import {build} from 'esbuild';
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
@@ -65,4 +66,31 @@ test('a loaded window.Clerk is reused instead of loading clerk-js twice', () => 
     delete globalThis.__clerkProviders;
     delete globalThis.__clerkReused;
   }
+});
+
+test('window.Clerk without load is not passed to ClerkProvider', () => {
+  const previousWindow = globalThis.window;
+  globalThis.window = {location: {href: 'https://example.test/docs/'}, Clerk: {version: 'fixture'}};
+  globalThis.__clerkProviders = 0;
+  globalThis.__clerkReused = false;
+  try {
+    renderToStaticMarkup(createElement(BlogClerkProvider, null, createElement('span', null, 'ok')));
+    assert.equal(globalThis.__clerkProviders, 1);
+    assert.equal(globalThis.__clerkReused, false);
+  } finally {
+    globalThis.window = previousWindow;
+    delete globalThis.__clerkProviders;
+    delete globalThis.__clerkReused;
+  }
+});
+
+test('BlogClerkProvider types reused window.Clerk as ClerkProvider Clerk prop', async () => {
+  const provider = await readFile(new URL('../src/components/auth/BlogClerkProvider.tsx', import.meta.url), 'utf8');
+  const types = await readFile(new URL('../src/components/auth/blog-clerk-provider.types.ts', import.meta.url), 'utf8');
+  assert.match(provider, /import type \{ClerkProp, HeadlessBrowserClerk\} from '@clerk\/react'/);
+  assert.match(provider, /value is HeadlessBrowserClerk/);
+  assert.match(provider, /loadedClerkInstance\(\): ClerkProp/);
+  assert.doesNotMatch(provider, /Clerk\?: \{load\?: unknown\}/);
+  assert.match(types, /@ts-expect-error incomplete window\.Clerk is not assignable to ClerkProvider's Clerk prop/);
+  assert.match(types, /rejectedWeakClerk: ClerkProp = weakClerk/);
 });
