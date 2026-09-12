@@ -52,7 +52,7 @@ const asyncErrorChunk = `export function mountChat(host, onClose, onReady, ui = 
 const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"></head><body>
   <button type="button" data-blog-search-trigger>搜索</button>
   <div class="blog-chat-widget" data-blog-chat-widget>
-    <button class="blog-chat-widget__launcher" type="button" aria-label="打开博客助手" aria-haspopup="dialog" aria-expanded="false" aria-controls="blog-chat-panel" data-chat-launcher hidden>打开</button>
+    <button class="blog-chat-widget__launcher" type="button" aria-label="打开博客助手" aria-haspopup="dialog" aria-expanded="false" aria-controls="blog-chat-panel" data-chat-launcher hidden>打开<span data-chat-launcher-face></span></button>
     <button class="blog-chat-widget__expand" type="button" aria-label="展开博客助手" aria-haspopup="dialog" aria-expanded="false" aria-controls="blog-chat-panel" data-chat-expand hidden>展开</button>
     <dialog id="blog-chat-panel" class="blog-chat-widget__panel" aria-label="博客助手" data-chat-loaded="false">
       <template data-chat-load-template>
@@ -158,4 +158,64 @@ try {
   await browser?.close();
   server.closeAllConnections();
   await new Promise(resolve => server.close(resolve));
+}
+
+const signedInBundle = await build({
+  entryPoints: [new URL('../../src/scripts/blog-chat.ts', import.meta.url).pathname],
+  bundle: true, platform: 'browser', format: 'esm', write: false, jsx: 'automatic',
+  define: {
+    'import.meta.env.DEV': 'false',
+    'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify('pk_test_fixture'),
+  },
+  plugins: [{name: 'signed-in-island-fixture', setup(build) {
+    build.onResolve({filter: /^@clerk\/react$/}, () => ({path: 'clerk', namespace: 'signed-in-clerk'}));
+    build.onLoad({filter: /.*/, namespace: 'signed-in-clerk'}, () => ({contents: `
+      import {useRef} from 'react';
+      export function ClerkProvider({children}) {
+        const counted = useRef(false);
+        if (!counted.current) {
+          counted.current = true;
+          window.__clerkProviders = (window.__clerkProviders || 0) + 1;
+        }
+        return children;
+      }
+      export function useAuth() { return {isLoaded: true, isSignedIn: true, userId: 'user-a', sessionId: 'session-a'}; }
+      export function useUser() { return {isLoaded: true, user: {id: 'user-a', firstName: 'A', lastName: 'B'}}; }
+      export function UNSAFE_PortalProvider({children}) { return children; }
+    `, loader: 'js', resolveDir: new URL('../../', import.meta.url).pathname}));
+    build.onResolve({filter: /\/AssistantWorkspace$/}, () => ({path: new URL('../fixtures/assistant-workspace-stub.tsx', import.meta.url).pathname}));
+    build.onResolve({filter: /\/monitoring$/}, () => ({path: '/monitoring.js', external: true}));
+  }}],
+});
+const signedInLoader = signedInBundle.outputFiles[0].text;
+const signedHtml = html.replace('<script type="module" src="/loader.js"></script>', '<script type="module" src="/signed-loader.js"></script>');
+const signedServer = createServer((request, response) => {
+  response.setHeader('Cache-Control', 'no-store');
+  if (request.url === '/signed-loader.js') {
+    response.setHeader('Content-Type', 'text/javascript'); response.end(signedInLoader);
+  } else if (request.url === '/monitoring.js') {
+    response.setHeader('Content-Type', 'text/javascript'); response.end('export function captureFeatureError() {}');
+  } else {response.setHeader('Content-Type', 'text/html'); response.end(signedHtml);}
+});
+await new Promise(resolve => signedServer.listen(0, '127.0.0.1', resolve));
+const signedBase = `http://127.0.0.1:${signedServer.address().port}`;
+let signedBrowser;
+try {
+  signedBrowser = await chromium.launch({headless: true});
+  const page = await signedBrowser.newPage({viewport: {width: 1016, height: 800}});
+  await page.route('**/*', route => new URL(route.request().url()).origin === signedBase ? route.continue() : route.abort());
+  await page.goto(signedBase);
+  await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
+  await page.waitForFunction(() => document.querySelector('[data-chat-launcher]')?.hasAttribute('data-signed-in'));
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: '已登录问 AI'}})));
+  await page.locator('.assistant-workspace').waitFor();
+  await page.waitForFunction(() => document.querySelector('textarea[aria-label="向 AI 博客助手提问"]')?.value === '已登录问 AI');
+  const providers = await page.evaluate(() => window.__clerkProviders);
+  assert.equal(providers, 1, 'Ask AI must reuse the signed-in launcher ClerkProvider instead of creating a second tree');
+  assert.equal(await page.getByText('助手未能加载').count(), 0);
+  console.log('Ask AI signed-in island: launcher ClerkProvider is reused and the prompt still mounts.');
+} finally {
+  await signedBrowser?.close();
+  signedServer.closeAllConnections();
+  await new Promise(resolve => signedServer.close(resolve));
 }

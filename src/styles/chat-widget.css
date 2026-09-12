@@ -123,6 +123,8 @@
 .blog-chat-widget__loading-header strong { font-weight: 500; }
 .blog-chat-widget__close { position: absolute; z-index: 5; left: 0; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 1.5rem; height: 3.5rem; padding: 0; border: 1px solid color-mix(in srgb, var(--chat-fg) 16%, transparent); border-left: 0; border-radius: 0 .5rem .5rem 0; color: inherit; background: var(--chat-bg); cursor: pointer; }
 .blog-chat-widget__loading { margin: auto; padding: 1.5rem; text-align: center; font-size: .875rem; }
+.blog-chat-widget__mount:has(.assistant-workspace) > .blog-chat-widget__loading-header,
+.blog-chat-widget__mount:has(.assistant-workspace) > .blog-chat-widget__loading { display: none; }
 .blog-chat-widget__loading [data-chat-load-detail] { margin-top: .5rem; font-size: .75rem; color: color-mix(in srgb, var(--chat-fg) 64%, transparent); word-break: break-word; }
 .blog-chat-widget__loading button { margin-top: 1rem; min-height: 2.75rem; padding: .5rem 1rem; background: var(--chat-accent); color: var(--chat-bg); border: 0; border-radius: .625rem; cursor: pointer; }
 .blog-chat-widget__loading [data-chat-refresh] { margin-left: .5rem; background: transparent; color: inherit; border: 1px solid color-mix(in srgb, var(--chat-fg) 18%, transparent); }

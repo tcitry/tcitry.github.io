@@ -141,6 +141,8 @@ function initializeChat() {
           try {
             // Static article pages do not have Astro's React refresh preamble.
             if (import.meta.env.DEV) await import('@vitejs/plugin-react/preamble');
+            await launcherReady;
+            if (stopped) return;
             phase = 'import';
             const {mountChat} = await import('../components/chat/mount-chat');
             // Search Ask AI unmounts Commander with flushSync inside onPress. Signed-in
@@ -208,6 +210,8 @@ function initializeChat() {
   launcher.hidden = false;
   expandHandle.hidden = false;
   const face = launcher.querySelector<HTMLElement>('[data-chat-launcher-face]');
+  let resolveLauncher = () => {};
+  const launcherReady = new Promise<void>((resolve) => { resolveLauncher = resolve; });
   if (face && import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY) {
     void (async () => {
       try {
@@ -217,9 +221,11 @@ function initializeChat() {
         launcherMount = mountLauncher(face, launcher);
       } catch (error) {
         if (import.meta.env.DEV) console.error('[blog-chat] Could not load the signed-in launcher.', error);
+      } finally {
+        resolveLauncher();
       }
     })();
-  }
+  } else resolveLauncher();
   launcher.addEventListener('click', () => panel.open ? close() : open(launcher), {signal});
   expandHandle.addEventListener('click', () => open(expandHandle), {signal});
   document.addEventListener('blog:ask-ai', (event) => {

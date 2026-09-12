@@ -4,6 +4,7 @@ import AssistantWorkspace from './AssistantWorkspace';
 import type {AssistantView} from '../../scripts/assistant-ui-state.mjs';
 import type {ChatPromptRequest} from './AgentChat';
 import {captureFeatureError} from '../../lib/monitoring';
+import {chatIsland} from './chat-island';
 
 class MountBoundary extends Component<{children: ReactNode; onError: (error: unknown) => void}, {failed: boolean}> {
   state = {failed: false};
@@ -18,31 +19,41 @@ export function mountChat(target: HTMLElement, onClose: () => void, onReady: () 
   onMountError?: (error: unknown) => void;
 } = {}) {
   const {onMountError, ...workspaceUI} = ui;
+  const island = chatIsland();
   let destroyed = false;
+  let requestedPrompt: ChatPromptRequest | undefined;
+  let root: ReturnType<typeof createRoot> | undefined;
   const reportUncaught = (error: unknown) => {
     if (destroyed) return;
     captureFeatureError(error, 'chat', 'render');
     onMountError?.(error);
   };
-  const root = createRoot(target, {
-    onUncaughtError: reportUncaught,
-    onCaughtError: (error) => { if (!destroyed) captureFeatureError(error, 'chat', 'render'); },
-    onRecoverableError: (error) => { if (!destroyed) captureFeatureError(error, 'chat', 'render_recoverable'); },
-  });
-  let requestedPrompt: ChatPromptRequest | undefined;
   const onPromptConsumed = (id: string) => {
     if (requestedPrompt?.id !== id || destroyed) return;
     requestedPrompt = undefined;
     render();
   };
-  const render = () => root.render(<MountBoundary onError={(error) => { if (!destroyed) onMountError?.(error); }}>
+  const tree = () => <MountBoundary onError={(error) => { if (!destroyed) onMountError?.(error); }}>
     <AssistantWorkspace onClose={onClose} onReady={onReady} pathname={target.closest<HTMLElement>('[data-blog-chat-widget]')?.dataset.readerPathname} title={target.closest<HTMLElement>('[data-blog-chat-widget]')?.dataset.readerTitle} {...workspaceUI} requestedPrompt={requestedPrompt} onPromptConsumed={onPromptConsumed} />
-  </MountBoundary>);
+  </MountBoundary>;
+  const render = () => {
+    if (island) {
+      island.mount(target, tree());
+      return;
+    }
+    root ??= createRoot(target, {
+      onUncaughtError: reportUncaught,
+      onCaughtError: (error) => { if (!destroyed) captureFeatureError(error, 'chat', 'render'); },
+      onRecoverableError: (error) => { if (!destroyed) captureFeatureError(error, 'chat', 'render_recoverable'); },
+    });
+    root.render(tree());
+  };
   try {
     render();
   } catch (error) {
     destroyed = true;
-    root.unmount();
+    island?.mount(target, null);
+    root?.unmount();
     throw error;
   }
   return {
@@ -55,7 +66,8 @@ export function mountChat(target: HTMLElement, onClose: () => void, onReady: () 
       if (destroyed) return;
       destroyed = true;
       requestedPrompt = undefined;
-      root.unmount();
+      island?.mount(target, null);
+      root?.unmount();
     },
   };
 }

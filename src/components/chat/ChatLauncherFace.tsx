@@ -1,5 +1,7 @@
+import {createPortal} from 'react-dom';
 import {useEffect} from 'react';
 import {useUser} from '@clerk/react';
+import type {ReactNode} from 'react';
 import BlogClerkProvider from '../auth/BlogClerkProvider';
 
 function initials(user: {firstName?: string | null; lastName?: string | null; fullName?: string | null; username?: string | null}) {
@@ -21,8 +23,13 @@ function Face({launcher}: {launcher: HTMLElement}) {
   return <span aria-hidden="true">{initials(user)}</span>;
 }
 
-export default function ChatLauncherFace({launcher}: {launcher: HTMLElement}) {
+export default function ChatLauncherFace({launcher, panel, panelTarget}: {
+  launcher: HTMLElement;
+  panel?: ReactNode;
+  panelTarget?: HTMLElement | null;
+}) {
   return <BlogClerkProvider>
     <Face launcher={launcher} />
+    {panel && panelTarget ? createPortal(panel, panelTarget) : null}
   </BlogClerkProvider>;
 }
