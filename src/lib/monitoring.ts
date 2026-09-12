@@ -1,7 +1,7 @@
 import {captureException, getClient, startSpan, withScope} from '@sentry/astro';
 
-type Feature = 'search' | 'code';
-type Operation = 'load' | 'recent_load' | 'query' | 'render' | 'render_recoverable';
+type Feature = 'search' | 'code' | 'chat';
+type Operation = 'load' | 'load_retry' | 'mount' | 'recent_load' | 'query' | 'render' | 'render_recoverable';
 
 function monitoringEnabled() {
   const client = getClient();

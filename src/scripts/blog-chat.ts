@@ -1,4 +1,13 @@
+import {captureFeatureError} from '../lib/monitoring';
 import {assistantUIState, type AssistantView} from './assistant-ui-state.mjs';
+import {
+  allowViteCssPreloadFallback,
+  CHAT_LOAD_RETRY_DELAY_MS,
+  chatLoadFailureCopy,
+  isAssetLoadError,
+  isRetriableChatLoadError,
+  safeChatErrorDetail,
+} from './module-load-error.mjs';
 
 let cleanup: (() => void) | undefined;
 
@@ -79,35 +88,103 @@ function initializeChat() {
     (visible(selector) ?? visible('[aria-label="关闭博客助手"]'))?.focus({preventScroll: true});
   }
 
+  function restoreLoadShell() {
+    const template = widget!.querySelector<HTMLTemplateElement>('[data-chat-load-template]');
+    if (template && !target!.querySelector('[data-chat-load-status]')) {
+      target!.replaceChildren(template.content.cloneNode(true));
+    }
+  }
+
+  function loadShell() {
+    restoreLoadShell();
+    return {
+      status: target!.querySelector<HTMLElement>('[data-chat-load-status]'),
+      detail: target!.querySelector<HTMLElement>('[data-chat-load-detail]'),
+      retry: target!.querySelector<HTMLButtonElement>('[data-chat-retry]'),
+      refresh: target!.querySelector<HTMLButtonElement>('[data-chat-refresh]'),
+    };
+  }
+
+  function showLoadFailure(error: unknown, phase: 'import' | 'mount') {
+    restoreLoadShell();
+    panel!.dataset.chatLoaded = 'false';
+    const {status, detail, retry, refresh} = loadShell();
+    if (status) status.textContent = chatLoadFailureCopy(error, phase);
+    const message = safeChatErrorDetail(error);
+    if (detail) {
+      detail.hidden = !message;
+      detail.textContent = message;
+    }
+    if (retry) retry.hidden = false;
+    if (refresh) refresh.hidden = !isAssetLoadError(error);
+    if (import.meta.env.DEV) console.error('[blog-chat] Could not load the chat.', error);
+  }
+
+  function wait(ms: number) {
+    return new Promise<void>((resolve) => setTimeout(resolve, ms));
+  }
+
   async function loadChat() {
     if (mount) return;
     if (loading) return loading;
-    const status = target!.querySelector<HTMLElement>('[data-chat-load-status]');
-    const retry = target!.querySelector<HTMLButtonElement>('[data-chat-retry]');
-    if (status) status.textContent = '正在打开博客助手…';
-    if (retry) retry.hidden = true;
+    const pending = loadShell();
+    if (pending.status) pending.status.textContent = '正在打开博客助手…';
+    if (pending.detail) { pending.detail.hidden = true; pending.detail.textContent = ''; }
+    if (pending.retry) pending.retry.hidden = true;
+    if (pending.refresh) pending.refresh.hidden = true;
     loading = (async () => {
+      const stopCssPreloadFallback = allowViteCssPreloadFallback();
+      let phase: 'import' | 'mount' = 'import';
+      let lastError: unknown;
       try {
-        // Static article pages do not have Astro's React refresh preamble.
-        if (import.meta.env.DEV) await import('@vitejs/plugin-react/preamble');
-        const {mountChat} = await import('../components/chat/mount-chat');
-        if (stopped) return;
-        mount = mountChat(target!, () => close(), () => {
-          panel!.dataset.chatLoaded = 'true';
-          if (panel!.open && (panel!.contains(document.activeElement) || document.activeElement === document.body)) focusChat();
-        }, {
-          initialView: currentView,
-          onViewChange: view => {
-            currentView = view;
-            if (panel!.open) state.save(view);
-          },
-        });
-      } catch (error) {
-        if (stopped) return;
-        if (status) status.textContent = '助手未能加载，请检查网络后重试。';
-        if (retry) retry.hidden = false;
-        if (import.meta.env.DEV) console.error('[blog-chat] Could not load the chat.', error);
-      } finally { loading = undefined; }
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            // Static article pages do not have Astro's React refresh preamble.
+            if (import.meta.env.DEV) await import('@vitejs/plugin-react/preamble');
+            await launcherReady;
+            if (stopped) return;
+            phase = 'import';
+            const {mountChat} = await import('../components/chat/mount-chat');
+            // Search Ask AI unmounts Commander with flushSync inside onPress. Signed-in
+            // Clerk + Convex trees are heavier; finish that unmount before createRoot.
+            await wait(0);
+            if (stopped) return;
+            phase = 'mount';
+            mount = mountChat(target!, () => close(), () => {
+              panel!.dataset.chatLoaded = 'true';
+              if (panel!.open && (panel!.contains(document.activeElement) || document.activeElement === document.body)) focusChat();
+            }, {
+              initialView: currentView,
+              onViewChange: view => {
+                currentView = view;
+                if (panel!.open) state.save(view);
+              },
+              onMountError(error) {
+                queueMicrotask(() => {
+                  if (stopped || panel!.dataset.chatLoaded === 'true') return;
+                  mount?.destroy();
+                  mount = undefined;
+                  captureFeatureError(error, 'chat', 'mount');
+                  showLoadFailure(error, 'mount');
+                });
+              },
+            });
+            return;
+          } catch (error) {
+            lastError = error;
+            if (stopped) return;
+            const retry = attempt === 0 && (phase === 'mount' || isRetriableChatLoadError(error));
+            captureFeatureError(error, 'chat', retry ? 'load_retry' : phase === 'mount' ? 'mount' : 'load');
+            if (!retry) break;
+            await wait(CHAT_LOAD_RETRY_DELAY_MS);
+            if (stopped) return;
+          }
+        }
+        if (!stopped && lastError) showLoadFailure(lastError, phase);
+      } finally {
+        stopCssPreloadFallback();
+        loading = undefined;
+      }
     })();
     return loading;
   }
@@ -133,6 +210,8 @@ function initializeChat() {
   launcher.hidden = false;
   expandHandle.hidden = false;
   const face = launcher.querySelector<HTMLElement>('[data-chat-launcher-face]');
+  let resolveLauncher = () => {};
+  const launcherReady = new Promise<void>((resolve) => { resolveLauncher = resolve; });
   if (face && import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY) {
     void (async () => {
       try {
@@ -142,9 +221,11 @@ function initializeChat() {
         launcherMount = mountLauncher(face, launcher);
       } catch (error) {
         if (import.meta.env.DEV) console.error('[blog-chat] Could not load the signed-in launcher.', error);
+      } finally {
+        resolveLauncher();
       }
     })();
-  }
+  } else resolveLauncher();
   launcher.addEventListener('click', () => panel.open ? close() : open(launcher), {signal});
   expandHandle.addEventListener('click', () => open(expandHandle), {signal});
   document.addEventListener('blog:ask-ai', (event) => {
@@ -161,6 +242,7 @@ function initializeChat() {
     const element = event.target as Element;
     if (element.closest('[data-chat-close]')) close();
     if (element.closest('[data-chat-retry]')) void loadChat();
+    if (element.closest('[data-chat-refresh]')) window.location.reload();
   }, {signal});
   panel.addEventListener('cancel', (event) => { event.preventDefault(); close(); }, {signal});
   panel.addEventListener('close', () => {

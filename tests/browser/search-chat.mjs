@@ -86,6 +86,7 @@ async function question(page, text) {
   assert.ok(box && box.x >= 0 && box.x + box.width <= page.viewportSize().width + 1, 'The search-to-chat action fits the search modal');
   await ask(page).click();
   await search(page).waitFor({state: 'detached'});
+  await page.waitForFunction(() => document.querySelector('#blog-chat-panel')?.open === true);
   assert.equal(await panel(page).evaluate(element => element.open), true, 'Search hands off to an open assistant');
 }
 
@@ -96,6 +97,7 @@ async function prefilled(page, text) {
   await frames(page);
   assert.equal(await input(page).evaluate(element => document.activeElement === element), true, 'The composer keeps focus after search teardown and assistant loading');
   assert.equal(await search(page).count(), 0);
+  assert.equal(await page.getByText('助手未能加载').count(), 0, 'Ask AI must not remain on the load-failure shell');
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Handoff does not create horizontal overflow');
 }
 
@@ -161,6 +163,7 @@ try {
     await question(page, prompt);
     const gate = page.locator('.assistant-workspace__view');
     await gate.getByRole('heading', {name: '登录后继续', exact: true}).waitFor();
+    assert.equal(await page.getByText('助手未能加载').count(), 0, 'An anonymous Ask AI handoff is an auth gate, not a network failure');
     assert.equal(await input(page).count(), 0, 'Anonymous readers see only the login gate');
     assert.equal(await tab(page, 'AI 对话').getAttribute('aria-checked'), 'true');
     assert.deepEqual((await state(page)).requests, [], 'An anonymous handoff executes no private Convex query');
@@ -202,6 +205,26 @@ try {
       await run.page.screenshot({path: join(tmpdir(), `search-chat-delayed-${mode}-failure.png`), fullPage: true}); throw error;
     } finally {run.release(); await run.context.close();}
   }
+
+  const cssPreload = await isolated(base, 1016, {delayMount: true});
+  try {
+    const {page} = cssPreload;
+    await question(page, 'CSS preload 失败时仍应打开助手');
+    await page.waitForFunction(() => document.querySelector('[data-chat-load-status]')?.textContent.includes('正在打开'));
+    const prevented = await page.evaluate(() => {
+      const event = new Event('vite:preloadError', {cancelable: true});
+      Object.defineProperty(event, 'payload', {value: new Error('Unable to preload CSS for /src/styles/chat.css')});
+      window.dispatchEvent(event);
+      return event.defaultPrevented;
+    });
+    assert.equal(prevented, true, 'A CSS preload error must not reject the assistant import');
+    cssPreload.release();
+    await page.locator('.assistant-workspace__switcher').waitFor({state: 'attached'});
+    await prefilled(page, 'CSS preload 失败时仍应打开助手');
+    console.log('Ask AI CSS preload error: Vite CSS preload failure is cancelled and the chat UI still mounts.');
+  } catch (error) {
+    await cssPreload.page.screenshot({path: join(tmpdir(), 'search-chat-css-preload-failure.png'), fullPage: true}); throw error;
+  } finally {cssPreload.release(); await cssPreload.context.close();}
   }
   for (const viaSignout of [false, true]) {
     const run = await isolated(base, 320);
