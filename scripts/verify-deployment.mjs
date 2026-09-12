@@ -160,6 +160,7 @@ export async function waitForPublishedRelease({ origin, expected, fetchImpl = fe
       headers: { 'cache-control': 'no-cache' },
     });
     assert.equal(response.status, 200, 'Production release marker status');
+    assert.match(response.headers.get('content-type') || '', /application\/json/i, 'Production release marker must return JSON');
     const marker = await response.json();
     assert.equal(marker.siteCommit, expected.siteCommit, 'Production has not switched to this reviewed release');
     assert.equal(marker.contentCommit, expected.contentCommit, 'Production content revision does not match this release');
@@ -277,9 +278,9 @@ async function main() {
     localPages.set(route, await readFile(path.join(dist, decodeURIComponent(route), 'index.html'), 'utf8'));
     const response = await ready(route, response => {
       assert.equal(response.status, 200, `Page status: ${route}`);
+      assert.match(response.headers.get('content-type') || '', /text\/html/i, `HTML content type: ${route}`);
       return response;
     });
-    assert.match(response.headers.get('content-type') || '', /text\/html/i, `HTML content type: ${route}`);
     assertCanonical(response.body, route); assertHtmlIndexing(response.body, environment, route);
     if (!localPreview) assertHeaderIndexing(response.headers.get('x-robots-tag'), environment, route);
     const record = routeMap.get(route);
@@ -296,8 +297,11 @@ async function main() {
   const feeds = new Set(['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/links/index.xml', ...terms.map(term => `${term.url}index.xml`)]);
   if (values['all-routes']) for (const term of [...content.tags, ...content.categories]) feeds.add(`${term.url}index.xml`);
   await batches([...feeds, '/sitemap.xml'], async route => {
-    const response = await ready(route, response => { assert.equal(response.status, 200, `Feed/sitemap status: ${route}`); return response; });
-    assert.match(response.headers.get('content-type') || '', /(?:xml|rss)/i, `XML content type: ${route}`);
+    const response = await ready(route, response => {
+      assert.equal(response.status, 200, `Feed/sitemap status: ${route}`);
+      assert.match(response.headers.get('content-type') || '', /(?:xml|rss)/i, `XML content type: ${route}`);
+      return response;
+    });
     assert.match(response.body, route === '/sitemap.xml' ? /<urlset\b/ : /<rss\b/, `XML document missing: ${route}`);
     assertXMLSiteURLs(response.body, route);
   }, 'Feeds and sitemap');

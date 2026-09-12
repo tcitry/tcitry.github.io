@@ -11,6 +11,7 @@ import {
 const stalePage = '/_astro/page.NG88OkOd.js';
 const livePage = '/_astro/page.D-Bdcy3v.js';
 const sharedCss = '/_astro/shared.AAAAAAAA.css';
+const json = body => new Response(JSON.stringify(body), { status: 200, headers: { 'content-type': 'application/json' } });
 const html = (assets, extras = '') => `${assets.map(asset => asset.endsWith('.css')
   ? `<link rel="stylesheet" href="${asset}">`
   : `<script type="module" src="${asset}"></script>`).join('')}${extras}`;
@@ -90,7 +91,7 @@ test('waitForPublishedRelease waits for the marker to match this revision then s
     const marker = generation < 3
       ? { siteCommit: 'c'.repeat(40), contentCommit: expected.contentCommit }
       : expected;
-    return new Response(JSON.stringify(marker), { status: 200 });
+    return json(marker);
   };
   const marker = await waitForPublishedRelease({
     origin: 'https://yindongliang.com', expected, fetchImpl, attempts: 4, delayMs: 0, sleep: async () => {},
@@ -101,9 +102,23 @@ test('waitForPublishedRelease waits for the marker to match this revision then s
 
   const stuck = async url => {
     assert.match(String(url), /blog-release\.json\?verify=/);
-    return new Response(JSON.stringify({ siteCommit: 'c'.repeat(40), contentCommit: expected.contentCommit }), { status: 200 });
+    return json({ siteCommit: 'c'.repeat(40), contentCommit: expected.contentCommit });
   };
   await assert.rejects(() => waitForPublishedRelease({
     origin: 'https://yindongliang.com', expected, fetchImpl: stuck, attempts: 2, delayMs: 0, sleep: async () => {},
   }), /has not switched to this reviewed release/);
+});
+
+test('waitForPublishedRelease retries a 200 HTML marker until JSON arrives', async () => {
+  const expected = { siteCommit: 'a'.repeat(40), contentCommit: 'b'.repeat(40) };
+  let generation = 0;
+  const fetchImpl = async () => {
+    generation += 1;
+    if (generation < 3) return new Response('<html>cached</html>', { status: 200, headers: { 'content-type': 'text/html' } });
+    return json(expected);
+  };
+  assert.deepEqual(await waitForPublishedRelease({
+    origin: 'https://yindongliang.com', expected, fetchImpl, attempts: 4, delayMs: 0, sleep: async () => {},
+  }), expected);
+  assert.equal(generation, 3);
 });
