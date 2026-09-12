@@ -11,7 +11,10 @@ import {chromium} from 'playwright';
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const fixture = (name) => fileURLToPath(new URL(`../fixtures/${name}`, import.meta.url));
 const cacheDir = await mkdtemp(join(tmpdir(), 'consultations-membership-'));
-const screenshotDir = '/opt/cursor/artifacts/screenshots';
+const screenshots = process.env.BLOG_SCREENSHOT_DIR;
+const capture = async (locator, name) => {
+  if (screenshots) await locator.screenshot({path: join(screenshots, name)});
+};
 const server = await createServer({
   root, configFile: false, envDir: false, publicDir: false, cacheDir,
   plugins: [react(), tailwind()],
@@ -32,7 +35,7 @@ let browser;
 const errors = [];
 try {
   await server.listen();
-  await mkdir(screenshotDir, {recursive: true});
+  if (screenshots) await mkdir(screenshots, {recursive: true});
   const base = new URL(server.resolvedUrls.local[0]);
   browser = await chromium.launch({headless: true});
   const context = await browser.newContext({viewport: {width: 480, height: 900}, reducedMotion: 'reduce', serviceWorkers: 'block'});
@@ -48,7 +51,7 @@ try {
   assert.equal(await panel.getByText('Pro 会员可发起咨询，等待博主回复。', {exact: true}).count(), 0);
   assert.equal(await panel.getByRole('button', {name: '开通 Pro', exact: true}).count(), 0);
   assert.equal(await panel.getByRole('button', {name: '发起咨询', exact: true}).isDisabled(), false);
-  await panel.screenshot({path: join(screenshotDir, 'consultations-pro-member.png')});
+  await capture(panel, 'consultations-pro-member.png');
 
   await open('?failMembership=true');
   await panel.getByRole('alert').filter({hasText: '会员状态暂时无法读取，请稍后重试。'}).waitFor();
@@ -68,13 +71,13 @@ try {
   await upgrade.waitFor();
   assert.equal(await upgrade.isDisabled(), false);
   await panel.getByRole('button', {name: /过期后仍可查看的咨询/}).waitFor();
-  await panel.screenshot({path: join(screenshotDir, 'consultations-free-member.png')});
+  await capture(panel, 'consultations-free-member.png');
   await upgrade.click();
   const profile = page.getByRole('dialog', {name: 'Clerk 账户与订阅（测试）', exact: true});
   await profile.waitFor();
   assert.deepEqual((await page.evaluate(() => window.__servicesClerk.getState().profileRequests)).at(-1).options,
     {__experimental_startPath: '/billing'});
-  await page.screenshot({path: join(screenshotDir, 'consultations-free-member-upgrade.png')});
+  await capture(page, 'consultations-free-member-upgrade.png');
   await profile.getByRole('button', {name: '关闭账户弹窗', exact: true}).click();
   await profile.waitFor({state: 'hidden'});
 
@@ -85,7 +88,7 @@ try {
   const missingPlanUpgrade = panel.getByRole('button', {name: '开通 Pro', exact: true});
   await missingPlanUpgrade.waitFor();
   assert.equal(await missingPlanUpgrade.isDisabled(), false);
-  await panel.screenshot({path: join(screenshotDir, 'consultations-missing-plan-slug.png')});
+  await capture(panel, 'consultations-missing-plan-slug.png');
   await missingPlanUpgrade.click();
   const missingPlanProfile = page.getByRole('dialog', {name: 'Clerk 账户与订阅（测试）', exact: true});
   await missingPlanProfile.waitFor();
@@ -98,7 +101,7 @@ try {
   await panel.getByText('私人咨询尚未开放。', {exact: true}).waitFor();
   assert.equal(await panel.getByRole('button', {name: '发起咨询', exact: true}).count(), 0, 'Global-off consultations have no fake start button');
   assert.equal(await panel.getByRole('button', {name: '开通 Pro', exact: true}).count(), 0);
-  await panel.screenshot({path: join(screenshotDir, 'consultations-globally-off.png')});
+  await capture(panel, 'consultations-globally-off.png');
 
   assert.equal(errors.length, 0, errors.join('\n'));
   console.log('Consultation membership: Pro start, failed check retry, free-user and missing-plan Billing upgrade, global-off without a fake start.');
