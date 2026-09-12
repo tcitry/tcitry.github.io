@@ -178,21 +178,22 @@ export async function waitUntilIndexed(client, initial, { attempts = 12, pollMs 
   throw new Error(INDEXING_PENDING_MESSAGE);
 }
 
-async function indexDocument(client, document, initial, { waiting, polling, beforeWrite, onRetryUpload }) {
-  let current = initial;
-  if (!waiting) {
-    await beforeWrite();
-    current = await client.upload(document, { beforeRetry: beforeWrite });
-  }
+function recordIndexed(indexed, document, complete) {
+  assert.equal(complete.key, document.key, 'AI Search completed a different article');
+  assert.equal(complete.metadata?.content_hash, document.hash, 'AI Search indexed content hash differs from the reviewed article');
+  indexed.push({ key: document.key, hash: document.hash, itemId: complete.id });
+}
+
+async function waitForSubmittedDocument(client, document, initial, { polling, beforeWrite, onRetryUpload }) {
   try {
-    return await waitUntilIndexed(client, current, polling);
+    return await waitUntilIndexed(client, initial, polling);
   } catch (error) {
     if (error?.message !== INDEXING_PENDING_MESSAGE) throw error;
     onRetryUpload?.(document);
     await beforeWrite();
-    current = await client.upload(document, { beforeRetry: beforeWrite });
+    const retried = await client.upload(document, { beforeRetry: beforeWrite });
     try {
-      return await waitUntilIndexed(client, current, polling);
+      return await waitUntilIndexed(client, retried, polling);
     } catch (retryError) {
       if (retryError?.message !== INDEXING_PENDING_MESSAGE) throw retryError;
       throw new Error(`AI Search indexing is still pending for ${document.url}; synchronization was not marked complete. Rerun after the current job finishes.`);
@@ -203,17 +204,25 @@ async function indexDocument(client, document, initial, { waiting, polling, befo
 /** Uploads are serialized and indexed before deletions; a failure never returns a completed state. */
 export async function applySync(client, plan, { onProgress = () => {}, polling, beforeWrite = async () => {}, onRetryUpload = () => {} } = {}) {
   const indexed = [...plan.unchanged.map(({ document, item }) => ({ key: document.key, hash: document.hash, itemId: item.id }))];
-  // Finish new/changed uploads before polling in-flight items so one queued article
-  // cannot keep the rest of the corpus, or the Workers Builds check, from progressing.
-  for (const { document, item } of [...plan.uploads, ...plan.waiting]) {
-    const complete = await indexDocument(client, document, item, {
-      waiting: plan.waiting.some(entry => entry.document.key === document.key),
-      polling, beforeWrite, onRetryUpload,
-    });
-    assert.equal(complete.key, document.key, 'AI Search completed a different article');
-    assert.equal(complete.metadata?.content_hash, document.hash, 'AI Search indexed content hash differs from the reviewed article');
-    indexed.push({ key: document.key, hash: document.hash, itemId: complete.id });
-    onProgress({ indexed: indexed.length, total: plan.unchanged.length + plan.waiting.length + plan.uploads.length });
+  const total = plan.unchanged.length + plan.waiting.length + plan.uploads.length;
+  const pending = [];
+  // Submit every new/changed article before polling any of them. A single
+  // queued/running item must not keep the rest of the corpus unsent.
+  for (const { document } of plan.uploads) {
+    await beforeWrite();
+    const uploaded = await client.upload(document, { beforeRetry: beforeWrite });
+    if (uploaded?.status === 'completed' && uploaded.next_action !== 'DELETE') {
+      recordIndexed(indexed, document, uploaded);
+      onProgress({ indexed: indexed.length, total });
+    } else {
+      pending.push({ document, item: uploaded });
+    }
+  }
+  pending.push(...plan.waiting);
+  for (const { document, item } of pending) {
+    const complete = await waitForSubmittedDocument(client, document, item, { polling, beforeWrite, onRetryUpload });
+    recordIndexed(indexed, document, complete);
+    onProgress({ indexed: indexed.length, total });
   }
   for (const item of plan.deletes) {
     await beforeWrite();
