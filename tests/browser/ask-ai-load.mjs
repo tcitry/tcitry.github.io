@@ -19,7 +19,7 @@ const bundle = await build({
   }}],
 });
 const loader = bundle.outputFiles[0].text;
-const chunk = `export function mountChat(host, onClose, onReady) {
+const successChunk = `export function mountChat(host, onClose, onReady) {
   host.replaceChildren();
   const workspace = document.createElement('div');
   workspace.className = 'assistant-workspace';
@@ -30,18 +30,49 @@ const chunk = `export function mountChat(host, onClose, onReady) {
   queueMicrotask(onReady);
   return {requestPrompt(text) { input.value = text; }, destroy() { host.replaceChildren(); }};
 }`;
+const throwOnceChunk = `let mounts = 0;
+export function mountChat(host, onClose, onReady) {
+  mounts += 1;
+  if (mounts === 1) throw new TypeError('Minified React error #310');
+  host.replaceChildren();
+  const workspace = document.createElement('div');
+  workspace.className = 'assistant-workspace';
+  const input = document.createElement('textarea');
+  input.setAttribute('aria-label', '向 AI 博客助手提问');
+  workspace.append(input);
+  host.append(workspace);
+  queueMicrotask(onReady);
+  return {requestPrompt(text) { input.value = text; }, destroy() { host.replaceChildren(); }};
+}`;
+const asyncErrorChunk = `export function mountChat(host, onClose, onReady, ui = {}) {
+  host.replaceChildren();
+  queueMicrotask(() => ui.onMountError?.(new TypeError("Cannot read properties of undefined (reading 'useAuth')")));
+  return {requestPrompt() {}, destroy() { host.replaceChildren(); }};
+}`;
 const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"></head><body>
   <button type="button" data-blog-search-trigger>搜索</button>
   <div class="blog-chat-widget" data-blog-chat-widget>
     <button class="blog-chat-widget__launcher" type="button" aria-label="打开博客助手" aria-haspopup="dialog" aria-expanded="false" aria-controls="blog-chat-panel" data-chat-launcher hidden>打开</button>
     <button class="blog-chat-widget__expand" type="button" aria-label="展开博客助手" aria-haspopup="dialog" aria-expanded="false" aria-controls="blog-chat-panel" data-chat-expand hidden>展开</button>
     <dialog id="blog-chat-panel" class="blog-chat-widget__panel" aria-label="博客助手" data-chat-loaded="false">
+      <template data-chat-load-template>
+        <div class="blog-chat-widget__loading-header"><strong>博客助手</strong>
+          <button type="button" aria-label="关闭博客助手" data-chat-close>关闭</button>
+        </div>
+        <div class="blog-chat-widget__loading">
+          <p role="status" data-chat-load-status>正在打开博客助手…</p>
+          <p data-chat-load-detail hidden></p>
+          <button type="button" data-chat-retry hidden>重新加载</button>
+          <button type="button" data-chat-refresh hidden>刷新页面</button>
+        </div>
+      </template>
       <div class="blog-chat-widget__mount" data-chat-mount>
         <div class="blog-chat-widget__loading-header"><strong>博客助手</strong>
           <button type="button" aria-label="关闭博客助手" data-chat-close>关闭</button>
         </div>
         <div class="blog-chat-widget__loading">
           <p role="status" data-chat-load-status>正在打开博客助手…</p>
+          <p data-chat-load-detail hidden></p>
           <button type="button" data-chat-retry hidden>重新加载</button>
           <button type="button" data-chat-refresh hidden>刷新页面</button>
         </div>
@@ -62,11 +93,14 @@ const server = createServer((request, response) => {
   } else if (request.url === '/chat-chunk.js') {
     if (mode === 'missing') {response.statusCode = 404; response.end('missing');}
     else if (mode === 'pending') pending = response;
-    else {response.setHeader('Content-Type', 'text/javascript'); response.end(chunk);}
+    else if (mode === 'throw-once') {response.setHeader('Content-Type', 'text/javascript'); response.end(throwOnceChunk);}
+    else if (mode === 'async-error') {response.setHeader('Content-Type', 'text/javascript'); response.end(asyncErrorChunk);}
+    else {response.setHeader('Content-Type', 'text/javascript'); response.end(successChunk);}
   } else {response.setHeader('Content-Type', 'text/html'); response.end(html);}
 });
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const base = `http://127.0.0.1:${server.address().port}`;
+const chunk = successChunk;
 let browser;
 try {
   browser = await chromium.launch({headless: true});
@@ -94,6 +128,23 @@ try {
   assert.equal(await page.getByText('助手未能加载').count(), 0, 'Ask AI must not stay on the load-failure shell');
   assert.equal(await page.locator('#blog-chat-panel').getAttribute('data-chat-loaded'), 'true');
 
+  mode = 'throw-once';
+  await page.reload();
+  await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: '首次挂载失败后应重试'}})));
+  await page.locator('.assistant-workspace').waitFor();
+  await page.waitForFunction(() => document.querySelector('textarea[aria-label="向 AI 博客助手提问"]')?.value === '首次挂载失败后应重试');
+  assert.equal(await page.getByText('助手未能打开').count(), 0, 'A transient mount throw must not keep the failure shell after retry');
+
+  mode = 'async-error';
+  await page.reload();
+  await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: '导入成功但 React 未挂上'}})));
+  await page.getByRole('status').filter({hasText: '助手未能打开，请重试'}).waitFor();
+  assert.equal(await page.locator('[data-chat-load-detail]').evaluate(element => element.textContent), "Cannot read properties of undefined (reading 'useAuth')");
+  assert.equal(await page.getByRole('button', {name: '重新加载', exact: true}).isVisible(), true);
+  assert.equal(await page.getByText('检查网络后重试').count(), 0, 'A React mount failure is not reported as a silent network failure');
+
   mode = 'missing';
   await page.reload();
   await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
@@ -102,7 +153,7 @@ try {
   assert.equal(await page.getByRole('button', {name: '重新加载', exact: true}).isVisible(), true);
   assert.equal(await page.getByRole('button', {name: '刷新页面', exact: true}).isVisible(), true);
   assert.equal(await page.getByText('检查网络后重试').count(), 0, 'A missing chunk is not reported as a silent network failure');
-  console.log('Ask AI loader: CSS preload is cancelled, the chat UI mounts with the prompt, and a missing chunk asks for a refresh.');
+  console.log('Ask AI loader: CSS preload is cancelled, mount retries once, React mount errors are distinct from network, and a missing chunk asks for a refresh.');
 } finally {
   await browser?.close();
   server.closeAllConnections();

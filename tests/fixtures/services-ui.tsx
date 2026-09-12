@@ -40,7 +40,7 @@ if (view === 'widget') {
       <dialog id="blog-chat-panel" class="blog-chat-widget__panel" aria-label="博客助手">
         <div class="blog-chat-widget__mount" data-chat-mount>
           <button data-chat-close aria-label="关闭博客助手">关闭</button>
-          <p data-chat-load-status role="status">正在打开博客助手…</p><button data-chat-retry hidden>重新加载</button><button data-chat-refresh hidden>刷新页面</button>
+          <p data-chat-load-status role="status">正在打开博客助手…</p><p data-chat-load-detail hidden></p><button data-chat-retry hidden>重新加载</button><button data-chat-refresh hidden>刷新页面</button>
         </div>
       </dialog>
     </div>`;

@@ -52,11 +52,13 @@ function initializeSearch() {
       mount ??= module.mountSearchCommand(mountHost, restoreFocus, document.querySelector('[data-blog-chat-widget]') ? (prompt) => {
         // The assistant takes focus after the search modal releases its focus scope.
         cancelAnimationFrame(focusFrame);
-        // Command unmounts with flushSync inside the same press. Load the
-        // assistant on the next task so that is not a nested React render.
-        setTimeout(() => {
-          document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt}}));
-        }, 0);
+        // Command unmounts with flushSync inside the same press. Wait a frame so
+        // HeroUI/Clerk teardown is not concurrent with the assistant createRoot.
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt}}));
+          }, 0);
+        });
       } : undefined);
       mount.open();
     } catch (error) {
