@@ -1,4 +1,6 @@
+import {captureFeatureError} from '../lib/monitoring';
 import {assistantUIState, type AssistantView} from './assistant-ui-state.mjs';
+import {allowViteCssPreloadFallback, chatLoadFailureCopy, isAssetLoadError} from './module-load-error.mjs';
 
 let cleanup: (() => void) | undefined;
 
@@ -84,13 +86,19 @@ function initializeChat() {
     if (loading) return loading;
     const status = target!.querySelector<HTMLElement>('[data-chat-load-status]');
     const retry = target!.querySelector<HTMLButtonElement>('[data-chat-retry]');
+    const refresh = target!.querySelector<HTMLButtonElement>('[data-chat-refresh]');
     if (status) status.textContent = '正在打开博客助手…';
     if (retry) retry.hidden = true;
+    if (refresh) refresh.hidden = true;
     loading = (async () => {
+      const stopCssPreloadFallback = allowViteCssPreloadFallback();
       try {
         // Static article pages do not have Astro's React refresh preamble.
         if (import.meta.env.DEV) await import('@vitejs/plugin-react/preamble');
         const {mountChat} = await import('../components/chat/mount-chat');
+        // Search Ask AI unmounts Commander with flushSync inside onPress. Finish
+        // that stack before this script creates a second React root.
+        await new Promise((resolve) => setTimeout(resolve, 0));
         if (stopped) return;
         mount = mountChat(target!, () => close(), () => {
           panel!.dataset.chatLoaded = 'true';
@@ -104,10 +112,15 @@ function initializeChat() {
         });
       } catch (error) {
         if (stopped) return;
-        if (status) status.textContent = '助手未能加载，请检查网络后重试。';
+        captureFeatureError(error, 'chat', 'load');
+        if (status) status.textContent = chatLoadFailureCopy(error);
         if (retry) retry.hidden = false;
+        if (refresh) refresh.hidden = !isAssetLoadError(error);
         if (import.meta.env.DEV) console.error('[blog-chat] Could not load the chat.', error);
-      } finally { loading = undefined; }
+      } finally {
+        stopCssPreloadFallback();
+        loading = undefined;
+      }
     })();
     return loading;
   }
@@ -161,6 +174,7 @@ function initializeChat() {
     const element = event.target as Element;
     if (element.closest('[data-chat-close]')) close();
     if (element.closest('[data-chat-retry]')) void loadChat();
+    if (element.closest('[data-chat-refresh]')) window.location.reload();
   }, {signal});
   panel.addEventListener('cancel', (event) => { event.preventDefault(); close(); }, {signal});
   panel.addEventListener('close', () => {
