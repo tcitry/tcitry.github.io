@@ -90,14 +90,21 @@ try {
   await assertSealedRelease(root, manifest);
   if (manifest.aiSearch) {
     // The online release marker verifies the published revision before ingestion.
-    // Sync failure leaves the site available, returns nonzero, and is retryable.
     const verificationEnv = { ...env };
     for (const name of Object.keys(verificationEnv)) {
       if (/^(?:CLOUDFLARE_|CF_)/.test(name) || /(?:TOKEN|SECRET|PASSWORD|DEPLOY_KEY|ADMIN_KEY)/.test(name)) delete verificationEnv[name];
     }
     await run('Verifying the published site', ['scripts/verify-deployment.mjs', '--env', 'production'], verificationEnv);
     await run('Verifying the published AI Search corpus and chat API', ['scripts/verify-ai-search-deployment.mjs'], verificationEnv);
-    await run('Synchronizing verified published articles', ['scripts/sync-ai-search.mjs', '--apply'], env);
+    // Article sync is best-effort after a successful site/API verification.
+    // Incomplete indexing, a newer production release, or API errors must not
+    // fail Workers Builds; finish with npm run ai-search:sync:published.
+    try {
+      await run('Synchronizing verified published articles', ['scripts/sync-ai-search.mjs', '--apply', '--best-effort'], env);
+    } catch (error) {
+      if (error?.name !== 'DeployStepError') throw error;
+      console.warn('WARNING: AI Search article sync did not finish. The published Worker and AI Search API checks succeeded; this does not fail the verified deploy. Site green does not mean the article corpus is fully indexed. Finish with npm run ai-search:sync:published.');
+    }
   }
 } catch (error) {
   if (error instanceof assert.AssertionError) {

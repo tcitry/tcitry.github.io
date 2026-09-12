@@ -5,8 +5,10 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { promisify } from 'node:util';
+import { fileURLToPath } from 'node:url';
 import { assetHashes, assertSealedRelease } from '../scripts/release-manifest.mjs';
 import { readerBuildIntegration } from '../scripts/reader-build.mjs';
+import { createCorpus, jsonBytes } from '../scripts/lib/ai-search-corpus.mjs';
 
 const execute = promisify(execFile);
 
@@ -112,6 +114,65 @@ if (args[0] === 'env') {
     },
     async manifest() { return JSON.parse(await readFile(path.join(site, '.generated/release.json'), 'utf8')); },
   };
+}
+
+async function sealWithAISearch(context) {
+  await mkdir(path.join(context.site, 'worker'), { recursive: true });
+  await mkdir(path.join(context.site, 'scripts/lib'), { recursive: true });
+  await mkdir(path.join(context.site, '.generated/ai-search/documents'), { recursive: true });
+  await mkdir(path.join(context.site, 'dist/posts/one'), { recursive: true });
+  await copyFile(new URL('../scripts/lib/ai-search-corpus.mjs', import.meta.url), path.join(context.site, 'scripts/lib/ai-search-corpus.mjs'));
+  await symlink(fileURLToPath(new URL('../node_modules/parse5', import.meta.url)), path.join(context.site, 'node_modules/parse5'));
+  await writeFile(path.join(context.site, 'wrangler.jsonc'), JSON.stringify({ name: 'test-worker', main: 'worker/index.ts', assets: { directory: './dist' } }));
+  await writeFile(path.join(context.site, 'worker/index.ts'), 'export default {};\n');
+  await writeFile(path.join(context.site, 'dist/posts/one/index.html'), '<html>Published fixture content.</html>');
+  await writeFile(path.join(context.site, 'scripts/sync-ai-search.mjs'), `
+import fs from 'node:fs';
+fs.writeFileSync('.generated/sync-args.json', JSON.stringify(process.argv.slice(2)));
+if (process.argv.includes('--dry-run')) {
+  if (process.env.FIXTURE_SYNC_FAIL === 'dry-run') {
+    console.error('AI Search request failed (HTTP 401).');
+    process.exit(1);
+  }
+  console.log('AI Search dry run: {"upload":1,"waiting":0,"unchanged":0,"delete":0}.');
+  process.exit(0);
+}
+if (process.env.FIXTURE_SYNC_FAIL === 'apply') {
+  console.error('AI Search sync source is no longer the current production release; stop this old release and use the current deployment');
+  process.exit(1);
+}
+console.log('AI Search sync completed: 1 indexed articles; 0 withdrawn items removed.');
+`);
+  await writeFile(path.join(context.site, 'scripts/verify-deployment.mjs'), `
+if (process.env.FIXTURE_VERIFY_DEPLOY_FAIL) {
+  console.error('Production pages failed verification');
+  process.exit(1);
+}
+console.log('Published site verified.');
+`);
+  await writeFile(path.join(context.site, 'scripts/verify-ai-search-deployment.mjs'), `
+if (process.env.FIXTURE_VERIFY_AI_SEARCH_FAIL) {
+  console.error('Production has not switched to this reviewed release');
+  process.exit(1);
+}
+console.log('Production revision and retired API routes verified; article synchronization may proceed.');
+`);
+  await context.git(context.site, ['add', '.']);
+  await context.git(context.site, ['commit', '--quiet', '-m', 'AI Search']);
+  const siteCommit = (await context.git(context.site, ['rev-parse', 'HEAD'])).stdout.trim();
+  const corpus = createCorpus([{
+    kind: 'page', type: 'posts', url: '/posts/one/', title: 'one', html: '<p>Published fixture content.</p>', date: '2026-09-01',
+  }], { environment: 'production', revision: { siteCommit, contentCommit: context.contentCommit } });
+  await writeFile(path.join(context.site, '.generated/ai-search/manifest.json'), jsonBytes(corpus.manifest));
+  await writeFile(path.join(context.site, '.generated/ai-search/references.json'), jsonBytes(corpus.references));
+  for (const document of corpus.documents) {
+    await writeFile(path.join(context.site, '.generated/ai-search/documents', document.id + '.md'), document.markdown);
+  }
+  const sealed = await context.run('verify-release.mjs');
+  assert.equal(sealed.code, 0, sealed.stderr);
+  const manifest = await context.manifest();
+  assert.ok(manifest.aiSearch);
+  return manifest;
 }
 
 test('Asset hashes cover nested and Unicode files and reject symlinks', async t => {
@@ -328,4 +389,51 @@ test('A preview build invalidates the previous production seal without creating 
   await integration.hooks['astro:build:done']();
   await assert.rejects(context.manifest(), { code: 'ENOENT' });
   await assert.rejects(readFile(path.join(context.site, '.generated/reader-build.json')), { code: 'ENOENT' });
+});
+
+test('AI Search dry-run and online API verification remain hard failures', async t => {
+  const account = { CLOUDFLARE_ACCOUNT_ID: 'a'.repeat(32) };
+  const dryRun = await fixture(t);
+  await sealWithAISearch(dryRun);
+  const rejectedPlan = await dryRun.run('deploy-verified.mjs', { ...account, FIXTURE_SYNC_FAIL: 'dry-run' });
+  assert.equal(rejectedPlan.code, 1, rejectedPlan.stdout + rejectedPlan.stderr);
+  assert.match(rejectedPlan.stdout + rejectedPlan.stderr, /Checking AI Search access and the article sync plan failed/);
+  await assert.rejects(readFile(path.join(dryRun.site, '.generated/deploy-env.json')), { code: 'ENOENT' });
+  await assert.rejects(readFile(path.join(dryRun.site, '.generated/convex-deployed')), { code: 'ENOENT' });
+
+  const pages = await fixture(t);
+  await sealWithAISearch(pages);
+  const rejectedPages = await pages.run('deploy-verified.mjs', { ...account, FIXTURE_VERIFY_DEPLOY_FAIL: '1' });
+  assert.equal(rejectedPages.code, 1, rejectedPages.stdout + rejectedPages.stderr);
+  assert.match(rejectedPages.stdout + rejectedPages.stderr, /Verifying the published site failed/);
+  JSON.parse(await readFile(path.join(pages.site, '.generated/deploy-env.json'), 'utf8'));
+
+  const api = await fixture(t);
+  await sealWithAISearch(api);
+  const rejectedApi = await api.run('deploy-verified.mjs', { ...account, FIXTURE_VERIFY_AI_SEARCH_FAIL: '1' });
+  assert.equal(rejectedApi.code, 1, rejectedApi.stdout + rejectedApi.stderr);
+  assert.match(rejectedApi.stdout + rejectedApi.stderr, /Verifying the published AI Search corpus and chat API failed/);
+  JSON.parse(await readFile(path.join(api.site, '.generated/deploy-env.json'), 'utf8'));
+  assert.deepEqual(JSON.parse(await readFile(path.join(api.site, '.generated/sync-args.json'), 'utf8')), ['--dry-run']);
+});
+
+test('AI Search article sync is best-effort after a verified Worker deploy', async t => {
+  const account = { CLOUDFLARE_ACCOUNT_ID: 'a'.repeat(32) };
+  const failed = await fixture(t);
+  await sealWithAISearch(failed);
+  const incomplete = await failed.run('deploy-verified.mjs', { ...account, FIXTURE_SYNC_FAIL: 'apply' });
+  assert.equal(incomplete.code, 0, incomplete.stdout + incomplete.stderr);
+  assert.match(incomplete.stdout + incomplete.stderr, /WARNING: AI Search article sync did not finish/);
+  assert.match(incomplete.stdout + incomplete.stderr, /ai-search:sync:published/);
+  assert.match(incomplete.stdout + incomplete.stderr, /no longer the current production release/);
+  assert.deepEqual(JSON.parse(await readFile(path.join(failed.site, '.generated/sync-args.json'), 'utf8')), ['--apply', '--best-effort']);
+  JSON.parse(await readFile(path.join(failed.site, '.generated/deploy-env.json'), 'utf8'));
+  await readFile(path.join(failed.site, '.generated/convex-deployed'));
+
+  const succeeded = await fixture(t);
+  await sealWithAISearch(succeeded);
+  const complete = await succeeded.run('deploy-verified.mjs', account);
+  assert.equal(complete.code, 0, complete.stdout + complete.stderr);
+  assert.doesNotMatch(complete.stdout + complete.stderr, /WARNING: AI Search article sync did not finish/);
+  assert.deepEqual(JSON.parse(await readFile(path.join(succeeded.site, '.generated/sync-args.json'), 'utf8')), ['--apply', '--best-effort']);
 });

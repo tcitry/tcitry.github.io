@@ -45,6 +45,7 @@
     "check:local": "npm run check && npm test && npm run build && npm run verify",
     "ai-search:export": "node scripts/export-ai-search.mjs",
     "ai-search:sync": "node scripts/sync-ai-search.mjs",
+    "ai-search:sync:published": "node scripts/verify-ai-search-deployment.mjs && node scripts/sync-ai-search.mjs --apply",
     "ai-search:bootstrap": "node scripts/bootstrap-ai-search.mjs",
     "ai-search:set-model": "node scripts/set-ai-search-model.mjs",
     "ai-search:info": "node scripts/set-ai-search-model.mjs --info",

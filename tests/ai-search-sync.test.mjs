@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict';
+import { execFile } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
+import { promisify } from 'node:util';
 import { createCorpus } from '../scripts/lib/ai-search-corpus.mjs';
-import { applySync, createAISearchClient, planSync, retryDelay, isRetryableAISearchFailure, assertInstanceConfiguration, CUSTOM_METADATA } from '../scripts/lib/ai-search-sync.mjs';
+import { applySync, createAISearchClient, planSync, retryDelay, isRetryableAISearchFailure, assertInstanceConfiguration, CUSTOM_METADATA, AISearchPartialError } from '../scripts/lib/ai-search-sync.mjs';
+import { parseBestEffortBudgetMs, DEFAULT_BEST_EFFORT_BUDGET_MS, MIN_BEST_EFFORT_BUDGET_MS, MAX_BEST_EFFORT_BUDGET_MS } from '../scripts/sync-ai-search.mjs';
+
+const execute = promisify(execFile);
 
 const documents = createCorpus(['one', 'two'].map(slug => ({ kind: 'page', type: 'posts', url: `/posts/${slug}/`, title: slug, html: '<p>hello</p>', date: '2026-09-01', tags: [] }))).documents;
 const item = (document, extra = {}) => ({ id: document.id, key: document.key, source_id: 'builtin', status: 'completed', next_action: 'INDEX', metadata: { content_hash: document.hash }, ...extra });
@@ -200,6 +206,30 @@ test('a stuck in-flight article still fails after one re-upload remains pending'
   assert.equal(uploads, 1);
 });
 
+test('a time budget stops further uploads and skips deletions without a completed state', async () => {
+  const [first, second] = documents;
+  const withdrawn = createCorpus([{ kind: 'page', type: 'posts', url: '/posts/gone/', title: 'gone', html: '<p>hello</p>', date: '2026-09-01', tags: [] }]).documents[0];
+  const uploads = [];
+  let deleted = 0;
+  let now = 0;
+  const client = {
+    upload: async document => { uploads.push(document.url); now = 10; return item(document); },
+    deleteItem: async () => { deleted++; },
+    wait: async () => {},
+  };
+  await assert.rejects(applySync(client, planSync([first, second], [item(withdrawn)]), {
+    deadlineAt: 5,
+    now: () => now,
+  }), error => {
+    assert.ok(error instanceof AISearchPartialError);
+    assert.match(error.message, /time budget after indexing 1\/2/);
+    assert.match(error.message, /ai-search:sync:published/);
+    return true;
+  });
+  assert.deepEqual(uploads, [first.url]);
+  assert.equal(deleted, 0);
+});
+
 test('successful sync waits for indexing then confirms removed items disappear', async () => {
   const [first, second] = documents;
   const calls = [];
@@ -212,4 +242,22 @@ test('successful sync waits for indexing then confirms removed items disappear',
   assert.equal(result.documents.length, 1);
   assert.equal(result.deleted, 1);
   assert.deepEqual(calls, ['upload', 'get', 'delete', 'get']);
+});
+
+test('best-effort budget parsing accepts the deploy default and rejects invalid values', () => {
+  assert.equal(parseBestEffortBudgetMs(undefined), DEFAULT_BEST_EFFORT_BUDGET_MS);
+  assert.equal(parseBestEffortBudgetMs(''), DEFAULT_BEST_EFFORT_BUDGET_MS);
+  assert.equal(parseBestEffortBudgetMs(String(MIN_BEST_EFFORT_BUDGET_MS)), MIN_BEST_EFFORT_BUDGET_MS);
+  assert.equal(parseBestEffortBudgetMs(String(MAX_BEST_EFFORT_BUDGET_MS)), MAX_BEST_EFFORT_BUDGET_MS);
+  assert.throws(() => parseBestEffortBudgetMs('12000'), /AI_SEARCH_SYNC_BUDGET_MS/);
+  assert.throws(() => parseBestEffortBudgetMs('1800001'), /AI_SEARCH_SYNC_BUDGET_MS/);
+  assert.throws(() => parseBestEffortBudgetMs('480000.5'), /AI_SEARCH_SYNC_BUDGET_MS/);
+});
+
+test('sync CLI rejects --best-effort without --apply', async () => {
+  await assert.rejects(execute(process.execPath, [fileURLToPath(new URL('../scripts/sync-ai-search.mjs', import.meta.url)), '--best-effort'], { encoding: 'utf8' }), error => {
+    assert.equal(error.code, 1);
+    assert.match(error.stderr, /Usage: npm run ai-search:sync/);
+    return true;
+  });
 });

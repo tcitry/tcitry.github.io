@@ -5,12 +5,24 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertSealedRelease } from './release-manifest.mjs';
 import { assertCorpusRelease, jsonBytes, readCorpus, sha256 } from './lib/ai-search-corpus.mjs';
 import { assertPublishedCorpus } from './lib/ai-search-published.mjs';
-import { AISearchAPIError, createAISearchClient, planSync, planSummary, applySync, assertInstanceConfiguration } from './lib/ai-search-sync.mjs';
+import { AISearchAPIError, AISearchPartialError, createAISearchClient, planSync, planSummary, applySync, assertInstanceConfiguration } from './lib/ai-search-sync.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
+export const DEFAULT_BEST_EFFORT_BUDGET_MS = 8 * 60 * 1000;
+export const MIN_BEST_EFFORT_BUDGET_MS = 30_000;
+export const MAX_BEST_EFFORT_BUDGET_MS = 30 * 60 * 1000;
+export const SYNC_USAGE = 'Usage: npm run ai-search:sync -- [--dry-run | --apply] [--best-effort]';
+
+export function parseBestEffortBudgetMs(value, fallback = DEFAULT_BEST_EFFORT_BUDGET_MS) {
+  if (value == null || value === '') return fallback;
+  const parsed = Number(value);
+  assert.ok(Number.isInteger(parsed) && parsed >= MIN_BEST_EFFORT_BUDGET_MS && parsed <= MAX_BEST_EFFORT_BUDGET_MS,
+    `AI_SEARCH_SYNC_BUDGET_MS must be an integer between ${MIN_BEST_EFFORT_BUDGET_MS} and ${MAX_BEST_EFFORT_BUDGET_MS}`);
+  return parsed;
+}
 
 /** Embedders may supply a client using an explicitly authorized credential provider. */
-export async function syncAISearch({ apply = false, client, directory = root, log = console.log, fetchImpl = fetch } = {}) {
+export async function syncAISearch({ apply = false, bestEffort = false, client, directory = root, log = console.log, fetchImpl = fetch, now = Date.now } = {}) {
   let corpus = await readCorpus(path.join(directory, '.generated/ai-search'));
   if (apply) {
     const releaseBytes = await readFile(path.join(directory, '.generated/release.json'));
@@ -36,12 +48,16 @@ export async function syncAISearch({ apply = false, client, directory = root, lo
   const instance = await client.getInstance();
   assertInstanceConfiguration(instance);
   const plan = planSync(corpus.documents, await client.listItems());
-  log(`AI Search ${apply ? 'verified sync' : 'dry run'}: ${JSON.stringify(planSummary(plan))}.`);
+  const budgetMs = apply && bestEffort ? parseBestEffortBudgetMs(process.env.AI_SEARCH_SYNC_BUDGET_MS) : undefined;
+  const deadlineAt = budgetMs == null ? undefined : now() + budgetMs;
+  log(`AI Search ${apply ? 'verified sync' : 'dry run'}: ${JSON.stringify(planSummary(plan))}${bestEffort ? `; best-effort budget ${budgetMs}ms` : ''}.`);
   if (!apply) return { localOnly: false, ...planSummary(plan) };
   const beforeWrite = () => assertPublishedCorpus(corpus.manifest, { fetchImpl });
   await beforeWrite();
   const result = await applySync(client, plan, {
     beforeWrite,
+    deadlineAt,
+    now,
     onProgress: ({ indexed, total }) => log(`AI Search indexed ${indexed}/${total} public articles.`),
     onRetryUpload: document => log(`AI Search indexing still pending for ${document.url}; retrying that article once.`),
   });
@@ -56,13 +72,20 @@ export async function syncAISearch({ apply = false, client, directory = root, lo
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  const args = process.argv.slice(2);
   try {
-    const args = process.argv.slice(2);
-    assert.ok(args.every(arg => ['--apply', '--dry-run'].includes(arg)) && !(args.includes('--apply') && args.includes('--dry-run')), 'Usage: npm run ai-search:sync -- [--dry-run | --apply]');
-    await syncAISearch({ apply: args.includes('--apply') });
+    const apply = args.includes('--apply');
+    const dryRun = args.includes('--dry-run');
+    const bestEffort = args.includes('--best-effort');
+    assert.ok(args.every(arg => ['--apply', '--dry-run', '--best-effort'].includes(arg)) && !(apply && dryRun) && (!bestEffort || apply), SYNC_USAGE);
+    await syncAISearch({ apply, bestEffort });
   } catch (error) {
-    const known = error instanceof assert.AssertionError || error instanceof AISearchAPIError || error.message?.startsWith('AI Search');
-    console.error(known ? error.message.split('\n')[0] : 'AI Search sync failed; verify the sealed production release, deployment receipt, and API credentials. No completion state was written.');
-    process.exitCode = 1;
+    if (error instanceof AISearchPartialError && args.includes('--best-effort')) {
+      console.warn(`WARNING: ${error.message}`);
+    } else {
+      const known = error instanceof assert.AssertionError || error instanceof AISearchAPIError || error.message?.startsWith('AI Search');
+      console.error(known ? error.message.split('\n')[0] : 'AI Search sync failed; verify the sealed production release, deployment receipt, and API credentials. No completion state was written.');
+      process.exitCode = 1;
+    }
   }
 }
