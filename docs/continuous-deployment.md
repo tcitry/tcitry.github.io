@@ -71,7 +71,7 @@ npm run deploy:verified
 
 若站点已上传但线上核验或 AI Search 同步失败，在同一封存目录修复外部条件后运行项目定义的 deployment verify 和同步命令；不要手工制造 deployment receipt。
 
-Workers Builds 的 GitHub check 对应整段 `deploy:verified`：Worker 上传、线上页面核验和 AI Search 同步必须都成功。因此 `/blog-release.json` 的 `siteCommit` 可能已经前进，但 check 仍为失败——这表示语料同步未完成，而不是站点未发布。一条 queued/running 的文章不得阻塞其余新增或更新；该篇重试后仍未完成，check 才保持失败。
+Workers Builds 的 GitHub check 对应整段 `deploy:verified`：Worker 上传、线上页面核验和 AI Search 同步必须都成功。因此 `/blog-release.json` 的 `siteCommit` 可能已经前进，但 check 仍为失败——这表示语料同步未完成，而不是站点未发布。新增文章会先全部提交再等待索引；一条 queued/running 的文章不得阻止其余提交，该篇重试后仍未完成，check 才保持失败。
 
 ## Workers Builds
 

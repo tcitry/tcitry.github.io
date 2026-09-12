@@ -135,16 +135,33 @@ test('failed or pending indexing prevents deletions and does not return complete
 
 test('new uploads are not blocked by a previously in-flight article', async () => {
   const [first, second] = documents;
-  const uploads = [];
+  const calls = [];
   const client = {
-    upload: async document => { uploads.push(document.url); return item(document); },
-    getItem: async id => item(documents.find(document => document.id === id) ?? first),
+    upload: async document => { calls.push(`upload:${document.url}`); return item(document); },
+    getItem: async id => { calls.push(`get:${id}`); return item(documents.find(document => document.id === id) ?? first); },
     deleteItem: async () => {},
     wait: async () => {},
   };
   const result = await applySync(client, planSync([first, second], [item(first, { status: 'running' })]), { polling: { attempts: 1, pollMs: 0 } });
-  assert.deepEqual(uploads, [second.url]);
+  const uploadSecond = calls.indexOf(`upload:${second.url}`);
+  const getFirst = calls.indexOf(`get:${first.id}`);
+  assert.ok(uploadSecond !== -1, 'The new article must be submitted');
+  assert.ok(getFirst === -1 || uploadSecond < getFirst, 'The new article must be submitted before polling the in-flight article');
   assert.equal(result.documents.length, 2);
+});
+
+test('a pending new upload does not prevent submitting the rest of the corpus', async () => {
+  const [first, second] = documents;
+  const uploads = [];
+  const client = {
+    upload: async document => { uploads.push(document.url); return item(document, { status: 'running' }); },
+    getItem: async id => item(id === second.id ? second : first, { status: id === second.id ? 'completed' : 'running' }),
+    wait: async () => {},
+    deleteItem: async () => {},
+  };
+  await assert.rejects(applySync(client, planSync([first, second], []), { polling: { attempts: 1, pollMs: 0 } }), /still pending/);
+  assert.equal(uploads[0], first.url);
+  assert.equal(uploads[1], second.url);
 });
 
 test('a stuck in-flight article is re-uploaded once then can complete', async () => {
