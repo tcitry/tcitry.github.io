@@ -94,9 +94,10 @@ npm run ai-search:bootstrap -- --apply
 npm run prepare:content
 npm run ai-search:sync
 npm run ai-search:sync -- --apply
+npm run ai-search:sync -- --apply --best-effort
 ```
 
-没有凭据时同步命令只报告本地语料或执行 dry-run。远端写入需要发布环境中的 `CLOUDFLARE_ACCOUNT_ID` 和受限 `CLOUDFLARE_API_TOKEN`；凭据不由 Wrangler OAuth、浏览器或本地认证存储自动推导。
+没有凭据时同步命令只报告本地语料或执行 dry-run。远端写入需要发布环境中的 `CLOUDFLARE_ACCOUNT_ID` 和受限 `CLOUDFLARE_API_TOKEN`；凭据不由 Wrangler OAuth、浏览器或本地认证存储自动推导。`--best-effort` 仅用于 `--apply`：在 `AI_SEARCH_SYNC_BUDGET_MS`（默认 8 分钟）内尽量提交，时间用尽后打印 `WARNING` 并以退出码 0 结束，不写完整成功记录。无预算的 `--apply` 仍会在未完成时失败。
 
 同步规则：
 
@@ -108,7 +109,9 @@ npm run ai-search:sync -- --apply
 - 上传成功后继续等待索引完成；
 - 任一分页、hash、状态或限流异常都不写完整成功记录。
 
-正式发布由 `deploy:verified` 在封存产物上线并完成线上核验后执行同步。`--apply` 会重新校验 release、站点提交、内容提交、语料 bytes 和 deployment receipt；不能手工制造这些文件绕过检查。
+正式发布由 `deploy:verified` 在封存产物上线并完成线上核验后执行 best-effort 同步。Worker/Convex 部署、页面核验和 AI Search corpus/chat API 核验仍是硬失败；文章同步超时、被更新的生产版本中止或索引未完成只会告警，不会把 Workers Builds 打红。`--apply` 会重新校验 release、站点提交、内容提交、语料 bytes 和 deployment receipt；不能手工制造这些文件绕过检查。站点变绿不等于语料已经全量索引。
+
+针对当前已发布版本、不重新上传 Worker 的一次回填见 [一次静默回填](continuous-deployment.md#一次静默回填)（`npm run ai-search:sync:published`）。该路径仍然使用 `assertPublishedCorpus`，不会对已下线的旧 release 继续写入。
 
 ## Metadata
 

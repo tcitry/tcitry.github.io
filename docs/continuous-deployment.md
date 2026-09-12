@@ -65,13 +65,13 @@ npm run deploy:verified
 
 - `build:production` 生成允许收录的生产产物。
 - `verify:release` 校验来源提交、配置、产物和 AI Search 语料并封存 release。
-- `deploy:verified` 只上传该封存产物，完成线上核验后同步 AI Search。
+- `deploy:verified` 只上传该封存产物，完成线上核验后尽力同步 AI Search。文章同步失败或只完成一部分不会让这次 verified deploy 失败。
 
 封存后不得重建或修改 `dist/`、配置、引用清单或语料。Wrangler 上传期间如有其他进程可能改写产物，应中止并从新的独立检出重建。
 
-若站点已上传但线上核验或 AI Search 同步失败，在同一封存目录修复外部条件后运行项目定义的 deployment verify 和同步命令；不要手工制造 deployment receipt。
+若站点已上传但线上核验失败，在同一封存目录修复外部条件后运行项目定义的 deployment verify；不要手工制造 deployment receipt。AI Search 文章同步是发布后的尽力而为步骤：Workers Builds 变绿只表示 Worker/Convex 与线上核验（含 AI Search corpus/chat API）成功，不等于全部文章已经索引完成。
 
-Workers Builds 的 GitHub check 对应整段 `deploy:verified`：Worker 上传、线上页面核验和 AI Search 同步必须都成功。因此 `/blog-release.json` 的 `siteCommit` 可能已经前进，但 check 仍为失败——这表示语料同步未完成，而不是站点未发布。新增文章会先全部提交再等待索引；一条 queued/running 的文章不得阻止其余提交，该篇重试后仍未完成，check 才保持失败。
+Workers Builds 的 GitHub check 对应 `deploy:verified` 的硬失败步骤：封存校验、Convex/Worker 部署、`verify-deployment` 和 `verify-ai-search-deployment`。预发布 AI Search dry-run 仍会因凭据、实例或同步计划无法建立而失败。全量文章同步改为 best-effort：在时间预算内尽量提交，超时、中途发布切换或索引未完成会打印 `WARNING`，但退出码为 0。预算内新增文章仍会先全部提交再等待索引。
 
 ## Workers Builds
 
@@ -83,7 +83,24 @@ Workers Builds 仅构建站点仓库 `main`。`build:workers` 会：
 4. 构建并验证生产站点；
 5. 交给 Cloudflare 上传已经封存的产物。
 
-`deploy:verified` 随后核验线上站点并同步 AI Search。公开主题 CI、GitHub Actions 通知成功或 `blog-release.json` 已切换都不等于这次 Workers Builds check 已经成功。日常不维护 `BLOG_CONTENT_COMMIT`；它只用于回滚或复现。
+`deploy:verified` 随后核验线上站点并尽力同步 AI Search。公开主题 CI 或 GitHub Actions 通知成功不等于这次 Workers Builds check 已经成功；check 变绿也不等于 AI Search 已索引完全部公开文章。日常不维护 `BLOG_CONTENT_COMMIT`；它只用于回滚、复现或一次静默回填。
+
+## 一次静默回填
+
+首次把约 800+ 篇公开文章补进 `tcitry-blog-search` 时，不要依赖一次会被取消的超长 Workers Builds 步骤。
+
+每次生产发布会在时间预算内尽量推进索引（默认 8 分钟，可用 `AI_SEARCH_SYNC_BUDGET_MS` 覆盖，单位毫秒）。已索引且 `content_hash` 未变的文章下次会跳过，因此频繁合并也能累积进度。
+
+要在不重新上传 Worker 的情况下，针对**当前已发布**的生产版本一次跑完剩余文章：
+
+1. 打开 `https://yindongliang.com/blog-release.json`，记下 `siteCommit` 与 `contentCommit`。
+2. 期间暂停合并站点 `main` 和 Blog 内容更新，避免线上 marker 前进。
+3. 在独立检出中 checkout 该 `siteCommit`，设置 `BLOG_CONTENT_COMMIT` 为该 `contentCommit`。
+4. 运行 `npm run setup && npm run build:production && npm run verify:release`。确认封存的 revision / `corpusHash` 与线上 marker 一致。
+5. 配置与生产发布相同的 `CLOUDFLARE_ACCOUNT_ID` 和受限 `CLOUDFLARE_API_TOKEN`（只放在本地 env 或平台 secret，不要写入 Git）。
+6. 运行 `npm run ai-search:sync:published`。
+
+该命令会核验线上 marker、写入 deployment receipt，再执行**无时间预算**的 `--apply`。每次远端写入前仍会核对当前生产 release；若期间有新版本上线，同步会停止，应改用新版本重跑。不要手工编辑 `.generated/deployment.json`。
 
 ## Blog 内容更新触发
 
@@ -96,6 +113,6 @@ Blog 仓库发送 `blog-content-updated` repository dispatch。站点 `.github/w
 - 主域关键页面、历史 URL、404、RSS、sitemap、robots 和 release marker 正确。
 - 普通构建未误发，生产页面允许预期的索引策略。
 - Clerk 登录、Convex 私人数据隔离、评论、收藏、咨询和通知使用 production 环境。
-- AI Search `/search` 与 Convex `/chat/completions` 使用同一 production public endpoint，引用匹配当前发布语料。
+- AI Search `/search` 与 Convex `/chat/completions` 使用同一 production public endpoint，引用匹配当前发布语料。Workers Builds 变绿不代表全部公开文章已经索引完成。
 - 已删除的 `/api/chat` 和 `/api/internal/retrieve` 保持 404。
 - Cloudflare、Convex 和浏览器日志中没有凭据、私人正文或跨账户数据。

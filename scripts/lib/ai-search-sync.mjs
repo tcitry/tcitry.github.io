@@ -19,6 +19,16 @@ export class AISearchAPIError extends Error {
   }
 }
 
+/** Best-effort sync stopped before a completed state. Callers must not treat this as a failed site deploy. */
+export class AISearchPartialError extends Error {
+  constructor(indexed, total) {
+    super(`AI Search sync reached the time budget after indexing ${indexed}/${total} public articles; synchronization was not marked complete. Rerun npm run ai-search:sync:published against the current production release.`);
+    this.name = 'AISearchPartialError';
+    this.indexed = indexed;
+    this.total = total;
+  }
+}
+
 export function retryDelay(retryAfter, attempt, now = Date.now()) {
   const seconds = Number(retryAfter);
   const parsed = retryAfter && !Number.isFinite(seconds) ? Date.parse(retryAfter) - now : seconds * 1000;
@@ -201,14 +211,19 @@ async function waitForSubmittedDocument(client, document, initial, { polling, be
   }
 }
 
+function assertWithinBudget(deadlineAt, now, indexed, total) {
+  if (deadlineAt != null && now() >= deadlineAt) throw new AISearchPartialError(indexed, total);
+}
+
 /** Uploads are serialized and indexed before deletions; a failure never returns a completed state. */
-export async function applySync(client, plan, { onProgress = () => {}, polling, beforeWrite = async () => {}, onRetryUpload = () => {} } = {}) {
+export async function applySync(client, plan, { onProgress = () => {}, polling, beforeWrite = async () => {}, onRetryUpload = () => {}, deadlineAt, now = Date.now } = {}) {
   const indexed = [...plan.unchanged.map(({ document, item }) => ({ key: document.key, hash: document.hash, itemId: item.id }))];
   const total = plan.unchanged.length + plan.waiting.length + plan.uploads.length;
   const pending = [];
   // Submit every new/changed article before polling any of them. A single
   // queued/running item must not keep the rest of the corpus unsent.
   for (const { document } of plan.uploads) {
+    assertWithinBudget(deadlineAt, now, indexed.length, total);
     await beforeWrite();
     const uploaded = await client.upload(document, { beforeRetry: beforeWrite });
     if (uploaded?.status === 'completed' && uploaded.next_action !== 'DELETE') {
@@ -220,11 +235,13 @@ export async function applySync(client, plan, { onProgress = () => {}, polling, 
   }
   pending.push(...plan.waiting);
   for (const { document, item } of pending) {
+    assertWithinBudget(deadlineAt, now, indexed.length, total);
     const complete = await waitForSubmittedDocument(client, document, item, { polling, beforeWrite, onRetryUpload });
     recordIndexed(indexed, document, complete);
     onProgress({ indexed: indexed.length, total });
   }
   for (const item of plan.deletes) {
+    assertWithinBudget(deadlineAt, now, indexed.length, total);
     await beforeWrite();
     await client.deleteItem(item, { beforeRetry: beforeWrite });
   }
