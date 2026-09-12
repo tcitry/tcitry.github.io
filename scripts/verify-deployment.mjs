@@ -109,6 +109,64 @@ export function assetReferences(html, route = '/') {
   return [...assets];
 }
 
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+export const publishedRetry = { attempts: 8, delayMs: 1000 };
+
+export function hashedAstroAssets(paths) {
+  return [...new Set(paths.filter(asset => asset.startsWith('/_astro/')))];
+}
+
+export function publishedAssetPaths({ publishedHtml, localHtml, route }) {
+  const published = assetReferences(publishedHtml, route);
+  if (localHtml == null) return published;
+  const localHashed = new Set(hashedAstroAssets(assetReferences(localHtml, route)));
+  const assets = [];
+  const seen = new Set();
+  for (const asset of published) {
+    if (asset.startsWith('/_astro/') && !localHashed.has(asset)) continue;
+    seen.add(asset);
+    assets.push(asset);
+  }
+  for (const asset of localHashed) {
+    if (seen.has(asset)) continue;
+    seen.add(asset);
+    assets.push(asset);
+  }
+  return assets;
+}
+
+export async function retryUntil(run, { attempts = publishedRetry.attempts, delayMs = publishedRetry.delayMs, sleep: wait = sleep, onRetry } = {}) {
+  assert.ok(Number.isInteger(attempts) && attempts > 0 && Number.isInteger(delayMs) && delayMs >= 0, 'Retry budget must be a positive attempt count and non-negative delay');
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try { return await run(attempt); } catch (error) {
+      lastError = error;
+      if (attempt === attempts) throw error;
+      onRetry?.(attempt, error);
+      await wait(delayMs);
+    }
+  }
+  throw lastError;
+}
+
+export async function waitForPublishedRelease({ origin, expected, fetchImpl = fetch, timeout = 30_000, attempts = publishedRetry.attempts, delayMs = publishedRetry.delayMs, sleep: wait = sleep, onRetry } = {}) {
+  assert.match(expected?.siteCommit || '', /^[a-f0-9]{40}$/, 'Local release marker missing siteCommit');
+  assert.match(expected?.contentCommit || '', /^[a-f0-9]{40}$/, 'Local release marker missing contentCommit');
+  return retryUntil(async attempt => {
+    const url = new URL('/blog-release.json', origin);
+    url.searchParams.set('verify', `${expected.siteCommit}-${attempt}`);
+    const response = await fetchImpl(url, {
+      redirect: 'manual', cache: 'no-store', signal: AbortSignal.timeout(timeout),
+      headers: { 'cache-control': 'no-cache' },
+    });
+    assert.equal(response.status, 200, 'Production release marker status');
+    const marker = await response.json();
+    assert.equal(marker.siteCommit, expected.siteCommit, 'Production has not switched to this reviewed release');
+    assert.equal(marker.contentCommit, expected.contentCommit, 'Production content revision does not match this release');
+    return marker;
+  }, { attempts, delayMs, sleep: wait, onRetry });
+}
+
 export function assertComments(html, expected, route) {
   assert.ok(!/<script\b[^>]*src=["']https:\/\/giscus\.app\/client\.js/i.test(html), `Giscus must not be loaded: ${route}`);
   const markers = [...html.matchAll(/<section\b[^>]*\bdata-convex-comments(?=[\s=>])[^>]*>/gi)];
@@ -130,7 +188,7 @@ async function main() {
     'all-routes': { type: 'boolean', default: false }, 'timeout-ms': { type: 'string', default: '30000' }, help: { type: 'boolean' },
   } });
   if (values.help) {
-    console.log('Usage: node scripts/verify-deployment.mjs --env production|preview [--origin http(s)://host] [--all-routes] [--timeout-ms 30000] [--report path]\nPUBLIC_SITE_ENV and VERIFY_ORIGIN may supply --env and --origin. Production defaults to https://yindongliang.com; preview defaults to http://127.0.0.1:4321. Run after building the same revision. Loopback preview skips Cloudflare response-header, HTTP-redirect and immutable-cache checks; production checks remain strict.');
+    console.log('Usage: node scripts/verify-deployment.mjs --env production|preview [--origin http(s)://host] [--all-routes] [--timeout-ms 30000] [--report path]\nPUBLIC_SITE_ENV and VERIFY_ORIGIN may supply --env and --origin. Production defaults to https://yindongliang.com; preview defaults to http://127.0.0.1:4321. Run after building the same revision. Production waits for /blog-release.json, checks hashed /_astro files this release actually emitted, and retries brief CDN 404s. Loopback preview skips Cloudflare response-header, HTTP-redirect and immutable-cache checks; production checks remain strict.');
     return;
   }
   const environment = values.env || process.env.PUBLIC_SITE_ENV;
@@ -165,17 +223,42 @@ async function main() {
   const section = content.pages.find(page => page.kind === 'section' && page.section === 'docs' && page.url !== '/docs/');
   assert.ok(section, 'Missing docs section'); selected.add(section.url);
   if (values['all-routes']) for (const route of routes) selected.add(route.url);
-  const checks = [], results = new Map(), pending = new Map();
-  async function request(route) {
-    if (!pending.has(route)) pending.set(route, (async () => {
-      const response = await fetch(new URL(route, origin), { redirect: 'manual', signal: AbortSignal.timeout(timeout) });
+  const dist = path.join(root, 'dist');
+  let releaseToken = 'verify';
+  if (!localPreview && environment === 'production') {
+    const expected = JSON.parse(await readFile(path.join(dist, 'blog-release.json'), 'utf8'));
+    await waitForPublishedRelease({
+      origin, expected, timeout,
+      onRetry: attempt => { if (attempt === 1) console.log('Waiting for production to switch to this release'); },
+    });
+    releaseToken = expected.siteCommit;
+  }
+  const checks = [], results = new Map(), pending = new Map(), localPages = new Map();
+  async function request(route, { attempt = 0, bust = false } = {}) {
+    const key = bust ? `${route}#${attempt}` : route;
+    if (!pending.has(key)) pending.set(key, (async () => {
+      const url = new URL(route, origin);
+      if (bust) url.searchParams.set('verify', `${releaseToken}-${attempt}`);
+      const response = await fetch(url, {
+        redirect: 'manual', cache: 'no-store', signal: AbortSignal.timeout(timeout),
+        headers: bust ? { 'cache-control': 'no-cache' } : undefined,
+      });
       const bytes = new Uint8Array(await response.arrayBuffer());
       assert.ok(bytes.length <= 25 * 1024 * 1024, `Response exceeds static hosting limit: ${route}`);
       const result = { route, status: response.status, headers: response.headers, body: new TextDecoder().decode(bytes), bytes: bytes.length };
       results.set(route, result); checks.push({ route, status: result.status, bytes: result.bytes });
       return result;
     })());
-    return pending.get(route);
+    return pending.get(key);
+  }
+  function published(route, attempt = 1) {
+    return localPreview ? request(route) : request(route, { attempt, bust: true });
+  }
+  async function ready(route, check) {
+    return retryUntil(async attempt => check(await published(route, attempt)), {
+      attempts: localPreview ? 1 : publishedRetry.attempts,
+      onRetry: (attempt, error) => { if (attempt === 1) console.log(`Waiting for the published revision (${route}: ${error.message.split('\n')[0]})`); },
+    });
   }
   async function batches(items, check, label) {
     for (let index = 0; index < items.length; index += 4) {
@@ -183,14 +266,19 @@ async function main() {
       console.log(`${label}: ${Math.min(index + 4, items.length)}/${items.length}`);
     }
   }
-  const recentResponse = await request('/search/recent.json');
-  assert.equal(recentResponse.status, 200, 'Recent updates endpoint status');
-  assert.match(recentResponse.headers.get('content-type') || '', /application\/json/i, 'Recent updates must return JSON');
-  assert.deepEqual(JSON.parse(recentResponse.body), expectedRecent, 'Recent updates must match this release');
-  if (!localPreview) assert.match(recentResponse.headers.get('cache-control') || '', /\bno-cache\b/i, 'Recent updates must revalidate between releases');
+  await ready('/search/recent.json', response => {
+    assert.equal(response.status, 200, 'Recent updates endpoint status');
+    assert.match(response.headers.get('content-type') || '', /application\/json/i, 'Recent updates must return JSON');
+    assert.deepEqual(JSON.parse(response.body), expectedRecent, 'Recent updates must match this release');
+    if (!localPreview) assert.match(response.headers.get('cache-control') || '', /\bno-cache\b/i, 'Recent updates must revalidate between releases');
+    return response;
+  });
   await batches([...selected], async route => {
-    const response = await request(route);
-    assert.equal(response.status, 200, `Page status: ${route}`);
+    localPages.set(route, await readFile(path.join(dist, decodeURIComponent(route), 'index.html'), 'utf8'));
+    const response = await ready(route, response => {
+      assert.equal(response.status, 200, `Page status: ${route}`);
+      return response;
+    });
     assert.match(response.headers.get('content-type') || '', /text\/html/i, `HTML content type: ${route}`);
     assertCanonical(response.body, route); assertHtmlIndexing(response.body, environment, route);
     if (!localPreview) assertHeaderIndexing(response.headers.get('x-robots-tag'), environment, route);
@@ -208,14 +296,14 @@ async function main() {
   const feeds = new Set(['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/links/index.xml', ...terms.map(term => `${term.url}index.xml`)]);
   if (values['all-routes']) for (const term of [...content.tags, ...content.categories]) feeds.add(`${term.url}index.xml`);
   await batches([...feeds, '/sitemap.xml'], async route => {
-    const response = await request(route); assert.equal(response.status, 200, `Feed/sitemap status: ${route}`);
+    const response = await ready(route, response => { assert.equal(response.status, 200, `Feed/sitemap status: ${route}`); return response; });
     assert.match(response.headers.get('content-type') || '', /(?:xml|rss)/i, `XML content type: ${route}`);
     assert.match(response.body, route === '/sitemap.xml' ? /<urlset\b/ : /<rss\b/, `XML document missing: ${route}`);
     assertXMLSiteURLs(response.body, route);
   }, 'Feeds and sitemap');
-  const robots = await request('/robots.txt'); assert.equal(robots.status, 200, 'robots.txt status'); assertRobotsPolicy(robots.body, environment);
+  const robots = await ready('/robots.txt', response => { assert.equal(response.status, 200, 'robots.txt status'); return response; }); assertRobotsPolicy(robots.body, environment);
   for (const route of ['/chat/', '/me/', '/demos/2026/cloudflare-product-map/', '/__astro-deployment-verification-missing__/']) {
-    const response = await request(route); assert.equal(response.status, 404, `Must return a real HTTP 404: ${route}`);
+    const response = await ready(route, response => { assert.equal(response.status, 404, `Must return a real HTTP 404: ${route}`); return response; });
     assert.match(response.body, /页面未找到/, `Custom 404 missing: ${route}`); assertComments(response.body, false, route);
     if (environment === 'preview') { assertHtmlIndexing(response.body, environment, route); if (!localPreview) assertHeaderIndexing(response.headers.get('x-robots-tag'), environment, route); }
   }
@@ -236,8 +324,10 @@ async function main() {
     assert.equal(new URL(response.headers.get('location'), origin).href, `${origin}${route}/`, `Trailing-slash target: ${route}`);
   }
   const assets = new Set(['/pagefind/pagefind.js', '/pagefind/pagefind-worker.js', '/pagefind/pagefind-entry.json', '/logo.gif', '/book-icons/menu.svg', '/favicon.ico', '/apple-touch-icon.png', '/icons/menu.svg', '/katex/katex.min.css']);
-  for (const route of selected) for (const asset of assetReferences(results.get(route).body, route)) assets.add(asset);
-  const entry = await request('/pagefind/pagefind-entry.json'); assert.equal(entry.status, 200, 'Pagefind entry status');
+  for (const route of selected) {
+    for (const asset of publishedAssetPaths({ publishedHtml: results.get(route).body, localHtml: localPages.get(route), route })) assets.add(asset);
+  }
+  const entry = await ready('/pagefind/pagefind-entry.json', response => { assert.equal(response.status, 200, 'Pagefind entry status'); return response; });
   const index = JSON.parse(entry.body);
   assert.ok(Object.keys(index.languages || {}).length > 0, 'Pagefind languages missing');
   for (const language of Object.values(index.languages)) {
@@ -251,11 +341,18 @@ async function main() {
     assert.ok(sample, `Missing Pagefind ${directory} sample`); assets.add(`/pagefind/${directory}/${sample}`);
   }
   await batches([...assets], async route => {
-    const response = await request(route); assert.equal(response.status, 200, `Asset status: ${route}`);
-    assert.ok(response.bytes > 0 && !/text\/html/i.test(response.headers.get('content-type') || ''), `Asset returned HTML or an empty body: ${route}`);
-    if (/\.css$/.test(route)) assert.match(response.headers.get('content-type') || '', /text\/css/i, `CSS content type: ${route}`);
-    if (/\.m?js$/.test(route)) assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/i, `JavaScript content type: ${route}`);
-    if (!localPreview && route.startsWith('/_astro/')) assert.match(response.headers.get('cache-control') || '', /immutable/i, `Hashed asset cache policy: ${route}`);
+    const response = await retryUntil(async attempt => {
+      const response = await (localPreview ? request(route) : request(route, { attempt, bust: true }));
+      assert.equal(response.status, 200, `Asset status: ${route}`);
+      assert.ok(response.bytes > 0 && !/text\/html/i.test(response.headers.get('content-type') || ''), `Asset returned HTML or an empty body: ${route}`);
+      if (/\.css$/.test(route)) assert.match(response.headers.get('content-type') || '', /text\/css/i, `CSS content type: ${route}`);
+      if (/\.m?js$/.test(route)) assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/i, `JavaScript content type: ${route}`);
+      if (!localPreview && route.startsWith('/_astro/')) assert.match(response.headers.get('cache-control') || '', /immutable/i, `Hashed asset cache policy: ${route}`);
+      return response;
+    }, {
+      attempts: localPreview ? 1 : publishedRetry.attempts,
+      onRetry: (attempt, error) => { if (attempt === 1) console.log(`Waiting for published assets (${route}: ${error.message.split('\n')[0]})`); },
+    });
   }, 'Static assets and search');
   const report = path.resolve(root, values.report || `.generated/deployment-verification-${environment}.json`);
   await mkdir(path.dirname(report), { recursive: true });
