@@ -115,7 +115,8 @@ test('a signed-out production visitor gets one Clerk prompt returning to the cur
   const result = renderPrompt(Component, {isLoaded: true, isSignedIn: false});
   assert.equal(result.providers, 1);
   assert.deepEqual(result.prompts, [{signInForceRedirectUrl: currentPage, signUpForceRedirectUrl: currentPage}]);
-  assert.equal(result.session.getItem('blog-clerk-return-url'), currentPage);
+  assert.equal(result.session.getItem('blog-clerk-return-url'), null,
+    'signed-out render must not overwrite a stored return URL if Account Portal lands on /');
 });
 
 test('shared One Tap redirect options match the current page without a hosted sign-in URL', async () => {
@@ -136,7 +137,7 @@ test('shared One Tap redirect options match the current page without a hosted si
 });
 
 test('One Tap treats transferable and external_account_not_found sign-ins as first-time sign-up', async () => {
-  const {googleOneTapNeedsSignUp, transferGoogleOneTapIfNeeded} = await importBundle(
+  const {googleOneTapNeedsSignUp, googleOneTapRejectedNeedsSignUp, transferGoogleOneTapIfNeeded} = await importBundle(
     new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
   );
 
@@ -160,6 +161,9 @@ test('One Tap treats transferable and external_account_not_found sign-ins as fir
   };
   assert.equal(googleOneTapNeedsSignUp(transferable), true);
   assert.equal(googleOneTapNeedsSignUp(failed), true);
+  assert.equal(googleOneTapRejectedNeedsSignUp({errors: [{code: 'external_account_not_found'}]}), true);
+  assert.equal(googleOneTapRejectedNeedsSignUp({code: 'external_account_not_found'}), true);
+  assert.equal(googleOneTapRejectedNeedsSignUp(new Error('network')), false);
 
   const created = [];
   const clerk = {
@@ -261,6 +265,36 @@ test('installing One Tap sign-in-or-up transfers new Google users and keeps retu
     installGoogleOneTapSignInOrUp({clerkjs: nested});
     await nested.authenticateWithGoogleOneTap({token: 'nested'});
     assert.deepEqual(nestedCreated, [{strategy: 'google_one_tap', token: 'nested'}]);
+
+    const rejectedCreated = [];
+    const rejected = {
+      authenticateWithGoogleOneTap: async () => {
+        const error = new Error('Invalid external account');
+        error.errors = [{code: 'external_account_not_found', message: 'The External Account was not found.'}];
+        throw error;
+      },
+      handleGoogleOneTapCallback: async () => {},
+      client: {
+        signUp: {
+          create: async (params) => {
+            rejectedCreated.push(params);
+            return {status: 'complete', missingFields: []};
+          },
+        },
+      },
+    };
+    installGoogleOneTapSignInOrUp(rejected);
+    const fromRejection = await rejected.authenticateWithGoogleOneTap({token: 'rejected'});
+    assert.deepEqual(rejectedCreated, [{strategy: 'google_one_tap', token: 'rejected'}]);
+    assert.equal(fromRejection.status, 'complete');
+
+    const unrelated = {
+      authenticateWithGoogleOneTap: async () => { throw new Error('GIS timeout'); },
+      handleGoogleOneTapCallback: async () => {},
+      client: {signUp: {create: async () => { throw new Error('should not transfer'); }}},
+    };
+    installGoogleOneTapSignInOrUp(unrelated);
+    await assert.rejects(() => unrelated.authenticateWithGoogleOneTap({token: 'other'}), /GIS timeout/);
   } finally {
     if (previousWindow === undefined) delete globalThis.window;
     else globalThis.window = previousWindow;
@@ -271,7 +305,7 @@ test('production One Tap prompt uses shared return URL and sign-in-or-up helpers
   const source = await readFile(new URL('../src/components/auth/GoogleOneTapPrompt.tsx', import.meta.url), 'utf8');
   assert.match(source, /\{...googleOneTapRedirect\(\)\}/);
   assert.match(source, /installGoogleOneTapSignInOrUp\(clerk\)/);
-  assert.match(source, /rememberClerkReturnUrl\(\)/);
+  assert.doesNotMatch(source, /rememberClerkReturnUrl\(\)/);
   assert.doesNotMatch(source, /signInForceRedirectUrl=\{currentPage\}/);
   assert.doesNotMatch(source, /\/sign-in/);
 });

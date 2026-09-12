@@ -348,10 +348,11 @@ test('every production SignInButton and openSignIn entry uses the shared sign-in
   assert.match(sources['src/components/auth/clerk-signin.ts'], /transferable:\s*true/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /rememberClerkReturnUrl\(\)/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /continuation:\s*'transfer_to_sign_up'/);
+  assert.match(sources['src/components/auth/clerk-signin.ts'], /googleOneTapRejectedNeedsSignUp/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /clerkjs/);
   assert.match(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /\{...googleOneTapRedirect\(\)\}/);
   assert.match(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /installGoogleOneTapSignInOrUp\(clerk\)/);
-  assert.match(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /rememberClerkReturnUrl\(\)/);
+  assert.doesNotMatch(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /rememberClerkReturnUrl\(\)/);
   assert.match(sources['src/components/auth/ClerkSignInButton.tsx'], /\{...panelClerkRedirect\(\)\}/);
   assert.match(sources['src/components/auth/ClerkSignInButton.tsx'], /onClickCapture=\{\(\) => rememberClerkReturnUrl\(window\.location\)\}/);
   assert.match(sources['src/components/auth/ClerkSignInButton.tsx'], /onPointerDownCapture=\{\(\) => rememberClerkReturnUrl\(window\.location\)\}/);

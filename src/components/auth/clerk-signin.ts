@@ -196,6 +196,16 @@ export function googleOneTapNeedsSignUp(result: GoogleOneTapAttempt | null | und
     || verification.error?.code === 'external_account_not_found';
 }
 
+export function googleOneTapRejectedNeedsSignUp(error: unknown) {
+  if (!error || typeof error !== 'object') return false;
+  const code = (error as {code?: unknown}).code;
+  if (code === 'external_account_not_found') return true;
+  const errors = (error as {errors?: unknown}).errors;
+  return Array.isArray(errors) && errors.some(item => (
+    item && typeof item === 'object' && (item as {code?: unknown}).code === 'external_account_not_found'
+  ));
+}
+
 export async function transferGoogleOneTapIfNeeded(
   clerk: GoogleOneTapClerk,
   result: unknown,
@@ -225,7 +235,17 @@ function installGoogleOneTapSignInOrUpOn(clerk: object) {
 
   instance.authenticateWithGoogleOneTap = async (params) => {
     rememberClerkReturnUrl();
-    const result = await authenticate(params);
+    let result: unknown;
+    try {
+      result = await authenticate(params);
+    } catch (error) {
+      if (!googleOneTapRejectedNeedsSignUp(error)) throw error;
+      result = {
+        status: 'needs_identifier',
+        identifier: null,
+        firstFactorVerification: {status: 'failed', error: {code: 'external_account_not_found'}},
+      };
+    }
     try {
       return await transferGoogleOneTapIfNeeded(instance, result, params.token);
     } catch {
