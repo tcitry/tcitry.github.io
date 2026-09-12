@@ -139,6 +139,7 @@ try {
       await trigger.click();
       await waitState(page, 'recent');
       assert.equal(await page.locator('[data-search-engine]').count(), 0, 'Recent updates are not attributed to a search engine');
+      assert.equal(await page.getByText('搜索公开文章 · 无需登录', {exact: true}).count(), 0, 'Idle commander does not show redundant public-search copy');
       assert.equal(network.requests.length, 0, 'Opening anonymous search does not issue an empty remote search');
       assert.equal(network.references, 0, 'The full public reference list is lazy until the first query');
       await input(page).fill('safe');
@@ -233,6 +234,7 @@ try {
         await input(page).fill('');
         await waitState(page, 'recent');
         assert.equal(await page.locator('[data-search-engine]').count(), 0, 'Clearing search removes the last result source');
+        assert.equal(await page.getByText('搜索公开文章 · 无需登录', {exact: true}).count(), 0, 'Clearing search does not restore idle public-search copy');
         const beforeComposition = network.requests.length;
         await input(page).dispatchEvent('compositionstart');
         await input(page).fill('中文');

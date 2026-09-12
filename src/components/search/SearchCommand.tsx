@@ -237,11 +237,9 @@ function SearchCommand({onClose, onAskAI}: Props) {
             </Command.InputGroup.Suffix>
           </Command.InputGroup>
 
-          <div className={styles.source} data-search-engine={normalizedQuery ? activeResult?.engine : undefined}>
-            {normalizedQuery && activeResult?.engine
-              ? activeResult.engine === 'ai-search' ? '基于 Cloudflare AI Search' : '基于 Pagefind · 全文搜索'
-              : '搜索公开文章 · 无需登录'}
-          </div>
+          {normalizedQuery && activeResult?.engine && <div className={styles.source} data-search-engine={activeResult.engine}>
+            {activeResult.engine === 'ai-search' ? '基于 Cloudflare AI Search' : '基于 Pagefind · 全文搜索'}
+          </div>}
 
           <Command.List
             aria-label={normalizedQuery ? '搜索结果' : '最近更新'}
