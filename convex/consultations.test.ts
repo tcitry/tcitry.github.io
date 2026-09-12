@@ -176,10 +176,14 @@ describe("Clerk verified session entitlement", () => {
     for (const slug of ["", "u:pro", "pro,free", "pro user"]) {
       vi.stubEnv("CLERK_PRO_PLAN_SLUG", slug);
       expect((await alice.action(api.membership.getMyMembership, {})).configured).toBe(false);
-      await expect(alice.action(api.consultations.start, request)).rejects.toThrow("CONSULTATION_UNAVAILABLE");
+      expect((await alice.action(api.membership.getMyMembership, {})).consultationsReady).toBe(true);
+      expect(await alice.query(api.membership.getConsultationRole, {})).toEqual({ isAdmin: false, ready: true });
+      await expect(alice.action(api.consultations.start, request)).rejects.toThrow("PRO_REQUIRED");
     }
     vi.stubEnv("CLERK_PRO_PLAN_SLUG", "pro");
     vi.stubEnv("CONSULTATION_ADMIN_TOKEN_IDENTIFIER", "");
+    expect((await alice.action(api.membership.getMyMembership, {})).consultationsReady).toBe(false);
+    expect(await alice.query(api.membership.getConsultationRole, {})).toEqual({ isAdmin: false, ready: false });
     await expect(alice.action(api.consultations.start, request)).rejects.toThrow("CONSULTATION_UNAVAILABLE");
     expect(await t.run(ctx => ctx.db.query("consultationThreads").take(1))).toEqual([]);
   });

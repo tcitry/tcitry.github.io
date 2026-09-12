@@ -19,7 +19,7 @@
 | `.env.production.local` | 同名公开变量 | 手动生产构建的本地覆盖 |
 | Cloudflare Build variables | 三项 `PUBLIC_*` | 云端生产构建 |
 | Cloudflare Build secrets | `CONVEX_DEPLOY_KEY`、同步或发布所需 secret | 云端部署步骤 |
-| Convex development / production | `CLERK_FRONTEND_API_URL`、`AI_SEARCH_PUBLIC_URL` 及业务变量 | 对应后端环境 |
+| Convex development / production | `CLERK_FRONTEND_API_URL`、`CLERK_PRO_PLAN_SLUG`、`CONSULTATION_ADMIN_TOKEN_IDENTIFIER`、`AI_SEARCH_PUBLIC_URL` | 对应后端环境；production 必须单独配置 Pro slug 与咨询作者 identity |
 | GitHub Actions secret | `CLOUDFLARE_DEPLOY_HOOK` | Blog 内容更新通知 |
 
 规则：

@@ -18,7 +18,7 @@ Clerk 启用 Convex integration，客户端使用 audience `convex` 的 session 
 Convex deployment 使用的业务变量：
 
 - `CLERK_FRONTEND_API_URL`
-- `CLERK_PRO_PLAN_SLUG`
+- `CLERK_PRO_PLAN_SLUG`（development / production 各自对应同环境 Clerk Billing 个人计划 slug；缺失时无法核验 Pro，不等于咨询全站关闭）
 - `CONSULTATION_ADMIN_TOKEN_IDENTIFIER`
 - `AI_SEARCH_PUBLIC_URL`
 

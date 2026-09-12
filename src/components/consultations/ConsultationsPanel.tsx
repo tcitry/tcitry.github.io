@@ -8,7 +8,7 @@ import { memberError, useMembership } from '../membership/useMembership';
 import CommentImages from '../comments/CommentImages';
 import {ImageUploadError} from '../comments/comment-image-upload';
 import {ConsultationImagePicker, useConsultationImages} from './ConsultationImages';
-import {consultationMembershipNote} from './consultation-membership-note';
+import {consultationMembershipAction, consultationMembershipNote} from './consultation-membership-note';
 import styles from './ConsultationsPanel.module.css';
 
 const statusLabels = { waiting: '等待回复', replied: '博主已回复', closed: '已结束' } as const;
@@ -202,9 +202,7 @@ export default function ConsultationsPanel({initialThreadId}: {initialThreadId?:
   const { membership, pending, error, refresh } = useMembership();
   const [selected, setSelected] = useState<SelectedThread | null>(initialThreadId ? {id: initialThreadId} : null);
   const [composing, setComposing] = useState(false);
-  const checking = pending || (!membership && !error);
-  const canConsult = Boolean(role?.ready && membership?.configured && membership.isPro && !checking && !error);
-  const canUpgrade = Boolean(role?.ready && membership?.configured && !membership.isPro && !checking && !error);
+  const action = consultationMembershipAction(role, membership, pending, error);
   const note = consultationMembershipNote(role, membership, pending, error);
   if (selected) return <section className={styles.panel} aria-label="私人咨询" data-consultations-panel data-sentry-mask data-pagefind-ignore>
     <Conversation key={selected.id} threadId={selected.id} title={selected.title} onBack={() => setSelected(null)} />
@@ -218,9 +216,11 @@ export default function ConsultationsPanel({initialThreadId}: {initialThreadId?:
       <div className={styles.membership}>
         {note ? <p>{note}</p> : null}
         <div className={styles.actions}>
-          {canUpgrade
+          {action === 'upgrade'
             ? <Button size="sm" onPress={() => openUserProfile({__experimental_startPath: '/billing'})}>开通 Pro</Button>
-            : <Button size="sm" isDisabled={!canConsult} onPress={() => setComposing(true)}>发起咨询</Button>}
+            : action === 'start' || action === 'disabled-start'
+              ? <Button size="sm" isDisabled={action !== 'start'} onPress={() => setComposing(true)}>发起咨询</Button>
+              : null}
           {error && <Button size="sm" variant="ghost" onPress={() => { void refresh(); }}>重试</Button>}
         </div>
         {error && <p className={styles.error} role="alert">{error}</p>}

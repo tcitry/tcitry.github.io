@@ -61,14 +61,16 @@ Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录�
 
 真人咨询使用站内异步私聊。用户只能读取和写入自己的咨询；作者收件箱和回复函数只允许配置的作者 identity 调用。
 
+咨询是否对全站开放，只由对应 Convex deployment 的 `CONSULTATION_ADMIN_TOKEN_IDENTIFIER` 决定。未配置作者 identity 时，咨询入口显示「尚未开放」，且不出现禁用的「发起咨询」。
+
 新建或继续咨询时，Convex 从已验证 Clerk v2 session `pla` claim 判断个人 Pro 权益：
 
-- `CLERK_PRO_PLAN_SLUG` 必须精确匹配计划 slug；
+- `CLERK_PRO_PLAN_SLUG` 必须精确匹配 Clerk Billing 个人计划 slug；development 与 production Convex 都要配置，且各自对应同环境 Clerk 计划；
 - scope 必须包含个人范围 `u`、`ou` 或 `uo`；
 - 仅组织 scope `o`、未知 scope、缺失或无效 claim 均不授予 Pro；
 - JWT 过期时间不是订阅结束日期，账期由 Clerk Billing UI 展示。
 
-订阅失效后仍可读取自己的历史，但新增付费留言需要重新通过权益检查。权益查询失败应显示错误和重试，不得显示为免费账户。
+slug 缺失或无效时无法核验 Pro，后端拒绝新建咨询，但前端不得表现为全站关闭：已登录非 Pro（含无法核验计划）看到 Pro 说明和「开通 Pro」，打开 Clerk Billing。订阅失效后仍可读取自己的历史，但新增付费留言需要重新通过权益检查。权益查询失败应显示错误和重试，不得显示为免费账户，也不得留下无说明的禁用「发起咨询」。
 
 ## 图片附件
 
@@ -87,8 +89,8 @@ Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录�
 | 变量 | 用途 |
 | --- | --- |
 | `CLERK_FRONTEND_API_URL` | 对应 Clerk 实例的可信 issuer |
-| `CLERK_PRO_PLAN_SLUG` | 个人 Pro 计划 slug |
-| `CONSULTATION_ADMIN_TOKEN_IDENTIFIER` | 作者的完整 `tokenIdentifier` |
+| `CLERK_PRO_PLAN_SLUG` | 个人 Pro 计划 slug；production Convex 必须与 Clerk production Billing 计划一致，否则无法核验 Pro |
+| `CONSULTATION_ADMIN_TOKEN_IDENTIFIER` | 作者的完整 `tokenIdentifier`；缺失时咨询全站关闭 |
 | `AI_SEARCH_PUBLIC_URL` | 与前端相同的 AI Search public endpoint |
 
 前端构建配置 `PUBLIC_CLERK_PUBLISHABLE_KEY`、`PUBLIC_CONVEX_URL` 和 `AI_SEARCH_PUBLIC_URL`。当前认证和 Pro 授权不使用 `CLERK_SECRET_KEY` 或 Clerk Backend API。
