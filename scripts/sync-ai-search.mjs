@@ -40,7 +40,11 @@ export async function syncAISearch({ apply = false, client, directory = root, lo
   if (!apply) return { localOnly: false, ...planSummary(plan) };
   const beforeWrite = () => assertPublishedCorpus(corpus.manifest, { fetchImpl });
   await beforeWrite();
-  const result = await applySync(client, plan, { beforeWrite, onProgress: ({ indexed, total }) => log(`AI Search indexed ${indexed}/${total} public articles.`) });
+  const result = await applySync(client, plan, {
+    beforeWrite,
+    onProgress: ({ indexed, total }) => log(`AI Search indexed ${indexed}/${total} public articles.`),
+    onRetryUpload: document => log(`AI Search indexing still pending for ${document.url}; retrying that article once.`),
+  });
   await beforeWrite();
   const state = { version: 1, instance: 'tcitry-blog-search', gateway: 'tcitry-blog-chat', revision: corpus.manifest.revision,
     corpusHash: corpus.manifest.corpusHash, completedAt: new Date().toISOString(), ...result };

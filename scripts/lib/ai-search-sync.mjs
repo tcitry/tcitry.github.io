@@ -164,6 +164,8 @@ export function planSummary(plan) {
   return { upload: plan.uploads.length, waiting: plan.waiting.length, unchanged: plan.unchanged.length, delete: plan.deletes.length };
 }
 
+export const INDEXING_PENDING_MESSAGE = 'AI Search indexing is still pending; synchronization was not marked complete. Rerun after the current job finishes.';
+
 export async function waitUntilIndexed(client, initial, { attempts = 12, pollMs = 10000 } = {}) {
   let item = initial;
   for (let poll = 0; poll <= attempts; poll++) {
@@ -173,19 +175,41 @@ export async function waitUntilIndexed(client, initial, { attempts = 12, pollMs 
     await client.wait(pollMs);
     item = await client.getItem(initial.id);
   }
-  throw new Error('AI Search indexing is still pending; synchronization was not marked complete. Rerun after the current job finishes.');
+  throw new Error(INDEXING_PENDING_MESSAGE);
+}
+
+async function indexDocument(client, document, initial, { waiting, polling, beforeWrite, onRetryUpload }) {
+  let current = initial;
+  if (!waiting) {
+    await beforeWrite();
+    current = await client.upload(document, { beforeRetry: beforeWrite });
+  }
+  try {
+    return await waitUntilIndexed(client, current, polling);
+  } catch (error) {
+    if (error?.message !== INDEXING_PENDING_MESSAGE) throw error;
+    onRetryUpload?.(document);
+    await beforeWrite();
+    current = await client.upload(document, { beforeRetry: beforeWrite });
+    try {
+      return await waitUntilIndexed(client, current, polling);
+    } catch (retryError) {
+      if (retryError?.message !== INDEXING_PENDING_MESSAGE) throw retryError;
+      throw new Error(`AI Search indexing is still pending for ${document.url}; synchronization was not marked complete. Rerun after the current job finishes.`);
+    }
+  }
 }
 
 /** Uploads are serialized and indexed before deletions; a failure never returns a completed state. */
-export async function applySync(client, plan, { onProgress = () => {}, polling, beforeWrite = async () => {} } = {}) {
+export async function applySync(client, plan, { onProgress = () => {}, polling, beforeWrite = async () => {}, onRetryUpload = () => {} } = {}) {
   const indexed = [...plan.unchanged.map(({ document, item }) => ({ key: document.key, hash: document.hash, itemId: item.id }))];
-  for (const { document, item } of [...plan.waiting, ...plan.uploads]) {
-    let initial = item;
-    if (!plan.waiting.some(entry => entry.document.key === document.key)) {
-      await beforeWrite();
-      initial = await client.upload(document, { beforeRetry: beforeWrite });
-    }
-    const complete = await waitUntilIndexed(client, initial, polling);
+  // Finish new/changed uploads before polling in-flight items so one queued article
+  // cannot keep the rest of the corpus, or the Workers Builds check, from progressing.
+  for (const { document, item } of [...plan.uploads, ...plan.waiting]) {
+    const complete = await indexDocument(client, document, item, {
+      waiting: plan.waiting.some(entry => entry.document.key === document.key),
+      polling, beforeWrite, onRetryUpload,
+    });
     assert.equal(complete.key, document.key, 'AI Search completed a different article');
     assert.equal(complete.metadata?.content_hash, document.hash, 'AI Search indexed content hash differs from the reviewed article');
     indexed.push({ key: document.key, hash: document.hash, itemId: complete.id });
