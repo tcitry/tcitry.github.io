@@ -2,29 +2,18 @@ import { Component, useId, useRef, useState, type FormEvent, type ReactNode } fr
 import { useClerk } from '@clerk/react';
 import { Button, Input, TextArea, Tooltip } from '@heroui/react';
 import { useAction, useMutation, usePaginatedQuery, useQuery } from 'convex/react';
-import type { FunctionReturnType } from 'convex/server';
 import { api } from '../../../convex/_generated/api';
 import type { Id } from '../../../convex/_generated/dataModel';
 import { memberError, useMembership } from '../membership/useMembership';
 import CommentImages from '../comments/CommentImages';
 import {ImageUploadError} from '../comments/comment-image-upload';
 import {ConsultationImagePicker, useConsultationImages} from './ConsultationImages';
+import {consultationMembershipNote} from './consultation-membership-note';
 import styles from './ConsultationsPanel.module.css';
 
 const statusLabels = { waiting: '等待回复', replied: '博主已回复', closed: '已结束' } as const;
 const time = (value: number) => new Intl.DateTimeFormat('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(value);
 type SelectedThread = {id: Id<'consultationThreads'>; title?: string};
-type Membership = FunctionReturnType<typeof api.membership.getMyMembership>;
-
-function consultationMembershipNote(role: {ready: boolean} | undefined, membership: Membership | null, pending: boolean, error: string) {
-  if (role === undefined) return '正在加载咨询…';
-  if (!role.ready) return '私人咨询尚未开放。';
-  if (pending || (!membership && !error)) return '正在核验会员状态…';
-  if (error) return '';
-  if (!membership.configured) return '私人咨询尚未开放。';
-  if (membership.isPro) return '等待博主回复。';
-  return '私人咨询仅 Pro 会员可用。已有记录始终可查看。';
-}
 
 interface ConversationProps {threadId: Id<'consultationThreads'>; title?: string; inbox?: boolean; onBack: () => void}
 
