@@ -109,12 +109,14 @@ test('waitForPublishedRelease waits for the marker to match this revision then s
   }), /has not switched to this reviewed release/);
 });
 
-test('waitForPublishedRelease retries a 200 HTML marker until JSON arrives', async () => {
+test('waitForPublishedRelease retries a 200 JSON body served as HTML until the JSON content type arrives', async () => {
   const expected = { siteCommit: 'a'.repeat(40), contentCommit: 'b'.repeat(40) };
   let generation = 0;
   const fetchImpl = async () => {
     generation += 1;
-    if (generation < 3) return new Response('<html>cached</html>', { status: 200, headers: { 'content-type': 'text/html' } });
+    if (generation < 3) {
+      return new Response(JSON.stringify(expected), { status: 200, headers: { 'content-type': 'text/html' } });
+    }
     return json(expected);
   };
   assert.deepEqual(await waitForPublishedRelease({
