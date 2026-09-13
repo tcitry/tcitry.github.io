@@ -39,6 +39,43 @@ test('Book navigation prunes hidden branches and empty articles while retaining 
   assert.deepEqual(site.pagesForTerm(fixture.tags[0]).map((item) => item.id), ['visible']);
 });
 
+test('home lists dated docs, posts and weekly like archives and keeps 10-item pagination', async () => {
+  const dated = [
+    page({ id: 'doc-1', source: 'docs/a.md', url: '/docs/a/', type: 'docs', date: '2026-03-03T00:00:00.000Z' }),
+    page({ id: 'post-1', source: 'posts/b.md', url: '/posts/b/', type: 'posts', section: 'posts', parent: '/posts/', date: '2026-03-02T00:00:00.000Z' }),
+    page({ id: 'weekly-1', source: 'weekly/c.md', url: '/weekly/c/', type: 'weekly', section: 'weekly', parent: '/weekly/', date: '2026-03-01T00:00:00.000Z' }),
+    ...Array.from({ length: 9 }, (_, index) => page({
+      id: `post-extra-${index}`, source: `posts/extra-${index}.md`, url: `/posts/extra-${index}/`,
+      type: 'posts', section: 'posts', parent: '/posts/',
+      date: new Date(Date.UTC(2026, 1, 10 - index)).toISOString(),
+    })),
+  ];
+  const site = await loadSite({ pages: [
+    page({ id: 'home', url: '/', kind: 'home', type: '', section: '', parent: '' }),
+    page({ id: 'posts', source: '', url: '/posts/', kind: 'section', type: 'posts', section: 'posts', parent: '/' }),
+    page({ id: 'archives', source: '', url: '/archives/', kind: 'section', type: 'archives', section: 'archives', parent: '/' }),
+    ...dated,
+    page({ id: 'link', source: 'links/x.md', url: '/links/x/', type: 'links', section: 'links', date: '2026-04-01T00:00:00.000Z' }),
+    page({ id: 'dateless-doc', source: 'docs/undated.md', url: '/docs/undated/', type: 'docs', date: '' }),
+  ], tags: [], categories: [], diagnostics: { warnings: [], sourceCount: dated.length + 5 } });
+  const views = site.buildViews();
+  const home = views.filter((view) => view.page.kind === 'home');
+  const homeIds = home.flatMap((view) => view.entries.map((entry) => entry.id));
+  const archiveIds = views.find((view) => view.page.url === '/archives/').entries.map((entry) => entry.id);
+  const expectedIds = ['doc-1', 'post-1', 'weekly-1', ...Array.from({ length: 9 }, (_, index) => `post-extra-${index}`)];
+  assert.deepEqual(homeIds, expectedIds);
+  assert.deepEqual(archiveIds, expectedIds);
+  assert.equal(home.length, 2);
+  assert.equal(home[0].entries.length, 10);
+  assert.equal(home[1].entries.length, 2);
+  assert.equal(home[1].page.url, '/page/2/');
+  assert.deepEqual(home[0].pagination, { current: 1, total: 2, urls: ['/', '/page/2/'] });
+  const posts = views.find((view) => view.page.url === '/posts/').entries.map((entry) => entry.id);
+  assert.equal(posts.length, 10);
+  assert.ok(posts.every((id) => id.startsWith('post-')));
+  assert.ok(!posts.includes('doc-1') && !posts.includes('weekly-1') && !posts.includes('link'));
+});
+
 test('home pagination and posts archive retain articles located outside the posts content section', async () => {
   const posts = Array.from({ length: 105 }, (_, index) => page({
     id: 'post-' + index, source: `docs/post-${index}.md`, url: `/posts/post-${index}/`, type: 'posts', parent: '/docs/',
