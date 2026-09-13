@@ -3,7 +3,7 @@ import {paginationOptsValidator, paginationResultValidator, type PaginationOptio
 import {ConvexError, v} from "convex/values";
 import {components} from "./_generated/api";
 import {env, mutation, query, type MutationCtx, type QueryCtx} from "./_generated/server";
-import {canonicalPathname, commentAuthorName, invalid, requireCommentIdentity} from "./commentShared";
+import {canonicalPathname, commentAuthorImageUrl, commentAuthorName, invalid, requireCommentIdentity} from "./commentShared";
 import {bindImages, deleteImages, imageResult, readCommentImages} from "./commentImages";
 import {notifyCommentReply} from "./notifications";
 
@@ -123,7 +123,7 @@ export const setCommentLike = mutation({
 });
 
 const publicComment = v.object({
-  id: v.id("comments"), authorName: v.string(), body: v.string(), createdAt: v.number(),
+  id: v.id("comments"), authorName: v.string(), authorImageUrl: v.optional(v.string()), body: v.string(), createdAt: v.number(),
   canDelete: v.boolean(), deleted: v.boolean(), likeCount: v.number(), likedByMe: v.boolean(), images: v.array(imageResult),
   replyTo: v.optional(v.object({id: v.id("comments"), authorName: v.string(), deleted: v.boolean()})),
 });
@@ -147,6 +147,7 @@ export const list = query({
         canDelete: !deleted && (isModerator(viewer) || row.owner === viewer), deleted,
         likeCount: deleted ? 0 : row.likeCount ?? 0, likedByMe: Boolean(liked),
         images: deleted ? [] : await readCommentImages(ctx, row),
+        ...(!deleted && row.authorImageUrl ? {authorImageUrl: row.authorImageUrl} : {}),
         ...(parent && parent.pathname === pathname ? {replyTo: {id: parent._id, authorName: parent.deletedAt !== undefined ? "已删除的评论" : parent.authorName, deleted: parent.deletedAt !== undefined}} : {}),
       };
     }))};
@@ -161,6 +162,7 @@ export const add = mutation({
     const owner = identity.tokenIdentifier;
     const pathname = canonicalPathname(args.pathname);
     const authorName = commentAuthorName(identity);
+    const authorImageUrl = commentAuthorImageUrl(identity);
     const body = args.body.trim();
     const imageIds = args.imageIds ?? [];
     if ((!body && !imageIds.length) || body.length > 4_000 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(body)) invalid("请填写 1–4,000 字的评论，或上传图片。");
@@ -171,7 +173,7 @@ export const add = mutation({
     }
     await rateLimiter.limit(ctx, "commentWrites", {key: owner, throws: true});
     const stats = await readStats(ctx, pathname);
-    const id = await ctx.db.insert("comments", {owner, pathname, authorName, body, createdAt: Date.now(), parentId: args.parentId, imageIds, likeCount: 0});
+    const id = await ctx.db.insert("comments", {owner, pathname, authorName, body, createdAt: Date.now(), parentId: args.parentId, imageIds, likeCount: 0, ...(authorImageUrl ? {authorImageUrl} : {})});
     await bindImages(ctx, imageIds, id, owner);
     await updateStats(ctx, pathname, stats, 1, 0);
     if (args.parentId) await notifyCommentReply(ctx, id, args.parentId);
@@ -190,7 +192,7 @@ export const remove = mutation({
     await rateLimiter.limit(ctx, "commentWrites", {key: owner, throws: true});
     const stats = await readStats(ctx, row.pathname);
     await deleteImages(ctx, row);
-    await ctx.db.patch("comments", row._id, {deletedAt: Date.now(), body: "", authorName: "", imageIds: [], likeCount: 0});
+    await ctx.db.patch("comments", row._id, {deletedAt: Date.now(), body: "", authorName: "", authorImageUrl: undefined, imageIds: [], likeCount: 0});
     await updateStats(ctx, row.pathname, stats, -1, 0);
     return null;
   },
