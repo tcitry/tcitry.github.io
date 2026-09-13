@@ -18,11 +18,17 @@ const bundle = await build({
 const {default: CommentContent} = await import('data:text/javascript;base64,' + Buffer.from(bundle.outputFiles[0].text).toString('base64'));
 
 function elements(node) { return [...(node.tagName ? [node] : []), ...(node.childNodes ?? []).flatMap(elements)]; }
+function tree(node) {
+  if (!node || typeof node !== 'object') return [];
+  const children = node.props?.children;
+  return [node, ...(Array.isArray(children) ? children : children != null ? [children] : []).flatMap(tree)];
+}
 const comment = (overrides = {}) => ({
   id: 'example', authorName: '读者', body: '评论正文', createdAt: 1_700_000_000_000,
   canDelete: false, deleted: false, likeCount: 0, likedByMe: false, images: [], ...overrides,
 });
 const render = (value, parentLoaded = false) => renderToStaticMarkup(createElement(CommentContent, {comment: value, parentLoaded}));
+const avatarImages = (value, parentLoaded = false) => tree(CommentContent({comment: value, parentLoaded})).filter(node => node.type?.name === 'AvatarImage' || node.type?.displayName === 'AvatarImage');
 
 test('comment bodies, account usernames and reply names cannot introduce markup or executable links', () => {
   const body = '<script>alert(1)</script>\n<img src=x onerror="alert(2)">\n[link](javascript:alert(3))';
@@ -46,23 +52,25 @@ test('loaded reply parents receive a local anchor while their account names stay
   assert.equal(nodes.some(node => node.tagName === 'img' || node.attrs.some(attribute => attribute.name.startsWith('on'))), false);
 });
 
-test('published comments render the stored HTTPS avatar', () => {
-  const html = render(comment({authorImageUrl: 'https://img.clerk.com/alice.png'}));
-  const imgs = elements(parseFragment(html)).filter(node => node.tagName === 'img');
-  assert.equal(imgs.length, 1);
-  assert.equal(imgs[0].attrs.find(attribute => attribute.name === 'src')?.value, 'https://img.clerk.com/alice.png');
-  assert.match(html, /读者/);
+test('published comments keep the stored HTTPS avatar URL on Avatar.Image', () => {
+  const value = comment({authorImageUrl: 'https://img.clerk.com/alice.png'});
+  const images = avatarImages(value);
+  assert.equal(images.length, 1);
+  assert.equal(images[0].props.src, 'https://img.clerk.com/alice.png');
+  assert.match(render(value), /读者/);
 });
 
 test('deleted comments render a tombstone without their body, identity or images', () => {
-  const html = render(comment({deleted: true, authorName: '已删除作者的用户名', body: '已删除的私有正文',
+  const value = comment({deleted: true, authorName: '已删除作者的用户名', body: '已删除的私有正文',
     authorImageUrl: 'https://example.invalid/deleted-avatar.png',
     images: [{id: 'deleted-image', url: 'https://example.invalid/deleted-image.png', contentType: 'image/png', size: 10}],
-  }));
+  });
+  const html = render(value);
   assert.match(html, /这条评论已删除，回复仍保留。/);
   assert.match(html, /已删除的评论/);
   assert.doesNotMatch(html, /已删除作者的用户名|已删除的私有正文|example\.invalid/);
   assert.equal(elements(parseFragment(html)).some(node => node.tagName === 'img'), false);
+  assert.equal(avatarImages(value).length, 0);
 });
 
 test('replies to a deleted parent retain the relationship without exposing the old author', () => {
