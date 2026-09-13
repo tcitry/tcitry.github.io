@@ -125,10 +125,47 @@ describe("comment identity and deletion", () => {
       // @ts-expect-error Ownership always comes from verified identity.
       owner: "bob",
     })).rejects.toThrow();
+    await expect(alice.mutation(api.comments.add, {
+      ...comment,
+      // @ts-expect-error Avatars come from signed identity, not the comment form.
+      authorImageUrl: "https://evil.example.test/forged.png",
+    })).rejects.toThrow();
     await alice.mutation(api.comments.add, comment);
     const result = await alice.query(api.comments.list, {pathname, paginationOpts});
     expect(result.page[0].authorName).toBe("Alice");
+    expect(result.page[0].authorImageUrl).toBeUndefined();
     expect(JSON.stringify(result)).not.toMatch(/Private legal name|private@example|tokenIdentifier|owner|subject|issuer/);
+  });
+
+  test("signed pictureUrl is the public avatar; invalid values are omitted and deletion clears it", async () => {
+    const {t} = setup();
+    const avatar = "https://img.clerk.com/alice.png";
+    const pictured = t.withIdentity({...aliceIdentity, pictureUrl: avatar});
+    const id = await pictured.mutation(api.comments.add, comment);
+    expect((await pictured.query(api.comments.list, {pathname, paginationOpts})).page[0]).toMatchObject({authorName: "Alice", authorImageUrl: avatar});
+    expect(await t.run(ctx => ctx.db.get("comments", id))).toMatchObject({authorImageUrl: avatar});
+    await pictured.mutation(api.comments.remove, {id});
+    const deleted = (await pictured.query(api.comments.list, {pathname, paginationOpts})).page[0];
+    expect(deleted).toMatchObject({id, deleted: true, authorName: "已删除的评论"});
+    expect(deleted.authorImageUrl).toBeUndefined();
+    expect(JSON.stringify(deleted)).not.toContain("img.clerk.com");
+    expect(await t.run(ctx => ctx.db.get("comments", id))).toMatchObject({authorName: ""});
+    expect((await t.run(ctx => ctx.db.get("comments", id)))?.authorImageUrl).toBeUndefined();
+
+    for (const [index, pictureUrl] of [
+      "http://img.clerk.com/alice.png",
+      "data:image/png;base64,abc",
+      "javascript:alert(1)",
+      "ftp://img.clerk.com/alice.png",
+      "not-a-url",
+      `https://${"x".repeat(2_049)}`,
+      "https://img.clerk.com/alice.png\u0000.png",
+    ].entries()) {
+      const user = t.withIdentity({...aliceIdentity, subject: `alice-invalid-${index}`, pictureUrl});
+      const invalidId = await user.mutation(api.comments.add, comment);
+      expect((await t.run(ctx => ctx.db.get("comments", invalidId)))?.authorImageUrl).toBeUndefined();
+      expect((await user.query(api.comments.list, {pathname, paginationOpts})).page[0].authorImageUrl).toBeUndefined();
+    }
   });
 
   test("missing username never falls back to email, full name, or user ID", async () => {

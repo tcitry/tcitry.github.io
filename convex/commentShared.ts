@@ -34,3 +34,18 @@ export function commentAuthorName(identity: UserIdentity) {
   }
   throw new ConvexError({code: "USERNAME_UNAVAILABLE", message: "当前登录信息缺少用户名，暂时无法发布评论。"});
 }
+
+// OIDC `picture` is exposed on Convex UserIdentity as `pictureUrl`. Never accept
+// a client-supplied avatar URL; missing or unsafe values just omit the avatar.
+const MAX_AUTHOR_IMAGE_URL_LENGTH = 2_048;
+
+export function commentAuthorImageUrl(identity: UserIdentity) {
+  const value = identity.pictureUrl;
+  if (typeof value !== "string") return;
+  const url = value.trim();
+  if (!url || url.length > MAX_AUTHOR_IMAGE_URL_LENGTH || /[\u0000-\u001f\u007f]/u.test(url)) return;
+  let parsed: URL;
+  try { parsed = new URL(url); } catch { return; }
+  if (parsed.protocol !== "https:" || !parsed.hostname) return;
+  return url;
+}

@@ -46,6 +46,14 @@ test('loaded reply parents receive a local anchor while their account names stay
   assert.equal(nodes.some(node => node.tagName === 'img' || node.attrs.some(attribute => attribute.name.startsWith('on'))), false);
 });
 
+test('published comments render the stored HTTPS avatar', () => {
+  const html = render(comment({authorImageUrl: 'https://img.clerk.com/alice.png'}));
+  const imgs = elements(parseFragment(html)).filter(node => node.tagName === 'img');
+  assert.equal(imgs.length, 1);
+  assert.equal(imgs[0].attrs.find(attribute => attribute.name === 'src')?.value, 'https://img.clerk.com/alice.png');
+  assert.match(html, /读者/);
+});
+
 test('deleted comments render a tombstone without their body, identity or images', () => {
   const html = render(comment({deleted: true, authorName: '已删除作者的用户名', body: '已删除的私有正文',
     authorImageUrl: 'https://example.invalid/deleted-avatar.png',

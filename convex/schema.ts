@@ -41,6 +41,7 @@ export default defineSchema({
     parentId: v.optional(v.id("comments")), owner: v.string(),
     deletedAt: v.optional(v.number()), likeCount: v.optional(v.number()),
     imageIds: v.optional(v.array(v.id("commentImages"))),
+    authorImageUrl: v.optional(v.string()),
   }).index("by_pathname_and_createdAt", ["pathname", "createdAt"])
     .index("by_owner_and_deletedAt_and_createdAt", ["owner", "deletedAt", "createdAt"]),
   commentStats: defineTable({pathname: v.string(), commentCount: v.number(), likeCount: v.number()})
