@@ -1317,7 +1317,7 @@ try {
     });
     assert.equal(focused.writeOutline, 'none');
     assert.equal(focused.writeOffset, '0px', 'Focus ring is flush, not an offset second card');
-    assert.match(focused.writeShadow, /0px 0px 0px 2px/, 'Focus-within uses a 2px accent ring like giscus');
+    assert.equal(focused.writeShadow, 'rgb(49, 85, 133) 0px 0px 0px 2px', 'Focus ring uses the Book link accent, not HeroUI ring-focus blue');
     assert.equal(focused.textareaOutline, 'none');
     assert.equal(focused.textareaShadow, 'none', 'HeroUI ring-focus does not paint a second blue box on the textarea');
     assert.equal(focused.textareaBorder, '0px');
