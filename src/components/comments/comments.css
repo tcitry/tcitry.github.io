@@ -132,13 +132,13 @@
   grid-column: 1 / -1;
   min-width: 0;
   margin: 0;
-  padding: 0;
   border: 0;
   box-shadow: none;
   background: transparent;
   border-radius: 0;
 }
-.blog-comments__composer textarea {
+.blog-comments__composer .textfield { padding: 0; }
+.blog-comments__composer textarea.textarea {
   display: block;
   width: 100%;
   min-width: 0;

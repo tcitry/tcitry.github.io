@@ -56,6 +56,7 @@ test('composer sits below the thread and keeps the icon toolbar plus HeroUI prim
 
 test('composer typography uses Book size tokens instead of mixed Primer/HeroUI scales', () => {
   assert.match(commentsCss, /\.blog-comments__composer[^{]*\{[^}]*font-size:\s*var\(--font-size-smaller/);
+  assert.match(commentsCss, /\.blog-comments__composer textarea\.textarea[^{]*\{[^}]*padding:\s*1\.125rem 1\.25rem/);
   assert.match(commentsCss, /\.blog-comments__composer textarea[^{]*\{[^}]*font:\s*inherit/);
   assert.match(commentsCss, /\.blog-comments__composer textarea::placeholder[^{]*\{[^}]*opacity:\s*1/);
   assert.match(commentsCss, /\.blog-comments__char-count[^}]*font-size:\s*var\(--font-size-smallest/);
@@ -85,7 +86,7 @@ test('top-level and nested avatars share the same space above the header', () =>
 });
 
 test('composer placeholder is inset and the field ring is focus-only', () => {
-  assert.match(commentsCss, /\.blog-comments__composer textarea[^{]*\{[^}]*padding:\s*1\.125rem 1\.25rem/);
+  assert.match(commentsCss, /\.blog-comments__composer textarea\.textarea[^{]*\{[^}]*padding:\s*1\.125rem 1\.25rem/);
   assert.match(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*0/);
   assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline:\s*2px solid var\(--comment-accent\)/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*1px solid var\(--field-border/);
