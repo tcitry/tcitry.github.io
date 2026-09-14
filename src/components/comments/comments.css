@@ -16,6 +16,7 @@
   --comment-action-offset: calc(var(--comment-avatar-offset) - .5rem);
   --comment-rule: color-mix(in srgb, var(--foreground) 16%, var(--background));
   --comment-edge: color-mix(in srgb, var(--foreground) 24%, var(--background));
+  box-sizing: border-box;
   margin-top: 2.5rem;
   border-top: 1px solid var(--book-border-color, var(--border, #ddd));
   padding-top: 1.5rem;
@@ -232,7 +233,7 @@
     --comment-avatar-offset: 0rem;
     --comment-action-offset: -.375rem;
     padding-bottom: calc(10rem + env(safe-area-inset-bottom, 0px));
-    padding-inline-end: 1.75rem;
+    padding-inline-end: 2rem;
   }
   .blog-comments__toolbar { flex-direction: column; align-items: stretch; }
   .blog-comments__uploads { align-self: start; }
