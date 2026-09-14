@@ -78,6 +78,23 @@ test('composer typography uses Book size tokens instead of mixed Primer/HeroUI s
   assert.doesNotMatch(commentsCss, /\.blog-comments__image-count[^{]*\{[^}]*font-size:\s*\.6875rem/);
 });
 
+test('shared comment image chrome keeps consultation layout and scopes comment-only colors', () => {
+  const imagesCss = readFileSync(new URL('../src/components/comments/comment-images.css', import.meta.url), 'utf8');
+  assert.match(imagesCss, /\.blog-comments__image-trigger \{[^}]*display:\s*block/);
+  assert.match(imagesCss, /\.blog-comments \.blog-comments__image-trigger \{[^}]*--comment-border/);
+  assert.match(imagesCss, /\.blog-comments__image-placeholder \{[^}]*background:\s*var\(--surface-secondary\)/);
+  assert.match(imagesCss, /\.blog-comments \.blog-comments__image-placeholder \{[^}]*--comment-inset/);
+});
+
+test('cancelling the composer discards attached drafts before clearing and can retry a failed discard', () => {
+  const cancel = thread.slice(thread.indexOf('async function cancelComposer'), thread.indexOf('const loaded'));
+  assert.match(cancel, /setPending\(true\)/);
+  assert.match(cancel, /图片暂未移除，请稍后重试/);
+  assert.match(cancel, /setImages\(remaining\)/);
+  assert.doesNotMatch(cancel, /catch \{\}/);
+  assert.match(thread, /async function removeImage[\s\S]*setPending\(true\)/);
+});
+
 test('comment markup uses a discussion header and nested reply rail, not stacked indent cards', () => {
   assert.match(content, /blog-comments__header/);
   assert.match(content, /RelativeTimeFormat/);
@@ -87,6 +104,7 @@ test('comment markup uses a discussion header and nested reply rail, not stacked
   assert.match(thread, /replyCount != null/);
   assert.match(thread, /条回复/);
   assert.match(thread, /data-reply=""/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__signin[^{]*\{[^}]*border:\s*1px solid/);
 });
 
 test('top-level and nested avatars share the same space above the header', () => {

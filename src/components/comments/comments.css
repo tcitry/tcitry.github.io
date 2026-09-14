@@ -85,10 +85,6 @@ html.dark .blog-comments__root {
   align-items: center;
   justify-content: space-between;
   gap: .75rem;
-  padding: .75rem 1rem;
-  border: 1px solid var(--comment-border);
-  border-radius: var(--comment-radius);
-  background: var(--comment-canvas);
 }
 .blog-comments__signin p { margin: 0; }
 
