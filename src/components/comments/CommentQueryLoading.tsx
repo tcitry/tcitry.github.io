@@ -23,10 +23,17 @@ export default function CommentQueryLoading({label, errorLabel, retryLabel, onRe
     const timer = window.setTimeout(() => setTimedOut(true), 15_000);
     return () => window.clearTimeout(timer);
   }, []);
-  return timedOut ? <div className="blog-chat__auth-status">
+  return timedOut ? <div className="blog-comments__status blog-comments__status--error">
     <p role="alert">{errorLabel}</p>
     <Button size="sm" variant="outline" onPress={onRetry}>{retryLabel}</Button>
-  </div> : <div className="blog-chat__auth-status" role="status">
-    <Spinner size="sm" color="current" /><span>{label}</span>
+  </div> : <div className="blog-comments__status" role="status">
+    <div className="blog-comments__status-label">
+      <Spinner size="sm" color="current" /><span>{label}</span>
+    </div>
+    <div className="blog-comments__skeleton" aria-hidden="true">
+      <span className="blog-comments__skeleton-line" />
+      <span className="blog-comments__skeleton-line" />
+      <span className="blog-comments__skeleton-line" />
+    </div>
   </div>;
 }

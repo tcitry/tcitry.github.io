@@ -8,7 +8,6 @@ import ConvexSession from '../auth/ConvexSession';
 import CommentThread from './CommentThread';
 import CommentQueryLoading, {useCommentQueryRetry} from './CommentQueryLoading';
 import {HeartIcon} from './CommentIcons';
-import {AuthLoading} from '../auth/SignInPanel';
 import ClerkSignInButton from '../auth/ClerkSignInButton';
 import surface from '../demos/DemoSurface.module.css';
 import BookmarkButton from '../reader/BookmarkButton';
@@ -65,7 +64,8 @@ function CommentsView({pathname, title, bookmarkable}: CommentsProps) {
     {!userId ? <div className="blog-comments__signin">
       <p className="blog-comments__hint">登录后查看评论与参与讨论。</p>
       <ClerkSignInButton><Button size="sm" variant="secondary">登录 / 注册</Button></ClerkSignInButton>
-    </div> : isLoading ? <AuthLoading label="正在连接登录状态…" />
+    </div> : isLoading ? <CommentQueryLoading label="正在连接登录状态…"
+      errorLabel="登录状态连接时间过长，请检查网络后重试。" retryLabel="刷新页面" onRetry={() => window.location.reload()} />
       : isAuthenticated ? <CommentThread pathname={pathname} />
         : <p role="alert" className="blog-comments__error">登录状态暂时无法同步，请稍后刷新或重新登录。</p>}
   </div>;

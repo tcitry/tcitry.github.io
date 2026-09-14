@@ -1293,15 +1293,27 @@ try {
         const style = getComputedStyle(button), rect = button.getBoundingClientRect(), icon = button.querySelector('svg').getBoundingClientRect();
         return {text: button.textContent, width: rect.width, height: rect.height, background: style.backgroundColor, border: style.borderTopWidth, icon: [icon.width, icon.height]};
       });
-      assert.deepEqual(iconStyle, {text: '', width: 40, height: 40, background: 'rgba(0, 0, 0, 0)', border: '0px', icon: [20, 20]}, 'Image upload stays an icon-only ghost action with a usable target');
+      assert.deepEqual({text: iconStyle.text, width: iconStyle.width, height: iconStyle.height, border: iconStyle.border, icon: iconStyle.icon},
+        {text: '', width: 40, height: 40, border: '0px', icon: [20, 20]}, 'Image upload stays an icon-only control with a 40px target');
+      const dropArea = await composer.locator('.blog-comments__drop-area').evaluate(element => {
+        const style = getComputedStyle(element);
+        return {border: style.borderTopWidth, style: style.borderTopStyle, background: style.backgroundColor};
+      });
+      assert.equal(dropArea.border, '1px');
+      assert.equal(dropArea.style, 'dashed');
+      assert.notEqual(dropArea.background, 'rgba(0, 0, 0, 0)', 'The drop well has a visible surface');
       const inputBox = await uploadButton.boundingBox(), submitBox = await submit.boundingBox();
-      assert.ok(Math.abs(inputBox.y + inputBox.height / 2 - submitBox.y - submitBox.height / 2) < 1, `${theme} ${width}px upload and publish stay on one aligned row`);
+      if (width > 640) {
+        assert.ok(Math.abs(inputBox.y + inputBox.height / 2 - submitBox.y - submitBox.height / 2) < 2, `${theme} ${width}px upload and publish stay on one aligned row`);
+      } else {
+        assert.ok(submitBox.y + 1 >= inputBox.y + inputBox.height - 8, `${theme} ${width}px composer stacks publish under the upload well`);
+      }
       assert.equal(await composer.locator('.drop-zone__description').evaluate(element => element.getBoundingClientRect().width), 1, 'The file limits remain accessible without occupying toolbar space');
       await page.evaluate(() => window.scrollTo({top: document.querySelector('.book-footer').getBoundingClientRect().top + scrollY - 120, behavior: 'instant'}));
       await uploadButton.scrollIntoViewIfNeeded();
       assert.ok(await page.evaluate(() => scrollY > 0), 'Tooltip regression covers an already scrolled article');
       const layoutBeforeHover = await page.evaluate(() => {
-        const selectors = ['.services-comments', '.book-footer', '.blog-comments__root', '.blog-comments__composer', '.blog-comments__uploads', '.blog-comments__submit', '.drop-zone__trigger', '.blog-comments__submit > button'];
+        const selectors = ['.services-comments', '.book-footer', '.blog-comments__root', '.blog-comments__composer', '.blog-comments__toolbar', '.blog-comments__uploads', '.blog-comments__submit', '.drop-zone__trigger', '.blog-comments__submit > button'];
         window.__commentLayout = () => ({rects: selectors.map(selector => {const {x, y, width, height} = document.querySelector(selector).getBoundingClientRect(); return {selector, x, y, width, height};}), scroll: [scrollX, scrollY, document.documentElement.scrollWidth, document.documentElement.scrollHeight]});
         window.__commentLayouts = [];
         const record = () => {window.__commentLayouts.push(window.__commentLayout()); window.__commentLayoutFrame = requestAnimationFrame(record);};
@@ -1341,7 +1353,12 @@ try {
       await page.getByRole('status', {name: '已选择 1 张图片，最多 4 张'}).waitFor();
       assert.equal(uploadRequests.length, 0, 'The icon opens the actual file picker and keeps selection local until publish');
       const countBox = await composer.locator('.blog-comments__image-count').boundingBox();
-      assert.ok(countBox.x + countBox.width < (await page.locator('.blog-comments__submit').boundingBox()).x, 'The selected image count stays clear of the character count and publish action');
+      const submitGroup = await page.locator('.blog-comments__submit').boundingBox();
+      if (width > 640) {
+        assert.ok(countBox.x + countBox.width < submitGroup.x, 'The selected image count stays clear of the character count and publish action');
+      } else {
+        assert.ok(countBox.y + countBox.height <= submitGroup.y + 4, 'On a stacked toolbar the selected count stays with upload, above publish');
+      }
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${theme} ${width}px comments have no horizontal overflow`);
       await page.mouse.move(width - 2, 2);
       await composer.screenshot({path: join(tmpdir(), `services-comments-upload-${theme}-${width}.png`)});
@@ -1351,7 +1368,7 @@ try {
     await page.setViewportSize({width: 375, height: 900});
     await page.evaluate(() => {document.documentElement.dataset.theme = 'light'; document.documentElement.dataset.bookTheme = 'light';});
     await body.fill('');
-    console.log('Comment upload toolbar: icon-only picker, hover/keyboard help, selected count and one-row layout passed at 320/416/772px in light/dark themes; real Book footer geometry and scrolled-document positions remain identical through tooltip mount/animation/removal.');
+    console.log('Comment upload toolbar: icon-only picker, visible drop well, hover/keyboard help, selected count, desktop one-row and stacked mobile layout passed at 320/416/772px in light/dark themes; real Book footer geometry and scrolled-document positions remain identical through tooltip mount/animation/removal.');
     await fileInput.setInputFiles(imageFile('preview.png'));
     await page.getByRole('button', {name: '移除图片 1', exact: true}).waitFor();
     assert.equal(uploadRequests.length, 0, 'Selecting an image previews locally until the comment is published');

@@ -258,32 +258,34 @@ export default function CommentThread({pathname}: {pathname: string}) {
           <span role="status">{image.status === 'uploading' ? '正在上传…' : image.status === 'failed' ? '上传失败，再次发布可重试。' : image.status === 'uploaded' ? '已上传' : ''}</span>
         </div>)}
       </div>}
-      <DropZone className="blog-comments__uploads">
-        <DropZone.Area className="blog-comments__drop-area" isDisabled={pending || images.length >= 4} onDrop={async event => {
-          const files: File[] = [];
-          for (const item of event.items) if (item.kind === 'file') files.push(await item.getFile());
-          if (active.current) selectImages(files);
-        }}>
-          <Tooltip delay={400}>
-            <DropZone.Trigger aria-label="添加图片" aria-describedby={imageDescriptionId} isDisabled={pending || images.length >= 4}><ImageIcon /></DropZone.Trigger>
-            <Tooltip.Content className={`${surface.surface} blog-comments__upload-tooltip`} placement="top start" offset={8} UNSTABLE_portalContainer={tooltipContainer ?? undefined}>
-              添加图片 · 最多 4 张，每张 5 MB
-            </Tooltip.Content>
-          </Tooltip>
-          {images.length > 0 && <span className="blog-comments__image-count" role="status" aria-label={`已选择 ${images.length} 张图片，最多 4 张`}>{images.length}/4</span>}
-          <DropZone.Description id={imageDescriptionId} className="blog-comments__sr-only">最多 4 张，每张 5 MB</DropZone.Description>
-        </DropZone.Area>
-        <DropZone.Input accept={commentImageTypes.join(',')} multiple onSelect={files => selectImages(Array.from(files))} />
-      </DropZone>
-      <div className="blog-comments__submit"><span>{body.length.toLocaleString()} / 4,000</span><Button type="submit" size="sm" isPending={pending || usernamePending} isDisabled={!body.trim() && !images.length}>发布评论</Button></div>
+      <div className="blog-comments__toolbar">
+        <DropZone className="blog-comments__uploads">
+          <DropZone.Area className="blog-comments__drop-area" isDisabled={pending || images.length >= 4} onDrop={async event => {
+            const files: File[] = [];
+            for (const item of event.items) if (item.kind === 'file') files.push(await item.getFile());
+            if (active.current) selectImages(files);
+          }}>
+            <Tooltip delay={400}>
+              <DropZone.Trigger aria-label="添加图片" aria-describedby={imageDescriptionId} isDisabled={pending || images.length >= 4}><ImageIcon /></DropZone.Trigger>
+              <Tooltip.Content className={`${surface.surface} blog-comments__upload-tooltip`} placement="top start" offset={8} UNSTABLE_portalContainer={tooltipContainer ?? undefined}>
+                添加图片 · 最多 4 张，每张 5 MB
+              </Tooltip.Content>
+            </Tooltip>
+            {images.length > 0 && <span className="blog-comments__image-count" role="status" aria-label={`已选择 ${images.length} 张图片，最多 4 张`}>{images.length}/4</span>}
+            <DropZone.Description id={imageDescriptionId} className="blog-comments__sr-only">最多 4 张，每张 5 MB</DropZone.Description>
+          </DropZone.Area>
+          <DropZone.Input accept={commentImageTypes.join(',')} multiple onSelect={files => selectImages(Array.from(files))} />
+        </DropZone>
+        <div className="blog-comments__submit"><span className="blog-comments__char-count">{body.length.toLocaleString()} / 4,000</span><Button type="submit" size="sm" className="blog-comments__publish" isPending={pending || usernamePending} isDisabled={!body.trim() && !images.length}>发布评论</Button></div>
+      </div>
     </form>
     {error && <p className="blog-comments__error" role="alert">{error}</p>}
     <p className="blog-comments__notice" role="status" aria-live="polite">{notice}</p>
     {firstPageLoading ? <CommentQueryLoading key={listQuery.attempt} label="正在读取评论…"
       errorLabel="评论读取时间过长，你的草稿已保留，可以重试。" retryLabel="重新读取评论" onRetry={listQuery.retry} />
-      : results.length === 0 ? <p className="blog-comments__empty">还没有评论，来聊聊你的看法吧。</p>
+      : results.length === 0 ? <div className="blog-comments__empty" role="status"><p>还没有评论，来聊聊你的看法吧。</p></div>
         : <ol className="blog-comments__list">
-          {discussionRows(results).map(({comment, depth}) => <li key={comment.id} id={`comment-${comment.id}`} tabIndex={-1} className="blog-comments__item" data-reply={depth > 0 || undefined} style={{marginInlineStart: `${Math.min(depth, 3) * 16}px`}}>
+          {discussionRows(results).map(({comment, depth}) => <li key={comment.id} id={`comment-${comment.id}`} tabIndex={-1} className="blog-comments__item" data-reply={depth > 0 || undefined} data-depth={depth > 0 ? String(Math.min(depth, 3)) : undefined}>
             <CommentContent comment={comment} parentLoaded={Boolean(comment.replyTo && loaded.has(comment.replyTo.id))} />
             {!comment.deleted && <div className="blog-comments__actions">
               <Button size="sm" variant="ghost" aria-label={`喜欢 ${comment.authorName} 的评论`} aria-pressed={comment.likedByMe} isPending={busyLike === comment.id} className="blog-comments__like" onPress={async () => {
@@ -300,6 +302,6 @@ export default function CommentThread({pathname}: {pathname: string}) {
             </div>}
           </li>)}
         </ol>}
-    {status !== 'Exhausted' && !firstPageLoading && <Button size="sm" variant="outline" isPending={status === 'LoadingMore'} onPress={() => loadMore(20)}>加载更早的评论</Button>}
+    {status !== 'Exhausted' && !firstPageLoading && <div className="blog-comments__more"><Button size="sm" variant="outline" isPending={status === 'LoadingMore'} onPress={() => loadMore(20)}>加载更早的评论</Button></div>}
   </div>;
 }
