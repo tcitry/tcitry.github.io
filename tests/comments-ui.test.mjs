@@ -8,13 +8,22 @@ const content = readFileSync(new URL('../src/components/comments/CommentContent.
 const root = readFileSync(new URL('../src/components/comments/CommentsRoot.tsx', import.meta.url), 'utf8');
 
 test('comment chrome maps Primer / giscus tokens instead of marketing cards', () => {
+  assert.match(commentsCss, /--comment-canvas:.*#fff/);
+  assert.match(commentsCss, /--comment-inset:.*#f6f8fa/);
+  assert.match(commentsCss, /--comment-fg:.*#1F2328/);
+  assert.match(commentsCss, /--comment-muted:\s*#656d76/);
   assert.match(commentsCss, /--comment-border:\s*#d0d7de/);
   assert.match(commentsCss, /--comment-primary:\s*#1f883d/);
   assert.match(commentsCss, /--comment-primary:\s*#238636/);
   assert.match(commentsCss, /--comment-accent:\s*var\(--color-link,\s*#0969da\)/);
+  assert.match(commentsCss, /\.blog-comments__content[^{]*\{[^}]*gap:\s*2rem/);
+  assert.match(commentsCss, /\.blog-comments__list[^{]*\{[^}]*gap:\s*1\.5rem/);
   assert.match(commentsCss, /\.blog-comments__tl-line/);
   assert.match(commentsCss, /left:\s*30px/);
+  assert.match(commentsCss, /top:\s*16px/);
   assert.match(commentsCss, /border-bottom:\s*1px dashed/);
+  assert.match(commentsCss, /box-shadow:\s*0 0 0 2px var\(--comment-accent\)/);
+  assert.match(commentsCss, /height:\s*26px/);
   assert.match(commentsCss, /\.blog-comments__bubble/);
   assert.match(commentsCss, /\.blog-comments__tabs/);
   assert.match(commentsCss, /\.blog-comments__tablist/);
@@ -38,7 +47,11 @@ test('composer sits below the thread and keeps the icon toolbar plus green publi
   assert.match(thread, /blog-comments__write/);
   assert.match(thread, /aria-hidden="true">预览/);
   assert.match(thread, /aria-label="添加图片"/);
+  assert.match(thread, /blog-comments__cancel/);
+  assert.match(thread, />取消</);
   assert.match(thread, /发布评论/);
+  assert.match(commentsCss, /\.blog-comments__publish \{/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__submit > \.button,/);
   assert.match(root, /登录后发表评论/);
   assert.match(root, /blog-comments__publish/);
   assert.doesNotMatch(thread, /marginInlineStart/);

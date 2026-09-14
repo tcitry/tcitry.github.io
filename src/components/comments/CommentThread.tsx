@@ -240,6 +240,18 @@ export default function CommentThread({pathname}: {pathname: string}) {
     finally {if (active.current) setPending(false);}
   }
 
+  async function cancelComposer() {
+    if (pending || usernamePending) return;
+    setReplyTo(null); setBody(''); setError(''); setNotice('');
+    const current = images;
+    imageCount.current = 0;
+    setImages([]);
+    for (const image of current) {
+      try {if (image.imageId) await discard({imageId: image.imageId});} catch {}
+      URL.revokeObjectURL(image.preview); previews.current.delete(image.preview);
+    }
+  }
+
   const loaded = new Set(results.map(comment => comment.id));
   const renderActions = (comment: CommentItem, replyCount?: number) => comment.deleted ? null : <div className="blog-comments__actions">
     <div className="blog-comments__pills">
@@ -326,7 +338,11 @@ export default function CommentThread({pathname}: {pathname: string}) {
             </DropZone.Area>
             <DropZone.Input accept={commentImageTypes.join(',')} multiple onSelect={files => selectImages(Array.from(files))} />
           </DropZone>
-          <div className="blog-comments__submit"><span>{body.length.toLocaleString()} / 4,000</span><Button type="submit" size="sm" className="blog-comments__publish" isPending={pending || usernamePending} isDisabled={!body.trim() && !images.length}>发布评论</Button></div>
+          <div className="blog-comments__submit">
+            <span>{body.length.toLocaleString()} / 4,000</span>
+            <Button type="submit" size="sm" className="blog-comments__publish" isPending={pending || usernamePending} isDisabled={!body.trim() && !images.length}>发布评论</Button>
+            <Button type="button" size="sm" variant="ghost" className="blog-comments__cancel" isDisabled={pending || usernamePending || (!replyTo && !body.trim() && !images.length)} onPress={() => {void cancelComposer();}}>取消</Button>
+          </div>
         </div>
       </div>
     </form>
