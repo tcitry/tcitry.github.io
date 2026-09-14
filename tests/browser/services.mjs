@@ -1328,6 +1328,34 @@ try {
     });
     assert.equal(blurred.outline, 'none');
     assert.equal(blurred.shadow, 'none', 'Unfocused write has no inner ring');
+    await page.emulateMedia({forcedColors: 'active'});
+    await body.click();
+    const forced = await page.evaluate(() => {
+      const write = document.querySelector('.blog-comments__write');
+      const probe = document.createElement('span');
+      probe.style.outline = '2px solid Highlight';
+      document.body.append(probe);
+      const highlight = getComputedStyle(probe).outlineColor;
+      probe.remove();
+      const style = getComputedStyle(write);
+      return {
+        media: matchMedia('(forced-colors: active)').matches,
+        outlineStyle: style.outlineStyle,
+        outlineWidth: style.outlineWidth,
+        outlineOffset: style.outlineOffset,
+        outlineColor: style.outlineColor,
+        highlight,
+        shadow: style.boxShadow,
+      };
+    });
+    assert.equal(forced.media, true);
+    assert.equal(forced.outlineStyle, 'solid');
+    assert.equal(forced.outlineWidth, '2px', 'Forced-colors focus uses a 2px system outline');
+    assert.equal(forced.outlineOffset, '0px');
+    assert.equal(forced.outlineColor, forced.highlight, 'Forced-colors outline uses Highlight, not the author accent');
+    assert.equal(forced.shadow, 'none', 'Forced-colors drops the author box-shadow');
+    await page.evaluate(() => document.querySelector('#comment-body').blur());
+    await page.emulateMedia({forcedColors: 'none'});
     for (const width of [375, 1280]) {
       await page.setViewportSize({width, height: 900});
       const edges = await page.evaluate(() => {
