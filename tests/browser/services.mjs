@@ -1291,10 +1291,6 @@ try {
         topPad: style(document.querySelector('.blog-comments__bubble > .blog-comments__header')).paddingTop,
         replyPad: style(document.querySelector('.blog-comments__item[data-reply]')).paddingTop,
         writeBorder: style(document.querySelector('.blog-comments__write')).borderTopWidth,
-        textLeft: textarea.getBoundingClientRect().left + parseFloat(style(textarea).paddingLeft),
-        iconLeft: document.querySelector('.blog-comments__uploads .drop-zone__trigger svg').getBoundingClientRect().left,
-        textRight: textarea.getBoundingClientRect().right - parseFloat(style(textarea).paddingRight),
-        publishRight: publish.getBoundingClientRect().right,
       };
     });
     assert.equal(chrome.textarea, '14px');
@@ -1306,8 +1302,21 @@ try {
     assert.equal(chrome.topPad, '16px');
     assert.equal(chrome.replyPad, '16px');
     assert.equal(chrome.writeBorder, '0px', 'Rest-state composer has no inner field ring');
-    assert.ok(Math.abs(chrome.textLeft - chrome.iconLeft) < 1, `Placeholder and image icon share one left inset (${chrome.textLeft} vs ${chrome.iconLeft})`);
-    assert.ok(Math.abs(chrome.textRight - chrome.publishRight) < 1, `Placeholder and publish share one right inset (${chrome.textRight} vs ${chrome.publishRight})`);
+    for (const width of [375, 1280]) {
+      await page.setViewportSize({width, height: 900});
+      const edges = await page.evaluate(() => {
+        const textarea = document.querySelector('#comment-body');
+        const style = getComputedStyle(textarea);
+        return {
+          textLeft: textarea.getBoundingClientRect().left + parseFloat(style.paddingLeft),
+          iconLeft: document.querySelector('.blog-comments__uploads .drop-zone__trigger svg').getBoundingClientRect().left,
+          textRight: textarea.getBoundingClientRect().right - parseFloat(style.paddingRight),
+          publishRight: document.querySelector('.blog-comments__publish').getBoundingClientRect().right,
+        };
+      });
+      assert.ok(Math.abs(edges.textLeft - edges.iconLeft) < 1, `${width}px placeholder and image icon share one left inset (${edges.textLeft} vs ${edges.iconLeft})`);
+      assert.ok(Math.abs(edges.textRight - edges.publishRight) < 1, `${width}px placeholder and publish share one right inset (${edges.textRight} vs ${edges.publishRight})`);
+    }
     const fileInput = page.locator('input[type="file"]');
     assert.equal(await fileInput.getAttribute('multiple'), '');
     assert.equal(await fileInput.getAttribute('accept'), 'image/jpeg,image/png,image/webp,image/gif');
