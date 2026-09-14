@@ -8,6 +8,7 @@ const read = name => readFileSync(fileURLToPath(new URL(name, root)), 'utf8');
 
 test('comments UI polish keeps dedicated styles and no inline indent', () => {
   const css = read('comments.css');
+  const images = read('comment-images.css');
   const loading = read('CommentQueryLoading.tsx');
   const thread = read('CommentThread.tsx');
   const rootView = read('CommentsRoot.tsx');
@@ -18,6 +19,10 @@ test('comments UI polish keeps dedicated styles and no inline indent', () => {
   assert.match(thread, /data-depth/);
   assert.match(thread, /blog-comments__more/);
   assert.match(css, /--comment-avatar-offset/);
+  assert.match(css, /\.blog-comments__root \{[\s\S]*--comment-edge/);
+  assert.match(css, /var\(--body-font-color/);
+  assert.match(css, /\.blog-comments \.blog-comments__image-trigger/);
+  assert.doesNotMatch(images, /\.blog-comments__image-trigger \{[^}]*border:/);
   assert.match(css, /@media \(max-width: 40rem\)/);
   assert.match(css, /blog-comments__skeleton/);
   assert.match(css, /blog-comments__publish\[data-disabled\]/);
