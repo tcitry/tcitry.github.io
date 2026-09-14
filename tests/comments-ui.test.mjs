@@ -14,6 +14,7 @@ test('comment chrome maps Primer / giscus tokens instead of marketing cards', ()
   assert.match(commentsCss, /left:\s*30px/);
   assert.match(commentsCss, /border-bottom:\s*1px dashed/);
   assert.match(commentsCss, /\.blog-comments__bubble/);
+  assert.match(commentsCss, /\.blog-comments__bubble > \.blog-comments__header/);
   assert.doesNotMatch(commentsCss, /blog-comments__empty[^{]*\{[^}]*border-style:\s*dashed/);
   assert.doesNotMatch(commentsCss, /margin-inline-start/);
 });
