@@ -77,7 +77,7 @@ if (view === 'widget') {
 } else {
   if (view === 'comments') {
     void import('../../src/components/comments/CommentsRoot').then(async ({default: CommentsRoot}) => {
-      const comments = <CommentsRoot pathname="/docs/services-fixture/" />;
+      const comments = <CommentsRoot pathname="/docs/services-fixture/" title="公开文章测试" bookmarkable={params.get('bookmarkable') === 'true'} />;
       if (params.get('bookStyles') === 'true') {
         // Exercise the real public theme stylesheet and BookLayout's footer
         // nesting, including a scrolled article above the mounted comments.

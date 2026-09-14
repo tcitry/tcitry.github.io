@@ -3,6 +3,8 @@ import {useAuth} from '@clerk/react';
 import {useConvexAuth} from 'convex/react';
 import {ConvexProviderWithClerk} from 'convex/react-clerk';
 import SignInPanel, {AuthLoading} from '../auth/SignInPanel';
+import AuthSyncRetry from '../auth/AuthSyncRetry';
+import {AUTH_BOOKMARK_UNAVAILABLE} from '../auth/convex-auth-control';
 import useSessionConvexClient from '../auth/useSessionConvexClient';
 import ArticleReader from './ArticleReader';
 import ReaderLibrary from './ReaderLibrary';
@@ -49,7 +51,7 @@ function ReaderAccount(props: ReaderProps) {
             {props.pathname && <ArticleReader pathname={props.pathname} title={props.title!} />}
             {props.library && <ReaderLibrary />}
           </ReaderBoundary>
-          : <p className="reader-account-hint">收藏暂时无法同步，请稍后刷新或重新登录。</p>}
+          : <AuthSyncRetry message={AUTH_BOOKMARK_UNAVAILABLE} onRetry={() => window.location.reload()} />}
   </>;
 }
 
