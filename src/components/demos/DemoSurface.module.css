@@ -76,6 +76,7 @@
   --border: color-mix(in srgb, var(--foreground) 18%, var(--background));
   --separator: var(--gray-200, #e9ecef);
   --focus: var(--accent);
+  --color-focus: var(--focus);
   --field-background: var(--surface);
   --field-foreground: var(--foreground);
   --field-placeholder: var(--muted);

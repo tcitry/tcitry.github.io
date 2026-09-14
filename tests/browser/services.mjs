@@ -1306,20 +1306,33 @@ try {
     const focused = await page.evaluate(() => {
       const write = document.querySelector('.blog-comments__write');
       const textarea = document.querySelector('#comment-body');
+      const writeStyle = getComputedStyle(write);
+      const textareaStyle = getComputedStyle(textarea);
       return {
-        writeOutline: getComputedStyle(write).outlineStyle,
-        writeOffset: getComputedStyle(write).outlineOffset,
-        writeShadow: getComputedStyle(write).boxShadow,
-        textareaOutline: getComputedStyle(textarea).outlineStyle,
-        textareaShadow: getComputedStyle(textarea).boxShadow,
-        textareaBorder: getComputedStyle(textarea).borderTopWidth,
+        writeOutline: writeStyle.outlineStyle,
+        writeOffset: writeStyle.outlineOffset,
+        writeShadow: writeStyle.boxShadow,
+        writeColorFocus: writeStyle.getPropertyValue('--color-focus').trim(),
+        writeCommentAccent: writeStyle.getPropertyValue('--comment-accent').trim(),
+        writeRingOffset: writeStyle.getPropertyValue('--tw-ring-offset-width').trim(),
+        textareaOutline: textareaStyle.outlineStyle,
+        textareaShadow: textareaStyle.boxShadow,
+        textareaBorder: textareaStyle.borderTopWidth,
+        textareaTwRing: textareaStyle.getPropertyValue('--tw-ring-color').trim(),
       };
     });
+    const navyRing = 'rgb(49, 85, 133) 0px 0px 0px 2px';
     assert.equal(focused.writeOutline, 'none');
     assert.equal(focused.writeOffset, '0px', 'Focus ring is flush, not an offset second card');
-    assert.equal(focused.writeShadow, 'rgb(49, 85, 133) 0px 0px 0px 2px', 'Focus ring uses the Book link accent, not HeroUI ring-focus blue');
+    assert.equal(focused.writeColorFocus, '#315585', 'HeroUI --color-focus follows comments navy, not :root ring-focus blue');
+    assert.equal(focused.writeCommentAccent, '#315585');
+    assert.equal(focused.writeRingOffset, '0px', 'HeroUI field ring has no offset halo');
+    assert.ok(focused.writeShadow.includes(navyRing), `Focus ring uses comments navy, got ${focused.writeShadow}`);
+    assert.equal(focused.writeShadow.includes('rgb(0, 111, 238)'), false, 'HeroUI default #006FEE does not paint the write ring');
+    assert.equal(focused.writeShadow.includes('rgb(0, 85, 187)'), false, 'Book --color-link #0055bb is not the composer field ring');
     assert.equal(focused.textareaOutline, 'none');
     assert.equal(focused.textareaShadow, 'none', 'HeroUI ring-focus does not paint a second blue box on the textarea');
+    assert.equal(focused.textareaTwRing, 'transparent');
     assert.equal(focused.textareaBorder, '0px');
     await page.evaluate(() => document.querySelector('#comment-body').blur());
     const blurred = await page.evaluate(() => {

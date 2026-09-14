@@ -13,7 +13,9 @@ test('comment chrome uses DemoSurface / HeroUI tokens instead of Primer greens',
   assert.match(commentsCss, /--comment-fg:\s*var\(--foreground/);
   assert.match(commentsCss, /--comment-muted:\s*var\(--muted/);
   assert.match(commentsCss, /--comment-border:\s*var\(--border/);
-  assert.match(commentsCss, /--comment-accent:\s*var\(--accent/);
+  assert.match(commentsCss, /--comment-accent:\s*#315585/);
+  assert.match(commentsCss, /\.blog-comments__root[^{]*\{[^}]*--color-focus:\s*var\(--comment-accent\)/);
+  assert.match(commentsCss, /\.blog-comments__root[^{]*\{[^}]*--ring-offset-width:\s*0px/);
   assert.match(commentsCss, /--comment-radius:\s*var\(--radius-lg/);
   assert.match(commentsCss, /\.blog-comments__content[^{]*\{[^}]*gap:\s*2rem/);
   assert.match(commentsCss, /\.blog-comments__list[^{]*\{[^}]*gap:\s*1\.5rem/);
@@ -21,7 +23,7 @@ test('comment chrome uses DemoSurface / HeroUI tokens instead of Primer greens',
   assert.match(commentsCss, /left:\s*30px/);
   assert.match(commentsCss, /1px dashed/);
   assert.match(commentsCss, /\.blog-comments__write:focus-within/);
-  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*box-shadow:\s*0 0 0 2px var\(--comment-accent\)/);
+  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*@apply outline-none ring-2 ring-focus/);
   assert.match(commentsCss, /@media \(forced-colors:\s*active\)[^{]*\{[^}]*\.blog-comments__write:focus-within[^{]*\{[^}]*outline:\s*2px solid Highlight/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline-offset:\s*2px/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*box-shadow:\s*0 0 0 2px var\(--comment-accent-subtle\)/);
@@ -98,8 +100,10 @@ test('composer placeholder and toolbar share one horizontal inset', () => {
 test('composer placeholder is inset and the field ring is focus-only', () => {
   assert.match(commentsCss, /\.blog-comments__composer textarea\.textarea[^{]*\{[^}]*padding:\s*1\.125rem 0/);
   assert.match(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*0/);
-  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*box-shadow:\s*0 0 0 2px var\(--comment-accent\)/);
+  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*@apply outline-none ring-2 ring-focus/);
   assert.match(commentsCss, /@media \(forced-colors:\s*active\)[^{]*\{[^}]*\.blog-comments__write:focus-within[^{]*\{[^}]*outline:\s*2px solid Highlight/);
+  assert.match(commentsCss, /\.blog-comments__composer \.textarea:focus[^{]*\{[^}]*@apply outline-none shadow-none ring-0/);
+  assert.match(commentsCss, /\.blog-comments__composer \.textarea\[data-focus="true"\]/);
   assert.match(commentsCss, /\.blog-comments__composer \.textarea:focus[^{]*\{[^}]*box-shadow:\s*none/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*1px solid var\(--field-border/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline-offset:\s*2px/);
