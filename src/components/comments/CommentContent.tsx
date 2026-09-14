@@ -19,7 +19,7 @@ export interface CommentItem {
 export default function CommentContent({comment, parentLoaded}: {comment: CommentItem; parentLoaded: boolean}) {
   const reply = comment.replyTo ? `回复 ${comment.replyTo.deleted ? '已删除的评论' : comment.replyTo.authorName}` : '';
   return <>
-    <div className="blog-comments__author-row">
+    <div className="blog-comments__header">
       <Avatar size="sm" className="blog-comments__avatar">
         {comment.authorImageUrl && !comment.deleted && <Avatar.Image src={comment.authorImageUrl} alt="" loading="lazy" />}
         <Avatar.Fallback>{comment.deleted ? '—' : comment.authorName.slice(0, 1)}</Avatar.Fallback>
