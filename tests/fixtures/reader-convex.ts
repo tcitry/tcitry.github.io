@@ -11,6 +11,7 @@ const writes: {name: string; args: Record<string, unknown>; userId: string | nul
 const queries: {name: string; userId: string | null}[] = [];
 const listRequests: {limit: number; userId: string | null}[] = [];
 let rejectNext = false;
+let convexAuthOverride: {isAuthenticated: boolean; isLoading: boolean} | null = null;
 const clients: {id: number; userId: string | null; sessionId: string | null; closed: boolean}[] = [];
 
 function createAccount(owner: string, bookmarked = false): Account {
@@ -38,7 +39,12 @@ export class ConvexReactClient {
   async close() {this.record.closed = true;}
 }
 export const FixtureClientContext = createContext<ConvexReactClient | null>(null);
-export function useConvexAuth() {const {userId} = useAuth(); return {isAuthenticated: Boolean(userId), isLoading: false};}
+export function useConvexAuth() {
+  const override = useSyncExternalStore(subscribe, () => convexAuthOverride);
+  const {userId} = useAuth();
+  if (override) return override;
+  return {isAuthenticated: Boolean(userId), isLoading: false};
+}
 const subscribe = (listener: () => void) => {listeners.add(listener); return () => listeners.delete(listener);};
 function account(client: ConvexReactClient | null) {
   if (!client) return snapshot;
@@ -102,4 +108,8 @@ export function usePaginatedQuery(reference: Parameters<typeof getFunctionName>[
 Object.assign(window, {__readerFixture: {
   getState: () => ({page: snapshot.page, writes, queries, listRequests, clients}),
   rejectNext: () => {rejectNext = true;},
+  setConvexAuth: (value: {isAuthenticated: boolean; isLoading: boolean} | null) => {
+    convexAuthOverride = value;
+    listeners.forEach((listener) => listener());
+  },
 }});

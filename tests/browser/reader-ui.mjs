@@ -85,6 +85,32 @@ try {
     console.log('Bookmarks sessions: live list changes, fresh clients on account/session changes, and anonymous state without private reads or writes.');
   } finally {await accountContext.close();}
 
+  const convexContext = await browser.newContext({viewport: {width: 1000, height: 900}, reducedMotion: 'reduce', serviceWorkers: 'block'});
+  await convexContext.route('**/*', (route) => new URL(route.request().url()).origin === base.origin ? route.continue() : route.abort());
+  try {
+    const page = await convexContext.newPage();
+    page.setDefaultTimeout(15_000);
+    await page.goto(new URL('/tests/fixtures/reader-ui.html', base).href);
+    const article = page.locator('[data-reader-article]');
+    await bookmarkButton(article, false).waitFor();
+    await page.evaluate(() => window.__readerFixture.setConvexAuth({isAuthenticated: false, isLoading: false}));
+    const retry = article.getByRole('button', {name: '重试后收藏当前文章', exact: true});
+    await retry.waitFor();
+    assert.equal(await retry.isDisabled(), false, 'A Convex gap must not leave a dead bookmark');
+    await article.getByRole('alert').filter({hasText: '登录状态尚未同步'}).waitFor();
+    await retry.click();
+    await bookmarkButton(article, false).waitFor();
+    assert.equal(await article.getByRole('button', {name: '重试后收藏当前文章', exact: true}).count(), 0);
+
+    await page.goto(new URL('/tests/fixtures/reader-ui.html?view=root', base).href);
+    await bookmarkButton(page.locator('[data-reader-article]'), true).waitFor();
+    await page.evaluate(() => window.__readerFixture.setConvexAuth({isAuthenticated: false, isLoading: false}));
+    await page.getByRole('alert').filter({hasText: '收藏暂时无法同步'}).waitFor();
+    assert.equal(await page.getByRole('button', {name: '重试', exact: true}).isDisabled(), false);
+    assert.equal(await page.locator('[data-article-bookmark]').count(), 0, 'ReaderRoot does not keep a fake bookmark control while Convex is down');
+    console.log('Bookmarks Convex gap: retry CTA instead of a silently disabled control.');
+  } finally {await convexContext.close();}
+
   for (const width of [1440, 390, 320]) {
     const context = await browser.newContext({viewport: {width, height: 900}, reducedMotion: 'reduce', serviceWorkers: 'block'});
     const errors = [];

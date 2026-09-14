@@ -56,6 +56,13 @@ test('composer sits below the thread and keeps the icon toolbar plus HeroUI prim
   assert.doesNotMatch(thread, /marginInlineStart/);
 });
 
+test('signed-in Convex gaps explain likes instead of silently disabling them', () => {
+  assert.match(root, /likeAuthPresentation/);
+  assert.match(root, /AuthSyncRetry/);
+  assert.match(root, /重试后喜欢这篇文章|likePresentation\.label/);
+  assert.doesNotMatch(root, /isDisabled=\{Boolean\(userId && \(!isAuthenticated/);
+});
+
 test('composer typography uses Book size tokens instead of mixed Primer/HeroUI scales', () => {
   assert.match(commentsCss, /\.blog-comments__composer[^{]*\{[^}]*font-size:\s*var\(--font-size-smaller/);
   assert.match(commentsCss, /\.blog-comments__composer textarea\.textarea[^{]*\{[^}]*padding:\s*1\.125rem 0/);

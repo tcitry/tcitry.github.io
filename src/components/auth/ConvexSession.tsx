@@ -3,9 +3,11 @@ import {useAuth} from '@clerk/react';
 import {useConvexAuth} from 'convex/react';
 import {ConvexProviderWithClerk} from 'convex/react-clerk';
 import SignInPanel, {AuthLoading} from './SignInPanel';
+import AuthSyncRetry from './AuthSyncRetry';
+import {AUTH_ACCOUNT_UNAVAILABLE, retryConvexAuth} from './convex-auth-control';
 import useSessionConvexClient from './useSessionConvexClient';
 import ServiceBoundary from './ServiceBoundary';
-import {ConvexTokenEpochContext, ConvexTokenRefreshContext} from './convex-token-refresh';
+import {ConvexTokenEpochContext, ConvexTokenRefreshContext, useRefreshConvexToken} from './convex-token-refresh';
 export {default as ServiceBoundary} from './ServiceBoundary';
 
 function useConvexClerkAuth() {
@@ -35,9 +37,12 @@ function useConvexClerkAuth() {
 export function ConvexAuthGate({children, requireAuth = true}: {children: ReactNode; requireAuth?: boolean}) {
   const {isLoaded, userId} = useAuth();
   const {isLoading, isAuthenticated} = useConvexAuth();
+  const refreshConvexToken = useRefreshConvexToken();
   if (!isLoaded || (requireAuth && isLoading)) return <AuthLoading label="正在连接…" />;
   if (requireAuth && !userId) return <SignInPanel title="登录后继续" description="使用同一个账户参与评论、保存对话和使用会员服务。" action />;
-  if (requireAuth && !isAuthenticated) return <p role="status">账户暂时无法连接，请稍后重试或重新登录。</p>;
+  if (requireAuth && !isAuthenticated) {
+    return <AuthSyncRetry message={AUTH_ACCOUNT_UNAVAILABLE} onRetry={() => retryConvexAuth(refreshConvexToken)} />;
+  }
   return children;
 }
 

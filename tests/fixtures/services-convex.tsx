@@ -40,6 +40,7 @@ const commentLikes = new Map<string, Set<string>>();
 const notifications: { _id: string; recipient: string; kind: 'comment_reply' | 'consultation_reply'; createdAt: number; readAt: number | null; target: null | {kind: 'comment'; pathname: string; commentId: string} | {kind: 'consultation'; threadId: string; messageId: string; title: string} }[] = [];
 let rejectNextComment = false;
 let rejectNextConsultation = false;
+let convexAuthOverride: {isAuthenticated: boolean; isLoading: boolean} | null = null;
 type Source = {id: string; title: string; url: string; sourceKind: 'author'};
 type AiConversation = {id: string; owner: string; threadId: string; title: string; activeRun: string | null; updatedAt: number};
 type AiMessage = {id: string; key: string; role: 'user' | 'assistant'; parts: {type: 'text'; text: string}[]; text: string; order: number; stepOrder: number; status: 'success' | 'streaming'; _creationTime: number; threadId: string};
@@ -112,7 +113,12 @@ export function ConvexProviderWithClerk({client, children}: {client: ConvexReact
     <AuthLastEffect client={client} authContext={authContext} />
   </ClientContext.Provider>;
 }
-export function useConvexAuth() { const {userId} = useAuth(); return {isAuthenticated: Boolean(userId), isLoading: false}; }
+export function useConvexAuth() {
+  useSyncExternalStore(subscribe, () => revision);
+  const {userId} = useAuth();
+  if (convexAuthOverride) return convexAuthOverride;
+  return {isAuthenticated: Boolean(userId), isLoading: false};
+}
 function useClient() {
   const client = useContext(ClientContext);
   if (!client) throw new Error('Services test: hook needs session-scoped Convex client');
@@ -479,6 +485,7 @@ Object.assign(window, {__services: {
     publish(); return id;
   },
   setPro: (userId: string, value: boolean) => {value ? pro.add(userId) : pro.delete(userId); publish();},
+  setConvexAuth: (value: {isAuthenticated: boolean; isLoading: boolean} | null) => {convexAuthOverride = value; publish();},
   completeAi: () => {
     for (const conversation of aiConversations) {
       const run = aiRuns.find(run => run.id === conversation.activeRun);
