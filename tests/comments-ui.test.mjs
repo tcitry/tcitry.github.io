@@ -59,7 +59,8 @@ test('composer sits below the thread and keeps the icon toolbar plus HeroUI prim
 test('signed-in Convex gaps explain likes instead of silently disabling them', () => {
   assert.match(root, /likeAuthPresentation/);
   assert.match(root, /AuthSyncRetry/);
-  assert.match(root, /重试后喜欢这篇文章|likePresentation\.label/);
+  assert.match(root, /isLoaded/);
+  assert.match(root, /authState === 'anonymous'/);
   assert.doesNotMatch(root, /isDisabled=\{Boolean\(userId && \(!isAuthenticated/);
 });
 

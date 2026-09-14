@@ -18,6 +18,8 @@ const {
 } = await import('data:text/javascript;base64,' + Buffer.from(bundle.outputFiles[0].text).toString('base64'));
 
 test('signed-in Convex gaps are connecting or unavailable, never anonymous', () => {
+  assert.equal(convexAuthControlState({userId: null, isLoaded: false, isAuthenticated: false, isLoading: false}), 'connecting');
+  assert.equal(convexAuthControlState({userId: null, isLoaded: true, isAuthenticated: false, isLoading: false}), 'anonymous');
   assert.equal(convexAuthControlState({userId: null, isAuthenticated: false, isLoading: false}), 'anonymous');
   assert.equal(convexAuthControlState({userId: 'user-a', isLoaded: false, isAuthenticated: false, isLoading: false}), 'connecting');
   assert.equal(convexAuthControlState({userId: 'user-a', isAuthenticated: false, isLoading: true}), 'connecting');

@@ -6,8 +6,8 @@ export function convexAuthControlState(input: {
   isAuthenticated: boolean;
   isLoading: boolean;
 }): ConvexAuthControlState {
-  if (!input.userId) return 'anonymous';
   if (input.isLoaded === false || input.isLoading) return 'connecting';
+  if (!input.userId) return 'anonymous';
   if (!input.isAuthenticated) return 'unavailable';
   return 'ready';
 }

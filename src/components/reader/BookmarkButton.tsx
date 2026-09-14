@@ -33,6 +33,7 @@ export default function BookmarkButton({pathname, title, tooltipContainer, descr
   const loading = presentation.disabled;
 
   async function toggle() {
+    if (authState === 'connecting') return;
     if (authState === 'anonymous') {openClerkSignIn(clerk); return;}
     if (authState === 'unavailable') {
       if (onAuthRetry) onAuthRetry();

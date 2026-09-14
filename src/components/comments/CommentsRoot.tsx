@@ -29,7 +29,7 @@ class CommentsBoundary extends Component<{children: ReactNode; onRetry: () => vo
 }
 
 function CommentsView({pathname, title, bookmarkable, onRetrySession}: CommentsProps & {onRetrySession: () => void}) {
-  const {userId} = useAuth();
+  const {isLoaded, userId} = useAuth();
   const {isAuthenticated, isLoading} = useConvexAuth();
   const summaryQuery = useCommentQueryRetry();
   const summary = useQuery(api.comments.getSummary, summaryQuery.skip ? 'skip' : {pathname});
@@ -38,7 +38,7 @@ function CommentsView({pathname, title, bookmarkable, onRetrySession}: CommentsP
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const [tooltipContainer, setTooltipContainer] = useState<HTMLDivElement | null>(null);
-  const authState = convexAuthControlState({userId, isAuthenticated, isLoading});
+  const authState = convexAuthControlState({userId, isLoaded, isAuthenticated, isLoading});
   const likePresentation = likeAuthPresentation(authState);
   const likeBusy = pending || authState === 'connecting' || (authState === 'ready' && liked === undefined);
   if (!summary) return <div className={`${surface.surface} blog-comments__root`} data-book-island>
@@ -66,12 +66,12 @@ function CommentsView({pathname, title, bookmarkable, onRetrySession}: CommentsP
     <div className="blog-comments__summary">
       <span className="blog-comments__count" role="status">{summary.commentCount.toLocaleString()} 条评论</span>
       <div className="blog-comments__article-actions">
-        {!userId ? <ClerkSignInButton>{likeButton}</ClerkSignInButton> : likeButton}
+        {authState === 'anonymous' ? <ClerkSignInButton>{likeButton}</ClerkSignInButton> : likeButton}
         {bookmarkable && title && <BookmarkButton pathname={pathname} title={title} tooltipContainer={tooltipContainer} onAuthRetry={onRetrySession} unavailableNotice={false} />}
       </div>
     </div>
     {error && <p className="blog-comments__error" role="alert">{error}</p>}
-    {!userId ? <div className="blog-comments__signin">
+    {authState === 'anonymous' ? <div className="blog-comments__signin">
       <p className="blog-comments__hint">登录后发表评论</p>
       <ClerkSignInButton><Button size="sm" variant="primary">登录 / 注册</Button></ClerkSignInButton>
     </div> : authState === 'connecting' ? <AuthLoading label="正在连接登录状态…" />
