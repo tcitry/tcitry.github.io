@@ -33,6 +33,10 @@ function initializeChat() {
   let stopped = false;
   let preservedCloseEvents = 0;
   let promptRequest = 0;
+  // Pointer close must not restore opener focus; that looks like a stuck hover
+  // because the edge handle reappears under the cursor and :focus-visible
+  // keeps the CSS tooltip. Keyboard Escape / activation still restores.
+  let restoreOpenerFocus = true;
   const overlayEscapes = new WeakSet<KeyboardEvent>();
 
   function syncReadingLayout() {
@@ -78,7 +82,13 @@ function initializeChat() {
     if (preserveState) preservedCloseEvents++;
     panel!.close();
     syncClosed();
-    if (restoreFocus) opener.focus({preventScroll: true});
+    if (!restoreFocus) return;
+    if (restoreOpenerFocus) {
+      opener.focus({preventScroll: true});
+      return;
+    }
+    const active = document.activeElement;
+    if (active === opener || (active instanceof HTMLElement && panel!.contains(active))) active.blur();
   }
 
   function focusChat() {
@@ -211,6 +221,7 @@ function initializeChat() {
     state.save(currentView);
     syncReadingLayout();
     if (mount) focusChat();
+    else if (!restoreOpenerFocus && trigger && document.activeElement === trigger) trigger.blur();
     void loadChat();
   }
 
@@ -233,6 +244,13 @@ function initializeChat() {
       }
     })();
   } else resolveLauncher();
+  document.addEventListener('pointerdown', event => {
+    if (event.isPrimary) restoreOpenerFocus = false;
+  }, {capture: true, signal});
+  document.addEventListener('keydown', event => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    restoreOpenerFocus = true;
+  }, {capture: true, signal});
   launcher.addEventListener('click', () => panel.open ? close() : open(launcher), {signal});
   expandHandle.addEventListener('click', () => open(expandHandle), {signal});
   document.addEventListener('blog:ask-ai', (event) => {
