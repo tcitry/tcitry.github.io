@@ -168,14 +168,9 @@ export const syncMyAuthorImage = mutation({
     const rows = await ctx.db.query("comments")
       .withIndex("by_owner_and_deletedAt_and_createdAt", q => q.eq("owner", owner).eq("deletedAt", undefined))
       .take(AUTHOR_IMAGE_SYNC_BATCH);
-    let updated = 0;
-    for (const row of rows) {
-      if (row.authorImageUrl !== authorImageUrl) {
-        await ctx.db.patch("comments", row._id, {authorImageUrl});
-        updated++;
-      }
-    }
-    return {updated};
+    const stale = rows.filter(row => row.authorImageUrl !== authorImageUrl);
+    await Promise.all(stale.map(row => ctx.db.patch("comments", row._id, {authorImageUrl})));
+    return {updated: stale.length};
   },
 });
 
