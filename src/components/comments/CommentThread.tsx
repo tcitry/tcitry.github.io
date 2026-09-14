@@ -55,6 +55,8 @@ export default function CommentThread({pathname}: {pathname: string}) {
   const remove = useMutation(api.comments.remove);
   const setLike = useMutation(api.comments.setCommentLike);
   const discard = useMutation(api.commentImages.discard);
+  const syncMyAuthorImage = useMutation(api.comments.syncMyAuthorImage);
+  const syncedAuthorImage = useRef(false);
   const [body, setBody] = useState('');
   const [images, setImages] = useState<DraftImage[]>([]);
   const imageCount = useRef(0);
@@ -103,6 +105,11 @@ export default function CommentThread({pathname}: {pathname: string}) {
   useEffect(() => {
     if (accountUsername) setUsernameDraft(accountUsername);
   }, [accountUsername]);
+  useEffect(() => {
+    if (syncedAuthorImage.current) return;
+    syncedAuthorImage.current = true;
+    void syncMyAuthorImage({}).catch(() => {});
+  }, [syncMyAuthorImage]);
 
   async function persistUsername() {
     if (!user?.update) {setUsernameError('当前账户暂时无法保存用户名，请稍后重试。'); return false;}
