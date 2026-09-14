@@ -28,6 +28,7 @@
   --comment-radius: var(--radius-lg, .5rem);
   --comment-avatar: 30px;
   --comment-header-y: 1rem;
+  --comment-composer-x: 1rem;
 }
 .blog-comments {
   margin-top: 2.5rem;
@@ -109,7 +110,7 @@
   display: grid;
   gap: .75rem;
   min-width: 0;
-  padding: 1rem;
+  padding: 1rem var(--comment-composer-x);
   border: 1px solid var(--comment-border);
   border-radius: var(--comment-radius);
   background: var(--comment-canvas);
@@ -145,7 +146,7 @@
   min-height: 100px;
   max-height: 500px;
   margin: 0;
-  padding: 1.125rem 1.25rem;
+  padding: 1.125rem 0;
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -194,7 +195,7 @@
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   width: 2.5rem;
   height: 2.5rem;
   min-width: 2.5rem;
@@ -246,7 +247,7 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: .5rem;
-  padding: .75rem 1rem 0;
+  padding: .75rem 0 0;
   border-top: 1px dashed var(--comment-border);
   background: transparent;
 }

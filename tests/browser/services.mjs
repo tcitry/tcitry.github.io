@@ -1283,7 +1283,7 @@ try {
       const publish = document.querySelector('.blog-comments__publish');
       return {
         textarea: style(textarea).fontSize,
-        textareaPadding: [style(textarea).paddingTop, style(textarea).paddingLeft],
+        textareaPadding: [style(textarea).paddingTop, style(textarea).paddingLeft, style(textarea).paddingRight],
         placeholder: {fontSize: placeholder.fontSize, opacity: placeholder.opacity},
         counter: style(document.querySelector('.blog-comments__char-count')).fontSize,
         cancel: {fontSize: style(cancel).fontSize, fontWeight: style(cancel).fontWeight, opacity: style(cancel).opacity},
@@ -1291,10 +1291,14 @@ try {
         topPad: style(document.querySelector('.blog-comments__bubble > .blog-comments__header')).paddingTop,
         replyPad: style(document.querySelector('.blog-comments__item[data-reply]')).paddingTop,
         writeBorder: style(document.querySelector('.blog-comments__write')).borderTopWidth,
+        textLeft: textarea.getBoundingClientRect().left + parseFloat(style(textarea).paddingLeft),
+        iconLeft: document.querySelector('.blog-comments__uploads .drop-zone__trigger svg').getBoundingClientRect().left,
+        textRight: textarea.getBoundingClientRect().right - parseFloat(style(textarea).paddingRight),
+        publishRight: publish.getBoundingClientRect().right,
       };
     });
     assert.equal(chrome.textarea, '14px');
-    assert.deepEqual(chrome.textareaPadding, ['18px', '20px']);
+    assert.deepEqual(chrome.textareaPadding, ['18px', '0px', '0px']);
     assert.deepEqual(chrome.placeholder, {fontSize: '14px', opacity: '1'});
     assert.equal(chrome.counter, '12px');
     assert.deepEqual(chrome.cancel, {fontSize: '12px', fontWeight: '500', opacity: '1'}, 'Disabled cancel stays 12px/500 without fading to another type size');
@@ -1302,6 +1306,8 @@ try {
     assert.equal(chrome.topPad, '16px');
     assert.equal(chrome.replyPad, '16px');
     assert.equal(chrome.writeBorder, '0px', 'Rest-state composer has no inner field ring');
+    assert.ok(Math.abs(chrome.textLeft - chrome.iconLeft) < 1, `Placeholder and image icon share one left inset (${chrome.textLeft} vs ${chrome.iconLeft})`);
+    assert.ok(Math.abs(chrome.textRight - chrome.publishRight) < 1, `Placeholder and publish share one right inset (${chrome.textRight} vs ${chrome.publishRight})`);
     const fileInput = page.locator('input[type="file"]');
     assert.equal(await fileInput.getAttribute('multiple'), '');
     assert.equal(await fileInput.getAttribute('accept'), 'image/jpeg,image/png,image/webp,image/gif');
