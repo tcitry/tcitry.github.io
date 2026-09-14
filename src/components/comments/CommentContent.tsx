@@ -16,6 +16,17 @@ export interface CommentItem {
   replyTo?: {id: Id<'comments'>; authorName: string; deleted: boolean};
 }
 
+function formatCommentTime(createdAt: number) {
+  const deltaSec = Math.round((createdAt - Date.now()) / 1000);
+  const abs = Math.abs(deltaSec);
+  const rtf = new Intl.RelativeTimeFormat('zh-CN', {numeric: 'auto'});
+  if (abs < 45) return rtf.format(deltaSec, 'second');
+  if (abs < 90 * 60) return rtf.format(Math.round(deltaSec / 60), 'minute');
+  if (abs < 36 * 3600) return rtf.format(Math.round(deltaSec / 3600), 'hour');
+  if (abs < 30 * 86400) return rtf.format(Math.round(deltaSec / 86400), 'day');
+  return new Intl.DateTimeFormat('zh-CN', {year: 'numeric', month: 'short', day: 'numeric'}).format(createdAt);
+}
+
 export default function CommentContent({comment, parentLoaded}: {comment: CommentItem; parentLoaded: boolean}) {
   const reply = comment.replyTo ? `回复 ${comment.replyTo.deleted ? '已删除的评论' : comment.replyTo.authorName}` : '';
   return <>
@@ -26,7 +37,7 @@ export default function CommentContent({comment, parentLoaded}: {comment: Commen
       </Avatar>
       <div className="blog-comments__meta">
         <strong>{comment.deleted ? '已删除的评论' : comment.authorName}</strong>
-        <time dateTime={new Date(comment.createdAt).toISOString()}>{new Intl.DateTimeFormat('zh-CN', {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(comment.createdAt)}</time>
+        <time dateTime={new Date(comment.createdAt).toISOString()}>{formatCommentTime(comment.createdAt)}</time>
       </div>
     </div>
     {comment.replyTo && <p className="blog-comments__reply">{parentLoaded ? <a href={`#comment-${comment.replyTo.id}`}>{reply}</a> : reply}</p>}
