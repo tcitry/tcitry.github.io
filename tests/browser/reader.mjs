@@ -48,13 +48,25 @@ try {
   assert.equal(await page.locator('.book-menu a[href="/me/"], .book-menu a[href="/chat/"]').count(), 0);
   assert.equal(await page.locator('[data-blog-chat-widget]').getAttribute('data-reader-pathname'), '/posts/this-blog/');
   const closeButton = panel.getByRole('button', {name: '关闭博客助手', exact: true});
-  const assertClosed = async (opener, description) => {
+  const expandTooltipHidden = async (description) => {
+    await page.mouse.move(20, 150);
+    assert.equal(await expand.locator('.blog-chat-widget__tooltip').evaluate(element => {
+      const style = getComputedStyle(element);
+      return style.visibility === 'hidden' || Number(style.opacity) === 0;
+    }), true, `${description}: expand tooltip hides after the pointer leaves`);
+  };
+  const assertClosed = async (opener, description, {keyboard = false} = {}) => {
     await panel.waitFor({state: 'hidden'});
     await expand.waitFor();
     assert.equal(await panel.evaluate(element => element.open), false, description);
     assert.equal(await launcher.getAttribute('aria-expanded'), 'false');
     assert.equal(await expand.getAttribute('aria-expanded'), 'false');
-    assert.equal(await opener.evaluate(element => document.activeElement === element), true, `${description}: focus returns to the actual opener`);
+    if (keyboard) {
+      assert.equal(await opener.evaluate(element => document.activeElement === element), true, `${description}: focus returns to the actual opener`);
+      assert.equal(await opener.evaluate(element => element.matches(':focus-visible')), true, `${description}: keyboard close shows accessible focus`);
+    } else {
+      assert.equal(await opener.evaluate(element => element.matches(':focus-visible')), false, `${description}: pointer close does not leave a keyboard focus ring`);
+    }
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${description}: the closed handle does not create overflow`);
   };
   const openFrom = async (opener, selectedView, width) => {
@@ -73,6 +85,7 @@ try {
   await panel.getByRole('radio', {name: '我的', exact: true}).click();
   await closeButton.click();
   await assertClosed(launcher, 'Closing the initial circle-opened panel');
+  await expandTooltipHidden('Closing the initial circle-opened panel');
   for (const width of [1440, 390, 320]) {
     await page.setViewportSize({width, height: 900});
     await settleLayout(page);
@@ -117,17 +130,19 @@ try {
     if (process.env.BLOG_SCREENSHOT_DIR) await page.screenshot({path: join(process.env.BLOG_SCREENSHOT_DIR, `assistant-edge-open-${width}.png`)});
     await closeButton.click();
     await assertClosed(expand, `Close button after edge opening at ${width}px`);
+    await expandTooltipHidden(`Close button after edge opening at ${width}px`);
     await openFrom(expand, '咨询', width);
     await page.keyboard.press('Escape');
-    await assertClosed(expand, `Escape after edge opening at ${width}px`);
+    await assertClosed(expand, `Escape after edge opening at ${width}px`, {keyboard: true});
 
     await openFrom(launcher, '咨询', width);
     await panel.getByRole('radio', {name: '我的', exact: true}).click();
     await closeButton.click();
     await assertClosed(launcher, `Close button after circle opening at ${width}px`);
+    await expandTooltipHidden(`Close button after circle opening at ${width}px`);
     await openFrom(launcher, '我的', width);
     await page.keyboard.press('Escape');
-    await assertClosed(launcher, `Escape after circle opening at ${width}px`);
+    await assertClosed(launcher, `Escape after circle opening at ${width}px`, {keyboard: true});
   }
   await page.goto(new URL('/', base).href);
   assert.equal(await page.locator('[data-open-reading]').count(), 0, 'Home has no alternate account launcher');

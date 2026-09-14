@@ -45,6 +45,7 @@ function WorkspaceContent({onClose, onReady, view, myOpened, selectView, request
   const [notificationThread, setNotificationThread] = useState<Id<'consultationThreads'> | null>(null);
   const tabRail = useRef<HTMLDivElement | null>(null);
   const [tooltipContainer, setTooltipContainer] = useState<HTMLDivElement | null>(null);
+  const [closeTipOpen, setCloseTipOpen] = useState(false);
   useEffect(() => { if (isLoaded) onReady(); }, [isLoaded, onReady]);
   useEffect(() => {
     if (view === 'admin' && !isLoading && (!isAuthenticated || role?.isAdmin === false)) selectView('consult');
@@ -53,8 +54,11 @@ function WorkspaceContent({onClose, onReady, view, myOpened, selectView, request
 
   return <div ref={setTooltipContainer} className={`${surface.surface} assistant-workspace`} data-book-island>
     <div className="assistant-workspace__edge-actions" role="group" aria-label="侧栏操作">
-    <Tooltip delay={400}>
-      <Button isIconOnly variant="secondary" className="assistant-workspace__close" aria-label="关闭博客助手" onPress={onClose}>
+    <Tooltip delay={400} isOpen={closeTipOpen} onOpenChange={setCloseTipOpen}>
+      <Button isIconOnly variant="secondary" className="assistant-workspace__close" aria-label="关闭博客助手" onPress={() => {
+        setCloseTipOpen(false);
+        onClose();
+      }}>
         <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m7.5 5 5 5-5 5" /></svg>
       </Button>
       <Tooltip.Content className="blog-chat__tooltip" placement="right" offset={8} UNSTABLE_portalContainer={tooltipContainer ?? undefined}>收起侧栏</Tooltip.Content>

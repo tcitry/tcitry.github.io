@@ -106,7 +106,7 @@ try {
       await page.screenshot({path: join(tmpdir(), `workspace-${failure}-failure-${width}.png`)});
       await panel.getByRole('button', {name: '关闭博客助手', exact: true}).click();
       assert.equal(await panel.evaluate(element => element.open), false, 'Close works even while the selected view is failed');
-      assert.equal(await launcher.evaluate(element => document.activeElement === element), true, 'Failure close returns focus to the actual launcher');
+      assert.equal(await launcher.evaluate(element => element.matches(':focus-visible')), false, 'Pointer close does not leave a keyboard focus ring on the launcher');
       const state = await page.evaluate(() => window.__services.getState());
       assert.equal(state.writes.filter(write => write.name !== 'membership:getMyMembership').length, 0, 'Failure recovery creates no business writes');
       assert.equal(state.clientLifecycle.some(event => ['setAuth', 'clearAuth'].includes(event.event) && event.closed), false);

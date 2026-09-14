@@ -999,9 +999,12 @@ try {
       await expand.click(); await readyOpen('a');
       await tab(page, 'AI 对话').click(); await readyOpen('a', 'chat');
       await close.focus(); await page.keyboard.press('Enter'); await readyClosed();
-      assert.equal(await expand.evaluate(element => document.activeElement === element), true);
+      assert.equal(await expand.evaluate(element => document.activeElement === element && element.matches(':focus-visible')), true,
+        'Keyboard close restores accessible focus to the expand handle');
       await expand.click(); await readyOpen('a', 'chat');
       await close.focus(); await page.keyboard.press('Escape'); await readyClosed();
+      assert.equal(await expand.evaluate(element => document.activeElement === element && element.matches(':focus-visible')), true,
+        'Escape restores accessible focus to the expand handle');
       await page.reload(); await readyClosed();
       await launcher.click(); await readyOpen('a');
       await switchSession(page, 'fixture-author', 'session-navigation-layout');
@@ -1049,7 +1052,13 @@ try {
       await navigate('b'); await readyClosed();
       await expand.click(); await readyOpen('b');
       await close.click(); await readyClosed();
-      assert.equal(await expand.evaluate(element => document.activeElement === element), true);
+      assert.equal(await expand.evaluate(element => element.matches(':focus-visible')), false,
+        'Pointer close does not leave a keyboard focus ring on the expand handle');
+      await page.mouse.move(20, 200);
+      assert.equal(await expand.locator('.blog-chat-widget__tooltip').evaluate(element => {
+        const style = getComputedStyle(element);
+        return style.visibility === 'hidden' || Number(style.opacity) === 0;
+      }), true, 'Expand tooltip hides after the pointer leaves');
       await navigate('a'); await readyClosed();
       await page.reload(); await readyClosed();
       assert.equal(await page.evaluate(() => localStorage.getItem('blog-assistant-pinned')), 'true', 'An old pin value is ignored rather than restoring cross-page state');
