@@ -7,53 +7,48 @@ const thread = readFileSync(new URL('../src/components/comments/CommentThread.ts
 const content = readFileSync(new URL('../src/components/comments/CommentContent.tsx', import.meta.url), 'utf8');
 const root = readFileSync(new URL('../src/components/comments/CommentsRoot.tsx', import.meta.url), 'utf8');
 
-test('comment chrome maps Primer / giscus tokens instead of marketing cards', () => {
-  assert.match(commentsCss, /--comment-canvas:.*#fff/);
-  assert.match(commentsCss, /--comment-inset:.*#f6f8fa/);
-  assert.match(commentsCss, /--comment-fg:.*#1F2328/);
-  assert.match(commentsCss, /--comment-muted:\s*#656d76/);
-  assert.match(commentsCss, /--comment-border:\s*#d0d7de/);
-  assert.match(commentsCss, /--comment-primary:\s*#1f883d/);
-  assert.match(commentsCss, /--comment-primary:\s*#238636/);
-  assert.match(commentsCss, /--comment-accent:\s*var\(--color-link,\s*#0969da\)/);
+test('comment chrome uses DemoSurface / HeroUI tokens instead of Primer greens', () => {
+  assert.match(commentsCss, /--comment-canvas:\s*var\(--surface/);
+  assert.match(commentsCss, /--comment-inset:\s*var\(--surface-secondary/);
+  assert.match(commentsCss, /--comment-fg:\s*var\(--foreground/);
+  assert.match(commentsCss, /--comment-muted:\s*var\(--muted/);
+  assert.match(commentsCss, /--comment-border:\s*var\(--border/);
+  assert.match(commentsCss, /--comment-accent:\s*var\(--accent/);
+  assert.match(commentsCss, /--comment-radius:\s*var\(--radius-lg/);
   assert.match(commentsCss, /\.blog-comments__content[^{]*\{[^}]*gap:\s*2rem/);
   assert.match(commentsCss, /\.blog-comments__list[^{]*\{[^}]*gap:\s*1\.5rem/);
   assert.match(commentsCss, /\.blog-comments__tl-line/);
   assert.match(commentsCss, /left:\s*30px/);
-  assert.match(commentsCss, /top:\s*16px/);
-  assert.match(commentsCss, /border-bottom:\s*1px dashed/);
-  assert.match(commentsCss, /box-shadow:\s*0 0 0 2px var\(--comment-accent\)/);
-  assert.match(commentsCss, /height:\s*26px/);
+  assert.match(commentsCss, /1px dashed/);
+  assert.match(commentsCss, /box-shadow:\s*0 0 0 2px var\(--comment-accent-subtle\)/);
   assert.match(commentsCss, /\.blog-comments__bubble/);
-  assert.match(commentsCss, /\.blog-comments__tabs/);
-  assert.match(commentsCss, /\.blog-comments__tablist/);
   assert.match(commentsCss, /\.blog-comments__write:focus-within/);
   assert.match(commentsCss, /\.blog-comments__replies/);
+  assert.doesNotMatch(commentsCss, /#1f883d|#238636|#d0d7de|#f6f8fa|#0969da/);
+  assert.doesNotMatch(commentsCss, /--comment-primary/);
   assert.doesNotMatch(commentsCss, /blog-comments__empty[^{]*\{[^}]*border-style:\s*dashed/);
   assert.doesNotMatch(commentsCss, /margin-inline-start/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__tabs/);
 });
 
-test('composer sits below the thread and keeps the icon toolbar plus green publish control', () => {
+test('composer sits below the thread and keeps the icon toolbar plus HeroUI primary publish', () => {
   const listIndex = thread.indexOf('className="blog-comments__list"');
   const formIndex = thread.indexOf('className="blog-comments__form"');
   const composerIndex = thread.indexOf('className="blog-comments__composer"');
   const publishIndex = thread.indexOf('blog-comments__publish');
-  assert.ok(listIndex > 0 && formIndex > listIndex, 'giscus data-input-position=bottom: list then composer');
+  assert.ok(listIndex > 0 && formIndex > listIndex, 'discussion input stays below the thread');
   assert.ok(composerIndex > formIndex);
   assert.ok(publishIndex > composerIndex);
   assert.match(thread, /blog-comments__toolbar/);
-  assert.match(thread, /blog-comments__tabs/);
-  assert.match(thread, /blog-comments__tablist/);
   assert.match(thread, /blog-comments__write/);
-  assert.match(thread, /aria-hidden="true">预览/);
   assert.match(thread, /aria-label="添加图片"/);
   assert.match(thread, /blog-comments__cancel/);
   assert.match(thread, />取消</);
+  assert.match(thread, /variant="primary"/);
   assert.match(thread, /发布评论/);
-  assert.match(commentsCss, /\.blog-comments__publish \{/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__submit > \.button,/);
   assert.match(root, /登录后发表评论/);
-  assert.match(root, /blog-comments__publish/);
+  assert.match(root, /variant="primary"/);
+  assert.doesNotMatch(thread, /blog-comments__tabs/);
   assert.doesNotMatch(thread, /marginInlineStart/);
 });
 

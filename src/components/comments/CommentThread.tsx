@@ -297,15 +297,9 @@ export default function CommentThread({pathname}: {pathname: string}) {
         error={usernameError} pending={pending || usernamePending} onSave={() => {void saveUsername();}} />}
       {replyTo && <div className="blog-comments__reply-target"><span>回复 {replyTo.authorName}</span><Button size="sm" variant="ghost" onPress={() => setReplyTo(null)}>取消回复</Button></div>}
       <div className="blog-comments__composer">
-        <div className="blog-comments__tabs">
-          <div className="blog-comments__tablist">
-            <span className="blog-comments__tab" data-active="">撰写</span>
-            <span className="blog-comments__tab" aria-hidden="true">预览</span>
-          </div>
-          <div className="blog-comments__composer-author"><Avatar size="sm">
-            {user?.imageUrl && <Avatar.Image src={user.imageUrl} alt="" />}<Avatar.Fallback>{accountUsername.slice(0, 1) || '我'}</Avatar.Fallback>
-          </Avatar><strong>{accountUsername || '设置用户名'}</strong></div>
-        </div>
+        <div className="blog-comments__composer-author"><Avatar size="sm">
+          {user?.imageUrl && <Avatar.Image src={user.imageUrl} alt="" />}<Avatar.Fallback>{accountUsername.slice(0, 1) || '我'}</Avatar.Fallback>
+        </Avatar><strong>{accountUsername || '设置用户名'}</strong></div>
         <div className="blog-comments__write">
           <TextField value={body} onChange={setBody} isDisabled={pending || usernamePending}>
             <Label className="blog-comments__sr-only">你的评论</Label>
@@ -340,7 +334,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
           </DropZone>
           <div className="blog-comments__submit">
             <span>{body.length.toLocaleString()} / 4,000</span>
-            <Button type="submit" size="sm" className="blog-comments__publish" isPending={pending || usernamePending} isDisabled={!body.trim() && !images.length}>发布评论</Button>
+            <Button type="submit" size="sm" variant="primary" className="blog-comments__publish" isPending={pending || usernamePending} isDisabled={!body.trim() && !images.length}>发布评论</Button>
             <Button type="button" size="sm" variant="ghost" className="blog-comments__cancel" isDisabled={pending || usernamePending || (!replyTo && !body.trim() && !images.length)} onPress={() => {void cancelComposer();}}>取消</Button>
           </div>
         </div>
