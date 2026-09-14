@@ -20,9 +20,10 @@ test('comment chrome uses DemoSurface / HeroUI tokens instead of Primer greens',
   assert.match(commentsCss, /\.blog-comments__tl-line/);
   assert.match(commentsCss, /left:\s*30px/);
   assert.match(commentsCss, /1px dashed/);
-  assert.match(commentsCss, /box-shadow:\s*0 0 0 2px var\(--comment-accent-subtle\)/);
-  assert.match(commentsCss, /\.blog-comments__bubble/);
   assert.match(commentsCss, /\.blog-comments__write:focus-within/);
+  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline:\s*2px solid var\(--comment-accent\)/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*box-shadow:\s*0 0 0 2px var\(--comment-accent-subtle\)/);
+  assert.match(commentsCss, /\.blog-comments__bubble/);
   assert.match(commentsCss, /\.blog-comments__replies/);
   assert.doesNotMatch(commentsCss, /#1f883d|#238636|#d0d7de|#f6f8fa|#0969da/);
   assert.doesNotMatch(commentsCss, /--comment-primary/);
@@ -81,4 +82,12 @@ test('top-level and nested avatars share the same space above the header', () =>
   assert.match(commentsCss, /\.blog-comments__item\[data-reply\][^{]*\{[^}]*padding:\s*var\(--comment-header-y\) 1rem \.5rem/);
   assert.match(commentsCss, /\.blog-comments__item\[data-reply\]:first-child > \.blog-comments__tl-line[^{]*\{[^}]*top:\s*var\(--comment-header-y\)/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__bubble > \.blog-comments__header[^{]*\{[^}]*padding:\s*\.5rem 1rem 0/);
+});
+
+test('composer placeholder is inset and the field ring is focus-only', () => {
+  assert.match(commentsCss, /\.blog-comments__composer textarea[^{]*\{[^}]*padding:\s*1\.125rem 1\.25rem/);
+  assert.match(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*0/);
+  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline:\s*2px solid var\(--comment-accent\)/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*1px solid var\(--field-border/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*box-shadow:\s*0 0 0 2px/);
 });
