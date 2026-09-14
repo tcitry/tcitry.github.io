@@ -21,7 +21,8 @@ test('comment chrome uses DemoSurface / HeroUI tokens instead of Primer greens',
   assert.match(commentsCss, /left:\s*30px/);
   assert.match(commentsCss, /1px dashed/);
   assert.match(commentsCss, /\.blog-comments__write:focus-within/);
-  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline:\s*2px solid var\(--comment-accent\)/);
+  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*box-shadow:\s*0 0 0 2px var\(--comment-accent\)/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline-offset:\s*2px/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*box-shadow:\s*0 0 0 2px var\(--comment-accent-subtle\)/);
   assert.match(commentsCss, /\.blog-comments__bubble/);
   assert.match(commentsCss, /\.blog-comments__replies/);
@@ -96,7 +97,8 @@ test('composer placeholder and toolbar share one horizontal inset', () => {
 test('composer placeholder is inset and the field ring is focus-only', () => {
   assert.match(commentsCss, /\.blog-comments__composer textarea\.textarea[^{]*\{[^}]*padding:\s*1\.125rem 0/);
   assert.match(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*0/);
-  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline:\s*2px solid var\(--comment-accent\)/);
+  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*box-shadow:\s*0 0 0 2px var\(--comment-accent\)/);
+  assert.match(commentsCss, /\.blog-comments__composer \.textarea:focus[^{]*\{[^}]*box-shadow:\s*none/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*1px solid var\(--field-border/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*box-shadow:\s*0 0 0 2px/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline-offset:\s*2px/);
 });

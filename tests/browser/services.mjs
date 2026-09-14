@@ -1302,6 +1302,32 @@ try {
     assert.equal(chrome.topPad, '16px');
     assert.equal(chrome.replyPad, '16px');
     assert.equal(chrome.writeBorder, '0px', 'Rest-state composer has no inner field ring');
+    await body.click();
+    const focused = await page.evaluate(() => {
+      const write = document.querySelector('.blog-comments__write');
+      const textarea = document.querySelector('#comment-body');
+      return {
+        writeOutline: getComputedStyle(write).outlineStyle,
+        writeOffset: getComputedStyle(write).outlineOffset,
+        writeShadow: getComputedStyle(write).boxShadow,
+        textareaOutline: getComputedStyle(textarea).outlineStyle,
+        textareaShadow: getComputedStyle(textarea).boxShadow,
+        textareaBorder: getComputedStyle(textarea).borderTopWidth,
+      };
+    });
+    assert.equal(focused.writeOutline, 'none');
+    assert.equal(focused.writeOffset, '0px', 'Focus ring is flush, not an offset second card');
+    assert.match(focused.writeShadow, /0px 0px 0px 2px/, 'Focus-within uses a 2px accent ring like giscus');
+    assert.equal(focused.textareaOutline, 'none');
+    assert.equal(focused.textareaShadow, 'none', 'HeroUI ring-focus does not paint a second blue box on the textarea');
+    assert.equal(focused.textareaBorder, '0px');
+    await page.evaluate(() => document.querySelector('#comment-body').blur());
+    const blurred = await page.evaluate(() => {
+      const write = document.querySelector('.blog-comments__write');
+      return {shadow: getComputedStyle(write).boxShadow, outline: getComputedStyle(write).outlineStyle};
+    });
+    assert.equal(blurred.outline, 'none');
+    assert.equal(blurred.shadow, 'none', 'Unfocused write has no inner ring');
     for (const width of [375, 1280]) {
       await page.setViewportSize({width, height: 900});
       const edges = await page.evaluate(() => {
