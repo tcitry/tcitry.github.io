@@ -1,0 +1,4 @@
+/* Weekly cover cards only need public HeroUI Card and Chip styles. */
+@reference "../../styles/tailwind.css";
+@import "@heroui/styles/components/card.css" layer(components);
+@import "@heroui/styles/components/chip.css" layer(components);

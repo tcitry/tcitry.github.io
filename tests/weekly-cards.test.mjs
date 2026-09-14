@@ -6,7 +6,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 
 const result = await build({
   entryPoints: [new URL('../src/components/book/WeeklyCardsView.tsx', import.meta.url).pathname],
-  bundle: true, platform: 'node', format: 'esm', write: false, jsx: 'automatic', loader: {'.css': 'empty'},
+  bundle: true, platform: 'node', format: 'esm', write: false, jsx: 'automatic', loader: {'.css': 'empty', '.module.css': 'empty'},
   plugins: [{name: 'external-packages', setup(plugin) {
     plugin.onResolve({filter: /^[^./]/}, ({path}) => ({path: import.meta.resolve(path), external: true}));
   }}],

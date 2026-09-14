@@ -1,6 +1,6 @@
 import {Card, Chip} from '@heroui/react';
 import type {WeeklyCardItem} from './special-pages';
-import './ContentSections.css';
+import './WeeklyCards.css';
 import styles from './ContentSections.module.css';
 
 function dateTime(label?: string) {
