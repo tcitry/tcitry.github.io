@@ -10,7 +10,9 @@ import {notifyCommentReply} from "./notifications";
 const rateLimiter = new RateLimiter(components.rateLimiter, {
   commentWrites: {kind: "token bucket", rate: 6, period: 60_000, capacity: 3},
   likes: {kind: "token bucket", rate: 30, period: 60_000, capacity: 10},
+  commentAvatarSync: {kind: "token bucket", rate: 2, period: 60_000, capacity: 1},
 });
+const AUTHOR_IMAGE_SYNC_BATCH = 100;
 
 function isModerator(owner: string) {
   return Boolean(owner && owner === env.CONSULTATION_ADMIN_TOKEN_IDENTIFIER?.trim());
@@ -151,6 +153,24 @@ export const list = query({
         ...(parent && parent.pathname === pathname ? {replyTo: {id: parent._id, authorName: parent.deletedAt !== undefined ? "已删除的评论" : parent.authorName, deleted: parent.deletedAt !== undefined}} : {}),
       };
     }))};
+  },
+});
+
+export const syncMyAuthorImage = mutation({
+  args: {}, returns: v.object({updated: v.number()}),
+  handler: async ctx => {
+    const identity = await requireCommentIdentity(ctx);
+    const authorImageUrl = commentAuthorImageUrl(identity);
+    if (!authorImageUrl) return {updated: 0};
+    const owner = identity.tokenIdentifier;
+    const status = await rateLimiter.limit(ctx, "commentAvatarSync", {key: owner});
+    if (!status.ok) return {updated: 0};
+    const rows = await ctx.db.query("comments")
+      .withIndex("by_owner_and_deletedAt_and_createdAt", q => q.eq("owner", owner).eq("deletedAt", undefined))
+      .take(AUTHOR_IMAGE_SYNC_BATCH);
+    const stale = rows.filter(row => row.authorImageUrl !== authorImageUrl);
+    await Promise.all(stale.map(row => ctx.db.patch("comments", row._id, {authorImageUrl})));
+    return {updated: stale.length};
   },
 });
 

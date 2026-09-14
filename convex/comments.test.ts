@@ -110,6 +110,7 @@ describe("comment identity and deletion", () => {
       () => t.mutation(api.comments.remove, {id}),
       () => t.mutation(api.comments.setLike, {pathname, liked: true}),
       () => t.mutation(api.comments.setCommentLike, {pathname, commentId: id, liked: true}),
+      () => t.mutation(api.comments.syncMyAuthorImage, {}),
     ]) await expect(call()).rejects.toThrow("UNAUTHENTICATED");
   });
 
@@ -166,6 +167,49 @@ describe("comment identity and deletion", () => {
       expect((await t.run(ctx => ctx.db.get("comments", invalidId)))?.authorImageUrl).toBeUndefined();
       expect((await user.query(api.comments.list, {pathname, paginationOpts})).page[0].authorImageUrl).toBeUndefined();
     }
+  });
+
+  test("login sync refreshes all own non-deleted avatars from the signed pictureUrl", async () => {
+    const {t, alice, bob} = setup();
+    const owner = `${aliceIdentity.issuer}|alice`;
+    const oldAvatar = "https://img.clerk.com/alice-old.png";
+    const newAvatar = "https://img.clerk.com/alice-new.png";
+    const bobAvatar = "https://img.clerk.com/bob.png";
+    const [missingId, staleId, matchingId, otherPathId, deletedId, leftoverDeletedId, bobId] = await t.run(async ctx => [
+      await ctx.db.insert("comments", {...comment, owner, authorName: "Alice", createdAt: 1}),
+      await ctx.db.insert("comments", {...comment, owner, authorName: "Alice", createdAt: 2, authorImageUrl: oldAvatar}),
+      await ctx.db.insert("comments", {...comment, owner, authorName: "Alice", createdAt: 3, authorImageUrl: newAvatar}),
+      await ctx.db.insert("comments", {...comment, pathname: "/posts/other/", owner, authorName: "Alice", createdAt: 4, authorImageUrl: oldAvatar}),
+      await ctx.db.insert("comments", {...comment, owner, authorName: "", body: "", createdAt: 5, deletedAt: 100}),
+      await ctx.db.insert("comments", {...comment, owner, authorName: "", body: "", createdAt: 6, deletedAt: 100, authorImageUrl: oldAvatar}),
+      await ctx.db.insert("comments", {...comment, owner: `${aliceIdentity.issuer}|bob`, authorName: "Bob", createdAt: 7, authorImageUrl: bobAvatar}),
+    ]);
+
+    expect(await alice.mutation(api.comments.syncMyAuthorImage, {})).toEqual({updated: 0});
+    expect((await t.run(ctx => ctx.db.get("comments", missingId)))?.authorImageUrl).toBeUndefined();
+    expect(await t.run(ctx => ctx.db.get("comments", staleId))).toMatchObject({authorImageUrl: oldAvatar});
+
+    for (const pictureUrl of ["http://img.clerk.com/alice.png", "javascript:alert(1)", "not-a-url"]) {
+      const invalid = t.withIdentity({...aliceIdentity, pictureUrl});
+      expect(await invalid.mutation(api.comments.syncMyAuthorImage, {})).toEqual({updated: 0});
+    }
+    expect(await t.run(ctx => ctx.db.get("comments", staleId))).toMatchObject({authorImageUrl: oldAvatar});
+
+    const pictured = t.withIdentity({...aliceIdentity, pictureUrl: newAvatar});
+    await expect(pictured.mutation(api.comments.syncMyAuthorImage, {
+      // @ts-expect-error Avatars come from signed identity, not the client.
+      authorImageUrl: "https://evil.example.test/forged.png",
+    })).rejects.toThrow();
+    expect(await pictured.mutation(api.comments.syncMyAuthorImage, {})).toEqual({updated: 3});
+    expect(await t.run(ctx => ctx.db.get("comments", missingId))).toMatchObject({authorImageUrl: newAvatar});
+    expect(await t.run(ctx => ctx.db.get("comments", staleId))).toMatchObject({authorImageUrl: newAvatar});
+    expect(await t.run(ctx => ctx.db.get("comments", matchingId))).toMatchObject({authorImageUrl: newAvatar});
+    expect(await t.run(ctx => ctx.db.get("comments", otherPathId))).toMatchObject({authorImageUrl: newAvatar});
+    expect((await t.run(ctx => ctx.db.get("comments", deletedId)))?.authorImageUrl).toBeUndefined();
+    expect(await t.run(ctx => ctx.db.get("comments", leftoverDeletedId))).toMatchObject({authorImageUrl: oldAvatar, deletedAt: 100});
+    expect(await t.run(ctx => ctx.db.get("comments", bobId))).toMatchObject({authorImageUrl: bobAvatar});
+    expect((await pictured.query(api.comments.list, {pathname, paginationOpts})).page.find(row => row.id === missingId)).toMatchObject({authorImageUrl: newAvatar});
+    expect((await bob.query(api.comments.list, {pathname, paginationOpts})).page.find(row => row.id === bobId)).toMatchObject({authorImageUrl: bobAvatar});
   });
 
   test("missing username never falls back to email, full name, or user ID", async () => {

@@ -2,7 +2,7 @@ import {useEffect, useId, useRef, useState, type SubmitEvent} from 'react';
 import {useAuth, useSession, useUser} from '@clerk/react';
 import {Avatar, Button, Label, TextArea, TextField, Tooltip} from '@heroui/react';
 import {DropZone} from '@heroui-pro/react';
-import {useMutation, usePaginatedQuery} from 'convex/react';
+import {useConvexAuth, useMutation, usePaginatedQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
 import type {Id} from '../../../convex/_generated/dataModel';
 import {useRefreshConvexToken} from '../auth/convex-token-refresh';
@@ -44,9 +44,10 @@ function discussionRows(comments: CommentItem[]) {
 }
 
 export default function CommentThread({pathname}: {pathname: string}) {
-  const {getToken, sessionClaims} = useAuth();
+  const {getToken, sessionClaims, isLoaded, isSignedIn} = useAuth();
   const {session} = useSession();
-  const {user} = useUser();
+  const {user, isLoaded: userLoaded} = useUser();
+  const {isAuthenticated} = useConvexAuth();
   const refreshConvexToken = useRefreshConvexToken();
   const listQuery = useCommentQueryRetry();
   const {results, status, loadMore} = usePaginatedQuery(api.comments.list, listQuery.skip ? 'skip' : {pathname}, {initialNumItems: 20});
@@ -55,6 +56,9 @@ export default function CommentThread({pathname}: {pathname: string}) {
   const remove = useMutation(api.comments.remove);
   const setLike = useMutation(api.comments.setCommentLike);
   const discard = useMutation(api.commentImages.discard);
+  const syncMyAuthorImage = useMutation(api.comments.syncMyAuthorImage);
+  const syncedAuthorImage = useRef(false);
+  const syncingAuthorImage = useRef(false);
   const [body, setBody] = useState('');
   const [images, setImages] = useState<DraftImage[]>([]);
   const imageCount = useRef(0);
@@ -103,6 +107,15 @@ export default function CommentThread({pathname}: {pathname: string}) {
   useEffect(() => {
     if (accountUsername) setUsernameDraft(accountUsername);
   }, [accountUsername]);
+  useEffect(() => {
+    if (syncedAuthorImage.current || syncingAuthorImage.current) return;
+    if (!isLoaded || !isSignedIn || !userLoaded || !user || !isAuthenticated) return;
+    syncingAuthorImage.current = true;
+    void syncMyAuthorImage({})
+      .then(() => { syncedAuthorImage.current = true; })
+      .catch(() => {})
+      .finally(() => { syncingAuthorImage.current = false; });
+  }, [isLoaded, isSignedIn, userLoaded, user?.id, isAuthenticated, syncMyAuthorImage]);
 
   async function persistUsername() {
     if (!user?.update) {setUsernameError('当前账户暂时无法保存用户名，请稍后重试。'); return false;}
