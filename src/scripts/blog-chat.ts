@@ -88,7 +88,7 @@ function initializeChat() {
       return;
     }
     const active = document.activeElement;
-    if (active === opener || (active instanceof HTMLElement && panel!.contains(active))) active.blur();
+    if (active instanceof HTMLElement && (active === opener || panel!.contains(active))) active.blur();
   }
 
   function focusChat() {
