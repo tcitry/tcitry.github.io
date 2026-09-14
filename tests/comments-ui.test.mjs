@@ -20,9 +20,10 @@ test('comment chrome uses DemoSurface / HeroUI tokens instead of Primer greens',
   assert.match(commentsCss, /\.blog-comments__tl-line/);
   assert.match(commentsCss, /left:\s*30px/);
   assert.match(commentsCss, /1px dashed/);
-  assert.match(commentsCss, /box-shadow:\s*0 0 0 2px var\(--comment-accent-subtle\)/);
-  assert.match(commentsCss, /\.blog-comments__bubble/);
   assert.match(commentsCss, /\.blog-comments__write:focus-within/);
+  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline:\s*2px solid var\(--comment-accent\)/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*box-shadow:\s*0 0 0 2px var\(--comment-accent-subtle\)/);
+  assert.match(commentsCss, /\.blog-comments__bubble/);
   assert.match(commentsCss, /\.blog-comments__replies/);
   assert.doesNotMatch(commentsCss, /#1f883d|#238636|#d0d7de|#f6f8fa|#0969da/);
   assert.doesNotMatch(commentsCss, /--comment-primary/);
@@ -43,6 +44,7 @@ test('composer sits below the thread and keeps the icon toolbar plus HeroUI prim
   assert.match(thread, /blog-comments__write/);
   assert.match(thread, /aria-label="添加图片"/);
   assert.match(thread, /blog-comments__cancel/);
+  assert.match(thread, /blog-comments__char-count/);
   assert.match(thread, />取消</);
   assert.match(thread, /variant="primary"/);
   assert.match(thread, /发布评论/);
@@ -50,6 +52,18 @@ test('composer sits below the thread and keeps the icon toolbar plus HeroUI prim
   assert.match(root, /variant="primary"/);
   assert.doesNotMatch(thread, /blog-comments__tabs/);
   assert.doesNotMatch(thread, /marginInlineStart/);
+});
+
+test('composer typography uses Book size tokens instead of mixed Primer/HeroUI scales', () => {
+  assert.match(commentsCss, /\.blog-comments__composer[^{]*\{[^}]*font-size:\s*var\(--font-size-smaller/);
+  assert.match(commentsCss, /\.blog-comments__composer textarea\.textarea[^{]*\{[^}]*padding:\s*1\.125rem 1\.25rem/);
+  assert.match(commentsCss, /\.blog-comments__composer textarea[^{]*\{[^}]*font:\s*inherit/);
+  assert.match(commentsCss, /\.blog-comments__composer textarea::placeholder[^{]*\{[^}]*opacity:\s*1/);
+  assert.match(commentsCss, /\.blog-comments__char-count[^}]*font-size:\s*var\(--font-size-smallest/);
+  assert.match(commentsCss, /\.blog-comments__submit \.button[^{]*\{[^}]*font-size:\s*var\(--font-size-smallest/);
+  assert.match(commentsCss, /\.blog-comments__submit \.button[^{]*\{[^}]*font-weight:\s*500/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__submit > span[^{]*\{[^}]*font-size:\s*\.6875rem/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__image-count[^{]*\{[^}]*font-size:\s*\.6875rem/);
 });
 
 test('comment markup uses a discussion header and nested reply rail, not stacked indent cards', () => {
@@ -61,4 +75,20 @@ test('comment markup uses a discussion header and nested reply rail, not stacked
   assert.match(thread, /replyCount != null/);
   assert.match(thread, /条回复/);
   assert.match(thread, /data-reply=""/);
+});
+
+test('top-level and nested avatars share the same space above the header', () => {
+  assert.match(commentsCss, /--comment-header-y:\s*1rem/);
+  assert.match(commentsCss, /\.blog-comments__bubble > \.blog-comments__header[^{]*\{[^}]*padding:\s*var\(--comment-header-y\) 1rem 0/);
+  assert.match(commentsCss, /\.blog-comments__item\[data-reply\][^{]*\{[^}]*padding:\s*var\(--comment-header-y\) 1rem \.5rem/);
+  assert.match(commentsCss, /\.blog-comments__item\[data-reply\]:first-child > \.blog-comments__tl-line[^{]*\{[^}]*top:\s*var\(--comment-header-y\)/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__bubble > \.blog-comments__header[^{]*\{[^}]*padding:\s*\.5rem 1rem 0/);
+});
+
+test('composer placeholder is inset and the field ring is focus-only', () => {
+  assert.match(commentsCss, /\.blog-comments__composer textarea\.textarea[^{]*\{[^}]*padding:\s*1\.125rem 1\.25rem/);
+  assert.match(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*0/);
+  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline:\s*2px solid var\(--comment-accent\)/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*1px solid var\(--field-border/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*box-shadow:\s*0 0 0 2px/);
 });

@@ -333,7 +333,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
             <DropZone.Input accept={commentImageTypes.join(',')} multiple onSelect={files => selectImages(Array.from(files))} />
           </DropZone>
           <div className="blog-comments__submit">
-            <span>{body.length.toLocaleString()} / 4,000</span>
+            <span className="blog-comments__char-count">{body.length.toLocaleString()} / 4,000</span>
             <Button type="submit" size="sm" variant="primary" className="blog-comments__publish" isPending={pending || usernamePending} isDisabled={!body.trim() && !images.length}>发布评论</Button>
             <Button type="button" size="sm" variant="ghost" className="blog-comments__cancel" isDisabled={pending || usernamePending || (!replyTo && !body.trim() && !images.length)} onPress={() => {void cancelComposer();}}>取消</Button>
           </div>

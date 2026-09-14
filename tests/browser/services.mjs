@@ -1275,6 +1275,33 @@ try {
     await page.getByText('这是针对初始评论的回复。', {exact: true}).waitFor();
     assert.equal((await state(page)).writes.filter(write => write.name === 'comments:add').at(-1).args.parentId, 'comment_initial');
     await page.getByText('3 条评论', {exact: true}).waitFor();
+    const chrome = await page.evaluate(() => {
+      const style = element => getComputedStyle(element);
+      const textarea = document.querySelector('#comment-body');
+      const placeholder = getComputedStyle(textarea, '::placeholder');
+      const cancel = document.querySelector('.blog-comments__cancel');
+      const publish = document.querySelector('.blog-comments__publish');
+      return {
+        textarea: style(textarea).fontSize,
+        textareaPadding: [style(textarea).paddingTop, style(textarea).paddingLeft],
+        placeholder: {fontSize: placeholder.fontSize, opacity: placeholder.opacity},
+        counter: style(document.querySelector('.blog-comments__char-count')).fontSize,
+        cancel: {fontSize: style(cancel).fontSize, fontWeight: style(cancel).fontWeight, opacity: style(cancel).opacity},
+        publish: {fontSize: style(publish).fontSize, fontWeight: style(publish).fontWeight},
+        topPad: style(document.querySelector('.blog-comments__bubble > .blog-comments__header')).paddingTop,
+        replyPad: style(document.querySelector('.blog-comments__item[data-reply]')).paddingTop,
+        writeBorder: style(document.querySelector('.blog-comments__write')).borderTopWidth,
+      };
+    });
+    assert.equal(chrome.textarea, '14px');
+    assert.deepEqual(chrome.textareaPadding, ['18px', '20px']);
+    assert.deepEqual(chrome.placeholder, {fontSize: '14px', opacity: '1'});
+    assert.equal(chrome.counter, '12px');
+    assert.deepEqual(chrome.cancel, {fontSize: '12px', fontWeight: '500', opacity: '1'}, 'Disabled cancel stays 12px/500 without fading to another type size');
+    assert.deepEqual(chrome.publish, {fontSize: '12px', fontWeight: '500'});
+    assert.equal(chrome.topPad, '16px');
+    assert.equal(chrome.replyPad, '16px');
+    assert.equal(chrome.writeBorder, '0px', 'Rest-state composer has no inner field ring');
     const fileInput = page.locator('input[type="file"]');
     assert.equal(await fileInput.getAttribute('multiple'), '');
     assert.equal(await fileInput.getAttribute('accept'), 'image/jpeg,image/png,image/webp,image/gif');
