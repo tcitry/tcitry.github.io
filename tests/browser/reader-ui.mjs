@@ -7,11 +7,14 @@ import {createServer} from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwind from '@tailwindcss/vite';
 import {chromium} from 'playwright';
+import {herouiProAliases, installHeroUiProCssStubs} from '../fixtures/heroui-pro-test-stubs.mjs';
 
 // Run real UI components against an in-memory hook fixture. No build, deploy,
 // Clerk account, Convex deployment, telemetry, or production data is involved.
 const root = fileURLToPath(new URL('../..', import.meta.url));
+await installHeroUiProCssStubs();
 const cacheDir = await mkdtemp(join(tmpdir(), 'reader-ui-vite-'));
+const stub = fileURLToPath(new URL('../fixtures/heroui-pro-stub.tsx', import.meta.url));
 const server = await createServer({
   root, configFile: false, envDir: false, publicDir: false, cacheDir,
   plugins: [react(), tailwind()],
@@ -20,6 +23,7 @@ const server = await createServer({
     {find: /^convex\/react$/, replacement: fileURLToPath(new URL('../fixtures/reader-convex.ts', import.meta.url))},
     {find: /^convex\/react-clerk$/, replacement: fileURLToPath(new URL('../fixtures/reader-convex-clerk.tsx', import.meta.url))},
     {find: /^@clerk\/react$/, replacement: fileURLToPath(new URL('../fixtures/reader-clerk.tsx', import.meta.url))},
+    ...herouiProAliases(stub),
   ]},
   define: {
     'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify('fixture-public-key'),

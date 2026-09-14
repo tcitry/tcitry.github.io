@@ -40,7 +40,10 @@ const commentLikes = new Map<string, Set<string>>();
 const notifications: { _id: string; recipient: string; kind: 'comment_reply' | 'consultation_reply'; createdAt: number; readAt: number | null; target: null | {kind: 'comment'; pathname: string; commentId: string} | {kind: 'consultation'; threadId: string; messageId: string; title: string} }[] = [];
 let rejectNextComment = false;
 let rejectNextConsultation = false;
-let convexAuthOverride: {isAuthenticated: boolean; isLoading: boolean} | null = null;
+let convexAuthOverride: {isAuthenticated: boolean; isLoading: boolean} | null =
+  new URLSearchParams(location.search).get('convexAuth') === 'unavailable'
+    ? {isAuthenticated: false, isLoading: false}
+    : null;
 type Source = {id: string; title: string; url: string; sourceKind: 'author'};
 type AiConversation = {id: string; owner: string; threadId: string; title: string; activeRun: string | null; updatedAt: number};
 type AiMessage = {id: string; key: string; role: 'user' | 'assistant'; parts: {type: 'text'; text: string}[]; text: string; order: number; stepOrder: number; status: 'success' | 'streaming'; _creationTime: number; threadId: string};

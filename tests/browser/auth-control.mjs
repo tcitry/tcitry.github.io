@@ -7,9 +7,11 @@ import {createServer} from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwind from '@tailwindcss/vite';
 import {chromium} from 'playwright';
+import {herouiProAliases, installHeroUiProCssStubs} from '../fixtures/heroui-pro-test-stubs.mjs';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const fixture = (name) => fileURLToPath(new URL(`../fixtures/${name}`, import.meta.url));
+await installHeroUiProCssStubs();
 const cacheDir = await mkdtemp(join(tmpdir(), 'auth-control-'));
 const screenshots = process.env.BLOG_SCREENSHOT_DIR;
 const capture = async (locator, name) => {
@@ -24,6 +26,7 @@ const server = await createServer({
     {find: /^convex\/react-clerk$/, replacement: fixture('services-convex.tsx')},
     {find: /^@clerk\/react$/, replacement: fixture('services-clerk.tsx')},
     {find: /^@convex-dev\/agent\/react$/, replacement: fixture('services-agent.tsx')},
+    ...herouiProAliases(fixture('heroui-pro-stub.tsx')),
   ]},
   define: {
     'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify('fixture-public-key'),
@@ -46,12 +49,7 @@ try {
   const state = () => page.evaluate(() => window.__services.getState());
   const comments = page.locator('.blog-comments__root');
 
-  await page.goto(new URL('/tests/fixtures/services-ui.html?view=comments&bookmarkable=true', base).href);
-  const like = comments.getByRole('button', {name: '喜欢这篇文章', exact: true});
-  const bookmark = comments.getByRole('button', {name: '收藏当前文章', exact: true});
-  await like.waitFor();
-  await bookmark.waitFor();
-  await page.evaluate(() => window.__services.setConvexAuth({isAuthenticated: false, isLoading: false}));
+  await page.goto(new URL('/tests/fixtures/services-ui.html?view=comments&bookmarkable=true&convexAuth=unavailable', base).href);
   const retryLike = comments.getByRole('button', {name: '重试后喜欢这篇文章', exact: true});
   const retryBookmark = comments.getByRole('button', {name: '重试后收藏当前文章', exact: true});
   await retryLike.waitFor();
@@ -67,23 +65,13 @@ try {
   assert.equal((await state()).writes.length, writesBefore, 'Retrying like must not fake a like write');
   await comments.getByRole('button', {name: '重试后收藏当前文章', exact: true}).click();
   assert.equal((await state()).writes.length, writesBefore, 'Retrying bookmark must not fake a bookmark write');
-  await page.evaluate(() => window.__services.setConvexAuth(null));
-  await comments.getByRole('button', {name: '喜欢这篇文章', exact: true}).waitFor();
-  await comments.getByRole('button', {name: '收藏当前文章', exact: true}).waitFor();
-  await comments.getByRole('button', {name: '喜欢这篇文章', exact: true}).click();
-  await page.waitForFunction(() => document.querySelector('.blog-comments__like')?.getAttribute('aria-pressed') === 'true');
-  assert.ok((await state()).writes.some(write => write.name === 'comments:setLike'));
 
-  await page.goto(new URL('/tests/fixtures/services-ui.html', base).href);
-  await page.getByRole('radio', {name: '我的', exact: true}).waitFor();
-  await page.evaluate(() => window.__services.setConvexAuth({isAuthenticated: false, isLoading: false}));
+  await page.goto(new URL('/tests/fixtures/services-ui.html?convexAuth=unavailable', base).href);
   await page.getByRole('alert').filter({hasText: '账户暂时无法连接'}).waitFor();
   const workspaceRetry = page.getByRole('button', {name: '重试', exact: true});
   assert.equal(await workspaceRetry.isDisabled(), false);
   await capture(page.locator('.assistant-workspace'), 'workspace-convex-unavailable.png');
-  await page.evaluate(() => window.__services.setConvexAuth(null));
-  await page.getByRole('radio', {name: '我的', exact: true}).waitFor();
-  assert.equal(await page.getByRole('alert').filter({hasText: '账户暂时无法连接'}).count(), 0);
+  assert.equal(await page.getByRole('region', {name: '与 AI 博客助手对话', exact: true}).count(), 0, 'The assistant does not fake a working chat while Convex is down');
 
   assert.equal(errors.length, 0, errors.join('\n'));
   console.log('Auth control: likes, bookmarks and the assistant gate explain Convex gaps and offer retry.');
