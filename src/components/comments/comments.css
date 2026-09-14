@@ -128,6 +128,13 @@
   outline: none;
   box-shadow: 0 0 0 2px var(--comment-accent);
 }
+@media (forced-colors: active) {
+  .blog-comments__write:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: 0;
+    box-shadow: none;
+  }
+}
 .blog-comments__composer .textfield,
 .blog-comments__composer .textarea {
   grid-column: 1 / -1;
