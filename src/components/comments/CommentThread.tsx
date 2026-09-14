@@ -21,7 +21,7 @@ interface DraftImage {key: string; file: File; preview: string; imageId?: Id<'co
 const linkedComment = () => /^#comment-[a-zA-Z0-9_-]{1,80}$/.test(window.location.hash) ? window.location.hash.slice(1) : '';
 const publishFallback = '评论未能发布，你的文字和图片仍保留在这里，请稍后重试。';
 
-function discussionRows(comments: CommentItem[]) {
+function discussionThreads(comments: CommentItem[]) {
   const byId = new Map(comments.map(comment => [comment.id, comment]));
   const children = new Map<string, CommentItem[]>();
   const roots: CommentItem[] = [];
@@ -31,16 +31,19 @@ function discussionRows(comments: CommentItem[]) {
       siblings.push(comment); children.set(comment.replyTo.id, siblings);
     } else roots.push(comment);
   }
-  const rows: {comment: CommentItem; depth: number}[] = [];
   const seen = new Set<string>();
-  const visit = (comment: CommentItem, depth: number) => {
-    if (seen.has(comment.id)) return;
-    seen.add(comment.id); rows.push({comment, depth});
-    for (const child of (children.get(comment.id) ?? []).sort((a, b) => a.createdAt - b.createdAt)) visit(child, depth + 1);
+  const collect = (comment: CommentItem): CommentItem[] => {
+    if (seen.has(comment.id)) return [];
+    seen.add(comment.id);
+    const nested: CommentItem[] = [];
+    for (const child of (children.get(comment.id) ?? []).sort((a, b) => a.createdAt - b.createdAt)) {
+      nested.push(child, ...collect(child));
+    }
+    return nested;
   };
-  for (const comment of roots) visit(comment, comment.replyTo ? 1 : 0);
-  for (const comment of comments) if (!seen.has(comment.id)) visit(comment, 0);
-  return rows;
+  const threads = roots.map(comment => ({comment, replies: collect(comment)}));
+  for (const comment of comments) if (!seen.has(comment.id)) threads.push({comment, replies: collect(comment)});
+  return threads;
 }
 
 export default function CommentThread({pathname}: {pathname: string}) {
@@ -237,69 +240,107 @@ export default function CommentThread({pathname}: {pathname: string}) {
     finally {if (active.current) setPending(false);}
   }
 
+  async function cancelComposer() {
+    if (pending || usernamePending) return;
+    setReplyTo(null); setBody(''); setError(''); setNotice('');
+    const current = images;
+    imageCount.current = 0;
+    setImages([]);
+    for (const image of current) {
+      try {if (image.imageId) await discard({imageId: image.imageId});} catch {}
+      URL.revokeObjectURL(image.preview); previews.current.delete(image.preview);
+    }
+  }
+
   const loaded = new Set(results.map(comment => comment.id));
+  const renderActions = (comment: CommentItem, replyCount?: number) => comment.deleted ? null : <div className="blog-comments__actions">
+    <div className="blog-comments__pills">
+      <Button size="sm" variant="ghost" aria-label={`喜欢 ${comment.authorName} 的评论`} aria-pressed={comment.likedByMe} isPending={busyLike === comment.id} className="blog-comments__like" onPress={async () => {
+        if (busyLike) return; setBusyLike(comment.id); setError('');
+        try {await setLike({pathname, commentId: comment.id, liked: !comment.likedByMe});}
+        catch {if (active.current) setError('喜欢未能保存，请稍后重试。');}
+        finally {if (active.current) setBusyLike(null);}
+      }}><HeartIcon filled={comment.likedByMe} /><span>{comment.likeCount.toLocaleString()}</span></Button>
+      <Button size="sm" variant="ghost" onPress={() => {setReplyTo({id: comment.id, authorName: comment.authorName}); input.current?.focus();}}>回复</Button>
+      {comment.canDelete && (deleteId === comment.id ? <>
+        <span>删除这条评论？</span><Button size="sm" variant="danger-soft" isPending={pending} onPress={() => {void deleteComment(comment.id);}}>确认删除</Button>
+        <Button size="sm" variant="ghost" isDisabled={pending} onPress={() => setDeleteId(null)}>取消</Button>
+      </> : <Button size="sm" variant="ghost" onPress={() => setDeleteId(comment.id)}>删除</Button>)}
+    </div>
+    {replyCount != null && <span className="blog-comments__replies-count">{replyCount} 条回复</span>}
+  </div>;
+
   return <div className="blog-comments__content">
-    <form ref={setTooltipContainer} onSubmit={submit} className="blog-comments__composer">
-      <div className="blog-comments__composer-author"><Avatar size="sm">
-        {user?.imageUrl && <Avatar.Image src={user.imageUrl} alt="" />}<Avatar.Fallback>{accountUsername.slice(0, 1) || '我'}</Avatar.Fallback>
-      </Avatar><strong>{accountUsername || '设置用户名'}</strong></div>
-      {needsUsername && <CommentUsernameForm username={usernameDraft} onChange={value => {setUsernameDraft(value); setUsernameError('');}}
-        error={usernameError} pending={pending || usernamePending} onSave={() => {void saveUsername();}} />}
-      {replyTo && <div className="blog-comments__reply-target"><span>回复 {replyTo.authorName}</span><Button size="sm" variant="ghost" onPress={() => setReplyTo(null)}>取消回复</Button></div>}
-      <TextField value={body} onChange={setBody} isDisabled={pending || usernamePending}>
-        <Label className="blog-comments__sr-only">你的评论</Label>
-        <TextArea ref={input} id="comment-body" maxLength={4_000} rows={4} placeholder="分享你的想法，也可以添加图片…" />
-      </TextField>
-      {images.length > 0 && <div className="blog-comments__draft-images">
-        {images.map((image, index) => <div className="blog-comments__draft-image" key={image.key}>
-          <img src={image.preview} alt={`待发布图片 ${index + 1}`} />
-          <Tooltip><Button isIconOnly size="sm" variant="secondary" className="blog-comments__remove-image" aria-label={`移除图片 ${index + 1}`} isDisabled={pending} onPress={() => {void removeImage(image);}}>×</Button>
-            <Tooltip.Content className={surface.surface} placement="top">移除图片</Tooltip.Content></Tooltip>
-          <span role="status">{image.status === 'uploading' ? '正在上传…' : image.status === 'failed' ? '上传失败，再次发布可重试。' : image.status === 'uploaded' ? '已上传' : ''}</span>
-        </div>)}
-      </div>}
-      <DropZone className="blog-comments__uploads">
-        <DropZone.Area className="blog-comments__drop-area" isDisabled={pending || images.length >= 4} onDrop={async event => {
-          const files: File[] = [];
-          for (const item of event.items) if (item.kind === 'file') files.push(await item.getFile());
-          if (active.current) selectImages(files);
-        }}>
-          <Tooltip delay={400}>
-            <DropZone.Trigger aria-label="添加图片" aria-describedby={imageDescriptionId} isDisabled={pending || images.length >= 4}><ImageIcon /></DropZone.Trigger>
-            <Tooltip.Content className={`${surface.surface} blog-comments__upload-tooltip`} placement="top start" offset={8} UNSTABLE_portalContainer={tooltipContainer ?? undefined}>
-              添加图片 · 最多 4 张，每张 5 MB
-            </Tooltip.Content>
-          </Tooltip>
-          {images.length > 0 && <span className="blog-comments__image-count" role="status" aria-label={`已选择 ${images.length} 张图片，最多 4 张`}>{images.length}/4</span>}
-          <DropZone.Description id={imageDescriptionId} className="blog-comments__sr-only">最多 4 张，每张 5 MB</DropZone.Description>
-        </DropZone.Area>
-        <DropZone.Input accept={commentImageTypes.join(',')} multiple onSelect={files => selectImages(Array.from(files))} />
-      </DropZone>
-      <div className="blog-comments__submit"><span>{body.length.toLocaleString()} / 4,000</span><Button type="submit" size="sm" isPending={pending || usernamePending} isDisabled={!body.trim() && !images.length}>发布评论</Button></div>
-    </form>
-    {error && <p className="blog-comments__error" role="alert">{error}</p>}
-    <p className="blog-comments__notice" role="status" aria-live="polite">{notice}</p>
     {firstPageLoading ? <CommentQueryLoading key={listQuery.attempt} label="正在读取评论…"
       errorLabel="评论读取时间过长，你的草稿已保留，可以重试。" retryLabel="重新读取评论" onRetry={listQuery.retry} />
       : results.length === 0 ? <p className="blog-comments__empty">还没有评论，来聊聊你的看法吧。</p>
         : <ol className="blog-comments__list">
-          {discussionRows(results).map(({comment, depth}) => <li key={comment.id} id={`comment-${comment.id}`} tabIndex={-1} className="blog-comments__item" data-reply={depth > 0 || undefined} style={{marginInlineStart: `${Math.min(depth, 3) * 16}px`}}>
-            <CommentContent comment={comment} parentLoaded={Boolean(comment.replyTo && loaded.has(comment.replyTo.id))} />
-            {!comment.deleted && <div className="blog-comments__actions">
-              <Button size="sm" variant="ghost" aria-label={`喜欢 ${comment.authorName} 的评论`} aria-pressed={comment.likedByMe} isPending={busyLike === comment.id} className="blog-comments__like" onPress={async () => {
-                if (busyLike) return; setBusyLike(comment.id); setError('');
-                try {await setLike({pathname, commentId: comment.id, liked: !comment.likedByMe});}
-                catch {if (active.current) setError('喜欢未能保存，请稍后重试。');}
-                finally {if (active.current) setBusyLike(null);}
-              }}><HeartIcon filled={comment.likedByMe} /><span>{comment.likeCount.toLocaleString()}</span></Button>
-              <Button size="sm" variant="ghost" onPress={() => {setReplyTo({id: comment.id, authorName: comment.authorName}); input.current?.focus();}}>回复</Button>
-              {comment.canDelete && (deleteId === comment.id ? <>
-                <span>删除这条评论？</span><Button size="sm" variant="danger-soft" isPending={pending} onPress={() => {void deleteComment(comment.id);}}>确认删除</Button>
-                <Button size="sm" variant="ghost" isDisabled={pending} onPress={() => setDeleteId(null)}>取消</Button>
-              </> : <Button size="sm" variant="ghost" onPress={() => setDeleteId(comment.id)}>删除</Button>)}
-            </div>}
+          {discussionThreads(results).map(({comment, replies}) => <li key={comment.id} id={`comment-${comment.id}`} tabIndex={-1} className="blog-comments__item">
+            <div className="blog-comments__bubble">
+              <CommentContent comment={comment} parentLoaded={Boolean(comment.replyTo && loaded.has(comment.replyTo.id))} />
+              {renderActions(comment, replies.length)}
+              {replies.length > 0 && <ol className="blog-comments__replies">
+                {replies.map(reply => <li key={reply.id} id={`comment-${reply.id}`} tabIndex={-1} className="blog-comments__item" data-reply="">
+                  <span className="blog-comments__tl-line" aria-hidden="true" />
+                  <div className="blog-comments__reply-main">
+                    <CommentContent comment={reply} parentLoaded={Boolean(reply.replyTo && loaded.has(reply.replyTo.id))} />
+                    {renderActions(reply)}
+                  </div>
+                </li>)}
+              </ol>}
+            </div>
           </li>)}
         </ol>}
-    {status !== 'Exhausted' && !firstPageLoading && <Button size="sm" variant="outline" isPending={status === 'LoadingMore'} onPress={() => loadMore(20)}>加载更早的评论</Button>}
+    {status !== 'Exhausted' && !firstPageLoading && <Button size="sm" variant="outline" className="blog-comments__more" isPending={status === 'LoadingMore'} onPress={() => loadMore(20)}>加载更早的评论</Button>}
+    <form ref={setTooltipContainer} onSubmit={submit} className="blog-comments__form">
+      {needsUsername && <CommentUsernameForm username={usernameDraft} onChange={value => {setUsernameDraft(value); setUsernameError('');}}
+        error={usernameError} pending={pending || usernamePending} onSave={() => {void saveUsername();}} />}
+      {replyTo && <div className="blog-comments__reply-target"><span>回复 {replyTo.authorName}</span><Button size="sm" variant="ghost" onPress={() => setReplyTo(null)}>取消回复</Button></div>}
+      <div className="blog-comments__composer">
+        <div className="blog-comments__composer-author"><Avatar size="sm">
+          {user?.imageUrl && <Avatar.Image src={user.imageUrl} alt="" />}<Avatar.Fallback>{accountUsername.slice(0, 1) || '我'}</Avatar.Fallback>
+        </Avatar><strong>{accountUsername || '设置用户名'}</strong></div>
+        <div className="blog-comments__write">
+          <TextField value={body} onChange={setBody} isDisabled={pending || usernamePending}>
+            <Label className="blog-comments__sr-only">你的评论</Label>
+            <TextArea ref={input} id="comment-body" maxLength={4_000} rows={4} placeholder="分享你的想法，也可以添加图片…" />
+          </TextField>
+          {images.length > 0 && <div className="blog-comments__draft-images">
+            {images.map((image, index) => <div className="blog-comments__draft-image" key={image.key}>
+              <img src={image.preview} alt={`待发布图片 ${index + 1}`} />
+              <Tooltip><Button isIconOnly size="sm" variant="secondary" className="blog-comments__remove-image" aria-label={`移除图片 ${index + 1}`} isDisabled={pending} onPress={() => {void removeImage(image);}}>×</Button>
+                <Tooltip.Content className={surface.surface} placement="top">移除图片</Tooltip.Content></Tooltip>
+              <span role="status">{image.status === 'uploading' ? '正在上传…' : image.status === 'failed' ? '上传失败，再次发布可重试。' : image.status === 'uploaded' ? '已上传' : ''}</span>
+            </div>)}
+          </div>}
+        </div>
+        <div className="blog-comments__toolbar">
+          <DropZone className="blog-comments__uploads">
+            <DropZone.Area className="blog-comments__drop-area" isDisabled={pending || images.length >= 4} onDrop={async event => {
+              const files: File[] = [];
+              for (const item of event.items) if (item.kind === 'file') files.push(await item.getFile());
+              if (active.current) selectImages(files);
+            }}>
+              <Tooltip delay={400}>
+                <DropZone.Trigger aria-label="添加图片" aria-describedby={imageDescriptionId} isDisabled={pending || images.length >= 4}><ImageIcon /></DropZone.Trigger>
+                <Tooltip.Content className={`${surface.surface} blog-comments__upload-tooltip`} placement="top start" offset={8} UNSTABLE_portalContainer={tooltipContainer ?? undefined}>
+                  添加图片 · 最多 4 张，每张 5 MB
+                </Tooltip.Content>
+              </Tooltip>
+              {images.length > 0 && <span className="blog-comments__image-count" role="status" aria-label={`已选择 ${images.length} 张图片，最多 4 张`}>{images.length}/4</span>}
+              <DropZone.Description id={imageDescriptionId} className="blog-comments__sr-only">最多 4 张，每张 5 MB</DropZone.Description>
+            </DropZone.Area>
+            <DropZone.Input accept={commentImageTypes.join(',')} multiple onSelect={files => selectImages(Array.from(files))} />
+          </DropZone>
+          <div className="blog-comments__submit">
+            <span>{body.length.toLocaleString()} / 4,000</span>
+            <Button type="submit" size="sm" variant="primary" className="blog-comments__publish" isPending={pending || usernamePending} isDisabled={!body.trim() && !images.length}>发布评论</Button>
+            <Button type="button" size="sm" variant="ghost" className="blog-comments__cancel" isDisabled={pending || usernamePending || (!replyTo && !body.trim() && !images.length)} onPress={() => {void cancelComposer();}}>取消</Button>
+          </div>
+        </div>
+      </div>
+    </form>
+    {error && <p className="blog-comments__error" role="alert">{error}</p>}
+    <p className="blog-comments__notice" role="status" aria-live="polite">{notice}</p>
   </div>;
 }

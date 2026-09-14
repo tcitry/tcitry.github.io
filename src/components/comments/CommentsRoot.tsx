@@ -63,8 +63,8 @@ function CommentsView({pathname, title, bookmarkable}: CommentsProps) {
     </div>
     {error && <p className="blog-comments__error" role="alert">{error}</p>}
     {!userId ? <div className="blog-comments__signin">
-      <p className="blog-comments__hint">登录后查看评论与参与讨论。</p>
-      <ClerkSignInButton><Button size="sm" variant="secondary">登录 / 注册</Button></ClerkSignInButton>
+      <p className="blog-comments__hint">登录后发表评论</p>
+      <ClerkSignInButton><Button size="sm" variant="primary">登录 / 注册</Button></ClerkSignInButton>
     </div> : isLoading ? <AuthLoading label="正在连接登录状态…" />
       : isAuthenticated ? <CommentThread pathname={pathname} />
         : <p role="alert" className="blog-comments__error">登录状态暂时无法同步，请稍后刷新或重新登录。</p>}
