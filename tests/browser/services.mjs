@@ -1312,26 +1312,17 @@ try {
         writeOutline: writeStyle.outlineStyle,
         writeOffset: writeStyle.outlineOffset,
         writeShadow: writeStyle.boxShadow,
-        writeColorFocus: writeStyle.getPropertyValue('--color-focus').trim(),
-        writeCommentAccent: writeStyle.getPropertyValue('--comment-accent').trim(),
-        writeRingOffset: writeStyle.getPropertyValue('--tw-ring-offset-width').trim(),
         textareaOutline: textareaStyle.outlineStyle,
         textareaShadow: textareaStyle.boxShadow,
         textareaBorder: textareaStyle.borderTopWidth,
         textareaTwRing: textareaStyle.getPropertyValue('--tw-ring-color').trim(),
       };
     });
-    const navyRing = 'rgb(49, 85, 133) 0px 0px 0px 2px';
-    assert.equal(focused.writeOutline, 'none');
-    assert.equal(focused.writeOffset, '0px', 'Focus ring is flush, not an offset second card');
-    assert.equal(focused.writeColorFocus, '#315585', 'HeroUI --color-focus follows comments navy, not :root ring-focus blue');
-    assert.equal(focused.writeCommentAccent, '#315585');
-    assert.equal(focused.writeRingOffset, '0px', 'HeroUI field ring has no offset halo');
-    assert.ok(focused.writeShadow.includes(navyRing), `Focus ring uses comments navy, got ${focused.writeShadow}`);
-    assert.equal(focused.writeShadow.includes('rgb(0, 111, 238)'), false, 'HeroUI default #006FEE does not paint the write ring');
-    assert.equal(focused.writeShadow.includes('rgb(0, 85, 187)'), false, 'Book --color-link #0055bb is not the composer field ring');
+    assert.equal(focused.writeOutline, 'none', 'Focused write has no outline chrome');
+    assert.equal(focused.writeOffset, '0px');
+    assert.equal(focused.writeShadow, 'none', 'Focused write has no field ring or box-shadow');
     assert.equal(focused.textareaOutline, 'none');
-    assert.equal(focused.textareaShadow, 'none', 'HeroUI ring-focus does not paint a second blue box on the textarea');
+    assert.equal(focused.textareaShadow, 'none', 'HeroUI ring-focus does not paint a field box on the textarea');
     assert.equal(focused.textareaTwRing, 'transparent');
     assert.equal(focused.textareaBorder, '0px');
     await page.evaluate(() => document.querySelector('#comment-body').blur());
@@ -1362,11 +1353,8 @@ try {
       };
     });
     assert.equal(forced.media, true);
-    assert.equal(forced.outlineStyle, 'solid');
-    assert.equal(forced.outlineWidth, '2px', 'Forced-colors focus uses a 2px system outline');
-    assert.equal(forced.outlineOffset, '0px');
-    assert.equal(forced.outlineColor, forced.highlight, 'Forced-colors outline uses Highlight, not the author accent');
-    assert.equal(forced.shadow, 'none', 'Forced-colors drops the author box-shadow');
+    assert.equal(forced.outlineStyle, 'none', 'Forced-colors also keeps the write area without a field outline');
+    assert.equal(forced.shadow, 'none', 'Forced-colors does not restore a field ring');
     await page.evaluate(() => document.querySelector('#comment-body').blur());
     await page.emulateMedia({forcedColors: 'none'});
     for (const width of [375, 1280]) {

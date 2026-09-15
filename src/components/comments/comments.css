@@ -23,19 +23,12 @@
   --comment-muted: var(--muted, color-mix(in srgb, var(--comment-fg) 70%, var(--comment-canvas)));
   --comment-border: var(--border, var(--book-border-color));
   --comment-border-muted: var(--separator, var(--comment-border));
-  /* Navy chrome, not Book --color-link (#0055bb) or HeroUI --accent (#006FEE). */
-  --comment-accent: #315585;
+  --comment-accent: var(--accent, var(--color-link));
   --comment-accent-subtle: var(--accent-soft, color-mix(in srgb, var(--comment-accent) 12%, transparent));
   --comment-radius: var(--radius-lg, .5rem);
   --comment-avatar: 30px;
   --comment-header-y: 1rem;
   --comment-composer-x: 1rem;
-}
-[data-book-theme="dark"] .blog-comments,
-[data-book-theme="dark"] .blog-comments__root,
-html.dark .blog-comments,
-html.dark .blog-comments__root {
-  --comment-accent: var(--color-link, #84b2ff);
 }
 .blog-comments {
   margin-top: 2.5rem;
@@ -54,15 +47,7 @@ html.dark .blog-comments__root {
   line-height: 1.5;
   margin: 0 0 .75rem;
 }
-.blog-comments__root,
-.blog-comments .blog-comments__root {
-  --focus: var(--comment-accent);
-  --color-focus: var(--comment-accent);
-  --ring-offset-width: 0px;
-  font-size: .875rem;
-  line-height: 1.5;
-  color: var(--comment-fg);
-}
+.blog-comments__root { font-size: .875rem; line-height: 1.5; color: var(--comment-fg); }
 .blog-comments__content { container: comment-content / inline-size; display: flex; flex-direction: column; gap: 2rem; }
 .blog-comments .blog-chat__auth-status,
 .blog-comments__root .blog-chat__auth-status { display: flex; flex-wrap: wrap; align-items: center; gap: .625rem; padding: .5rem 0; color: var(--comment-muted); font-size: .875rem; }
@@ -139,16 +124,18 @@ html.dark .blog-comments__root {
   background: var(--field-background, var(--comment-canvas));
 }
 .blog-comments__write:focus-within {
-  @apply outline-none ring-2 ring-focus;
+  @apply outline-none shadow-none ring-0;
+  outline: none;
+  box-shadow: none;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-color: transparent;
   --tw-ring-offset-width: 0px;
 }
 @media (forced-colors: active) {
   .blog-comments__write:focus-within {
-    outline: 2px solid Highlight;
-    outline-offset: 0;
+    outline: none;
     box-shadow: none;
-    --tw-ring-shadow: 0 0 #0000;
-    --tw-ring-offset-shadow: 0 0 #0000;
   }
 }
 .blog-comments__composer .textfield,
