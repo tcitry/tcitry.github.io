@@ -5,6 +5,7 @@ import {
   hashedAstroAssets,
   publishedAssetPaths,
   retryUntil,
+  ssoCallbackTransferHandler,
   waitForPublishedRelease,
 } from '../scripts/verify-deployment.mjs';
 
@@ -107,6 +108,13 @@ test('waitForPublishedRelease waits for the marker to match this revision then s
   await assert.rejects(() => waitForPublishedRelease({
     origin: 'https://yindongliang.com', expected, fetchImpl: stuck, attempts: 2, delayMs: 0, sleep: async () => {},
   }), /has not switched to this reviewed release/);
+});
+
+test('SSO callback transfer-handler assertion matches the live English fallback and the previous Chinese copy', () => {
+  assert.match('<p role="status">Completing sign-in…</p>', ssoCallbackTransferHandler);
+  assert.match('<p role="status">正在完成登录…</p>', ssoCallbackTransferHandler);
+  assert.match('<div data-clerk-sso-callback>', ssoCallbackTransferHandler);
+  assert.doesNotMatch('<p role="status">Signed in. Returning to your page…</p>', ssoCallbackTransferHandler);
 });
 
 test('waitForPublishedRelease retries a 200 JSON body served as HTML until the JSON content type arrives', async () => {

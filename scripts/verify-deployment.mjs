@@ -116,6 +116,10 @@ export function hashedAstroAssets(paths) {
   return [...new Set(paths.filter(asset => asset.startsWith('/_astro/')))];
 }
 
+// Live /sso-callback fallback is English; keep the previous Chinese copy so
+// verify-build and post-deploy verification cannot drift again.
+export const ssoCallbackTransferHandler = /data-clerk-sso-callback|Completing sign-in|正在完成登录/;
+
 export function publishedAssetPaths({ publishedHtml, localHtml, route }) {
   const published = assetReferences(publishedHtml, route);
   if (localHtml == null) return published;
@@ -318,7 +322,7 @@ async function main() {
   });
   assertCanonical(ssoCallback.body, '/sso-callback/');
   assert.match(ssoCallback.body, /\bnoindex\b/, 'SSO callback must stay out of search indexes');
-  assert.match(ssoCallback.body, /正在完成登录/, 'SSO callback must render the transfer handler');
+  assert.match(ssoCallback.body, ssoCallbackTransferHandler, 'SSO callback must render the transfer handler');
   assertComments(ssoCallback.body, false, '/sso-callback/');
   const redirects = parseRedirects(redirectText);
   assert.ok(redirects.some(rule => rule.from === '/page/1/' && rule.to === '/'), 'Pagination redirect missing');
