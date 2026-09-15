@@ -149,10 +149,11 @@ export function panelClerkRedirect() {
     // Combined sign-in-or-up: first-time GitHub/Google OAuth must transfer into
     // sign-up to create an account instead of Account Portal external_account_not_found.
     withSignUp: true,
-    // Full-page redirect OAuth. Account Portal /sign-in is not sign-in-or-up and
-    // cannot transfer; first-time GitHub/Google users return here so
-    // completePendingOAuthTransfer can run signUp.create({ transfer: true }).
-    oauthFlow: 'redirect' as const,
+    // Account Portal /sign-in is not sign-in-or-up and cannot transfer.
+    // Full-page redirect never returns to the site for first-time GitHub
+    // (lands on pure /sign-in with external_account_not_found), so keep
+    // GitHub/Google in a popup so transfer runs in this modal.
+    oauthFlow: 'popup' as const,
   };
 }
 

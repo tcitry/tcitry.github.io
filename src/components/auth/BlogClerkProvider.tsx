@@ -18,8 +18,8 @@ function ClerkAuthEffects() {
       restoreClerkReturnUrl();
       return;
     }
-    // Cold load after redirect OAuth: Clerk may be transferable /
-    // external_account_not_found. Complete first-time signup on-site.
+    // Popup keeps transfer on-site. If a leftover transferable sign-in
+    // remains (popup / edge cases), complete first-time signup here.
     void completePendingOAuthTransfer(clerk).catch(() => undefined);
   }, [isLoaded, isSignedIn, clerk]);
   return null;
