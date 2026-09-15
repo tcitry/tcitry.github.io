@@ -95,4 +95,6 @@ test('BlogClerkProvider types reused window.Clerk as ClerkProvider Clerk prop', 
   assert.doesNotMatch(provider, /Clerk\?: \{load\?: unknown\}/);
   assert.match(types, /@ts-expect-error incomplete window\.Clerk is not assignable to ClerkProvider's Clerk prop/);
   assert.match(types, /rejectedWeakClerk: ClerkProp = weakClerk/);
+  assert.match(types, /loadedClerkCompletesPendingOAuthTransfer/);
+  assert.match(types, /LoadedClerk/);
 });
