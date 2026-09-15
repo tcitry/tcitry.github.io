@@ -84,13 +84,17 @@ function initializeChat() {
     if (preserveState) preservedCloseEvents++;
     panel!.close();
     syncClosed();
-    if (!restoreFocus) return;
+    const active = document.activeElement;
+    const inPanel = active instanceof HTMLElement && panel!.contains(active);
+    if (!restoreFocus) {
+      if (inPanel) active.blur();
+      return;
+    }
     if (restoreOpenerFocus) {
       opener.focus({preventScroll: true});
       return;
     }
-    const active = document.activeElement;
-    if (active instanceof HTMLElement && (active === opener || panel!.contains(active))) active.blur();
+    if (active instanceof HTMLElement && (active === opener || inPanel)) active.blur();
   }
 
   function focusChat() {
@@ -122,6 +126,7 @@ function initializeChat() {
       dismissedQuietly = true;
       mount?.destroy();
       mount = undefined;
+      panel!.dataset.chatLoaded = 'false';
       close(false);
       return;
     }
@@ -181,6 +186,7 @@ function initializeChat() {
               shouldDismissFailure: () => openIntent === 'restore',
               onDismissFailure: () => {
                 dismissedQuietly = true;
+                panel!.dataset.chatLoaded = 'false';
                 close(false);
               },
               onMountError(error) {
@@ -215,9 +221,10 @@ function initializeChat() {
 
   function open(trigger?: HTMLButtonElement, intent: 'user' | 'restore' = 'user') {
     openIntent = intent;
-    if (dismissedQuietly && mount) {
-      mount.destroy();
+    if (intent === 'user' && dismissedQuietly) {
+      mount?.destroy();
       mount = undefined;
+      panel!.dataset.chatLoaded = 'false';
       dismissedQuietly = false;
     }
     if (panel!.open) return;

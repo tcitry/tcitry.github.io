@@ -20,6 +20,7 @@ const bundle = await build({
 });
 const loader = bundle.outputFiles[0].text;
 const successChunk = `export function mountChat(host, onClose, onReady) {
+  window.__chatMounts = (window.__chatMounts || 0) + 1;
   host.replaceChildren();
   const workspace = document.createElement('div');
   workspace.className = 'assistant-workspace';
@@ -34,6 +35,19 @@ const throwOnceChunk = `let mounts = 0;
 export function mountChat(host, onClose, onReady) {
   mounts += 1;
   if (mounts === 1) throw new TypeError('Minified React error #310');
+  host.replaceChildren();
+  const workspace = document.createElement('div');
+  workspace.className = 'assistant-workspace';
+  const input = document.createElement('textarea');
+  input.setAttribute('aria-label', '向 AI 博客助手提问');
+  workspace.append(input);
+  host.append(workspace);
+  queueMicrotask(onReady);
+  return {requestPrompt(text) { input.value = text; }, destroy() { host.replaceChildren(); }};
+}`;
+const gatedChunk = `export function mountChat(host, onClose, onReady) {
+  window.__chatMounts = (window.__chatMounts || 0) + 1;
+  if (!window.__allowChatMount) throw new TypeError('Gated assistant mount');
   host.replaceChildren();
   const workspace = document.createElement('div');
   workspace.className = 'assistant-workspace';
@@ -95,6 +109,7 @@ const server = createServer((request, response) => {
     else if (mode === 'pending') pending = response;
     else if (mode === 'throw-once') {response.setHeader('Content-Type', 'text/javascript'); response.end(throwOnceChunk);}
     else if (mode === 'async-error') {response.setHeader('Content-Type', 'text/javascript'); response.end(asyncErrorChunk);}
+    else if (mode === 'gated') {response.setHeader('Content-Type', 'text/javascript'); response.end(gatedChunk);}
     else {response.setHeader('Content-Type', 'text/javascript'); response.end(successChunk);}
   } else {response.setHeader('Content-Type', 'text/html'); response.end(html);}
 });
@@ -163,6 +178,29 @@ try {
   });
   assert.equal(await page.getByText('若页面刚更新，请刷新后再试').count(), 0, 'A restored load failure must not block reading');
   assert.equal(await page.locator('[data-chat-launcher]').getAttribute('aria-expanded'), 'false');
+  assert.equal(await page.evaluate(() => {
+    const panel = document.querySelector('#blog-chat-panel');
+    return panel instanceof HTMLElement && panel.contains(document.activeElement);
+  }), false, 'Quiet restore dismiss must not leave keyboard focus in the hidden panel');
+
+  mode = 'gated';
+  await page.evaluate(() => sessionStorage.setItem('blog-assistant-ui', JSON.stringify({pathname: location.pathname, view: 'chat'})));
+  await page.reload();
+  await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
+  await page.waitForFunction(() => {
+    const panel = document.querySelector('#blog-chat-panel');
+    return panel instanceof HTMLDialogElement && !panel.open && sessionStorage.getItem('blog-assistant-ui') === null;
+  });
+  await page.evaluate(() => { window.__allowChatMount = true; });
+  await page.locator('[data-chat-launcher]').click();
+  await page.locator('.assistant-workspace').waitFor();
+  const mountsAfterOpen = await page.evaluate(() => window.__chatMounts);
+  assert.ok(mountsAfterOpen >= 1);
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => document.querySelector('#blog-chat-panel')?.open !== true);
+  await page.locator('[data-chat-launcher]').click();
+  await page.locator('.assistant-workspace').waitFor();
+  assert.equal(await page.evaluate(() => window.__chatMounts), mountsAfterOpen, 'A later close/reopen must keep the healthy mount after a mount-less quiet dismiss');
 
   mode = 'ok';
   await page.setViewportSize({width: 320, height: 720});
