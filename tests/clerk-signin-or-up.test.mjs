@@ -9,8 +9,6 @@ const currentPage = 'https://example.test/docs/article/?view=full#comments';
 const expectedRedirect = {
   forceRedirectUrl: currentPage,
   signUpForceRedirectUrl: currentPage,
-  withSignUp: true,
-  oauthFlow: 'popup',
 };
 
 async function importBundle(entryUrl, plugins = [], define = {}) {
@@ -43,15 +41,15 @@ function withPage(run, href = currentPage) {
   }
 }
 
-test('native modal options preserve the complete article URL and comment hash', async () => {
+test('Account Portal redirects preserve the complete article URL and comment hash', async () => {
   const {panelClerkRedirect, openClerkSignIn} = await importBundle(
     new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
   );
   withPage(() => {
     assert.deepEqual(panelClerkRedirect(), expectedRedirect);
     const opened = [];
-    openClerkSignIn({openSignIn: props => opened.push(props)});
-    assert.deepEqual(opened, [{...expectedRedirect, transferable: true}]);
+    openClerkSignIn({redirectToSignIn: props => opened.push(props)});
+    assert.deepEqual(opened, [{signInForceRedirectUrl: currentPage, signUpForceRedirectUrl: currentPage}]);
   });
 });
 
@@ -105,7 +103,7 @@ test('callback delegates sign-in, sign-up and continuation to the official combi
   } finally { delete globalThis.__nativeSignIns; }
 });
 
-test('ClerkSignInButton delegates its modal and full return URL to the official button', async () => {
+test('ClerkSignInButton delegates Account Portal navigation and full return URL to the official button', async () => {
   globalThis.__nativeSignInButtons = [];
   const {default: ClerkSignInButton} = await importBundle(
     new URL('../src/components/auth/ClerkSignInButton.tsx', import.meta.url),
@@ -126,12 +124,12 @@ test('ClerkSignInButton delegates its modal and full return URL to the official 
     withPage(() => {
       const html = renderToStaticMarkup(createElement(ClerkSignInButton, null, 'Sign in'));
       assert.equal(html, 'Sign in', 'No capture wrapper or separate return-URL storage is needed');
-      assert.deepEqual(globalThis.__nativeSignInButtons, [{...expectedRedirect, mode: 'modal', children: 'Sign in'}]);
+      assert.deepEqual(globalThis.__nativeSignInButtons, [{...expectedRedirect, mode: 'redirect', children: 'Sign in'}]);
     });
   } finally { delete globalThis.__nativeSignInButtons; }
 });
 
-test('SignInPanel modal entry spreads the shared sign-in-or-up options', async () => {
+test('SignInPanel delegates to Account Portal without modal or popup options', async () => {
   globalThis.__clerkSignInFixture = {buttons: []};
   const {default: SignInPanel} = await importBundle(
     new URL('../src/components/auth/SignInPanel.tsx', import.meta.url),
@@ -180,16 +178,16 @@ test('SignInPanel modal entry spreads the shared sign-in-or-up options', async (
     }));
     assert.equal(globalThis.__clerkSignInFixture.buttons.length, 1);
     const props = globalThis.__clerkSignInFixture.buttons[0];
-    assert.equal(props.mode, 'modal');
-    assert.equal(props.withSignUp, true);
-    assert.equal(props.oauthFlow, 'popup');
+    assert.equal(props.mode, 'redirect');
+    assert.equal(Object.hasOwn(props, 'withSignUp'), false);
+    assert.equal(Object.hasOwn(props, 'oauthFlow'), false);
     assert.equal(props.forceRedirectUrl, currentPage);
     assert.equal(props.signUpForceRedirectUrl, currentPage);
   });
   delete globalThis.__clerkSignInFixture;
 });
 
-test('anonymous bookmark sign-in uses the shared helper instead of a bare openSignIn', async () => {
+test('anonymous bookmark sign-in uses the shared Account Portal redirect helper', async () => {
   const {default: BookmarkButton} = await importBundle(
     new URL('../src/components/reader/BookmarkButton.tsx', import.meta.url),
     [{
@@ -205,7 +203,7 @@ test('anonymous bookmark sign-in uses the shared helper instead of a bare openSi
             clerk: `
               export function useAuth() { return {isLoaded: true, userId: null}; }
               export function useClerk() {
-                return {openSignIn: (props) => { globalThis.__bookmarkSignIn.opened.push(props); }};
+                return {redirectToSignIn: (props) => { globalThis.__bookmarkSignIn.opened.push(props); }};
               }
             `,
             convex: `
@@ -236,12 +234,12 @@ test('anonymous bookmark sign-in uses the shared helper instead of a bare openSi
     }));
     assert.equal(typeof globalThis.__bookmarkSignIn.press, 'function');
     globalThis.__bookmarkSignIn.press();
-    assert.deepEqual(globalThis.__bookmarkSignIn.opened, [{...expectedRedirect, transferable: true}]);
+    assert.deepEqual(globalThis.__bookmarkSignIn.opened, [{signInForceRedirectUrl: currentPage, signUpForceRedirectUrl: currentPage}]);
     delete globalThis.__bookmarkSignIn;
   });
 });
 
-test('production entries keep native OAuth ownership and the existing One Tap adapter', async () => {
+test('production entries delegate to Account Portal and retain the existing One Tap adapter', async () => {
   const files = [
     'src/components/auth/clerk-signin.ts',
     'src/components/auth/ClerkSignInButton.tsx',
@@ -276,4 +274,5 @@ test('production entries keep native OAuth ownership and the existing One Tap ad
   assert.equal([...callers.matchAll(/<ClerkSignInButton\b/g)].length, 4);
   assert.doesNotMatch(callers, /<SignInButton\b/);
   assert.doesNotMatch(callers, /openSignIn\(/);
+  assert.doesNotMatch(callers, /redirectToSignIn\(/, 'Entry points must share the return-URL helper');
 });

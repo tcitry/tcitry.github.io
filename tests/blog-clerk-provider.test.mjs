@@ -123,7 +123,7 @@ test('separate comment, One Tap and assistant trees do not reuse a headless wind
   });
 });
 
-test('provider configures one native combined sign-in root and retains the article hash', () => {
+test('provider leaves sign-in and sign-up URLs to Account Portal and retains the article hash', () => {
   const href = 'https://example.test/docs/article/?view=full#comments';
   const clerk = uiClerk();
   const nativePopup = async () => {};
@@ -131,8 +131,8 @@ test('provider configures one native combined sign-in root and retains the artic
   withWindow(clerk, () => {
     renderToStaticMarkup(createElement(BlogClerkProvider, null, createElement('span', null, 'ok')));
     const [options] = globalThis.__clerkOptions;
-    assert.equal(options.signInUrl, '/sso-callback/');
-    assert.equal(Object.hasOwn(options, 'signUpUrl'), false, 'A separate sign-up URL would split the native combined flow');
+    assert.equal(Object.hasOwn(options, 'signInUrl'), false, 'New sign-ins must use the configured Account Portal');
+    assert.equal(Object.hasOwn(options, 'signUpUrl'), false, 'Sign-up remains hosted by Account Portal');
     assert.equal(options.signInFallbackRedirectUrl, href);
     assert.equal(options.signUpFallbackRedirectUrl, href);
     assert.equal(options.afterSignOutUrl, href);
