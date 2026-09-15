@@ -1,8 +1,13 @@
 ---
 import AuthCallbackLayout from '../layouts/AuthCallbackLayout.astro';
 import SsoCallback from '../components/auth/SsoCallback';
+// client:only: BlogClerkProvider reads window during render. client:load still
+// SSRs the island during static prerender and crashes Workers Builds with
+// "window is not defined". Google One Tap uses the same pattern.
 ---
 <AuthCallbackLayout>
-  <SsoCallback client:load />
+  <SsoCallback client:only="react">
+    <p role="status">正在完成登录…</p>
+  </SsoCallback>
   <noscript><p>完成 GitHub 或 Google 登录需要启用 JavaScript。<a href="/">返回首页</a></p></noscript>
 </AuthCallbackLayout>
