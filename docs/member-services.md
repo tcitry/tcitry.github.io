@@ -4,7 +4,7 @@
 
 ## 架构
 
-- Clerk：登录、账户资料和 Billing UI。站点登录入口仍是 Clerk modal（Account Portal 只作登录壳后备），不是应用内 `/sign-in` 页。已有账户直接登录；首次 GitHub/Google OAuth 必须在站内 `/sso-callback/` 完成 `AuthenticateWithRedirectCallback` 与 `signUp.create({ transfer: true })`，不能停在 Account Portal 纯 `/sign-in` 的 `external_account_not_found`。OAuth `redirectUrl` 被改写为同源 `https://yindongliang.com/sso-callback/`；`oauthFlow` 用整页 redirect，让 GitHub 回到该页而不是 Portal。Clerk Dashboard 的 Allowed redirect URLs / Paths 必须允许该站内回调（含尾斜杠），不要把 Component path 的 Sign-in URL 指到这个回调页。若仍留下 transferable 的 sign-in，`addListener` 与冷加载都会补完 transfer。`forceRedirectUrl` 不含 hash（评论锚点由 `sessionStorage` 恢复），打开登录时把当前页写入 `sessionStorage`，Clerk 变为已登录后再同源恢复。
+- Clerk：登录、账户资料和 Billing UI。站点登录入口仍是 Clerk modal（Account Portal 只作登录壳后备），不是应用内 `/sign-in` 页。已有账户直接登录；首次 GitHub/Google OAuth 必须在站内 `/sso-callback/` 完成 `AuthenticateWithRedirectCallback` 与 `signUp.create({ transfer: true })`，不能停在 Account Portal 纯 `/sign-in` 的 `external_account_not_found`。OAuth `redirectUrl` 被改写为同源 `https://yindongliang.com/sso-callback/`；`oauthFlow` 用整页 redirect，让 GitHub 回到该页而不是 Portal。当前 Dashboard 的 Configure → Paths 没有「Allowed redirect URLs」：那是 Native applications 的移动端 SSO 白名单。网站同源回调由应用域名自动允许。Paths 里 `<SignIn />` / `<SignUp />` 保持 Account Portal，不要改成应用域名上的 `/sso-callback`（那不是 SignIn 挂载点）。可选填写 Home URL 为 `https://yindongliang.com`。若仍留下 transferable 的 sign-in，`addListener` 与冷加载都会补完 transfer。`forceRedirectUrl` 不含 hash（评论锚点由 `sessionStorage` 恢复），打开登录时把当前页写入 `sessionStorage`，Clerk 变为已登录后再同源恢复。
 - Convex：认证与授权、评论、喜欢、收藏、通知、咨询、附件、AI 会话和流式状态。
 - `@convex-dev/agent`：AI thread、message 和 stream delta 持久化。
 - Cloudflare AI Search：公开文章检索与回答生成；不保存私人账户数据。
