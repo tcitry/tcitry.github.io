@@ -11,6 +11,8 @@ test('edge chevrons drop pointer and HeroUI leftover rings', () => {
   assert.match(css, /\[data-focus-visible\]:not\(:focus-visible\)/,
     'HeroUI data-focus-visible without keyboard focus must not paint a box');
   assert.match(css, /\.blog-chat-widget__expand:focus-visible[\s\S]*outline-style:\s*auto/);
+  assert.match(css, /\.blog-chat-widget \.blog-chat-widget__close:focus-visible/,
+    'ChatSession fallback close sits in .blog-chat; beat .blog-chat :is(button, a):focus-visible');
   assert.match(css, /\.assistant-workspace__close:focus-visible[\s\S]*outline-style:\s*auto/);
   assert.match(css, /outline-color:\s*var\(--color-link\)/);
   assert.doesNotMatch(css, /\.assistant-workspace__close:focus-visible[^{]*\{[^}]*outline:\s*2px solid var\(--accent\)/,

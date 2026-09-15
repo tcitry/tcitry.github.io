@@ -224,7 +224,7 @@ html.blog-chat-modal-open { overflow: hidden; scrollbar-gutter: auto; }
 .assistant-workspace__account { display: block; width: 2rem; min-width: 2rem; height: 2rem; min-height: 2rem; border-radius: 50%; overflow: hidden; }
 .assistant-workspace__edge-actions { position: absolute; z-index: 5; inset-inline-start: 0; top: 50%; transform: translateY(-50%); width: 1.5rem; height: 3.5rem; }
 .assistant-workspace__close { box-sizing: border-box; position: static; transform: none; display: grid; place-items: center; width: 100%; min-width: 0; height: 100%; min-height: 0; margin: 0; padding: 0; border: 1px solid var(--border); border-inline-start: 0; border-radius: 0 .5rem .5rem 0; background: var(--surface); color: var(--muted); box-shadow: 1px 1px 4px #00000008; }
-.blog-chat-widget__close:focus-visible,
+.blog-chat-widget .blog-chat-widget__close:focus-visible,
 .assistant-workspace__close:focus-visible {
   color: var(--foreground, var(--chat-fg));
   background: var(--surface-secondary, color-mix(in srgb, var(--chat-fg) 4%, var(--chat-bg)));
