@@ -22,10 +22,9 @@ const bundle = await build({
       build.onResolve({filter: /^@clerk\/react$/}, () => ({path: 'clerk', namespace: 'clerk-fixture'}));
       build.onLoad({filter: /.*/, namespace: 'clerk-fixture'}, () => ({
         contents: `
-          export function useAuth() { return {isLoaded: true, isSignedIn: true}; }
-          export function useClerk() { return {}; }
-          export function ClerkProvider({children, Clerk}) {
+          export function ClerkProvider({children, Clerk, ...options}) {
             globalThis.__clerkProviders += 1;
+            globalThis.__clerkOptions.push(options);
             if (Clerk && (Clerk.components == null || Clerk.onComponentsReady == null)) {
               throw new Error('Clerk was not loaded with Ui components');
             }
@@ -43,11 +42,12 @@ function uiClerk() {
   return {load() {}, onComponentsReady: Promise.resolve(), components: {}};
 }
 
-function withWindow(clerk, run) {
+function withWindow(clerk, run, href = 'https://example.test/docs/') {
   const previousWindow = globalThis.window;
-  globalThis.window = {location: {href: 'https://example.test/docs/'}, ...(clerk ? {Clerk: clerk} : {})};
+  globalThis.window = {location: {href}, ...(clerk ? {Clerk: clerk} : {})};
   globalThis.__clerkProviders = 0;
   globalThis.__clerkReused = false;
+  globalThis.__clerkOptions = [];
   try {
     return run();
   } finally {
@@ -55,6 +55,7 @@ function withWindow(clerk, run) {
     else globalThis.window = previousWindow;
     delete globalThis.__clerkProviders;
     delete globalThis.__clerkReused;
+    delete globalThis.__clerkOptions;
   }
 }
 
@@ -122,10 +123,42 @@ test('separate comment, One Tap and assistant trees do not reuse a headless wind
   });
 });
 
+test('provider configures one native combined sign-in root and retains the article hash', () => {
+  const href = 'https://example.test/docs/article/?view=full#comments';
+  const clerk = uiClerk();
+  const nativePopup = async () => {};
+  clerk.client = {signIn: {authenticateWithPopup: nativePopup}, signUp: {authenticateWithPopup: nativePopup}};
+  withWindow(clerk, () => {
+    renderToStaticMarkup(createElement(BlogClerkProvider, null, createElement('span', null, 'ok')));
+    const [options] = globalThis.__clerkOptions;
+    assert.equal(options.signInUrl, '/sso-callback/');
+    assert.equal(Object.hasOwn(options, 'signUpUrl'), false, 'A separate sign-up URL would split the native combined flow');
+    assert.equal(options.signInFallbackRedirectUrl, href);
+    assert.equal(options.signUpFallbackRedirectUrl, href);
+    assert.equal(options.afterSignOutUrl, href);
+    assert.equal(clerk.client.signIn.authenticateWithPopup, nativePopup);
+    assert.equal(clerk.client.signUp.authenticateWithPopup, nativePopup);
+  }, href);
+});
+
+test('provider callback fallback points home instead of restarting sign-in', () => {
+  for (const href of [
+    'https://example.test/sso-callback',
+    'https://example.test/sso-callback/?intent=signIn#/create/sso-callback',
+  ]) {
+    withWindow(undefined, () => {
+      renderToStaticMarkup(createElement(BlogClerkProvider, null, createElement('span', null, 'ok')));
+      const [options] = globalThis.__clerkOptions;
+      assert.equal(options.signInFallbackRedirectUrl, '/');
+      assert.equal(options.signUpFallbackRedirectUrl, '/');
+    }, href);
+  }
+});
+
 test('BlogClerkProvider types reused window.Clerk as ClerkProvider Clerk prop', async () => {
   const provider = await readFile(new URL('../src/components/auth/BlogClerkProvider.tsx', import.meta.url), 'utf8');
   const types = await readFile(new URL('../src/components/auth/blog-clerk-provider.types.ts', import.meta.url), 'utf8');
-  assert.match(provider, /import \{ClerkProvider, useAuth, useClerk\} from '@clerk\/react'/);
+  assert.match(provider, /import \{ClerkProvider\} from '@clerk\/react'/);
   assert.match(provider, /import type \{BrowserClerk, ClerkProp\} from '@clerk\/react'/);
   assert.match(provider, /value is BrowserClerk/);
   assert.match(provider, /loadedClerkInstance\(\): ClerkProp/);
@@ -136,7 +169,5 @@ test('BlogClerkProvider types reused window.Clerk as ClerkProvider Clerk prop', 
   assert.match(types, /@ts-expect-error incomplete window\.Clerk is not assignable to ClerkProvider's Clerk prop/);
   assert.match(types, /rejectedWeakClerk: ClerkProp = weakClerk/);
   assert.match(types, /acceptedUiClerk: ClerkProp = uiClerk/);
-  assert.match(types, /loadedClerkWatchesAuthSession/);
-  assert.match(types, /LoadedClerk/);
-  assert.match(provider, /watchClerkAuthSession\(clerk, Boolean\(isSignedIn\)\)/);
+  assert.doesNotMatch(provider, /useEffect|watchClerkAuthSession|authenticateWithPopup/);
 });

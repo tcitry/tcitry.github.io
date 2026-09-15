@@ -209,7 +209,7 @@ test('One Tap treats transferable and external_account_not_found sign-ins as fir
 });
 
 test('installing One Tap sign-in-or-up transfers new Google users and keeps returning sessions', async () => {
-  const {installGoogleOneTapSignInOrUp, clerkReturnUrlStorageKey} = await importBundle(
+  const {installGoogleOneTapSignInOrUp} = await importBundle(
     new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
   );
   const previousWindow = globalThis.window;
@@ -246,7 +246,6 @@ test('installing One Tap sign-in-or-up transfers new Google users and keeps retu
 
     const returning = await clerk.authenticateWithGoogleOneTap({token: 'returning'});
     assert.equal(returning, completeSignIn);
-    assert.equal(session.getItem(clerkReturnUrlStorageKey), currentPage);
     await clerk.handleGoogleOneTapCallback(returning, {signInForceRedirectUrl: currentPage});
     assert.deepEqual(created, []);
     assert.deepEqual(callbacks, [{

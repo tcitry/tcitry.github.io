@@ -1,24 +1,12 @@
-import {createContext, useContext, useEffect, type ReactNode} from 'react';
-import {ClerkProvider, useAuth, useClerk} from '@clerk/react';
+import {createContext, useContext, type ReactNode} from 'react';
+import {ClerkProvider} from '@clerk/react';
 import type {BrowserClerk, ClerkProp} from '@clerk/react';
-import {clerkForceRedirectUrl, watchClerkAuthSession} from './clerk-signin';
+import {clerkAfterAuthFallbackUrl, clerkSignInPath} from './clerk-signin';
 
 const BlogClerkTreeContext = createContext(false);
 
 export function clerkPublishableKey() {
   return import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY ?? '';
-}
-
-function ClerkAuthEffects() {
-  const {isLoaded, isSignedIn} = useAuth();
-  const clerk = useClerk();
-  useEffect(() => {
-    if (!isLoaded) return;
-    // Keep the popup adapter installed across Clerk resource updates. The
-    // callback window alone owns OAuth transfer and completion.
-    return watchClerkAuthSession(clerk, Boolean(isSignedIn));
-  }, [isLoaded, isSignedIn, clerk]);
-  return null;
 }
 
 // @clerk/react skips the UI chunk when ClerkProvider gets a Clerk prop.
@@ -43,11 +31,10 @@ export default function BlogClerkProvider({children}: {children: ReactNode}) {
   const nested = useContext(BlogClerkTreeContext);
   if (!key || nested) return children;
   const currentPage = window.location.href;
-  const signInRedirect = clerkForceRedirectUrl();
+  const signInRedirect = clerkAfterAuthFallbackUrl();
   const loadedClerk = loadedClerkInstance();
-  return <ClerkProvider publishableKey={key} {...(loadedClerk ? {Clerk: loadedClerk} : {})} signInFallbackRedirectUrl={signInRedirect} signUpFallbackRedirectUrl={signInRedirect} afterSignOutUrl={currentPage} appearance={{elements: {modalBackdrop: 'blog-clerk-modal'}}}>
+  return <ClerkProvider publishableKey={key} signInUrl={clerkSignInPath} {...(loadedClerk ? {Clerk: loadedClerk} : {})} signInFallbackRedirectUrl={signInRedirect} signUpFallbackRedirectUrl={signInRedirect} afterSignOutUrl={currentPage} appearance={{elements: {modalBackdrop: 'blog-clerk-modal'}}}>
     <BlogClerkTreeContext.Provider value={true}>
-      <ClerkAuthEffects />
       {children}
     </BlogClerkTreeContext.Provider>
   </ClerkProvider>;
