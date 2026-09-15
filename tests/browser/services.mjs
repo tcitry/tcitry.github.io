@@ -1589,7 +1589,7 @@ try {
     await page.getByRole('button', {name: '登录 / 注册', exact: true}).click();
     await page.waitForFunction(() => document.activeElement?.id === 'comment-comment_initial');
     await assertClientCleanup(page);
-    console.log('Comments: public counts only while anonymous; authenticated article/comment likes, account username, safe replies and session isolation.');
+    console.log('Comments: public counts only while anonymous; authenticated article/comment likes, account username, safe replies, failed cancel discard retry and session isolation.');
   } finally {await context.close();}
   }
   assert.deepEqual(errors, [], 'No browser runtime errors');
