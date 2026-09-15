@@ -123,6 +123,18 @@ try {
     });
     await context.addInitScript(() => {
       sessionStorage.setItem('blog-assistant-ui', JSON.stringify({pathname: '/tests/fixtures/services-ui.html', view: 'my'}));
+      const proto = HTMLDialogElement.prototype;
+      for (const name of ['show', 'showModal']) {
+        const original = proto[name];
+        proto[name] = function(...args) {
+          const launcher = document.querySelector('[data-chat-launcher]');
+          if (launcher instanceof HTMLElement) {
+            launcher.focus({preventScroll: true});
+            window.__assistantOpenedFromLauncher = document.activeElement === launcher;
+          }
+          return original.apply(this, args);
+        };
+      }
     });
     const page = await context.newPage();
     page.setDefaultTimeout(15_000);
@@ -143,6 +155,8 @@ try {
       assert.equal(await page.getByRole('heading', {name: '公开文章测试', exact: true}).isVisible(), true);
       assert.equal(await launcher.getAttribute('aria-expanded'), 'false');
       assert.equal(await page.locator('[data-service-boundary="failed"]').count(), 0);
+      assert.equal(await page.evaluate(() => window.__assistantOpenedFromLauncher === true), true,
+        'The restored dialog must open with the launcher as the native focus restore target');
       assert.equal(await page.evaluate(() => {
         const dialog = document.querySelector('#blog-chat-panel');
         const launcher = document.querySelector('[data-chat-launcher]');

@@ -169,6 +169,20 @@ try {
   assert.equal(await page.getByRole('button', {name: '刷新页面', exact: true}).isVisible(), true);
   assert.equal(await page.getByText('检查网络后重试').count(), 0, 'A missing chunk is not reported as a silent network failure');
 
+  await page.addInitScript(() => {
+    const proto = HTMLDialogElement.prototype;
+    for (const name of ['show', 'showModal']) {
+      const original = proto[name];
+      proto[name] = function(...args) {
+        const launcher = document.querySelector('[data-chat-launcher]');
+        if (launcher instanceof HTMLElement && sessionStorage.getItem('blog-assistant-ui')) {
+          launcher.focus({preventScroll: true});
+          window.__assistantOpenedFromLauncher = document.activeElement === launcher;
+        }
+        return original.apply(this, args);
+      };
+    }
+  });
   await page.evaluate(() => sessionStorage.setItem('blog-assistant-ui', JSON.stringify({pathname: location.pathname, view: 'chat'})));
   await page.reload();
   await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
@@ -178,6 +192,8 @@ try {
   });
   assert.equal(await page.getByText('若页面刚更新，请刷新后再试').count(), 0, 'A restored load failure must not block reading');
   assert.equal(await page.locator('[data-chat-launcher]').getAttribute('aria-expanded'), 'false');
+  assert.equal(await page.evaluate(() => window.__assistantOpenedFromLauncher === true), true,
+    'The restored dialog must open with the launcher as the native focus restore target');
   assert.equal(await page.evaluate(() => {
     const panel = document.querySelector('#blog-chat-panel');
     const launcher = document.querySelector('[data-chat-launcher]');
