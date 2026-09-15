@@ -42,8 +42,12 @@ async function componentFor(siteEnvironment, publishableKey) {
                 export function useUser() { return globalThis.__oneTapFixture.auth; }
                 export function useAuth() { return globalThis.__oneTapFixture.auth; }
                 export function useClerk() { return globalThis.__oneTapFixture.clerk; }
-                export function ClerkProvider({children}) {
+                export function ClerkProvider({children, Clerk}) {
+                  if (Clerk && (Clerk.components == null || Clerk.onComponentsReady == null)) {
+                    throw new Error('Clerk was not loaded with Ui components');
+                  }
                   globalThis.__oneTapFixture.providers++;
+                  if (Clerk) globalThis.__oneTapFixture.reused = true;
                   return children;
                 }
                 export function GoogleOneTap(props) {
@@ -70,13 +74,14 @@ function memoryStorage() {
   };
 }
 
-function renderPrompt(Component, auth, clerk = {}) {
+function renderPrompt(Component, auth, clerk = {}, windowClerk) {
   const previousWindow = globalThis.window;
   const session = memoryStorage();
-  const fixture = {auth, clerk, providers: 0, prompts: [], session};
+  const fixture = {auth, clerk, providers: 0, prompts: [], session, reused: false};
   globalThis.window = {
     location: {href: currentPage, origin},
     sessionStorage: session,
+    ...(windowClerk ? {Clerk: windowClerk} : {}),
   };
   globalThis.__oneTapFixture = fixture;
   try {
@@ -117,6 +122,14 @@ test('a signed-out production visitor gets one Clerk prompt returning to the cur
   assert.deepEqual(result.prompts, [{signInForceRedirectUrl: currentPage, signUpForceRedirectUrl: currentPage}]);
   assert.equal(result.session.getItem('blog-clerk-return-url'), null,
     'signed-out render must not overwrite a stored return URL if Account Portal lands on /');
+});
+
+test('production One Tap does not pass a headless window.Clerk into ClerkProvider', async () => {
+  const Component = await componentFor('production', 'pk_live_fixture');
+  const result = renderPrompt(Component, {isLoaded: true, isSignedIn: false}, {}, {load() {}});
+  assert.equal(result.providers, 1);
+  assert.equal(result.reused, false);
+  assert.deepEqual(result.prompts, [{signInForceRedirectUrl: currentPage, signUpForceRedirectUrl: currentPage}]);
 });
 
 test('shared One Tap redirect options match the current page without a hosted sign-in URL', async () => {
