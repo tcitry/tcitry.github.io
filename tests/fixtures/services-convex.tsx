@@ -40,6 +40,7 @@ const commentLikes = new Map<string, Set<string>>();
 const notifications: { _id: string; recipient: string; kind: 'comment_reply' | 'consultation_reply'; createdAt: number; readAt: number | null; target: null | {kind: 'comment'; pathname: string; commentId: string} | {kind: 'consultation'; threadId: string; messageId: string; title: string} }[] = [];
 let rejectNextComment = false;
 let rejectNextConsultation = false;
+let rejectNextDiscard = false;
 let convexAuthOverride: {isAuthenticated: boolean; isLoading: boolean} | null =
   new URLSearchParams(location.search).get('convexAuth') === 'unavailable'
     ? {isAuthenticated: false, isLoading: false}
@@ -376,6 +377,7 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
       collection.set(key, likes); publish(); return Boolean(args.liked);
     }
     if (name === 'commentImages:discard') {
+      if (rejectNextDiscard) {rejectNextDiscard = false; throw new Error('Fixture image discard failed');}
       const index = commentImages.findIndex(image => image.id === args.imageId && image.owner === userId && !image.attached);
       if (index >= 0) commentImages.splice(index, 1);
       publish(); return null;
@@ -472,6 +474,7 @@ Object.assign(window, {__services: {
   releaseAiSend: () => {releaseAiSend?.(); releaseAiSend = undefined;},
   failNextComment: () => {rejectNextComment = true;},
   failNextConsultation: () => {rejectNextConsultation = true;},
+  failNextDiscard: () => {rejectNextDiscard = true;},
   canReadImage: (imageId: string) => {
     const {userId} = currentFixtureAuth();
     const image = commentImages.find(item => item.id === imageId);
