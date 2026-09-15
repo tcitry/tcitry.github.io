@@ -23,6 +23,7 @@ const bundle = await build({
       build.onLoad({filter: /.*/, namespace: 'clerk-fixture'}, () => ({
         contents: `
           export function useAuth() { return {isLoaded: true, isSignedIn: true}; }
+          export function useClerk() { return {}; }
           export function ClerkProvider({children, Clerk}) {
             globalThis.__clerkProviders += 1;
             if (Clerk) globalThis.__clerkReused = true;
@@ -87,6 +88,7 @@ test('window.Clerk without load is not passed to ClerkProvider', () => {
 test('BlogClerkProvider types reused window.Clerk as ClerkProvider Clerk prop', async () => {
   const provider = await readFile(new URL('../src/components/auth/BlogClerkProvider.tsx', import.meta.url), 'utf8');
   const types = await readFile(new URL('../src/components/auth/blog-clerk-provider.types.ts', import.meta.url), 'utf8');
+  assert.match(provider, /import \{ClerkProvider, useAuth, useClerk\} from '@clerk\/react'/);
   assert.match(provider, /import type \{ClerkProp, HeadlessBrowserClerk\} from '@clerk\/react'/);
   assert.match(provider, /value is HeadlessBrowserClerk/);
   assert.match(provider, /loadedClerkInstance\(\): ClerkProp/);

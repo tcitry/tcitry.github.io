@@ -1,10 +1,13 @@
+type ClerkSignInProps = {
+  forceRedirectUrl?: string;
+  signUpForceRedirectUrl?: string;
+  withSignUp?: boolean;
+  transferable?: boolean;
+  oauthFlow?: 'auto' | 'redirect' | 'popup';
+};
+
 type ClerkSignInOpener = {
-  openSignIn: (props?: {
-    forceRedirectUrl?: string;
-    signUpForceRedirectUrl?: string;
-    withSignUp?: boolean;
-    transferable?: boolean;
-  }) => unknown;
+  openSignIn: (props?: ClerkSignInProps) => unknown;
 };
 
 type ReturnUrlLocation = {
@@ -122,14 +125,31 @@ export function restoreClerkReturnUrl(
   return true;
 }
 
+export function clerkForceRedirectUrl(location: ReturnUrlLocation = window.location) {
+  // Account Portal nests these URLs in query strings. A comment hash would become
+  // a fragment of the SSO callback and drop later params. sessionStorage keeps the hash.
+  const resolved = resolveSameOriginReturnUrl(location.href, location);
+  if (!resolved) return location.href;
+  try {
+    const url = new URL(resolved);
+    url.hash = '';
+    return url.href;
+  } catch {
+    return resolved;
+  }
+}
+
 export function panelClerkRedirect() {
-  const currentPage = window.location.href;
+  const currentPage = clerkForceRedirectUrl();
   return {
     forceRedirectUrl: currentPage,
     signUpForceRedirectUrl: currentPage,
     // Combined sign-in-or-up: first-time GitHub/Google OAuth must transfer into
     // sign-up to create an account instead of Account Portal external_account_not_found.
     withSignUp: true,
+    // Full-page OAuth lands on Account Portal /sign-in, which is not sign-in-or-up.
+    // Keep GitHub/Google in a popup so transfer runs in this modal.
+    oauthFlow: 'popup' as const,
   };
 }
 
@@ -172,6 +192,7 @@ type GoogleOneTapClerk = {
     customNavigate?: (to: string) => Promise<unknown>,
   ) => Promise<unknown>;
   client?: {
+    signIn?: GoogleOneTapAttempt | null;
     signUp?: {
       create: (params: {transfer?: boolean; strategy?: string; token?: string}) => Promise<unknown>;
     };
@@ -207,7 +228,7 @@ export function googleOneTapRejectedNeedsSignUp(error: unknown) {
 }
 
 export async function transferGoogleOneTapIfNeeded(
-  clerk: GoogleOneTapClerk,
+  clerk: Pick<GoogleOneTapClerk, 'client'>,
   result: unknown,
   token?: string,
 ) {
@@ -222,6 +243,61 @@ export async function transferGoogleOneTapIfNeeded(
     }
   }
   return signUp.create({transfer: true});
+}
+
+type PendingOAuthClerk = Pick<GoogleOneTapClerk, 'client'> & {
+  openSignIn?: ClerkSignInOpener['openSignIn'];
+  setActive?: (params: {session: string}) => Promise<unknown>;
+};
+
+let pendingOAuthTransfer: Promise<boolean> | undefined;
+
+export function ensureClerkCaptchaElement(doc?: Document | null) {
+  const root = doc === undefined ? (typeof document === 'undefined' ? null : document) : doc;
+  if (!root?.body || root.getElementById('clerk-captcha')) return false;
+  const el = root.createElement('div');
+  el.id = 'clerk-captcha';
+  el.setAttribute('hidden', '');
+  root.body.appendChild(el);
+  return true;
+}
+
+async function runPendingOAuthTransfer(clerk: PendingOAuthClerk, signIn: GoogleOneTapAttempt) {
+  ensureClerkCaptchaElement();
+  let result: unknown;
+  try {
+    result = await transferGoogleOneTapIfNeeded(clerk, signIn);
+  } catch {
+    return false;
+  }
+  const sessionId = result && typeof result === 'object'
+    ? (result as {createdSessionId?: unknown}).createdSessionId
+    : null;
+  if (typeof sessionId === 'string' && sessionId && clerk.setActive) {
+    await clerk.setActive({session: sessionId});
+    return true;
+  }
+  if (
+    result
+    && typeof result === 'object'
+    && (result as {status?: unknown}).status === 'missing_requirements'
+    && typeof clerk.openSignIn === 'function'
+  ) {
+    clerk.openSignIn({...panelClerkRedirect(), transferable: true});
+    return true;
+  }
+  return false;
+}
+
+export function completePendingOAuthTransfer(clerk: PendingOAuthClerk | null | undefined) {
+  if (pendingOAuthTransfer) return pendingOAuthTransfer;
+  if (!clerk) return Promise.resolve(false);
+  const signIn = clerk.client?.signIn;
+  if (!signIn || !googleOneTapNeedsSignUp(signIn)) return Promise.resolve(false);
+  pendingOAuthTransfer = runPendingOAuthTransfer(clerk, signIn).finally(() => {
+    pendingOAuthTransfer = undefined;
+  });
+  return pendingOAuthTransfer;
 }
 
 function installGoogleOneTapSignInOrUpOn(clerk: object) {
