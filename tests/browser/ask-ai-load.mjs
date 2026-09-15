@@ -180,8 +180,10 @@ try {
   assert.equal(await page.locator('[data-chat-launcher]').getAttribute('aria-expanded'), 'false');
   assert.equal(await page.evaluate(() => {
     const panel = document.querySelector('#blog-chat-panel');
-    return panel instanceof HTMLElement && panel.contains(document.activeElement);
-  }), false, 'Quiet restore dismiss must not leave keyboard focus in the hidden panel');
+    const launcher = document.querySelector('[data-chat-launcher]');
+    return panel instanceof HTMLElement && panel.contains(document.activeElement)
+      || launcher === document.activeElement;
+  }), false, 'Quiet restore dismiss must not leave keyboard focus in the hidden panel or on the launcher');
 
   mode = 'gated';
   await page.evaluate(() => sessionStorage.setItem('blog-assistant-ui', JSON.stringify({pathname: location.pathname, view: 'chat'})));
@@ -246,6 +248,7 @@ const signedInBundle = await build({
         return children;
       }
       export function useAuth() { return {isLoaded: true, isSignedIn: true, userId: 'user-a', sessionId: 'session-a'}; }
+      export function useClerk() { return {}; }
       export function useUser() { return {isLoaded: true, user: {id: 'user-a', firstName: 'A', lastName: 'B'}}; }
       export function UNSAFE_PortalProvider({children}) { return children; }
     `, loader: 'js', resolveDir: new URL('../../', import.meta.url).pathname}));
