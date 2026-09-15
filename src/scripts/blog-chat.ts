@@ -87,7 +87,7 @@ function initializeChat() {
     const active = document.activeElement;
     const inPanel = active instanceof HTMLElement && panel!.contains(active);
     if (!restoreFocus) {
-      if (inPanel) active.blur();
+      if (active instanceof HTMLElement && (active === opener || inPanel)) active.blur();
       return;
     }
     if (restoreOpenerFocus) {

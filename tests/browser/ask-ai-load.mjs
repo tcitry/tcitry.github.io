@@ -180,8 +180,10 @@ try {
   assert.equal(await page.locator('[data-chat-launcher]').getAttribute('aria-expanded'), 'false');
   assert.equal(await page.evaluate(() => {
     const panel = document.querySelector('#blog-chat-panel');
-    return panel instanceof HTMLElement && panel.contains(document.activeElement);
-  }), false, 'Quiet restore dismiss must not leave keyboard focus in the hidden panel');
+    const launcher = document.querySelector('[data-chat-launcher]');
+    return panel instanceof HTMLElement && panel.contains(document.activeElement)
+      || launcher === document.activeElement;
+  }), false, 'Quiet restore dismiss must not leave keyboard focus in the hidden panel or on the launcher');
 
   mode = 'gated';
   await page.evaluate(() => sessionStorage.setItem('blog-assistant-ui', JSON.stringify({pathname: location.pathname, view: 'chat'})));

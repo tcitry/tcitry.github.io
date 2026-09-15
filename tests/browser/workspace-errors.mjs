@@ -145,8 +145,10 @@ try {
       assert.equal(await page.locator('[data-service-boundary="failed"]').count(), 0);
       assert.equal(await page.evaluate(() => {
         const dialog = document.querySelector('#blog-chat-panel');
-        return dialog instanceof HTMLElement && dialog.contains(document.activeElement);
-      }), false, 'Quiet restore dismiss must not leave keyboard focus in the hidden assistant');
+        const launcher = document.querySelector('[data-chat-launcher]');
+        return dialog instanceof HTMLElement && dialog.contains(document.activeElement)
+          || launcher === document.activeElement;
+      }), false, 'Quiet restore dismiss must not leave keyboard focus in the hidden assistant or on the launcher');
       await launcher.click();
       await panel.getByRole('heading', {name: '此功能暂时无法打开', exact: true}).waitFor();
       assert.equal(await panel.getByRole('button', {name: '重试', exact: true}).isVisible(), true);
