@@ -143,6 +143,42 @@ test('waitForPublishedRelease waits for the marker to match this revision then s
   }), /has not switched to this reviewed release/);
 });
 
+test('waitForPublishedRelease defaults wait beyond eight attempts until both revisions match', async () => {
+  const expected = { siteCommit: 'a'.repeat(40), contentCommit: 'b'.repeat(40) };
+  const delays = [];
+  let requests = 0;
+  const marker = await waitForPublishedRelease({
+    origin: 'https://yindongliang.com', expected,
+    fetchImpl: async () => {
+      requests += 1;
+      if (requests <= 8) return json({ siteCommit: 'c'.repeat(40), contentCommit: expected.contentCommit });
+      if (requests === 9) return json({ siteCommit: expected.siteCommit, contentCommit: 'd'.repeat(40) });
+      return json(expected);
+    },
+    sleep: async ms => { delays.push(ms); },
+  });
+  assert.deepEqual(marker, expected);
+  assert.equal(requests, 10);
+  assert.deepEqual(delays, Array(9).fill(10000));
+});
+
+test('waitForPublishedRelease defaults fail a stuck previous revision after the propagation allowance', async () => {
+  const expected = { siteCommit: 'a'.repeat(40), contentCommit: 'b'.repeat(40) };
+  const delays = [];
+  let requests = 0;
+  await assert.rejects(() => waitForPublishedRelease({
+    origin: 'https://yindongliang.com', expected,
+    fetchImpl: async () => {
+      requests += 1;
+      return json({ siteCommit: 'c'.repeat(40), contentCommit: expected.contentCommit });
+    },
+    sleep: async ms => { delays.push(ms); },
+  }), /has not switched to this reviewed release/);
+  assert.equal(requests, 31);
+  assert.deepEqual(delays, Array(30).fill(10000));
+  assert.equal(delays.reduce((total, ms) => total + ms, 0), 300000);
+});
+
 test('waitForPublishedRelease retries a 200 JSON body served as HTML until the JSON content type arrives', async () => {
   const expected = { siteCommit: 'a'.repeat(40), contentCommit: 'b'.repeat(40) };
   let generation = 0;

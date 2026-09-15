@@ -140,6 +140,9 @@ export function assetReferences(html, route = '/') {
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 export const publishedRetry = { attempts: 8, delayMs: 1000 };
+// Allow five minutes of retry delays for release propagation. This is a
+// site verification policy, not a Cloudflare propagation guarantee.
+export const publishedReleaseRetry = { attempts: 31, delayMs: 10000 };
 
 export function hashedAstroAssets(paths) {
   return [...new Set(paths.filter(asset => asset.startsWith('/_astro/')))];
@@ -178,7 +181,7 @@ export async function retryUntil(run, { attempts = publishedRetry.attempts, dela
   throw lastError;
 }
 
-export async function waitForPublishedRelease({ origin, expected, fetchImpl = fetch, timeout = 30_000, attempts = publishedRetry.attempts, delayMs = publishedRetry.delayMs, sleep: wait = sleep, onRetry } = {}) {
+export async function waitForPublishedRelease({ origin, expected, fetchImpl = fetch, timeout = 30_000, attempts = publishedReleaseRetry.attempts, delayMs = publishedReleaseRetry.delayMs, sleep: wait = sleep, onRetry } = {}) {
   assert.match(expected?.siteCommit || '', /^[a-f0-9]{40}$/, 'Local release marker missing siteCommit');
   assert.match(expected?.contentCommit || '', /^[a-f0-9]{40}$/, 'Local release marker missing contentCommit');
   return retryUntil(async attempt => {
