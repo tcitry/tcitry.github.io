@@ -3,12 +3,17 @@ import test from 'node:test';
 import {
   allowViteCssPreloadFallback,
   chatLoadFailureCopy,
+  clearStaleChatAssetReload,
   isAssetLoadError,
+  isAssetLoadErrorMessage,
   isClerkLoadError,
   isCssPreloadError,
   isRetriableChatLoadError,
   needsChatPageRefresh,
+  reloadForStaleChatAsset,
   safeChatErrorDetail,
+  shouldReportChatLoadError,
+  STALE_CHAT_ASSET_RELOAD_KEY,
 } from '../src/scripts/module-load-error.mjs';
 
 test('CSS preload errors are cancelled so the JavaScript import can continue', () => {
@@ -37,11 +42,39 @@ test('assistant load copy names auth, stale assets, and mount failures instead o
   assert.match(chatLoadFailureCopy(new TypeError('Cannot read properties of undefined (reading \'useAuth\')'), 'mount'), /未能打开/);
   assert.doesNotMatch(chatLoadFailureCopy(new TypeError('Cannot read properties of undefined'), 'mount'), /检查网络/);
   assert.doesNotMatch(chatLoadFailureCopy(clerk), /检查网络/);
-  assert.equal(isRetriableChatLoadError(new TypeError('Failed to fetch dynamically imported module: [url]')), true);
+  assert.equal(isRetriableChatLoadError(new TypeError('Failed to fetch dynamically imported module: [url]')), false);
   assert.equal(isRetriableChatLoadError(new Error('network down')), false);
   assert.equal(needsChatPageRefresh(new TypeError('Load failed'), 'import'), true);
   assert.match(chatLoadFailureCopy(new TypeError('Load failed'), 'import'), /刷新/);
   assert.equal(needsChatPageRefresh(new TypeError('Cannot read properties of undefined (reading \'useAuth\')'), 'mount'), false);
+  assert.equal(shouldReportChatLoadError(new Error('Failed to fetch dynamically imported module: /_astro/mount-chat.abc.js')), false);
+  assert.equal(shouldReportChatLoadError(new TypeError('Load failed'), 'import'), false);
+  assert.equal(shouldReportChatLoadError(new TypeError('Cannot read properties of undefined (reading \'useAuth\')'), 'mount'), true);
+  assert.equal(isAssetLoadErrorMessage('Failed to fetch dynamically imported module: https://yindongliang.com/_astro/mount-chat.abc.js'), true);
+  assert.equal(isAssetLoadErrorMessage('Sentry uncaught browser fixture /docs/'), false);
+});
+
+test('a stale hashed assistant chunk reloads the document once, then keeps refresh guidance', () => {
+  const storage = new Map();
+  const session = {
+    getItem(key) { return storage.has(key) ? storage.get(key) : null; },
+    setItem(key, value) { storage.set(key, value); },
+    removeItem(key) { storage.delete(key); },
+  };
+  let reloads = 0;
+  assert.equal(reloadForStaleChatAsset(session, () => { reloads += 1; }), true);
+  assert.equal(reloads, 1);
+  assert.equal(session.getItem(STALE_CHAT_ASSET_RELOAD_KEY), '1');
+  assert.equal(reloadForStaleChatAsset(session, () => { reloads += 1; }), false);
+  assert.equal(reloads, 1, 'A second stale import must not loop reloads');
+  clearStaleChatAssetReload(session);
+  assert.equal(session.getItem(STALE_CHAT_ASSET_RELOAD_KEY), null);
+  assert.equal(reloadForStaleChatAsset(session, () => { reloads += 1; }), true);
+  assert.equal(reloads, 2);
+  const blocked = {getItem() { throw new Error('blocked'); }, setItem() { throw new Error('blocked'); }, removeItem() { throw new Error('blocked'); }};
+  assert.equal(reloadForStaleChatAsset(blocked, () => { reloads += 1; }), false);
+  assert.equal(reloads, 2);
+  clearStaleChatAssetReload(blocked);
 });
 
 test('production error detail is a short sanitized message', () => {

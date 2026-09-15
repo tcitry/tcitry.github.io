@@ -4,9 +4,12 @@ import {
   allowViteCssPreloadFallback,
   CHAT_LOAD_RETRY_DELAY_MS,
   chatLoadFailureCopy,
+  clearStaleChatAssetReload,
   needsChatPageRefresh,
   isRetriableChatLoadError,
+  reloadForStaleChatAsset,
   safeChatErrorDetail,
+  shouldReportChatLoadError,
 } from './module-load-error.mjs';
 
 let cleanup: (() => void) | undefined;
@@ -176,6 +179,7 @@ function initializeChat() {
             phase = 'mount';
             mount = mountChat(target!, () => close(), () => {
               panel!.dataset.chatLoaded = 'true';
+              clearStaleChatAssetReload();
               if (panel!.open && (panel!.contains(document.activeElement) || document.activeElement === document.body)) focusChat();
             }, {
               initialView: currentView,
@@ -194,7 +198,8 @@ function initializeChat() {
                   if (stopped || panel!.dataset.chatLoaded === 'true') return;
                   mount?.destroy();
                   mount = undefined;
-                  captureFeatureError(error, 'chat', 'mount');
+                  if (needsChatPageRefresh(error, 'mount') && reloadForStaleChatAsset()) return;
+                  if (shouldReportChatLoadError(error, 'mount')) captureFeatureError(error, 'chat', 'mount');
                   showLoadFailure(error, 'mount');
                 });
               },
@@ -203,8 +208,14 @@ function initializeChat() {
           } catch (error) {
             lastError = error;
             if (stopped) return;
+            if (needsChatPageRefresh(error, phase)) {
+              if (reloadForStaleChatAsset()) return;
+              break;
+            }
             const retry = attempt === 0 && (phase === 'mount' || isRetriableChatLoadError(error));
-            captureFeatureError(error, 'chat', retry ? 'load_retry' : phase === 'mount' ? 'mount' : 'load');
+            if (shouldReportChatLoadError(error, phase)) {
+              captureFeatureError(error, 'chat', retry ? 'load_retry' : phase === 'mount' ? 'mount' : 'load');
+            }
             if (!retry) break;
             await wait(CHAT_LOAD_RETRY_DELAY_MS);
             if (stopped) return;

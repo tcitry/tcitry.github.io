@@ -207,6 +207,8 @@ try {
     assert.doesNotMatch(await page.locator('body').innerHTML(), /assets\.example\.com|private-fixture-chunk|fixture-secret/);
     assert.equal(state.bootId, bootId);
     assert.equal(await page.getByRole('textbox', {name: '页面草稿', exact: true}).inputValue(), '手动恢复前的页面内容');
+    assert.equal(await page.evaluate(() => sessionStorage.getItem('blog-chat-stale-asset-reload')), null,
+      'A nested lazy view keeps the current document; only the assistant entry import auto-reloads');
     await close(page).click();
     assert.equal((await snapshot(page)).closes, 1, 'The user can close a failed lazy view');
     assert.equal(await page.locator('#root').textContent(), '');
