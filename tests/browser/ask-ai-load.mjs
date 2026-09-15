@@ -248,6 +248,7 @@ const signedInBundle = await build({
         return children;
       }
       export function useAuth() { return {isLoaded: true, isSignedIn: true, userId: 'user-a', sessionId: 'session-a'}; }
+      export function useClerk() { return {}; }
       export function useUser() { return {isLoaded: true, user: {id: 'user-a', firstName: 'A', lastName: 'B'}}; }
       export function UNSAFE_PortalProvider({children}) { return children; }
     `, loader: 'js', resolveDir: new URL('../../', import.meta.url).pathname}));
