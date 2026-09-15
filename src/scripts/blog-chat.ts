@@ -33,6 +33,8 @@ function initializeChat() {
   let stopped = false;
   let preservedCloseEvents = 0;
   let promptRequest = 0;
+  let openIntent: 'user' | 'restore' = 'user';
+  let dismissedQuietly = false;
   // Pointer close must not restore opener focus; that looks like a stuck hover
   // because the edge handle reappears under the cursor and :focus-visible
   // keeps the CSS tooltip. Keyboard Escape / activation still restores.
@@ -116,6 +118,13 @@ function initializeChat() {
   }
 
   function showLoadFailure(error: unknown, phase: 'import' | 'mount') {
+    if (openIntent === 'restore') {
+      dismissedQuietly = true;
+      mount?.destroy();
+      mount = undefined;
+      close(false);
+      return;
+    }
     restoreLoadShell();
     panel!.dataset.chatLoaded = 'false';
     const {status, detail, retry, refresh} = loadShell();
@@ -169,6 +178,11 @@ function initializeChat() {
                 currentView = view;
                 if (panel!.open) state.save(view);
               },
+              shouldDismissFailure: () => openIntent === 'restore',
+              onDismissFailure: () => {
+                dismissedQuietly = true;
+                close(false);
+              },
               onMountError(error) {
                 queueMicrotask(() => {
                   if (stopped || panel!.dataset.chatLoaded === 'true') return;
@@ -199,7 +213,13 @@ function initializeChat() {
     return loading;
   }
 
-  function open(trigger?: HTMLButtonElement) {
+  function open(trigger?: HTMLButtonElement, intent: 'user' | 'restore' = 'user') {
+    openIntent = intent;
+    if (dismissedQuietly && mount) {
+      mount.destroy();
+      mount = undefined;
+      dismissedQuietly = false;
+    }
     if (panel!.open) return;
     if (trigger) opener = trigger;
     syncViewport();
@@ -315,7 +335,7 @@ function initializeChat() {
     preservedCloseEvents++;
     panel.close();
     syncClosed();
-    open();
+    open(undefined, openIntent);
   }, {signal});
   window.addEventListener('resize', syncReadingLayout, {signal});
   window.visualViewport?.addEventListener('resize', syncViewport, {signal});
@@ -327,7 +347,7 @@ function initializeChat() {
     launcherMount?.destroy();
     mount?.destroy();
   };
-  if (restoredView) open();
+  if (restoredView) open(undefined, 'restore');
 }
 
 initializeChat();

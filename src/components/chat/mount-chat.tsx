@@ -17,6 +17,8 @@ export function mountChat(target: HTMLElement, onClose: () => void, onReady: () 
   initialView?: AssistantView;
   onViewChange?: (view: AssistantView) => void;
   onMountError?: (error: unknown) => void;
+  shouldDismissFailure?: () => boolean;
+  onDismissFailure?: () => void;
 } = {}) {
   const {onMountError, ...workspaceUI} = ui;
   const island = chatIsland();

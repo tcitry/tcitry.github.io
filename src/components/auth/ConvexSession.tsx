@@ -61,8 +61,9 @@ function Client({url, children, requireAuth}: {url: string; children: ReactNode;
 
 // A new Clerk session gets a fresh client and query cache before children render.
 // The wrapper lives under BlogClerkProvider; comment data also requires authentication.
-export default function ConvexSession({children, requireAuth = false, disableBoundary = false, onErrorClose}: {
+export default function ConvexSession({children, requireAuth = false, disableBoundary = false, onErrorClose, shouldDismissFailure, onDismissFailure}: {
   children: ReactNode; requireAuth?: boolean; disableBoundary?: boolean; onErrorClose?: () => void;
+  shouldDismissFailure?: () => boolean; onDismissFailure?: () => void;
 }) {
   const {userId, sessionId} = useAuth();
   const url = import.meta.env.PUBLIC_CONVEX_URL ?? '';
@@ -71,5 +72,5 @@ export default function ConvexSession({children, requireAuth = false, disableBou
   const content = <Client key={sessionKey} url={url} requireAuth={requireAuth}>{children}</Client>;
   // An outer retry must also replace a failed/closed client. Local boundaries
   // inside a healthy provider can retry one private view without replacing it.
-  return disableBoundary ? content : <ServiceBoundary key={sessionKey} onClose={onErrorClose}>{content}</ServiceBoundary>;
+  return disableBoundary ? content : <ServiceBoundary key={sessionKey} onClose={onErrorClose} shouldDismissFailure={shouldDismissFailure} onDismissFailure={onDismissFailure}>{content}</ServiceBoundary>;
 }

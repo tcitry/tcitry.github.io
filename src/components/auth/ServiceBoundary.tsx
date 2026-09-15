@@ -7,6 +7,9 @@ type Props = {
   onClose?: () => void;
   resetKey?: string;
   autoRetryDelayMs?: number;
+  /** Hide this chrome and dismiss instead of blocking reading. */
+  shouldDismissFailure?: () => boolean;
+  onDismissFailure?: () => void;
 };
 
 // Never include an error message, stack, query arguments or identity in logs.
@@ -34,8 +37,17 @@ export default class ServiceBoundary extends Component<Props, {failed: boolean; 
     document.addEventListener('visibilitychange', this.resume);
   }
 
+  private shouldDismiss() {
+    return this.props.shouldDismissFailure?.() === true;
+  }
+
   componentDidCatch(error: unknown) {
     if (import.meta.env.DEV) console.warn('[Account service] View failed.', {category: serviceErrorCategory(error)});
+    if (this.shouldDismiss()) {
+      this.clearTimer();
+      (this.props.onDismissFailure ?? this.props.onClose)?.();
+      return;
+    }
     // A disconnected Convex socket normally reconnects itself without throwing.
     // Only retry a caught error once, even if many browser events fire later.
     if (serviceErrorCategory(error) !== 'asset_load_failed' && this.automaticRetries === 0 && navigator.onLine !== false) {
@@ -65,7 +77,7 @@ export default class ServiceBoundary extends Component<Props, {failed: boolean; 
     if (this.mounted && this.state.failed) this.setState({failed: false, category: null});
   };
   private automaticRetry = () => {
-    if (!this.mounted || !this.state.failed || this.state.category === 'asset_load_failed' || this.automaticRetries >= 1
+    if (!this.mounted || !this.state.failed || this.shouldDismiss() || this.state.category === 'asset_load_failed' || this.automaticRetries >= 1
         || navigator.onLine === false || document.visibilityState !== 'visible') return;
     this.automaticRetries += 1;
     this.retry();
@@ -75,6 +87,7 @@ export default class ServiceBoundary extends Component<Props, {failed: boolean; 
   };
 
   render() {
+    if (this.state.failed && this.shouldDismiss()) return null;
     return this.state.failed ? <section className={styles.panel} data-service-boundary="failed" aria-label="服务连接提示">
       <div role="alert">
         <h2 className={styles.title}>此功能暂时无法打开</h2>

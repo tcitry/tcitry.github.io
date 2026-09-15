@@ -113,6 +113,43 @@ try {
       console.log(`${width}px ${failure}: scoped fallback, available controls, explicit close, no automatic reload or business writes passed.`);
     } finally {await context.close();}
   }
+
+  {
+    const context = await browser.newContext({viewport: {width: 1016, height: 900}, reducedMotion: 'reduce', serviceWorkers: 'block'});
+    await context.route('**/*', async route => {
+      const url = new URL(route.request().url());
+      if (url.origin !== base.origin) return route.abort();
+      return route.continue();
+    });
+    await context.addInitScript(() => {
+      sessionStorage.setItem('blog-assistant-ui', JSON.stringify({pathname: '/tests/fixtures/services-ui.html', view: 'my'}));
+    });
+    const page = await context.newPage();
+    page.setDefaultTimeout(15_000);
+    page.on('pageerror', error => {
+      if (!/Fixture role query rejected/.test(error.message)) unexpectedErrors.push(error.message);
+    });
+    try {
+      await page.goto(new URL('/tests/fixtures/services-ui.html?view=widget&failRole=true', base).href);
+      const launcher = page.locator('[data-chat-launcher]');
+      const panel = page.locator('#blog-chat-panel');
+      await launcher.waitFor({state: 'visible'});
+      await page.waitForFunction(() => {
+        const dialog = document.querySelector('#blog-chat-panel');
+        return dialog instanceof HTMLDialogElement && !dialog.open && sessionStorage.getItem('blog-assistant-ui') === null;
+      });
+      assert.equal(await panel.evaluate(element => element.open), false, 'A restored session failure must not leave the assistant open');
+      assert.equal(await page.getByRole('heading', {name: '此功能暂时无法打开', exact: true}).count(), 0);
+      assert.equal(await page.getByRole('heading', {name: '公开文章测试', exact: true}).isVisible(), true);
+      assert.equal(await launcher.getAttribute('aria-expanded'), 'false');
+      assert.equal(await page.locator('[data-service-boundary="failed"]').count(), 0);
+      await launcher.click();
+      await panel.getByRole('heading', {name: '此功能暂时无法打开', exact: true}).waitFor();
+      assert.equal(await panel.getByRole('button', {name: '重试', exact: true}).isVisible(), true);
+      assert.equal(await panel.getByRole('button', {name: '关闭博客助手', exact: true}).isVisible(), true);
+      console.log('Restored assistant: a session failure closes quietly so reading continues; an explicit open still offers retry.');
+    } finally {await context.close();}
+  }
   assert.deepEqual(unexpectedErrors, []);
 } finally {
   await browser?.close(); await server.close(); await rm(cacheDir, {recursive: true, force: true});

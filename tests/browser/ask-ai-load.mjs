@@ -154,6 +154,16 @@ try {
   assert.equal(await page.getByRole('button', {name: '刷新页面', exact: true}).isVisible(), true);
   assert.equal(await page.getByText('检查网络后重试').count(), 0, 'A missing chunk is not reported as a silent network failure');
 
+  await page.evaluate(() => sessionStorage.setItem('blog-assistant-ui', JSON.stringify({pathname: location.pathname, view: 'chat'})));
+  await page.reload();
+  await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
+  await page.waitForFunction(() => {
+    const panel = document.querySelector('#blog-chat-panel');
+    return panel instanceof HTMLDialogElement && !panel.open && sessionStorage.getItem('blog-assistant-ui') === null;
+  });
+  assert.equal(await page.getByText('若页面刚更新，请刷新后再试').count(), 0, 'A restored load failure must not block reading');
+  assert.equal(await page.locator('[data-chat-launcher]').getAttribute('aria-expanded'), 'false');
+
   mode = 'ok';
   await page.setViewportSize({width: 320, height: 720});
   await page.reload();
