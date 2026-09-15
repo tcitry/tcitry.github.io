@@ -4,7 +4,7 @@
 
 ## 架构
 
-- Clerk：登录、账户资料和 Billing UI。站点登录入口使用 sign-in-or-up transfer：已有账户直接登录；首次 GitHub/Google OAuth 转到注册创建账户，而不是停在 Account Portal 的 `external_account_not_found`。用户名可选，可在评论等场景稍后设置。GitHub/Google 整页 OAuth 必须在 modal 内用 popup 完成：Account Portal 纯 `/sign-in` 不能 transfer，redirect 对首次用户不会回到站点。若仍留下 transferable 的 sign-in，回到站点后由应用侧 `signUp.create({ transfer: true })` 补完。`forceRedirectUrl` 不含 hash（评论锚点由 `sessionStorage` 恢复），且可能被 Portal 回落到站点首页，因此打开登录时把当前页写入 `sessionStorage`，Clerk 变为已登录后再同源恢复。
+- Clerk：登录、账户资料和 Billing UI。站点登录入口仍是 Clerk modal（Account Portal 只作登录壳后备），不是应用内 `/sign-in` 页。已有账户直接登录；首次 GitHub/Google OAuth 必须在站内 `/sso-callback/` 完成 `AuthenticateWithRedirectCallback` 与 `signUp.create({ transfer: true })`，不能停在 Account Portal 纯 `/sign-in` 的 `external_account_not_found`。OAuth `redirectUrl` 被改写为同源 `https://yindongliang.com/sso-callback/`；`oauthFlow` 用整页 redirect，让 GitHub 回到该页而不是 Portal。Clerk Dashboard 的 Allowed redirect URLs / Paths 必须允许该站内回调（含尾斜杠），不要把 Component path 的 Sign-in URL 指到这个回调页。若仍留下 transferable 的 sign-in，`addListener` 与冷加载都会补完 transfer。`forceRedirectUrl` 不含 hash（评论锚点由 `sessionStorage` 恢复），打开登录时把当前页写入 `sessionStorage`，Clerk 变为已登录后再同源恢复。
 - Convex：认证与授权、评论、喜欢、收藏、通知、咨询、附件、AI 会话和流式状态。
 - `@convex-dev/agent`：AI thread、message 和 stream delta 持久化。
 - Cloudflare AI Search：公开文章检索与回答生成；不保存私人账户数据。

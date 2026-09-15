@@ -1,7 +1,7 @@
 import {createContext, useContext, useEffect, type ReactNode} from 'react';
 import {ClerkProvider, useAuth, useClerk} from '@clerk/react';
 import type {BrowserClerk, ClerkProp} from '@clerk/react';
-import {clerkForceRedirectUrl, completePendingOAuthTransfer, restoreClerkReturnUrl} from './clerk-signin';
+import {clerkForceRedirectUrl, watchClerkAuthSession} from './clerk-signin';
 
 const BlogClerkTreeContext = createContext(false);
 
@@ -14,13 +14,10 @@ function ClerkAuthEffects() {
   const clerk = useClerk();
   useEffect(() => {
     if (!isLoaded) return;
-    if (isSignedIn) {
-      restoreClerkReturnUrl();
-      return;
-    }
-    // Popup keeps transfer on-site. If a leftover transferable sign-in
-    // remains (popup / edge cases), complete first-time signup here.
-    void completePendingOAuthTransfer(clerk).catch(() => undefined);
+    // Rewrite OAuth redirectUrl to /sso-callback/, complete leftover
+    // transferable sign-ins, and listen after popup/redirect — not only
+    // when these effect deps change.
+    return watchClerkAuthSession(clerk, Boolean(isSignedIn));
   }, [isLoaded, isSignedIn, clerk]);
   return null;
 }

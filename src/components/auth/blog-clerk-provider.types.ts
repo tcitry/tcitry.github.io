@@ -15,3 +15,8 @@ type PendingOAuthTransfer = typeof import('./clerk-signin').completePendingOAuth
 export const loadedClerkCompletesPendingOAuthTransfer: PendingOAuthTransfer extends (clerk: LoadedClerk) => unknown
   ? true
   : false = true;
+
+type AuthSessionWatch = typeof import('./clerk-signin').watchClerkAuthSession;
+export const loadedClerkWatchesAuthSession: AuthSessionWatch extends (clerk: LoadedClerk, isSignedIn: boolean) => unknown
+  ? true
+  : false = true;
