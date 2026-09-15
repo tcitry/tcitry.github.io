@@ -1,4 +1,5 @@
-import type {LoadedClerk} from '@clerk/shared/types';
+import type {AuthenticateWithPopupParams, HandleOAuthCallbackParams, LoadedClerk} from '@clerk/shared/types';
+import {clerkPopupStateParam, startClerkOAuthPopup} from './clerk-oauth-popup';
 
 type ClerkSignInProps = {
   forceRedirectUrl?: string;
@@ -144,7 +145,13 @@ export function clerkForceRedirectUrl(location: ReturnUrlLocation = window.locat
 export const clerkSsoCallbackPath = '/sso-callback/';
 
 export function clerkSsoCallbackUrl(location: ReturnUrlLocation = window.location) {
-  return resolveSameOriginReturnUrl(clerkSsoCallbackPath, location) || clerkSsoCallbackPath;
+  const callback = new URL(clerkSsoCallbackPath, locationContext(location).origin);
+  const current = new URL(location.href);
+  if (isClerkSsoCallbackHref(current.href, location)) {
+    const state = current.searchParams.get(clerkPopupStateParam);
+    if (state) callback.searchParams.set(clerkPopupStateParam, state);
+  }
+  return callback.href;
 }
 
 export function isClerkSsoCallbackHref(candidate: string, location: ReturnUrlLocation) {
@@ -152,27 +159,60 @@ export function isClerkSsoCallbackHref(candidate: string, location: ReturnUrlLoc
     const {origin} = locationContext(location);
     const url = new URL(candidate, origin);
     const path = url.pathname.endsWith('/') ? url.pathname : `${url.pathname}/`;
-    return path === clerkSsoCallbackPath;
+    return url.origin === origin && path === clerkSsoCallbackPath;
   } catch {
     return false;
   }
 }
 
-export function ssoCallbackHandlerProps() {
+export function ssoCallbackHandlerProps(): HandleOAuthCallbackParams {
+  const callback = clerkSsoCallbackUrl();
+  const route = (path: string) => `${callback}#/${path}`;
   return {
-    transferable: true as const,
-    signInFallbackRedirectUrl: '/',
-    signUpFallbackRedirectUrl: '/',
+    transferable: true,
+    // Only the callback finishes navigation. During popup login, even success
+    // stays in this window until the opener acknowledges its active session.
+    signInForceRedirectUrl: callback,
+    signUpForceRedirectUrl: callback,
+    signInUrl: route(''),
+    signUpUrl: route('create'),
+    firstFactorUrl: route('factor-one'),
+    secondFactorUrl: route('factor-two'),
+    resetPasswordUrl: route('reset-password'),
+    continueSignUpUrl: route('create/continue'),
+    verifyEmailAddressUrl: route('create/verify-email-address'),
+    verifyPhoneNumberUrl: route('create/verify-phone-number'),
+    signInProtectCheckUrl: route('protect-check'),
+    signUpProtectCheckUrl: route('create/protect-check'),
   };
 }
 
-function withSiteSsoCallback(params: unknown, method: string) {
+type CallbackRun = {promise: Promise<unknown>; navigate: (to: string) => Promise<unknown>};
+const callbackRuns = new WeakMap<object, CallbackRun>();
+
+export function runClerkSsoCallback(clerk: LoadedClerk, navigate: (to: string) => Promise<unknown>) {
+  // @clerk/react's proxy drops customNavigate and the callback promise. Use the
+  // loaded browser runtime so errors, continuation and cross-island dedup work.
+  const runtime = (clerk as LoadedClerk & {clerkjs?: LoadedClerk}).clerkjs || clerk;
+  const previous = callbackRuns.get(runtime);
+  if (previous) {
+    // React can replace an effect while the request is pending (StrictMode).
+    // Deliver continuation to the current mounted owner, without a second call.
+    previous.navigate = navigate;
+    return previous.promise;
+  }
+  ensureClerkCaptchaElement();
+  const run: CallbackRun = {
+    navigate,
+    promise: Promise.resolve().then(() => runtime.handleRedirectCallback(ssoCallbackHandlerProps(), to => run.navigate(to))),
+  };
+  callbackRuns.set(runtime, run);
+  return run.promise;
+}
+
+function withSiteSsoCallback(params: unknown) {
   const next = params && typeof params === 'object' ? {...params as Record<string, unknown>} : {};
   const callback = clerkSsoCallbackUrl();
-  if (method === 'sso') {
-    next.redirectCallbackUrl = callback;
-    return next;
-  }
   next.redirectUrl = callback;
   return next;
 }
@@ -183,24 +223,30 @@ function patchOAuthRedirectMethod(resource: object, name: string) {
   const current = (resource as Record<string, unknown>)[name];
   if (typeof current !== 'function' || oauthPatchedMethods.has(current)) return;
   const wrapped = function patchedOAuthRedirect(this: unknown, params?: unknown, ...rest: unknown[]) {
-    return current.call(this, withSiteSsoCallback(params, name), ...rest);
+    return current.call(this, withSiteSsoCallback(params), ...rest);
   };
   oauthPatchedMethods.add(wrapped);
   (resource as Record<string, unknown>)[name] = wrapped;
 }
 
-function installOAuthSsoCallbackOnResource(resource: unknown) {
+function installOAuthSsoCallbackOnResource(clerk: LoadedClerk, resource: unknown, intent: 'signIn' | 'signUp') {
   if (!resource || typeof resource !== 'object') return;
-  for (const name of ['authenticateWithRedirect', 'authenticateWithPopup', 'sso']) {
-    patchOAuthRedirectMethod(resource, name);
+  patchOAuthRedirectMethod(resource, 'authenticateWithRedirect');
+  const current = (resource as Record<string, unknown>).authenticateWithPopup;
+  if (typeof current === 'function' && !oauthPatchedMethods.has(current)) {
+    const wrapped = (params: AuthenticateWithPopupParams) => startClerkOAuthPopup(
+      clerk, resource as LoadedClerk['client']['signIn'] | LoadedClerk['client']['signUp'], intent, params, clerkSsoCallbackUrl(),
+    );
+    oauthPatchedMethods.add(wrapped);
+    (resource as Record<string, unknown>).authenticateWithPopup = wrapped;
   }
 }
 
 export function installOAuthSsoCallback(clerk: object | null | undefined) {
   for (const target of googleOneTapClerkTargets(clerk)) {
     const client = (target as {client?: {signIn?: unknown; signUp?: unknown}}).client;
-    installOAuthSsoCallbackOnResource(client?.signIn);
-    installOAuthSsoCallbackOnResource(client?.signUp);
+    installOAuthSsoCallbackOnResource(clerk as LoadedClerk, client?.signIn, 'signIn');
+    installOAuthSsoCallbackOnResource(clerk as LoadedClerk, client?.signUp, 'signUp');
   }
 }
 
@@ -214,35 +260,20 @@ function unsubscribeClerkListener(result: unknown) {
 
 export function watchClerkAuthSession(clerk: LoadedClerk, isSignedIn: boolean) {
   installOAuthSsoCallback(clerk);
-  if (isSignedIn) {
-    restoreClerkReturnUrl();
-    return () => undefined;
-  }
-  void completePendingOAuthTransfer(clerk).catch(() => undefined);
+  // Callback and prebuilt UI own transfer. Parent islands only keep the OAuth
+  // adapter installed as Clerk replaces resources; they must never race them.
+  if (isSignedIn && !isClerkSsoCallbackHref(window.location.href, window.location)) clearClerkReturnUrl();
   const host = clerk as LoadedClerk & {addListener?: (listener: () => void) => unknown};
   if (typeof host.addListener !== 'function') return () => undefined;
   return unsubscribeClerkListener(host.addListener(() => {
     installOAuthSsoCallback(clerk);
-    void completePendingOAuthTransfer(clerk).catch(() => undefined);
   }));
-}
-
-function popupShouldClose() {
-  try {
-    return typeof window !== 'undefined' && Boolean(window.opener) && !window.opener.closed;
-  } catch {
-    return false;
-  }
 }
 
 export function finishClerkSsoCallback(
   location: ReturnUrlLocation = window.location,
   storage?: ReturnUrlStorage | null,
 ) {
-  if (popupShouldClose()) {
-    try { window.close(); } catch { /* popup close can be blocked */ }
-    return 'popup';
-  }
   if (restoreClerkReturnUrl(location, storage)) return 'return';
   if (!isClerkSsoCallbackHref(location.href, location)) return false;
   const origin = location.origin || new URL(location.href).origin;
@@ -260,10 +291,9 @@ export function panelClerkRedirect() {
     // Combined sign-in-or-up: first-time GitHub/Google OAuth must transfer into
     // sign-up to create an account instead of Account Portal external_account_not_found.
     withSignUp: true,
-    // Modal is still the login shell. OAuth itself is a full-page redirect whose
-    // redirectUrl is rewritten to the app-hosted /sso-callback/, so first-time
-    // GitHub finishes on-site (Account Portal pure /sign-in cannot transfer).
-    oauthFlow: 'redirect' as const,
+    // The popup adapter keeps OAuth, transfer and any extra fields in the child
+    // window; the opener activates the verified session without navigating.
+    oauthFlow: 'popup' as const,
   };
 }
 
@@ -359,8 +389,6 @@ export async function transferGoogleOneTapIfNeeded(
   return signUp.create({transfer: true});
 }
 
-let pendingOAuthTransfer: Promise<boolean> | undefined;
-
 export function ensureClerkCaptchaElement(doc?: Document | null) {
   const root = doc === undefined ? (typeof document === 'undefined' ? null : document) : doc;
   if (!root?.body) return false;
@@ -377,50 +405,6 @@ export function ensureClerkCaptchaElement(doc?: Document | null) {
   el.id = 'clerk-captcha';
   root.body.appendChild(el);
   return true;
-}
-
-function pendingOAuthAttempt(signIn: LoadedClerk['client']['signIn'] | GoogleOneTapAttempt | null | undefined) {
-  return googleOneTapNeedsSignUp(signIn as GoogleOneTapAttempt | null | undefined);
-}
-
-async function runPendingOAuthTransfer(clerk: LoadedClerk) {
-  ensureClerkCaptchaElement();
-  const signIn = clerk.client.signIn;
-  let result: unknown;
-  try {
-    result = await transferGoogleOneTapIfNeeded(clerk, signIn);
-  } catch {
-    return false;
-  }
-  const sessionId = result && typeof result === 'object'
-    ? (result as {createdSessionId?: unknown}).createdSessionId
-    : null;
-  if (typeof sessionId === 'string' && sessionId) {
-    try {
-      await clerk.setActive({session: sessionId});
-      return true;
-    } catch {
-      return false;
-    }
-  }
-  if (
-    result
-    && typeof result === 'object'
-    && (result as {status?: unknown}).status === 'missing_requirements'
-  ) {
-    clerk.openSignIn({...panelClerkRedirect(), transferable: true});
-    return true;
-  }
-  return false;
-}
-
-export function completePendingOAuthTransfer(clerk: LoadedClerk) {
-  if (pendingOAuthTransfer) return pendingOAuthTransfer;
-  if (!pendingOAuthAttempt(clerk.client?.signIn)) return Promise.resolve(false);
-  pendingOAuthTransfer = runPendingOAuthTransfer(clerk).finally(() => {
-    pendingOAuthTransfer = undefined;
-  });
-  return pendingOAuthTransfer;
 }
 
 function installGoogleOneTapSignInOrUpOn(clerk: object) {

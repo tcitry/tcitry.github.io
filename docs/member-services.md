@@ -4,12 +4,25 @@
 
 ## 架构
 
-- Clerk：登录、账户资料和 Billing UI。站点登录入口仍是 Clerk modal（Account Portal 只作登录壳后备），不是应用内 `/sign-in` 页。已有账户直接登录；首次 GitHub/Google OAuth 必须在站内 `/sso-callback/` 完成 `AuthenticateWithRedirectCallback` 与 `signUp.create({ transfer: true })`，不能停在 Account Portal 纯 `/sign-in` 的 `external_account_not_found`。OAuth `redirectUrl` 被改写为同源 `https://yindongliang.com/sso-callback/`；`oauthFlow` 用整页 redirect，让 GitHub 回到该页而不是 Portal。当前 Dashboard 的 Configure → Paths 没有「Allowed redirect URLs」：那是 Native applications 的移动端 SSO 白名单。网站同源回调由应用域名自动允许。Paths 里 `<SignIn />` / `<SignUp />` 保持 Account Portal，不要改成应用域名上的 `/sso-callback`（那不是 SignIn 挂载点）。可选填写 Home URL 为 `https://yindongliang.com`。若仍留下 transferable 的 sign-in，`addListener` 与冷加载都会补完 transfer。`forceRedirectUrl` 不含 hash（评论锚点由 `sessionStorage` 恢复），打开登录时把当前页写入 `sessionStorage`，Clerk 变为已登录后再同源恢复。
+- Clerk：登录、账户资料和 Billing UI。站点保留官方 Clerk modal，GitHub/Google OAuth 使用 popup；不新增独立 `/sign-in` 页面。授权、首次注册 transfer 和资料补全均在弹窗内完成，原页面通过验证后的会话同步登录状态，保留 URL、评论 hash 和滚动位置。实现与验收边界见下节。
 - Convex：认证与授权、评论、喜欢、收藏、通知、咨询、附件、AI 会话和流式状态。
 - `@convex-dev/agent`：AI thread、message 和 stream delta 持久化。
 - Cloudflare AI Search：公开文章检索与回答生成；不保存私人账户数据。
 
 浏览器使用 Clerk 为 Convex integration 提供的 audience `convex` session token。Convex 从 `ctx.auth.getUserIdentity()` 获取身份，业务函数不得信任客户端提交的用户 ID、角色、claims 或 `isPro`。
+
+## OAuth popup 与回调
+
+- `oauthFlow: 'popup'` 让官方按钮同步打开窗口；`clerk-oauth-popup.ts` 接管该窗口的 OAuth 发起，调用 Clerk 公开 Resource API，令 `redirectUrl` 与 `actionCompleteRedirectUrl` 都指向弹窗内的同源 `/sso-callback/`。不能再次调用原生 `authenticateWithPopup()`：核对 Clerk JS 6.31.0 后确认，它会将未完成注册的结果经 Account Portal 转为父页面导航。
+- `/sso-callback/` 使用 `client:only="react"`，由单个 `handleRedirectCallback()` 执行者完成 transfer。全局 `addListener` 只维护 OAuth 方法适配，不创建账户、不负责回跳。StrictMode 重挂载共享同一 pending callback，并将后续导航交给仍挂载的组件。
+- `missing_requirements`、邮箱/手机验证、MFA、Protect Check 与 Session Tasks 交给弹窗内的官方 `<SignIn routing="hash" withSignUp />`。该 combined flow 包含官方注册流程，不自行实现字段校验和验证码表单；进入它后停止运行外层 callback handler。成功后仅弹窗回到自身 callback。
+- 弹窗成功消息携带一次性流程标识。父页必须同时检查 origin、窗口 source 和流程标识，然后重新读取服务端 session，验证目标 session 为 active 且无未完成任务。先关闭原登录 modal，再用 `setActive({ session, navigate: async () => {} })` 激活；确认后关闭 popup。消息本身不是登录凭证。同步失败时弹窗保留重试入口，取消或关闭时移除事件监听。
+- 没有可用 opener 的独立 callback 保留整页回跳后备：仅此处消费 `sessionStorage` 中的同源 return URL，避免多个 effect 覆盖原文章地址。弹窗被浏览器拦截时提示允许弹窗，不自动导航主页面。
+- Clerk Dashboard Paths 中的 `<SignIn />` / `<SignUp />` 继续保持 Account Portal，不改为应用域名的 `/sso-callback`。GitHub OAuth App 的 Authorization callback 仍为 Clerk Frontend API 的 `oauth_callback`。同源 Web callback 不使用 Native applications 的移动端 SSO 白名单。
+
+验证入口：`npm run test:browser:clerk-popup` 使用真实双窗口和本地 Clerk fixture 检查首次注册、回访、补资料、取消重试、消息来源校验，以及原页面的 URL/hash/滚动位置和单次 transfer。该测试不调用真实 GitHub，也不证明生产已上线；发布前仍须完成真实 GitHub 新号、回访、One Tap 与 production 构建验收。
+
+依据：[Clerk 6.31.0 popup transport](https://github.com/clerk/javascript/blob/%40clerk%2Fclerk-js%406.31.0/packages/clerk-js/src/utils/authenticateWithPopup.ts)、[Clerk 1.32.1 combined SignIn 路由](https://github.com/clerk/javascript/blob/%40clerk%2Fui%401.32.1/packages/ui/src/components/SignIn/index.tsx)。SDK 升级后重新核对这两处接入行为；本地依赖版本以 lockfile 为准。
 
 ## 助手面板
 
@@ -23,7 +36,7 @@
 
 会员状态和订阅管理位于 Clerk 头像菜单，不设置独立会员 tab。切换用户或 session 时销毁旧 Convex client，并清空私人列表、选择状态和草稿，防止上一账户数据短暂可见。
 
-Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录时展示。首次 Google 用户与 modal 一样走 sign-in-or-up transfer，避免 Account Portal 的 `external_account_not_found`；当前页写入 `sessionStorage`，登录后同源恢复。
+Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录时展示。其独立适配继续处理首次 Google 用户的 sign-in-or-up transfer，并将成功目标设为当前页（含 hash）；全局 listener 不再抢先发起 transfer。
 
 ## AI 对话
 

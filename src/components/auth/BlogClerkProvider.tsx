@@ -14,9 +14,8 @@ function ClerkAuthEffects() {
   const clerk = useClerk();
   useEffect(() => {
     if (!isLoaded) return;
-    // Rewrite OAuth redirectUrl to /sso-callback/, complete leftover
-    // transferable sign-ins, and listen after popup/redirect — not only
-    // when these effect deps change.
+    // Keep the popup adapter installed across Clerk resource updates. The
+    // callback window alone owns OAuth transfer and completion.
     return watchClerkAuthSession(clerk, Boolean(isSignedIn));
   }, [isLoaded, isSignedIn, clerk]);
   return null;

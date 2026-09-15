@@ -11,8 +11,8 @@ export const rejectedWeakClerk: ClerkProp = weakClerk;
 // Runtime reuse also requires UI (`onComponentsReady` + `components`), not just .load.
 export const acceptedUiClerk: ClerkProp = uiClerk;
 
-type PendingOAuthTransfer = typeof import('./clerk-signin').completePendingOAuthTransfer;
-export const loadedClerkCompletesPendingOAuthTransfer: PendingOAuthTransfer extends (clerk: LoadedClerk) => unknown
+type SsoCallback = typeof import('./clerk-signin').runClerkSsoCallback;
+export const loadedClerkHandlesSsoCallback: SsoCallback extends (clerk: LoadedClerk, navigate: (to: string) => Promise<unknown>) => unknown
   ? true
   : false = true;
 

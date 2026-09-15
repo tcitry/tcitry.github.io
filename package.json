@@ -44,6 +44,7 @@
     "test:browser:consultations": "node tests/browser/consultations-membership.mjs",
     "test:browser:auth-control": "node tests/browser/auth-control.mjs",
     "test:browser:clerk-ui": "node tests/browser/clerk-ui-islands.mjs",
+    "test:browser:clerk-popup": "node tests/browser/clerk-oauth-popup.mjs",
     "check:local": "npm run check && npm test && npm run build && npm run verify",
     "ai-search:export": "node scripts/export-ai-search.mjs",
     "ai-search:sync": "node scripts/sync-ai-search.mjs",
