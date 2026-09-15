@@ -6,11 +6,13 @@ import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 
 const currentPage = 'https://example.test/docs/article/?view=full#comments';
+const currentPageWithoutHash = 'https://example.test/docs/article/?view=full';
 const origin = 'https://example.test';
 const expectedRedirect = {
-  forceRedirectUrl: currentPage,
-  signUpForceRedirectUrl: currentPage,
+  forceRedirectUrl: currentPageWithoutHash,
+  signUpForceRedirectUrl: currentPageWithoutHash,
   withSignUp: true,
+  oauthFlow: 'popup',
 };
 
 async function importBundle(entryUrl, plugins = []) {
@@ -70,6 +72,111 @@ test('shared Clerk sign-in options opt into sign-in-or-up and keep OAuth transfe
     assert.deepEqual(opened, [{...expectedRedirect, transferable: true}]);
     assert.equal(session.getItem(clerkReturnUrlStorageKey), currentPage);
   });
+});
+
+test('force redirect URLs drop the hash so Account Portal query strings stay intact', async () => {
+  const {clerkForceRedirectUrl, panelClerkRedirect, rememberClerkReturnUrl, clerkReturnUrlStorageKey} = await importBundle(
+    new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
+  );
+  withPage(session => {
+    assert.equal(clerkForceRedirectUrl(), currentPageWithoutHash);
+    assert.deepEqual(panelClerkRedirect(), expectedRedirect);
+    rememberClerkReturnUrl();
+    assert.equal(session.getItem(clerkReturnUrlStorageKey), currentPage,
+      'return URL restore still keeps the comment hash');
+  });
+});
+
+test('pending OAuth transfer completes first-time GitHub sign-in left on the Clerk client', async () => {
+  const {completePendingOAuthTransfer, ensureClerkCaptchaElement} = await importBundle(
+    new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
+  );
+  const previousDocument = globalThis.document;
+  const transfers = [];
+  const sessions = [];
+  const opened = [];
+  const transferable = {
+    status: 'needs_identifier',
+    identifier: null,
+    firstFactorVerification: {status: 'transferable', error: {code: 'external_account_not_found'}},
+  };
+  const body = {children: [], appendChild(node) { this.children.push(node); return node; }};
+  const fakeDocument = {
+    body,
+    getElementById: (id) => body.children.find(node => node.id === id) || null,
+    createElement: (tag) => {
+      const attrs = {};
+      return {
+        tag, id: '', attrs,
+        setAttribute(name, value) { attrs[name] = value; },
+      };
+    },
+  };
+  globalThis.document = fakeDocument;
+  try {
+    assert.equal(ensureClerkCaptchaElement(), true);
+    assert.equal(fakeDocument.getElementById('clerk-captcha')?.id, 'clerk-captcha');
+    assert.equal(ensureClerkCaptchaElement(), false);
+
+    let finishCreate;
+    const firstClerk = {
+      client: {
+        signIn: transferable,
+        signUp: {
+          create: (params) => {
+            transfers.push(params);
+            return new Promise(resolve => { finishCreate = resolve; });
+          },
+        },
+      },
+      setActive: async (params) => { sessions.push(params); },
+      openSignIn: (props) => opened.push(props),
+    };
+    const first = completePendingOAuthTransfer(firstClerk);
+    const second = completePendingOAuthTransfer({
+      client: {signIn: transferable, signUp: {create: async () => { transfers.push('retry'); throw new Error('retry'); }}},
+    });
+    finishCreate({status: 'complete', createdSessionId: 'sess_github'});
+    assert.equal(await first, true);
+    assert.equal(await second, true, 'a second island must reuse the in-flight transfer');
+    assert.deepEqual(transfers, [{transfer: true}]);
+    assert.deepEqual(sessions, [{session: 'sess_github'}]);
+    assert.deepEqual(opened, []);
+  } finally {
+    if (previousDocument === undefined) delete globalThis.document;
+    else globalThis.document = previousDocument;
+  }
+});
+
+test('pending OAuth transfer opens sign-in-or-up when sign-up still needs fields', async () => {
+  const {completePendingOAuthTransfer} = await importBundle(
+    new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
+  );
+  const opened = [];
+  const missing = {
+    status: 'needs_identifier',
+    identifier: null,
+    firstFactorVerification: {status: 'failed', error: {code: 'external_account_not_found'}},
+  };
+  const previousWindow = globalThis.window;
+  globalThis.window = {location: {href: currentPage, origin}};
+  try {
+    const transferred = await completePendingOAuthTransfer({
+      client: {
+        signIn: missing,
+        signUp: {
+          create: async () => ({status: 'missing_requirements', missingFields: ['password']}),
+        },
+      },
+      openSignIn: (props) => opened.push(props),
+    });
+    assert.equal(transferred, true);
+    assert.deepEqual(opened, [{...expectedRedirect, transferable: true}]);
+    assert.equal(await completePendingOAuthTransfer({client: {signIn: {status: 'complete'}}}), false);
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
 });
 
 test('return URL helper stores, reads, clears and restores only same-origin pages', async () => {
@@ -265,8 +372,9 @@ test('SignInPanel modal entry spreads the shared sign-in-or-up options', async (
     const props = globalThis.__clerkSignInFixture.buttons[0];
     assert.equal(props.mode, 'modal');
     assert.equal(props.withSignUp, true);
-    assert.equal(props.forceRedirectUrl, currentPage);
-    assert.equal(props.signUpForceRedirectUrl, currentPage);
+    assert.equal(props.oauthFlow, 'popup');
+    assert.equal(props.forceRedirectUrl, currentPageWithoutHash);
+    assert.equal(props.signUpForceRedirectUrl, currentPageWithoutHash);
     assert.equal(session.getItem(clerkReturnUrlStorageKey), null,
       'rendering the signed-out button must not overwrite a stored return URL');
   });
@@ -345,11 +453,13 @@ test('every production SignInButton and openSignIn entry uses the shared sign-in
     sources['src/components/reader/BookmarkButton.tsx'],
   ].join('\n');
   assert.match(sources['src/components/auth/clerk-signin.ts'], /withSignUp:\s*true/);
+  assert.match(sources['src/components/auth/clerk-signin.ts'], /oauthFlow:\s*'popup'/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /transferable:\s*true/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /rememberClerkReturnUrl\(\)/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /continuation:\s*'transfer_to_sign_up'/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /googleOneTapRejectedNeedsSignUp/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /clerkjs/);
+  assert.match(sources['src/components/auth/clerk-signin.ts'], /completePendingOAuthTransfer/);
   assert.match(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /\{...googleOneTapRedirect\(\)\}/);
   assert.match(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /installGoogleOneTapSignInOrUp\(clerk\)/);
   assert.doesNotMatch(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /rememberClerkReturnUrl\(\)/);
@@ -359,6 +469,8 @@ test('every production SignInButton and openSignIn entry uses the shared sign-in
   assert.doesNotMatch(sources['src/components/auth/ClerkSignInButton.tsx'], /onClickCapture=\{rememberClerkReturnUrl\}/);
   assert.doesNotMatch(sources['src/components/auth/ClerkSignInButton.tsx'], /onPointerDownCapture=\{rememberClerkReturnUrl\}/);
   assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /restoreClerkReturnUrl\(\)/);
+  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /completePendingOAuthTransfer\(clerk\)/);
+  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /clerkForceRedirectUrl\(\)/);
   assert.match(sources['src/components/reader/BookmarkButton.tsx'], /openClerkSignIn\(clerk\)/);
   assert.equal([...callers.matchAll(/<ClerkSignInButton\b/g)].length, 4);
   assert.doesNotMatch(callers, /<SignInButton\b/);
