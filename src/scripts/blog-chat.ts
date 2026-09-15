@@ -100,11 +100,24 @@ function initializeChat() {
     if (active instanceof HTMLElement && (active === opener || inPanel)) active.blur();
   }
 
+  function isEdgeChrome(element: Element) {
+    return element === expandHandle || element === launcher
+      || Boolean(element.closest('.blog-chat-widget__expand, .blog-chat-widget__close, .assistant-workspace__close, [data-chat-expand], [data-chat-launcher], [data-chat-close]'));
+  }
+
+  function clearPointerEdgeFocus() {
+    if (restoreOpenerFocus) return;
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && isEdgeChrome(active)) active.blur();
+  }
+
   function focusChat() {
     // Do not summon the mobile keyboard until the reader taps the input.
     const selector = mobile.matches ? '[aria-label="关闭博客助手"]' : 'textarea';
     const visible = (selector: string) => [...target!.querySelectorAll<HTMLElement>(selector)].find((element) => element.getClientRects().length);
-    (visible(selector) ?? visible('[aria-label="关闭博客助手"]'))?.focus({preventScroll: true});
+    const candidate = visible(selector) ?? (restoreOpenerFocus ? visible('[aria-label="关闭博客助手"]') : undefined);
+    if (!candidate || (!restoreOpenerFocus && isEdgeChrome(candidate))) return;
+    candidate.focus({preventScroll: true});
   }
 
   function restoreLoadShell() {
@@ -181,6 +194,8 @@ function initializeChat() {
               panel!.dataset.chatLoaded = 'true';
               clearStaleChatAssetReload();
               if (panel!.open && (panel!.contains(document.activeElement) || document.activeElement === document.body)) focusChat();
+              clearPointerEdgeFocus();
+              queueMicrotask(clearPointerEdgeFocus);
             }, {
               initialView: currentView,
               onViewChange: view => {
@@ -260,6 +275,7 @@ function initializeChat() {
     syncReadingLayout();
     if (mount) focusChat();
     else if (!restoreOpenerFocus && trigger && document.activeElement === trigger) trigger.blur();
+    clearPointerEdgeFocus();
     void loadChat();
   }
 
