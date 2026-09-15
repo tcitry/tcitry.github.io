@@ -58,6 +58,20 @@ function withWindow(clerk, run) {
   }
 }
 
+test('BlogClerkProvider cannot prerender: it reads window during render', () => {
+  const previousWindow = globalThis.window;
+  delete globalThis.window;
+  try {
+    assert.throws(
+      () => renderToStaticMarkup(createElement(BlogClerkProvider, null, createElement('span', null, 'ok'))),
+      error => error instanceof ReferenceError && /window is not defined/.test(error.message),
+    );
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
+});
+
 test('nested BlogClerkProvider does not mount a second ClerkProvider', () => {
   withWindow(undefined, () => {
     const html = renderToStaticMarkup(createElement(BlogClerkProvider, null, createElement(BlogClerkProvider, null, createElement('span', null, 'ok'))));
