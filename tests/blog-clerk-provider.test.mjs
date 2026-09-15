@@ -136,6 +136,10 @@ test('provider configures one native combined sign-in root and retains the artic
     assert.equal(options.signInFallbackRedirectUrl, href);
     assert.equal(options.signUpFallbackRedirectUrl, href);
     assert.equal(options.afterSignOutUrl, href);
+    assert.equal(typeof options.routerPush, 'function');
+    assert.equal(typeof options.routerReplace, 'function');
+    assert.doesNotThrow(() => options.routerPush(href));
+    assert.doesNotThrow(() => options.routerReplace(href));
     assert.equal(clerk.client.signIn.authenticateWithPopup, nativePopup);
     assert.equal(clerk.client.signUp.authenticateWithPopup, nativePopup);
   }, href);
