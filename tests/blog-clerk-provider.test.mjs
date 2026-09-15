@@ -123,5 +123,7 @@ test('BlogClerkProvider types reused window.Clerk as ClerkProvider Clerk prop', 
   assert.match(types, /rejectedWeakClerk: ClerkProp = weakClerk/);
   assert.match(types, /acceptedUiClerk: ClerkProp = uiClerk/);
   assert.match(types, /loadedClerkCompletesPendingOAuthTransfer/);
+  assert.match(types, /loadedClerkWatchesAuthSession/);
   assert.match(types, /LoadedClerk/);
+  assert.match(provider, /watchClerkAuthSession\(clerk, Boolean\(isSignedIn\)\)/);
 });

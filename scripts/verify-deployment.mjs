@@ -306,11 +306,20 @@ async function main() {
     assertXMLSiteURLs(response.body, route);
   }, 'Feeds and sitemap');
   const robots = await ready('/robots.txt', response => { assert.equal(response.status, 200, 'robots.txt status'); return response; }); assertRobotsPolicy(robots.body, environment);
-  for (const route of ['/chat/', '/me/', '/demos/2026/cloudflare-product-map/', '/__astro-deployment-verification-missing__/']) {
+  for (const route of ['/chat/', '/me/', '/sign-in/', '/demos/2026/cloudflare-product-map/', '/__astro-deployment-verification-missing__/']) {
     const response = await ready(route, response => { assert.equal(response.status, 404, `Must return a real HTTP 404: ${route}`); return response; });
     assert.match(response.body, /页面未找到/, `Custom 404 missing: ${route}`); assertComments(response.body, false, route);
     if (environment === 'preview') { assertHtmlIndexing(response.body, environment, route); if (!localPreview) assertHeaderIndexing(response.headers.get('x-robots-tag'), environment, route); }
   }
+  const ssoCallback = await ready('/sso-callback/', response => {
+    assert.equal(response.status, 200, 'SSO callback status');
+    assert.match(response.headers.get('content-type') || '', /text\/html/i, 'SSO callback content type');
+    return response;
+  });
+  assertCanonical(ssoCallback.body, '/sso-callback/');
+  assert.match(ssoCallback.body, /\bnoindex\b/, 'SSO callback must stay out of search indexes');
+  assert.match(ssoCallback.body, /正在完成登录/, 'SSO callback must render the transfer handler');
+  assertComments(ssoCallback.body, false, '/sso-callback/');
   const redirects = parseRedirects(redirectText);
   assert.ok(redirects.some(rule => rule.from === '/page/1/' && rule.to === '/'), 'Pagination redirect missing');
   for (const from of ['/chat/', '/me/']) assert.ok(!redirects.some(rule => rule.from === from), `Unpublished account URL does not need a redirect: ${from}`);
@@ -322,7 +331,7 @@ async function main() {
     const destination = await request(to); assert.equal(destination.status, 200, `Redirect destination missing: ${to}`);
     assertCanonical(destination.body, to); assertHtmlIndexing(destination.body, environment, to); assertHeaderIndexing(destination.headers.get('x-robots-tag'), environment, to);
   }, 'Legacy redirects');
-  for (const route of localPreview ? [] : ['/labs', '/archives', '/demos/2026/rounded-timeline']) {
+  for (const route of localPreview ? [] : ['/labs', '/archives', '/demos/2026/rounded-timeline', '/sso-callback']) {
     const response = await request(route); assert.equal(response.status, 307, `Trailing-slash redirect: ${route}`);
     assert.ok(response.headers.get('location'), `Trailing-slash Location missing: ${route}`);
     assert.equal(new URL(response.headers.get('location'), origin).href, `${origin}${route}/`, `Trailing-slash target: ${route}`);

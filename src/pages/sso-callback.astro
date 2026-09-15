@@ -1,0 +1,8 @@
+---
+import AuthCallbackLayout from '../layouts/AuthCallbackLayout.astro';
+import SsoCallback from '../components/auth/SsoCallback';
+---
+<AuthCallbackLayout>
+  <SsoCallback client:load />
+  <noscript><p>完成 GitHub 或 Google 登录需要启用 JavaScript。<a href="/">返回首页</a></p></noscript>
+</AuthCallbackLayout>

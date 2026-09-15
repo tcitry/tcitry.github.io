@@ -133,7 +133,7 @@ for (const [, navigation] of archiveTOCs) {
     assert.ok(archiveHeadings.has(term.name), `Archives category has no matching heading ID: ${term.name}`);
   }
 }
-for (const url of ['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/links/index.xml', '/sitemap.xml', '/robots.txt', '/404.html', '/favicon.ico', '/apple-touch-icon.png', '/icons/menu.svg', '/icons/chevron-right.svg', '/icons/favicon.ico', '/katex/katex.min.css', '/katex/katex.min.js', '/katex/fonts/KaTeX_Main-Regular.woff2', '/pagefind/pagefind.js', '/pagefind/pagefind-entry.json', '/pagefind/pagefind-worker.js', '/demos/2026/rounded-timeline/index.html', '/labs/index.html', '/labs/agent-replay/index.html']) await access(path.join(output, url));
+for (const url of ['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/links/index.xml', '/sitemap.xml', '/robots.txt', '/404.html', '/favicon.ico', '/apple-touch-icon.png', '/icons/menu.svg', '/icons/chevron-right.svg', '/icons/favicon.ico', '/katex/katex.min.css', '/katex/katex.min.js', '/katex/fonts/KaTeX_Main-Regular.woff2', '/pagefind/pagefind.js', '/pagefind/pagefind-entry.json', '/pagefind/pagefind-worker.js', '/demos/2026/rounded-timeline/index.html', '/labs/index.html', '/labs/agent-replay/index.html', '/sso-callback/index.html']) await access(path.join(output, url));
 assertRobotsPolicy(await readFile(path.join(output, 'robots.txt'), 'utf8'), environment);
 const sitemap = await readFile(path.join(output, 'sitemap.xml'), 'utf8');
 assert.match(sitemap, /<urlset\b/); assertXMLSiteURLs(sitemap, 'sitemap.xml');
@@ -188,6 +188,16 @@ for (const url of ['/chat/', '/me/']) {
   assert.ok(!redirects.some(rule => rule.from === url), `Unpublished account URL does not need a redirect: ${url}`);
   assert.ok(!sitemap.includes(`<loc>https://yindongliang.com${url}</loc>`), `Removed account URL is excluded from sitemap: ${url}`);
 }
+await assert.rejects(access(htmlPath('/sign-in/')), {code: 'ENOENT'}, 'Must not generate a dedicated app /sign-in page');
+const ssoCallback = await readFile(path.join(output, 'sso-callback/index.html'), 'utf8');
+assertCanonical(ssoCallback, '/sso-callback/');
+assert.match(ssoCallback, /\bnoindex\b/, 'SSO callback must stay out of search indexes');
+assert.match(ssoCallback, /astro-island/, 'SSO callback must hydrate Clerk');
+assert.match(ssoCallback, /data-clerk-sso-callback|正在完成登录/, 'SSO callback must render the transfer handler');
+assert.doesNotMatch(ssoCallback, /data-pagefind-body/, 'SSO callback is not article search corpus');
+assert.ok(!sitemap.includes('<loc>https://yindongliang.com/sso-callback/</loc>'), 'SSO callback must stay out of the sitemap');
+assertComments(ssoCallback, false, '/sso-callback/');
+for (const asset of assetReferences(ssoCallback, '/sso-callback/')) assets.add(asset);
 const lab = await readFile(path.join(output, 'labs/index.html'), 'utf8');
 checkPage(lab, '/labs/');
 const replay = await readFile(path.join(output, 'labs/agent-replay/index.html'), 'utf8');

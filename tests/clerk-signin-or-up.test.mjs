@@ -12,13 +12,14 @@ const expectedRedirect = {
   forceRedirectUrl: currentPageWithoutHash,
   signUpForceRedirectUrl: currentPageWithoutHash,
   withSignUp: true,
-  oauthFlow: 'popup',
+  oauthFlow: 'redirect',
 };
 
-async function importBundle(entryUrl, plugins = []) {
+async function importBundle(entryUrl, plugins = [], define = {}) {
   const bundle = await build({
     entryPoints: [entryUrl.pathname],
     bundle: true, platform: 'node', format: 'esm', write: false, jsx: 'automatic',
+    define,
     plugins: [...plugins, {
       name: 'css-stub',
       setup(plugin) {
@@ -204,6 +205,168 @@ test('pending OAuth transfer swallows setActive rejection', async () => {
     setActive: async () => { throw new Error('session activate failed'); },
     openSignIn() {},
   }));
+});
+
+test('OAuth helpers target the app-hosted /sso-callback/ instead of Account Portal /sign-in', async () => {
+  const {
+    clerkSsoCallbackPath, clerkSsoCallbackUrl, isClerkSsoCallbackHref, ssoCallbackHandlerProps,
+    installOAuthSsoCallback, finishClerkSsoCallback, rememberClerkReturnUrl, clerkReturnUrlStorageKey,
+  } = await importBundle(new URL('../src/components/auth/clerk-signin.ts', import.meta.url));
+  assert.equal(clerkSsoCallbackPath, '/sso-callback/');
+  assert.deepEqual(ssoCallbackHandlerProps(), {
+    transferable: true,
+    signInFallbackRedirectUrl: '/',
+    signUpFallbackRedirectUrl: '/',
+  });
+  withPage(() => {
+    assert.equal(clerkSsoCallbackUrl(), 'https://example.test/sso-callback/');
+    assert.equal(isClerkSsoCallbackHref('https://example.test/sso-callback/', {href: currentPage, origin}), true);
+    assert.equal(isClerkSsoCallbackHref('/sso-callback', {href: currentPage, origin}), true);
+    assert.equal(isClerkSsoCallbackHref('https://example.test/docs/', {href: currentPage, origin}), false);
+    assert.equal(isClerkSsoCallbackHref('https://accounts.example.test/sign-in', {href: currentPage, origin}), false);
+  });
+
+  const calls = [];
+  const signIn = {
+    authenticateWithRedirect: async (params) => { calls.push(['redirect', params]); return params; },
+    authenticateWithPopup: async (params) => { calls.push(['popup', params]); return params; },
+    sso: async (params) => { calls.push(['sso', params]); return params; },
+  };
+  await withPage(() => {
+    installOAuthSsoCallback({client: {signIn, signUp: {}}});
+    return Promise.all([
+      signIn.authenticateWithRedirect({
+        strategy: 'oauth_github',
+        redirectUrl: 'https://accounts.example.test/sign-in/sso-callback',
+        redirectUrlComplete: currentPageWithoutHash,
+      }),
+      signIn.authenticateWithPopup({
+        popup: {name: 'oauth'},
+        redirectUrl: 'https://accounts.example.test/sign-in',
+      }),
+      signIn.sso({strategy: 'oauth_github', redirectCallbackUrl: '/sign-in', redirectUrl: currentPageWithoutHash}),
+    ]);
+  });
+  assert.deepEqual(calls, [
+    ['redirect', {
+      strategy: 'oauth_github',
+      redirectUrl: 'https://example.test/sso-callback/',
+      redirectUrlComplete: currentPageWithoutHash,
+    }],
+    ['popup', {popup: {name: 'oauth'}, redirectUrl: 'https://example.test/sso-callback/'}],
+    ['sso', {
+      strategy: 'oauth_github',
+      redirectCallbackUrl: 'https://example.test/sso-callback/',
+      redirectUrl: currentPageWithoutHash,
+    }],
+  ]);
+
+  const replaced = [];
+  const session = memoryStorage();
+  const callbackLocation = {
+    href: 'https://example.test/sso-callback/?rotating_token_nonce=n',
+    origin,
+    replace: url => replaced.push(url),
+  };
+  rememberClerkReturnUrl({href: currentPage, origin}, session);
+  assert.equal(finishClerkSsoCallback(callbackLocation, session), 'return');
+  assert.deepEqual(replaced, [currentPage]);
+  assert.equal(session.getItem(clerkReturnUrlStorageKey), null);
+
+  replaced.length = 0;
+  assert.equal(finishClerkSsoCallback(callbackLocation, memoryStorage()), 'home');
+  assert.deepEqual(replaced, ['https://example.test/']);
+});
+
+test('auth session watcher transfers leftover GitHub OAuth after a Clerk listener tick', async () => {
+  const {watchClerkAuthSession} = await importBundle(
+    new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
+  );
+  const transfers = [];
+  const listeners = [];
+  let signIn = {status: 'complete'};
+  const clerk = {
+    client: {
+      get signIn() { return signIn; },
+      signUp: {
+        create: async (params) => {
+          transfers.push(params);
+          return {status: 'complete', createdSessionId: 'sess_github'};
+        },
+      },
+    },
+    setActive: async () => {},
+    openSignIn() {},
+    addListener(listener) {
+      listeners.push(listener);
+      return () => { listeners.length = 0; };
+    },
+  };
+  const previousWindow = globalThis.window;
+  globalThis.window = {location: {href: currentPage, origin}, opener: null};
+  try {
+    const stop = watchClerkAuthSession(clerk, false);
+    assert.equal(listeners.length, 1);
+    assert.deepEqual(transfers, []);
+    signIn = {
+      status: 'needs_identifier',
+      identifier: null,
+      firstFactorVerification: {status: 'transferable', error: {code: 'external_account_not_found'}},
+    };
+    listeners[0]();
+    await Promise.resolve();
+    await Promise.resolve();
+    assert.deepEqual(transfers, [{transfer: true}]);
+    stop();
+    assert.equal(listeners.length, 0);
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
+});
+
+test('SsoCallback hydrates AuthenticateWithRedirectCallback for first-time transfer', async () => {
+  globalThis.__ssoCallbackFixture = {callbacks: [], auth: {isLoaded: true, isSignedIn: false}};
+  const {default: SsoCallback} = await importBundle(
+    new URL('../src/components/auth/SsoCallback.tsx', import.meta.url),
+    [{
+      name: 'sso-callback-fixture',
+      setup(build) {
+        build.onResolve({filter: /^@clerk\/react$/}, () => ({path: 'clerk', namespace: 'sso-callback-fixture'}));
+        build.onLoad({filter: /.*/, namespace: 'sso-callback-fixture'}, () => ({
+          contents: `
+            export function useAuth() { return globalThis.__ssoCallbackFixture.auth; }
+            export function useClerk() { return {}; }
+            export function ClerkProvider({children}) { return children; }
+            export function ClerkLoaded({children}) { return children; }
+            export function ClerkLoading() { return null; }
+            export function ClerkFailed() { return null; }
+            export function AuthenticateWithRedirectCallback(props) {
+              globalThis.__ssoCallbackFixture.callbacks.push(props);
+              return null;
+            }
+          `,
+        }));
+      },
+    }],
+    {'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify('pk_test_fixture')},
+  );
+  const previousWindow = globalThis.window;
+  globalThis.window = {location: {href: 'https://example.test/sso-callback/', origin}};
+  try {
+    const html = renderToStaticMarkup(createElement(SsoCallback));
+    assert.match(html, /正在完成登录/);
+    assert.equal(globalThis.__ssoCallbackFixture.callbacks.length, 1);
+    assert.deepEqual(globalThis.__ssoCallbackFixture.callbacks[0], {
+      transferable: true,
+      signInFallbackRedirectUrl: '/',
+      signUpFallbackRedirectUrl: '/',
+    });
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+    delete globalThis.__ssoCallbackFixture;
+  }
 });
 
 test('return URL helper stores, reads, clears and restores only same-origin pages', async () => {
@@ -399,7 +562,7 @@ test('SignInPanel modal entry spreads the shared sign-in-or-up options', async (
     const props = globalThis.__clerkSignInFixture.buttons[0];
     assert.equal(props.mode, 'modal');
     assert.equal(props.withSignUp, true);
-    assert.equal(props.oauthFlow, 'popup');
+    assert.equal(props.oauthFlow, 'redirect');
     assert.equal(props.forceRedirectUrl, currentPageWithoutHash);
     assert.equal(props.signUpForceRedirectUrl, currentPageWithoutHash);
     assert.equal(session.getItem(clerkReturnUrlStorageKey), null,
@@ -466,11 +629,13 @@ test('every production SignInButton and openSignIn entry uses the shared sign-in
     'src/components/auth/clerk-signin.ts',
     'src/components/auth/ClerkSignInButton.tsx',
     'src/components/auth/BlogClerkProvider.tsx',
+    'src/components/auth/SsoCallback.tsx',
     'src/components/auth/GoogleOneTapPrompt.tsx',
     'src/components/auth/SignInPanel.tsx',
     'src/components/auth/AccountButton.tsx',
     'src/components/comments/CommentsRoot.tsx',
     'src/components/reader/BookmarkButton.tsx',
+    'src/pages/sso-callback.astro',
   ];
   const sources = Object.fromEntries(await Promise.all(files.map(async file => [file, await readFile(file, 'utf8')])));
   const callers = [
@@ -480,14 +645,18 @@ test('every production SignInButton and openSignIn entry uses the shared sign-in
     sources['src/components/reader/BookmarkButton.tsx'],
   ].join('\n');
   assert.match(sources['src/components/auth/clerk-signin.ts'], /withSignUp:\s*true/);
-  assert.match(sources['src/components/auth/clerk-signin.ts'], /oauthFlow:\s*'popup'/);
-  assert.doesNotMatch(sources['src/components/auth/clerk-signin.ts'], /oauthFlow:\s*'redirect' as const/);
+  assert.match(sources['src/components/auth/clerk-signin.ts'], /oauthFlow:\s*'redirect' as const/);
+  assert.doesNotMatch(sources['src/components/auth/clerk-signin.ts'], /oauthFlow:\s*'popup' as const/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /transferable:\s*true/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /rememberClerkReturnUrl\(\)/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /continuation:\s*'transfer_to_sign_up'/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /googleOneTapRejectedNeedsSignUp/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /clerkjs/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /completePendingOAuthTransfer/);
+  assert.match(sources['src/components/auth/clerk-signin.ts'], /clerkSsoCallbackPath = '\/sso-callback\/'/);
+  assert.match(sources['src/components/auth/clerk-signin.ts'], /installOAuthSsoCallback/);
+  assert.match(sources['src/components/auth/clerk-signin.ts'], /watchClerkAuthSession/);
+  assert.match(sources['src/components/auth/clerk-signin.ts'], /addListener/);
   assert.match(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /\{...googleOneTapRedirect\(\)\}/);
   assert.match(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /installGoogleOneTapSignInOrUp\(clerk\)/);
   assert.doesNotMatch(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /rememberClerkReturnUrl\(\)/);
@@ -496,12 +665,17 @@ test('every production SignInButton and openSignIn entry uses the shared sign-in
   assert.match(sources['src/components/auth/ClerkSignInButton.tsx'], /onPointerDownCapture=\{\(\) => rememberClerkReturnUrl\(window\.location\)\}/);
   assert.doesNotMatch(sources['src/components/auth/ClerkSignInButton.tsx'], /onClickCapture=\{rememberClerkReturnUrl\}/);
   assert.doesNotMatch(sources['src/components/auth/ClerkSignInButton.tsx'], /onPointerDownCapture=\{rememberClerkReturnUrl\}/);
-  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /restoreClerkReturnUrl\(\)/);
-  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /completePendingOAuthTransfer\(clerk\)\.catch/);
-  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /leftover transferable sign-in/);
+  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /watchClerkAuthSession\(clerk, Boolean\(isSignedIn\)\)/);
+  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /leftover/);
   assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /clerkForceRedirectUrl\(\)/);
   assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /afterSignOutUrl=\{currentPage\}/);
   assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /const currentPage = window\.location\.href/);
+  assert.match(sources['src/components/auth/SsoCallback.tsx'], /AuthenticateWithRedirectCallback/);
+  assert.match(sources['src/components/auth/SsoCallback.tsx'], /ssoCallbackHandlerProps\(\)/);
+  assert.match(sources['src/components/auth/SsoCallback.tsx'], /finishClerkSsoCallback\(\)/);
+  assert.match(sources['src/pages/sso-callback.astro'], /SsoCallback client:load/);
+  assert.doesNotMatch(sources['src/pages/sso-callback.astro'], /\/sign-in/);
+  await assert.rejects(readFile(new URL('../src/pages/sign-in.astro', import.meta.url)), {code: 'ENOENT'});
   assert.match(sources['src/components/auth/clerk-signin.ts'], /from '@clerk\/shared\/types'/);
   assert.doesNotMatch(sources['src/components/auth/clerk-signin.ts'], /strategy\?: string/);
   assert.doesNotMatch(sources['src/components/auth/clerk-signin.ts'], /setAttribute\('hidden'/);

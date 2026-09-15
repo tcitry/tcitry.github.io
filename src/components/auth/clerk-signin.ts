@@ -141,6 +141,117 @@ export function clerkForceRedirectUrl(location: ReturnUrlLocation = window.locat
   }
 }
 
+export const clerkSsoCallbackPath = '/sso-callback/';
+
+export function clerkSsoCallbackUrl(location: ReturnUrlLocation = window.location) {
+  return resolveSameOriginReturnUrl(clerkSsoCallbackPath, location) || clerkSsoCallbackPath;
+}
+
+export function isClerkSsoCallbackHref(candidate: string, location: ReturnUrlLocation) {
+  try {
+    const {origin} = locationContext(location);
+    const url = new URL(candidate, origin);
+    const path = url.pathname.endsWith('/') ? url.pathname : `${url.pathname}/`;
+    return path === clerkSsoCallbackPath;
+  } catch {
+    return false;
+  }
+}
+
+export function ssoCallbackHandlerProps() {
+  return {
+    transferable: true as const,
+    signInFallbackRedirectUrl: '/',
+    signUpFallbackRedirectUrl: '/',
+  };
+}
+
+function withSiteSsoCallback(params: unknown, method: string) {
+  const next = params && typeof params === 'object' ? {...params as Record<string, unknown>} : {};
+  const callback = clerkSsoCallbackUrl();
+  if (method === 'sso') {
+    next.redirectCallbackUrl = callback;
+    return next;
+  }
+  next.redirectUrl = callback;
+  return next;
+}
+
+const oauthPatchedMethods = new WeakSet<object>();
+
+function patchOAuthRedirectMethod(resource: object, name: string) {
+  const current = (resource as Record<string, unknown>)[name];
+  if (typeof current !== 'function' || oauthPatchedMethods.has(current)) return;
+  const wrapped = function patchedOAuthRedirect(this: unknown, params?: unknown, ...rest: unknown[]) {
+    return current.call(this, withSiteSsoCallback(params, name), ...rest);
+  };
+  oauthPatchedMethods.add(wrapped);
+  (resource as Record<string, unknown>)[name] = wrapped;
+}
+
+function installOAuthSsoCallbackOnResource(resource: unknown) {
+  if (!resource || typeof resource !== 'object') return;
+  for (const name of ['authenticateWithRedirect', 'authenticateWithPopup', 'sso']) {
+    patchOAuthRedirectMethod(resource, name);
+  }
+}
+
+export function installOAuthSsoCallback(clerk: object | null | undefined) {
+  for (const target of googleOneTapClerkTargets(clerk)) {
+    const client = (target as {client?: {signIn?: unknown; signUp?: unknown}}).client;
+    installOAuthSsoCallbackOnResource(client?.signIn);
+    installOAuthSsoCallbackOnResource(client?.signUp);
+  }
+}
+
+function unsubscribeClerkListener(result: unknown) {
+  if (typeof result === 'function') return result as () => void;
+  if (result && typeof result === 'object' && typeof (result as {unsubscribe?: unknown}).unsubscribe === 'function') {
+    return () => (result as {unsubscribe: () => void}).unsubscribe();
+  }
+  return () => undefined;
+}
+
+export function watchClerkAuthSession(clerk: LoadedClerk, isSignedIn: boolean) {
+  installOAuthSsoCallback(clerk);
+  if (isSignedIn) {
+    restoreClerkReturnUrl();
+    return () => undefined;
+  }
+  void completePendingOAuthTransfer(clerk).catch(() => undefined);
+  const host = clerk as LoadedClerk & {addListener?: (listener: () => void) => unknown};
+  if (typeof host.addListener !== 'function') return () => undefined;
+  return unsubscribeClerkListener(host.addListener(() => {
+    installOAuthSsoCallback(clerk);
+    void completePendingOAuthTransfer(clerk).catch(() => undefined);
+  }));
+}
+
+function popupShouldClose() {
+  try {
+    return typeof window !== 'undefined' && Boolean(window.opener) && !window.opener.closed;
+  } catch {
+    return false;
+  }
+}
+
+export function finishClerkSsoCallback(
+  location: ReturnUrlLocation = window.location,
+  storage?: ReturnUrlStorage | null,
+) {
+  if (popupShouldClose()) {
+    try { window.close(); } catch { /* popup close can be blocked */ }
+    return 'popup';
+  }
+  if (restoreClerkReturnUrl(location, storage)) return 'return';
+  if (!isClerkSsoCallbackHref(location.href, location)) return false;
+  const origin = location.origin || new URL(location.href).origin;
+  const home = `${origin}/`;
+  if (typeof location.replace === 'function') location.replace(home);
+  else (location as {href: string}).href = home;
+  return 'home';
+}
+
 export function panelClerkRedirect() {
   const currentPage = clerkForceRedirectUrl();
   return {
@@ -149,11 +260,10 @@ export function panelClerkRedirect() {
     // Combined sign-in-or-up: first-time GitHub/Google OAuth must transfer into
     // sign-up to create an account instead of Account Portal external_account_not_found.
     withSignUp: true,
-    // Account Portal /sign-in is not sign-in-or-up and cannot transfer.
-    // Full-page redirect never returns to the site for first-time GitHub
-    // (lands on pure /sign-in with external_account_not_found), so keep
-    // GitHub/Google in a popup so transfer runs in this modal.
-    oauthFlow: 'popup' as const,
+    // Modal is still the login shell. OAuth itself is a full-page redirect whose
+    // redirectUrl is rewritten to the app-hosted /sso-callback/, so first-time
+    // GitHub finishes on-site (Account Portal pure /sign-in cannot transfer).
+    oauthFlow: 'redirect' as const,
   };
 }
 
