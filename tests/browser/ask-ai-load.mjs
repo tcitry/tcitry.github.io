@@ -169,31 +169,34 @@ try {
     'A React mount failure remains visible to monitoring');
 
   mode = 'missing';
+  await page.evaluate(() => sessionStorage.removeItem('blog-assistant-ui'));
   await page.reload();
   await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
-  let staleLoads = 0;
-  const onStaleLoad = () => { staleLoads += 1; };
-  page.on('load', onStaleLoad);
-  try {
-    await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: '缺失 chunk 时应自动刷新'}})));
-    await page.waitForFunction(() => sessionStorage.getItem('blog-chat-stale-asset-reload') === '1');
-    await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
-    await page.waitForFunction(() => {
-      const panel = document.querySelector('#blog-chat-panel');
-      return panel instanceof HTMLDialogElement && !panel.open;
-    });
-    assert.equal(staleLoads, 1, 'A stale hashed assistant chunk reloads the document once');
-    assert.equal(await page.evaluate(() => (window.__featureErrors || []).length), 0, 'The auto reload must not report the replaced chunk');
+  const reloaded = page.waitForEvent('load');
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: '缺失 chunk 时应自动刷新'}})));
+  await reloaded;
+  assert.equal(await page.evaluate(() => sessionStorage.getItem('blog-chat-stale-asset-reload')), '1',
+    'A stale hashed assistant chunk marks a one-shot document reload');
+  await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
+  await page.waitForFunction(() => {
+    const panel = document.querySelector('#blog-chat-panel');
+    return panel instanceof HTMLDialogElement && !panel.open && sessionStorage.getItem('blog-assistant-ui') === null;
+  });
+  assert.equal(await page.evaluate(() => (window.__featureErrors || []).length), 0, 'The auto reload must not report the replaced chunk');
 
+  let extraLoads = 0;
+  const onExtraLoad = () => { extraLoads += 1; };
+  page.on('load', onExtraLoad);
+  try {
     await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: '刷新后仍缺失则提示'}})));
     await page.getByRole('status').filter({hasText: '若页面刚更新，请刷新后再试'}).waitFor();
     assert.equal(await page.getByRole('button', {name: '重新加载', exact: true}).isVisible(), true);
     assert.equal(await page.getByRole('button', {name: '刷新页面', exact: true}).isVisible(), true);
     assert.equal(await page.getByText('检查网络后重试').count(), 0, 'A missing chunk is not reported as a silent network failure');
-    assert.equal(staleLoads, 1, 'A second stale import shows refresh guidance instead of looping');
+    assert.equal(extraLoads, 0, 'A second stale import shows refresh guidance instead of looping');
     assert.equal(await page.evaluate(() => (window.__featureErrors || []).length), 0, 'Refresh guidance must not captureException');
   } finally {
-    page.off('load', onStaleLoad);
+    page.off('load', onExtraLoad);
   }
 
   await page.addInitScript(() => {
