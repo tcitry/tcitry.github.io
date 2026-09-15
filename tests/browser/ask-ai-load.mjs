@@ -20,6 +20,7 @@ const bundle = await build({
 });
 const loader = bundle.outputFiles[0].text;
 const successChunk = `export function mountChat(host, onClose, onReady) {
+  window.__chatMounts = (window.__chatMounts || 0) + 1;
   host.replaceChildren();
   const workspace = document.createElement('div');
   workspace.className = 'assistant-workspace';
@@ -163,6 +164,20 @@ try {
   });
   assert.equal(await page.getByText('若页面刚更新，请刷新后再试').count(), 0, 'A restored load failure must not block reading');
   assert.equal(await page.locator('[data-chat-launcher]').getAttribute('aria-expanded'), 'false');
+  assert.equal(await page.evaluate(() => {
+    const panel = document.querySelector('#blog-chat-panel');
+    return panel instanceof HTMLElement && panel.contains(document.activeElement);
+  }), false, 'Quiet restore dismiss must not leave keyboard focus in the hidden panel');
+
+  mode = 'ok';
+  await page.locator('[data-chat-launcher]').click();
+  await page.locator('.assistant-workspace').waitFor();
+  assert.equal(await page.evaluate(() => window.__chatMounts), 1);
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => document.querySelector('#blog-chat-panel')?.open !== true);
+  await page.locator('[data-chat-launcher]').click();
+  await page.locator('.assistant-workspace').waitFor();
+  assert.equal(await page.evaluate(() => window.__chatMounts), 1, 'A later close/reopen must keep the healthy mount after a mount-less quiet dismiss');
 
   mode = 'ok';
   await page.setViewportSize({width: 320, height: 720});
