@@ -674,6 +674,7 @@ test('every production SignInButton and openSignIn entry uses the shared sign-in
   assert.match(sources['src/components/auth/SsoCallback.tsx'], /ssoCallbackHandlerProps\(\)/);
   assert.match(sources['src/components/auth/SsoCallback.tsx'], /finishClerkSsoCallback\(\)/);
   assert.match(sources['src/pages/sso-callback.astro'], /SsoCallback client:only="react"/);
+  assert.match(sources['src/pages/sso-callback.astro'], /slot="fallback"/);
   assert.doesNotMatch(sources['src/pages/sso-callback.astro'], /<SsoCallback client:load/);
   assert.doesNotMatch(sources['src/pages/sso-callback.astro'], /\/sign-in/);
   await assert.rejects(readFile(new URL('../src/pages/sign-in.astro', import.meta.url)), {code: 'ENOENT'});
