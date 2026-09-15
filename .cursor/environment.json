@@ -1,0 +1,17 @@
+{
+  "name": "tcitry-blog",
+  "install": "npm ci --include=dev --prefer-offline --no-audit --no-fund && bash .cursor/setup-demo-content.sh",
+  "terminals": [
+    {
+      "name": "astro-dev",
+      "command": "BLOG_DIR=\"$HOME/Blog\" npm run dev",
+      "description": "Astro dev server for tcitry-blog on http://127.0.0.1:4321 using scaffolded demo BLOG_DIR content."
+    }
+  ],
+  "ports": [
+    {
+      "name": "astro-dev",
+      "port": 4321
+    }
+  ]
+}
