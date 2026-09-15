@@ -92,7 +92,11 @@ async function openPage(browser, mode) {
       : {load() {}};
   }, mode);
   await page.goto(base);
-  await page.waitForFunction(() => window.__islandsReady === true);
+  await page.waitForFunction(() => (
+    window.__islandsReady === true
+    && window.__clerkProviders === 3
+    && Boolean(document.querySelector('[data-island="comments"]'))
+  ));
   return {page, errors};
 }
 
