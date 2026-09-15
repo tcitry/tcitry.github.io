@@ -9,7 +9,7 @@ import ServiceBoundary from '../../src/components/auth/ServiceBoundary';
 // needed because this fixture never instantiates those services.
 type Mode = 'healthy' | 'transient' | 'persistent' | 'asset-failure';
 type AssetErrorStyle = 'chromium' | 'webkit' | 'firefox';
-type Options = {mode?: Mode; resetKey?: string; autoRetryDelayMs?: number; canClose?: boolean; assetErrorStyle?: AssetErrorStyle};
+type Options = {mode?: Mode; resetKey?: string; autoRetryDelayMs?: number; canClose?: boolean; assetErrorStyle?: AssetErrorStyle; dismissOnFailure?: boolean};
 const privateError = 'fixture-private-service-detail';
 const privateChunkURL = 'https://assets.example.com/_astro/private-fixture-chunk.js?session=fixture-secret';
 const assetErrors = {
@@ -17,7 +17,7 @@ const assetErrors = {
   webkit: `Importing a module script failed: ${privateChunkURL}`,
   firefox: `error loading dynamically imported module: ${privateChunkURL}`,
 };
-const stats = {caught: 0, renders: 0, mounts: 0, unmounts: 0, closes: 0, timerFired: 0, timerCleared: 0, lazyLoads: 0};
+const stats = {caught: 0, renders: 0, mounts: 0, unmounts: 0, closes: 0, dismisses: 0, timerFired: 0, timerCleared: 0, lazyLoads: 0};
 const warnings: unknown[][] = [];
 const nativeWarn = console.warn.bind(console);
 console.warn = (...args: unknown[]) => {
@@ -28,7 +28,7 @@ const bootId = crypto.randomUUID();
 const trackedTimers = new Set<number>();
 const nativeTimeout = window.setTimeout.bind(window);
 const nativeClearTimeout = window.clearTimeout.bind(window);
-let options: Required<Options> = {mode: 'healthy', resetKey: 'view-a', autoRetryDelayMs: 347, canClose: true, assetErrorStyle: 'chromium'};
+let options: Required<Options> = {mode: 'healthy', resetKey: 'view-a', autoRetryDelayMs: 347, canClose: true, assetErrorStyle: 'chromium', dismissOnFailure: false};
 let failing = false;
 let online = true;
 let visibility: DocumentVisibilityState = 'visible';
@@ -66,6 +66,8 @@ function render() {
   flushSync(() => root!.render(<ServiceBoundary
     resetKey={options.resetKey}
     autoRetryDelayMs={options.autoRetryDelayMs}
+    shouldDismissFailure={options.dismissOnFailure ? () => true : undefined}
+    onDismissFailure={options.dismissOnFailure ? () => {stats.dismisses++;} : undefined}
     onClose={options.canClose ? () => {stats.closes++; root?.unmount(); root = undefined;} : undefined}
   >{LazyService ? <Suspense fallback={<p role="status">正在加载功能</p>}><LazyService /></Suspense> : <Service />}</ServiceBoundary>));
 }
@@ -74,9 +76,9 @@ Object.assign(window, {__serviceBoundary: {
   bootId,
   mount(next: Options = {}) {
     if (root) {flushSync(() => root?.unmount()); root = undefined;}
-    Object.assign(stats, {caught: 0, renders: 0, mounts: 0, unmounts: 0, closes: 0, timerFired: 0, timerCleared: 0, lazyLoads: 0});
+    Object.assign(stats, {caught: 0, renders: 0, mounts: 0, unmounts: 0, closes: 0, dismisses: 0, timerFired: 0, timerCleared: 0, lazyLoads: 0});
     warnings.length = 0;
-    options = {mode: 'healthy', resetKey: 'view-a', autoRetryDelayMs: 347, canClose: true, assetErrorStyle: 'chromium', ...next};
+    options = {mode: 'healthy', resetKey: 'view-a', autoRetryDelayMs: 347, canClose: true, assetErrorStyle: 'chromium', dismissOnFailure: false, ...next};
     failing = options.mode !== 'healthy';
     // Keep this same lazy type across boundary retries. React itself caches the
     // rejected import promise, as it does for a missing deployed asset chunk.

@@ -212,6 +212,19 @@ try {
     assert.equal(await page.locator('#root').textContent(), '');
   }
   assert.equal(documents, 1, 'Service retries, asset failures and closing never reload implicitly');
+  await mount(page, {mode: 'persistent', dismissOnFailure: true});
+  await waitCaught(page, 1);
+  assert.equal(await page.getByRole('alert').count(), 0, 'A quiet dismiss does not show blocking service chrome');
+  assert.equal(await page.getByRole('heading', {name: '此功能暂时无法打开', exact: true}).count(), 0);
+  assert.equal((await snapshot(page)).dismisses, 1);
+  assert.equal((await snapshot(page)).closes, 0, 'Quiet dismiss does not use the visible close control');
+  await recoveryEvents(page);
+  await page.waitForTimeout(pauseForRetry);
+  assert.equal((await snapshot(page)).caught, 1, 'Quiet dismiss does not schedule an automatic retry');
+  assert.equal((await snapshot(page)).pendingTimers, 0);
+  assert.equal(await page.getByRole('textbox', {name: '页面草稿', exact: true}).inputValue(), '手动恢复前的页面内容');
+  console.log('Service boundary: quiet dismiss hides chrome, preserves the page, and does not retry in the background.');
+
   await mount(page, {mode: 'asset-failure'});
   await waitCaught(page, 1);
   await assertFallback(page, true);

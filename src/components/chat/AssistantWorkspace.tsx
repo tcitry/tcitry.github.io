@@ -29,11 +29,16 @@ interface WorkspaceProps {
   onClose: () => void; onReady: () => void; pathname?: string; title?: string;
   initialView?: AssistantView; onViewChange?: (view: AssistantView) => void;
   requestedPrompt?: ChatPromptRequest; onPromptConsumed?: (id: string) => void;
+  shouldDismissFailure?: () => boolean; onDismissFailure?: () => void;
 }
-function ServiceView({children}: {children: ReactNode}) {
-  return <ServiceBoundary><Suspense fallback={<AuthLoading label="正在加载…" />}>{children}</Suspense></ServiceBoundary>;
+function ServiceView({children, shouldDismissFailure, onDismissFailure}: {
+  children: ReactNode; shouldDismissFailure?: () => boolean; onDismissFailure?: () => void;
+}) {
+  return <ServiceBoundary shouldDismissFailure={shouldDismissFailure} onDismissFailure={onDismissFailure}>
+    <Suspense fallback={<AuthLoading label="正在加载…" />}>{children}</Suspense>
+  </ServiceBoundary>;
 }
-function WorkspaceContent({onClose, onReady, view, myOpened, selectView, requestedPrompt, onPromptConsumed}: WorkspaceProps & {
+function WorkspaceContent({onClose, onReady, view, myOpened, selectView, requestedPrompt, onPromptConsumed, shouldDismissFailure, onDismissFailure}: WorkspaceProps & {
   view: AssistantView; myOpened: boolean; selectView: (view: AssistantView) => void;
 }) {
   const {isLoaded} = useAuth();
@@ -51,6 +56,7 @@ function WorkspaceContent({onClose, onReady, view, myOpened, selectView, request
     if (view === 'admin' && !isLoading && (!isAuthenticated || role?.isAdmin === false)) selectView('consult');
   }, [view, isLoading, isAuthenticated, role?.isAdmin, selectView]);
   useEffect(() => {tabRail.current?.querySelector('[aria-checked="true"]')?.scrollIntoView({block: 'nearest', inline: 'nearest'});}, [activeView]);
+  const dismiss = {shouldDismissFailure, onDismissFailure};
 
   return <div ref={setTooltipContainer} className={`${surface.surface} assistant-workspace`} data-book-island>
     <div className="assistant-workspace__edge-actions" role="group" aria-label="侧栏操作">
@@ -90,15 +96,15 @@ function WorkspaceContent({onClose, onReady, view, myOpened, selectView, request
     </nav>
     <div className="assistant-workspace__view">
       <ConvexAuthGate>
-          <div className="assistant-workspace__service" hidden={activeView !== 'chat'}><ServiceView><AgentChat requestedPrompt={activeView === 'chat' ? requestedPrompt : undefined} onPromptConsumed={onPromptConsumed} /></ServiceView></div>
-          {activeView === 'consult' && <ServiceView><ConsultationsPanel key={notificationThread ?? 'consultations'} initialThreadId={notificationThread ?? undefined} /></ServiceView>}
-          {activeView === 'admin' && isAuthor && <ServiceView><ConsultationInbox /></ServiceView>}
-          {activeView === 'messages' && <div className="assistant-workspace__reader"><ServiceView><NotificationsPanel onOpenConsultation={threadId => {
+          <div className="assistant-workspace__service" hidden={activeView !== 'chat'}><ServiceView {...dismiss}><AgentChat requestedPrompt={activeView === 'chat' ? requestedPrompt : undefined} onPromptConsumed={onPromptConsumed} /></ServiceView></div>
+          {activeView === 'consult' && <ServiceView {...dismiss}><ConsultationsPanel key={notificationThread ?? 'consultations'} initialThreadId={notificationThread ?? undefined} /></ServiceView>}
+          {activeView === 'admin' && isAuthor && <ServiceView {...dismiss}><ConsultationInbox /></ServiceView>}
+          {activeView === 'messages' && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><NotificationsPanel onOpenConsultation={threadId => {
             setNotificationThread(threadId);
             selectView('consult');
           }} /></ServiceView></div>}
           <div className="assistant-workspace__personal" hidden={activeView !== 'my'}>
-            {myOpened && <div className="assistant-workspace__reader"><ServiceView><MyPanel /></ServiceView></div>}
+            {myOpened && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><MyPanel /></ServiceView></div>}
           </div>
       </ConvexAuthGate>
     </div>
@@ -131,7 +137,7 @@ function Workspace(props: WorkspaceProps) {
     if (requestedPrompt) selectView('chat');
     else if (props.requestedPrompt && promptOwner.current?.cancelled) props.onPromptConsumed?.(props.requestedPrompt.id);
   }, [requestedPrompt?.id, props.requestedPrompt?.id, props.onPromptConsumed, selectView]);
-  return <ConvexSession onErrorClose={props.onClose}>
+  return <ConvexSession onErrorClose={props.onClose} shouldDismissFailure={props.shouldDismissFailure} onDismissFailure={props.onDismissFailure}>
     <WorkspaceContent {...props} requestedPrompt={requestedPrompt} view={view} myOpened={myOpened} selectView={selectView} />
   </ConvexSession>;
 }
