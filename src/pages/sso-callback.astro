@@ -7,7 +7,7 @@ import SsoCallback from '../components/auth/SsoCallback';
 ---
 <AuthCallbackLayout>
   <SsoCallback client:only="react">
-    <p slot="fallback" role="status">正在完成登录…</p>
+    <p slot="fallback" role="status">Completing sign-in…</p>
   </SsoCallback>
-  <noscript><p>完成 GitHub 或 Google 登录需要启用 JavaScript。<a href="/">返回首页</a></p></noscript>
+  <noscript><p>JavaScript is required to complete sign-in. Enable it, then try again from the original page.</p></noscript>
 </AuthCallbackLayout>

@@ -13,6 +13,7 @@ function SsoCallbackBody() {
   const finished = useRef(false);
   const callbackUrl = clerkSsoCallbackUrl();
   const activeSessionId = session?.status === 'active' && !session.currentTask ? session.id : null;
+  const isPopup = Boolean(window.opener && !window.opener.closed);
 
   useEffect(() => {
     const onHashChange = () => setContinuation(window.location.hash.startsWith('#/'));
@@ -22,7 +23,7 @@ function SsoCallbackBody() {
   useEffect(() => {
     if (!activeSessionId || finished.current) return;
     setError('');
-    const cleanup = notifyClerkPopupComplete(activeSessionId, () => setError('登录已完成，但原页面尚未同步，请重试。'));
+    const cleanup = notifyClerkPopupComplete(activeSessionId, () => setError("You're signed in, but we couldn't update the original page. Please try again."));
     if (cleanup) return cleanup;
     finished.current = true;
     finishClerkSsoCallback();
@@ -41,7 +42,7 @@ function SsoCallbackBody() {
       window.history.replaceState(null, '', next.href);
       if (mounted) setContinuation(true);
     }).catch(() => {
-      if (mounted) setError('登录未能完成，请关闭此窗口并从原页面重试。');
+      if (mounted) setError("We couldn't complete sign-in. Please return to the original page and try again.");
     });
     return () => { mounted = false; };
   }, [clerk, activeSessionId, continuation, callbackUrl]);
@@ -51,20 +52,21 @@ function SsoCallbackBody() {
   }
   return <div data-clerk-sso-callback>
     <div id="clerk-captcha" />
-    <p role="status">{activeSessionId ? '登录完成，正在同步原页面…' : '正在完成登录…'}</p>
+    {!error && <p role="status">{activeSessionId
+      ? isPopup ? 'Signed in. This window will close automatically.' : 'Signed in. Returning to your page…'
+      : 'Completing sign-in…'}</p>}
     {error && <p role="alert">{error}</p>}
-    {error && activeSessionId && <button type="button" onClick={() => setRetry(value => value + 1)}>重试同步</button>}
-    <p><a href="/">返回首页</a></p>
+    {error && activeSessionId && <button type="button" onClick={() => setRetry(value => value + 1)}>Retry</button>}
   </div>;
 }
 
 export default function SsoCallback() {
   if (!clerkPublishableKey()) {
-    return <p role="alert">登录服务未配置。<a href="/">返回首页</a></p>;
+    return <p role="alert">Sign-in is unavailable. Please return to the original page and try again later.</p>;
   }
   return <BlogClerkProvider>
-    <ClerkLoading><p role="status">正在连接登录服务…</p></ClerkLoading>
-    <ClerkFailed><p role="alert">登录服务暂时无法连接，请稍后重试。<a href="/">返回首页</a></p></ClerkFailed>
+    <ClerkLoading><p role="status">Connecting to sign-in…</p></ClerkLoading>
+    <ClerkFailed><p role="alert">We couldn't connect to sign-in. Please return to the original page and try again.</p></ClerkFailed>
     <ClerkLoaded>
       <SsoCallbackBody />
     </ClerkLoaded>

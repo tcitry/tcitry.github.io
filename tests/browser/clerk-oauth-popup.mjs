@@ -111,6 +111,7 @@ try {
         await popup.getByRole('textbox', {name: '用户名'}).fill('public-reader');
         assert.equal(new URL(popup.url()).origin, base);
         assert.equal(new URL(popup.url()).pathname, '/sso-callback/');
+        assert.equal(await popup.locator('a[href="/"]').count(), 0, 'The popup does not offer a Home link');
         assert.equal(await testCase.page.getByRole('textbox', {name: '用户名'}).count(), 0, 'Profile completion belongs to the popup');
         await assertParentStable(testCase, false);
         await popup.getByRole('button', {name: '完成注册', exact: true}).click();
@@ -157,12 +158,15 @@ try {
     await retrySync.page.evaluate(() => { window.__fixtureRejectReload = true; });
     const {popup} = await openPopup(retrySync);
     await popup.getByRole('button', {name: '授权 GitHub', exact: true}).click();
-    await popup.getByRole('button', {name: '重试同步', exact: true}).waitFor();
+    await popup.getByRole('button', {name: 'Retry', exact: true}).waitFor();
+    assert.equal(await popup.getByRole('alert').textContent(), "You're signed in, but we couldn't update the original page. Please try again.");
+    assert.equal(await popup.getByRole('status').count(), 0, 'A failed sync must not also promise automatic closing');
+    assert.equal(await popup.locator('a[href="/"]').count(), 0, 'A completed popup must not direct the reader to Home');
     await assertParentStable(retrySync, false);
     assert.equal((await state(retrySync.page)).calls.filter(call => call.method === 'setActive' && call.pathname === '/article/').length, 0, 'Failed server refresh must not activate the parent');
     await retrySync.page.evaluate(() => { window.__fixtureRejectReload = false; });
     const closed = popup.waitForEvent('close');
-    await popup.getByRole('button', {name: '重试同步', exact: true}).click();
+    await popup.getByRole('button', {name: 'Retry', exact: true}).click();
     await closed;
     await assertParentStable(retrySync, true);
     assert.equal(transfers(await state(retrySync.page)).length, 1, 'Retrying session synchronization must not create another account');

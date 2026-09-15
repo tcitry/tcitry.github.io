@@ -342,12 +342,18 @@ test('SsoCallback renders transfer status or the combined continuation UI from c
     withPage(() => {
       globalThis.window.location.hash = '';
       const html = renderToStaticMarkup(createElement(SsoCallback));
-      assert.match(html, /正在完成登录/);
+      assert.match(html, /Completing sign-in…/);
       assert.match(html, /id="clerk-captcha"/);
+      assert.doesNotMatch(html, /<a\b[^>]*href="\/"/, 'The callback does not offer a Home detour');
       assert.equal(globalThis.__ssoCallbackFixture.signIns.length, 0);
       globalThis.__ssoCallbackFixture.session = {id: 'sess_active', status: 'active', currentTask: null};
       const completed = renderToStaticMarkup(createElement(SsoCallback));
-      assert.match(completed, /登录完成，正在同步原页面/);
+      assert.match(completed, /Signed in\. Returning to your page…/);
+      assert.doesNotMatch(completed, /<a\b[^>]*href="\/"/);
+      globalThis.window.opener = {closed: false};
+      const popupCompleted = renderToStaticMarkup(createElement(SsoCallback));
+      assert.match(popupCompleted, /Signed in\. This window will close automatically\./);
+      assert.doesNotMatch(popupCompleted, /<a\b[^>]*href="\/"/);
     }, 'https://example.test/sso-callback/');
     withPage(() => {
       globalThis.window.location.hash = '#/create/continue';
