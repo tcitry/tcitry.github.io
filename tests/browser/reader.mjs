@@ -79,7 +79,8 @@ try {
     assert.equal(await expand.getAttribute('aria-expanded'), 'true');
     assert.equal(await panel.getAttribute('aria-modal'), String(width < 640));
     assert.equal(await panel.evaluate(element => element.matches(':modal')), width < 640, 'Small screens use the native modal dialog; desktop remains docked');
-    assert.equal(await panel.evaluate(element => element.contains(document.activeElement)), true, 'Opening the panel moves keyboard focus into it');
+    assert.equal(await closeButton.evaluate(element => element.matches(':focus-visible')), false,
+      'Pointer open does not leave a keyboard focus ring on the collapse handle');
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `The open panel fits the ${width}px viewport`);
   };
   await panel.getByRole('radio', {name: '我的', exact: true}).click();

@@ -27,16 +27,15 @@ const chunk = `export function mountChat(host, onClose, onReady) {
   workspace.className = 'assistant-workspace';
   const close = document.createElement('button');
   close.type = 'button';
+  close.className = 'assistant-workspace__close';
   close.setAttribute('aria-label', '关闭博客助手');
   close.addEventListener('click', onClose);
-  const input = document.createElement('textarea');
-  input.setAttribute('aria-label', '向 AI 博客助手提问');
-  workspace.append(close, input);
+  workspace.append(close);
   host.append(workspace);
   queueMicrotask(onReady);
   return {requestPrompt() {}, destroy() { host.replaceChildren(); }};
 }`;
-const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><style>${css}</style></head><body>
+const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><style>:root{--color-link:#0055bb}</style><style>${css}</style></head><body>
   <div class="blog-chat-widget" data-blog-chat-widget>
     <button class="blog-chat-widget__launcher" type="button" aria-label="打开博客助手" aria-haspopup="dialog" aria-expanded="false" aria-controls="blog-chat-panel" data-chat-launcher hidden>打开<span class="blog-chat-widget__tooltip" aria-hidden="true">博客助手</span></button>
     <button class="blog-chat-widget__expand" type="button" aria-label="展开博客助手" aria-haspopup="dialog" aria-expanded="false" aria-controls="blog-chat-panel" data-chat-expand hidden>展开<span class="blog-chat-widget__tooltip" aria-hidden="true">展开侧栏</span></button>
@@ -80,6 +79,16 @@ try {
 
   await expand.click();
   await page.locator('.assistant-workspace').waitFor();
+  assert.equal(await close.evaluate(element => element.matches(':focus-visible')), false,
+    'Pointer expand does not leave a keyboard focus ring on the collapse handle');
+  assert.equal(await close.evaluate(element => {
+    element.setAttribute('data-focus-visible', 'true');
+    element.setAttribute('data-focus', 'true');
+    const style = getComputedStyle(element);
+    element.removeAttribute('data-focus-visible');
+    element.removeAttribute('data-focus');
+    return style.outlineStyle === 'none';
+  }), true, 'HeroUI data-focus leftover on the collapse handle does not paint a box');
   await close.click();
   await panel.waitFor({state: 'hidden'});
   assert.equal(await expand.evaluate(element => element.matches(':focus-visible')), false,

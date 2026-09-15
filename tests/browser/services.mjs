@@ -997,6 +997,12 @@ try {
       await readyClosed();
       await page.goBack(); await page.waitForURL(address('a')); await readyClosed();
       await expand.click(); await readyOpen('a');
+      assert.equal(await close.evaluate(element => element.matches(':focus-visible')), false,
+        'Pointer expand does not leave a keyboard focus ring on the collapse handle');
+      assert.equal(await close.evaluate(element => {
+        const style = getComputedStyle(element);
+        return style.outlineStyle === 'none' || style.outlineWidth === '0px';
+      }), true, 'Pointer expand does not paint a leftover outline on the HeroUI collapse handle');
       await tab(page, 'AI 对话').click(); await readyOpen('a', 'chat');
       await close.focus(); await page.keyboard.press('Enter'); await readyClosed();
       assert.equal(await expand.evaluate(element => document.activeElement === element && element.matches(':focus-visible')), true,
