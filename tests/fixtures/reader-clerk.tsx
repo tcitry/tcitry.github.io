@@ -43,7 +43,7 @@ export function useSession() {
 export function useClerk() {
   return {
     signOut: async () => switchSession(null, null),
-    redirectToSignIn: () => switchSession('fixture-a', 'session-a'),
+    openSignIn: () => switchSession('fixture-a', 'session-a'),
     openUserProfile: () => {},
   };
 }

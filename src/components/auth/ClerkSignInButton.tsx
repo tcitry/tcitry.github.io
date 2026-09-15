@@ -4,7 +4,7 @@ import {panelClerkRedirect} from './clerk-signin';
 
 export default function ClerkSignInButton({children}: {children: ReactNode}) {
   return (
-    <SignInButton mode="redirect" {...panelClerkRedirect()}>
+    <SignInButton mode="modal" {...panelClerkRedirect()}>
       {children}
     </SignInButton>
   );
