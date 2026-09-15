@@ -1,6 +1,6 @@
 import {createContext, useContext, useEffect, type ReactNode} from 'react';
 import {ClerkProvider, useAuth, useClerk} from '@clerk/react';
-import type {ClerkProp, HeadlessBrowserClerk} from '@clerk/react';
+import type {BrowserClerk, ClerkProp} from '@clerk/react';
 import {clerkForceRedirectUrl, completePendingOAuthTransfer, restoreClerkReturnUrl} from './clerk-signin';
 
 const BlogClerkTreeContext = createContext(false);
@@ -23,13 +23,21 @@ function ClerkAuthEffects() {
   return null;
 }
 
-function isLoadedClerk(value: unknown): value is HeadlessBrowserClerk {
-  return Boolean(value) && typeof (value as HeadlessBrowserClerk).load === 'function';
+// @clerk/react skips the UI chunk when ClerkProvider gets a Clerk prop.
+// window.Clerk often exists as a {load} stub before UI attaches, so .load is
+// not enough — passing that instance makes Google One Tap / SignIn throw
+// "Clerk was not loaded with Ui components".
+function isUiClerk(value: unknown): value is BrowserClerk {
+  if (!value || typeof value !== 'object') return false;
+  const clerk = value as BrowserClerk;
+  return typeof clerk.load === 'function'
+    && clerk.onComponentsReady != null
+    && clerk.components != null;
 }
 
 function loadedClerkInstance(): ClerkProp {
   const clerk = (window as Window & {Clerk?: unknown}).Clerk;
-  return isLoadedClerk(clerk) ? clerk : undefined;
+  return isUiClerk(clerk) ? clerk : undefined;
 }
 
 export default function BlogClerkProvider({children}: {children: ReactNode}) {
