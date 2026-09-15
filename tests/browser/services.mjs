@@ -1502,8 +1502,17 @@ try {
     await submit.click();
     await page.getByRole('alert').filter({hasText: '评论未能发布，你的文字和图片仍保留在这里，请稍后重试。'}).waitFor();
     const discardedImage = (await state(page)).commentImages.find(image => !image.attached).id;
-    await page.getByRole('button', {name: '移除图片 1', exact: true}).click();
+    const draftBody = await body.inputValue();
+    await page.evaluate(() => window.__services.failNextDiscard());
+    await page.locator('.blog-comments__composer').getByRole('button', {name: '取消', exact: true}).click();
+    await page.getByRole('alert').filter({hasText: '图片暂未移除，请稍后重试。'}).waitFor();
+    assert.equal(await body.inputValue(), draftBody, 'A failed cancel discard keeps the comment draft');
+    assert.equal(await page.getByRole('img', {name: '待发布图片 1', exact: true}).count(), 1, 'The uploaded draft stays visible after a failed discard');
+    assert.ok((await state(page)).commentImages.some(image => image.id === discardedImage && !image.attached), 'The unattached image remains until discard succeeds');
+    await page.locator('.blog-comments__composer').getByRole('button', {name: '取消', exact: true}).click();
     await page.waitForFunction(imageId => !window.__services.getState().commentImages.some(image => image.id === imageId), discardedImage);
+    assert.equal(await page.getByRole('img', {name: '待发布图片 1', exact: true}).count(), 0);
+    assert.equal(await body.inputValue(), '', 'A successful cancel retry clears the composer after discard');
     assert.equal((await state(page)).writes.filter(write => write.name === 'commentImages:discard').at(-1).args.imageId, discardedImage);
     await fileInput.setInputFiles(imageFile('image-only.png', 'portrait'));
     await submit.click();
@@ -1568,7 +1577,7 @@ try {
     await page.getByRole('button', {name: '登录 / 注册', exact: true}).click();
     await page.waitForFunction(() => document.activeElement?.id === 'comment-comment_initial');
     await assertClientCleanup(page);
-    console.log('Comments: public counts only while anonymous; authenticated article/comment likes, account username, safe replies and session isolation.');
+    console.log('Comments: public counts only while anonymous; authenticated article/comment likes, account username, safe replies, failed cancel discard retry and session isolation.');
   } finally {await context.close();}
   }
   assert.deepEqual(errors, [], 'No browser runtime errors');
