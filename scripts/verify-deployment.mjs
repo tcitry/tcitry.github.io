@@ -39,6 +39,35 @@ export function assertCanonical(html, route) {
   assert.equal(links[0].href, new URL(route, canonicalOrigin).href, `Canonical mismatch: ${route}`);
 }
 
+export function assertSsoCallback(html) {
+  assertCanonical(html, '/sso-callback/');
+  const robots = [...html.matchAll(/<meta\b[^>]*>/gi)].map(([tag]) => attributes(tag));
+  assert.ok(robots.some(tag => tag.name?.toLowerCase() === 'robots' && directives(tag.content).includes('noindex')), 'SSO callback must stay out of search indexes');
+  const islands = [...html.matchAll(/(<astro-island\b[^>]*>)([\s\S]*?)<\/astro-island\s*>/gi)]
+    .map(([, tag, body]) => ({attrs: attributes(tag), body}))
+    .filter(({attrs}) => {
+      try { return /(?:^|\/)SsoCallback(?:\.[^/]+)?\.js$/.test(new URL(attrs['component-url'], canonicalOrigin).pathname); }
+      catch { return false; }
+    });
+  assert.equal(islands.length, 1, 'SSO callback must hydrate one SsoCallback Astro island');
+  const {attrs, body} = islands[0];
+  assert.equal(attrs['component-export'], 'default', 'SSO callback must hydrate the SsoCallback component');
+  assert.equal(attrs.client, 'only', 'SSO callback must not SSR Clerk (window is undefined during prerender)');
+  // Astro also serializes fallback content inside a template. Only the visible
+  // status outside that template demonstrates usable pre-hydration content.
+  const visible = body.replace(/<template\b[^>]*>[\s\S]*?<\/template\s*>/gi, '').replace(/<!--[\s\S]*?-->/g, '');
+  const status = [...visible.matchAll(/<([a-z][\w:-]*)\b[^>]*>/gi)].some(match => {
+    if (attributes(match[0]).role !== 'status') return false;
+    const remainder = visible.slice(match.index + match[0].length);
+    const closing = new RegExp(`<\\/${match[1]}\\s*>`, 'i').exec(remainder);
+    if (!closing) return false;
+    const text = remainder.slice(0, closing.index).replace(/<[^>]*>/g, '').replace(/&nbsp;/gi, ' ');
+    return Boolean(decodeHTML(text).trim());
+  });
+  assert.ok(status, 'SSO callback must show a non-empty status fallback before hydration');
+  assert.doesNotMatch(html, /\bdata-pagefind-body\b/i, 'SSO callback is not article search corpus');
+}
+
 export function assertHtmlIndexing(html, environment, label) {
   assert.ok(modes.includes(environment), `Unknown verification environment: ${environment}`);
   const robots = [...html.matchAll(/<meta\b[^>]*>/gi)].map(([tag]) => attributes(tag)).filter(tag => /^(robots|googlebot|bingbot)$/i.test(tag.name || ''));
@@ -316,9 +345,7 @@ async function main() {
     assert.match(response.headers.get('content-type') || '', /text\/html/i, 'SSO callback content type');
     return response;
   });
-  assertCanonical(ssoCallback.body, '/sso-callback/');
-  assert.match(ssoCallback.body, /\bnoindex\b/, 'SSO callback must stay out of search indexes');
-  assert.match(ssoCallback.body, /正在完成登录/, 'SSO callback must render the transfer handler');
+  assertSsoCallback(ssoCallback.body);
   assertComments(ssoCallback.body, false, '/sso-callback/');
   const redirects = parseRedirects(redirectText);
   assert.ok(redirects.some(rule => rule.from === '/page/1/' && rule.to === '/'), 'Pagination redirect missing');

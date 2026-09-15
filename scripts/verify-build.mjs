@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { parseArgs } from 'node:util';
 import { parse, parseFragment } from 'parse5';
-import { assertCanonical, assertComments, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects } from './verify-deployment.mjs';
+import { assertCanonical, assertComments, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertSsoCallback, assertXMLSiteURLs, assetReferences, parseRedirects } from './verify-deployment.mjs';
 import { auditContentLinks } from './internal-links.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), output = path.join(root, 'dist');
 const { values } = parseArgs({ options: { env: { type: 'string' }, help: { type: 'boolean' } } });
@@ -190,13 +190,7 @@ for (const url of ['/chat/', '/me/']) {
 }
 await assert.rejects(access(htmlPath('/sign-in/')), {code: 'ENOENT'}, 'Must not generate a dedicated app /sign-in page');
 const ssoCallback = await readFile(path.join(output, 'sso-callback/index.html'), 'utf8');
-assertCanonical(ssoCallback, '/sso-callback/');
-assert.match(ssoCallback, /\bnoindex\b/, 'SSO callback must stay out of search indexes');
-assert.match(ssoCallback, /astro-island/, 'SSO callback must hydrate Clerk');
-assert.match(ssoCallback, /client="only"/, 'SSO callback must not SSR Clerk (window is undefined during prerender)');
-assert.match(ssoCallback, /<p role="status">Completing sign-in…<\/p>/, 'SSO callback must show Astro fallback before the island hydrates');
-assert.match(ssoCallback, /data-clerk-sso-callback|Completing sign-in/, 'SSO callback must render the transfer handler');
-assert.doesNotMatch(ssoCallback, /data-pagefind-body/, 'SSO callback is not article search corpus');
+assertSsoCallback(ssoCallback);
 assert.ok(!sitemap.includes('<loc>https://yindongliang.com/sso-callback/</loc>'), 'SSO callback must stay out of the sitemap');
 assertComments(ssoCallback, false, '/sso-callback/');
 for (const asset of assetReferences(ssoCallback, '/sso-callback/')) assets.add(asset);
