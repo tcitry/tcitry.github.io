@@ -169,6 +169,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
 
   async function removeImage(image: DraftImage) {
     if (pending) return;
+    setPending(true);
     try {
       if (image.imageId) await discard({imageId: image.imageId});
       if (!active.current) return;
@@ -176,6 +177,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
       imageCount.current -= 1;
       setImages(current => current.filter(item => item.key !== image.key));
     } catch {if (active.current) setError('图片暂未移除，请稍后重试。');}
+    finally {if (active.current) setPending(false);}
   }
 
   async function submitComment() {
@@ -242,14 +244,22 @@ export default function CommentThread({pathname}: {pathname: string}) {
 
   async function cancelComposer() {
     if (pending || usernamePending) return;
-    setReplyTo(null); setBody(''); setError(''); setNotice('');
-    const current = images;
-    imageCount.current = 0;
-    setImages([]);
-    for (const image of current) {
-      try {if (image.imageId) await discard({imageId: image.imageId});} catch {}
-      URL.revokeObjectURL(image.preview); previews.current.delete(image.preview);
-    }
+    setPending(true); setError(''); setNotice('');
+    const remaining: DraftImage[] = [];
+    try {
+      for (const image of images) {
+        try {
+          if (image.imageId) await discard({imageId: image.imageId});
+          if (!active.current) return;
+          URL.revokeObjectURL(image.preview); previews.current.delete(image.preview);
+          imageCount.current = Math.max(0, imageCount.current - 1);
+        } catch {remaining.push(image);}
+      }
+      if (!active.current) return;
+      setImages(remaining);
+      if (remaining.length) {setError('图片暂未移除，请稍后重试。'); return;}
+      setReplyTo(null); setBody('');
+    } finally {if (active.current) setPending(false);}
   }
 
   const loaded = new Set(results.map(comment => comment.id));
