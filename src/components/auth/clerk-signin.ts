@@ -1,3 +1,5 @@
+import type {LoadedClerk} from '@clerk/shared/types';
+
 type ClerkSignInProps = {
   forceRedirectUrl?: string;
   signUpForceRedirectUrl?: string;
@@ -184,6 +186,8 @@ export type GoogleOneTapAttempt = {
   firstFactorVerification?: GoogleOneTapVerification | null;
 };
 
+type SignUpCreate = Pick<LoadedClerk['client']['signUp'], 'create'>;
+
 type GoogleOneTapClerk = {
   authenticateWithGoogleOneTap: (params: {token: string}) => Promise<unknown>;
   handleGoogleOneTapCallback: (
@@ -193,9 +197,7 @@ type GoogleOneTapClerk = {
   ) => Promise<unknown>;
   client?: {
     signIn?: GoogleOneTapAttempt | null;
-    signUp?: {
-      create: (params: {transfer?: boolean; strategy?: string; token?: string}) => Promise<unknown>;
-    };
+    signUp?: SignUpCreate;
   };
 };
 
@@ -228,7 +230,7 @@ export function googleOneTapRejectedNeedsSignUp(error: unknown) {
 }
 
 export async function transferGoogleOneTapIfNeeded(
-  clerk: Pick<GoogleOneTapClerk, 'client'>,
+  clerk: {client?: {signUp?: SignUpCreate}},
   result: unknown,
   token?: string,
 ) {
@@ -245,25 +247,33 @@ export async function transferGoogleOneTapIfNeeded(
   return signUp.create({transfer: true});
 }
 
-type PendingOAuthClerk = Pick<GoogleOneTapClerk, 'client'> & {
-  openSignIn?: ClerkSignInOpener['openSignIn'];
-  setActive?: (params: {session: string}) => Promise<unknown>;
-};
-
 let pendingOAuthTransfer: Promise<boolean> | undefined;
 
 export function ensureClerkCaptchaElement(doc?: Document | null) {
   const root = doc === undefined ? (typeof document === 'undefined' ? null : document) : doc;
-  if (!root?.body || root.getElementById('clerk-captcha')) return false;
+  if (!root?.body) return false;
+  const existing = root.getElementById('clerk-captcha');
+  if (existing) {
+    // Interactive Turnstile cannot run in a display:none / hidden host.
+    existing.removeAttribute('hidden');
+    if ('style' in existing && existing.style && typeof existing.style.removeProperty === 'function') {
+      existing.style.removeProperty('display');
+    }
+    return false;
+  }
   const el = root.createElement('div');
   el.id = 'clerk-captcha';
-  el.setAttribute('hidden', '');
   root.body.appendChild(el);
   return true;
 }
 
-async function runPendingOAuthTransfer(clerk: PendingOAuthClerk, signIn: GoogleOneTapAttempt) {
+function pendingOAuthAttempt(signIn: LoadedClerk['client']['signIn'] | GoogleOneTapAttempt | null | undefined) {
+  return googleOneTapNeedsSignUp(signIn as GoogleOneTapAttempt | null | undefined);
+}
+
+async function runPendingOAuthTransfer(clerk: LoadedClerk) {
   ensureClerkCaptchaElement();
+  const signIn = clerk.client.signIn;
   let result: unknown;
   try {
     result = await transferGoogleOneTapIfNeeded(clerk, signIn);
@@ -273,15 +283,18 @@ async function runPendingOAuthTransfer(clerk: PendingOAuthClerk, signIn: GoogleO
   const sessionId = result && typeof result === 'object'
     ? (result as {createdSessionId?: unknown}).createdSessionId
     : null;
-  if (typeof sessionId === 'string' && sessionId && clerk.setActive) {
-    await clerk.setActive({session: sessionId});
-    return true;
+  if (typeof sessionId === 'string' && sessionId) {
+    try {
+      await clerk.setActive({session: sessionId});
+      return true;
+    } catch {
+      return false;
+    }
   }
   if (
     result
     && typeof result === 'object'
     && (result as {status?: unknown}).status === 'missing_requirements'
-    && typeof clerk.openSignIn === 'function'
   ) {
     clerk.openSignIn({...panelClerkRedirect(), transferable: true});
     return true;
@@ -289,12 +302,10 @@ async function runPendingOAuthTransfer(clerk: PendingOAuthClerk, signIn: GoogleO
   return false;
 }
 
-export function completePendingOAuthTransfer(clerk: PendingOAuthClerk | null | undefined) {
+export function completePendingOAuthTransfer(clerk: LoadedClerk) {
   if (pendingOAuthTransfer) return pendingOAuthTransfer;
-  if (!clerk) return Promise.resolve(false);
-  const signIn = clerk.client?.signIn;
-  if (!signIn || !googleOneTapNeedsSignUp(signIn)) return Promise.resolve(false);
-  pendingOAuthTransfer = runPendingOAuthTransfer(clerk, signIn).finally(() => {
+  if (!pendingOAuthAttempt(clerk.client?.signIn)) return Promise.resolve(false);
+  pendingOAuthTransfer = runPendingOAuthTransfer(clerk).finally(() => {
     pendingOAuthTransfer = undefined;
   });
   return pendingOAuthTransfer;

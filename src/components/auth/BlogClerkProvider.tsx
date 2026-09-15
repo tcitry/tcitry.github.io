@@ -18,7 +18,7 @@ function ClerkAuthEffects() {
       restoreClerkReturnUrl();
       return;
     }
-    void completePendingOAuthTransfer(clerk);
+    void completePendingOAuthTransfer(clerk).catch(() => undefined);
   }, [isLoaded, isSignedIn, clerk]);
   return null;
 }
@@ -36,9 +36,10 @@ export default function BlogClerkProvider({children}: {children: ReactNode}) {
   const key = clerkPublishableKey();
   const nested = useContext(BlogClerkTreeContext);
   if (!key || nested) return children;
-  const currentPage = clerkForceRedirectUrl();
+  const currentPage = window.location.href;
+  const signInRedirect = clerkForceRedirectUrl();
   const loadedClerk = loadedClerkInstance();
-  return <ClerkProvider publishableKey={key} {...(loadedClerk ? {Clerk: loadedClerk} : {})} signInFallbackRedirectUrl={currentPage} signUpFallbackRedirectUrl={currentPage} afterSignOutUrl={currentPage} appearance={{elements: {modalBackdrop: 'blog-clerk-modal'}}}>
+  return <ClerkProvider publishableKey={key} {...(loadedClerk ? {Clerk: loadedClerk} : {})} signInFallbackRedirectUrl={signInRedirect} signUpFallbackRedirectUrl={signInRedirect} afterSignOutUrl={currentPage} appearance={{elements: {modalBackdrop: 'blog-clerk-modal'}}}>
     <BlogClerkTreeContext.Provider value={true}>
       <ClerkAuthEffects />
       {children}

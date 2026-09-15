@@ -106,17 +106,25 @@ test('pending OAuth transfer completes first-time GitHub sign-in left on the Cle
     getElementById: (id) => body.children.find(node => node.id === id) || null,
     createElement: (tag) => {
       const attrs = {};
+      const style = {display: '', removeProperty(name) { delete this[name]; }};
       return {
-        tag, id: '', attrs,
+        tag, id: '', attrs, style,
         setAttribute(name, value) { attrs[name] = value; },
+        removeAttribute(name) { delete attrs[name]; },
       };
     },
   };
   globalThis.document = fakeDocument;
   try {
     assert.equal(ensureClerkCaptchaElement(), true);
-    assert.equal(fakeDocument.getElementById('clerk-captcha')?.id, 'clerk-captcha');
+    const captcha = fakeDocument.getElementById('clerk-captcha');
+    assert.equal(captcha?.id, 'clerk-captcha');
+    assert.equal(captcha?.attrs.hidden, undefined);
+    captcha.setAttribute('hidden', '');
+    captcha.style.display = 'none';
     assert.equal(ensureClerkCaptchaElement(), false);
+    assert.equal(captcha.attrs.hidden, undefined);
+    assert.equal(captcha.style.display, undefined);
 
     let finishCreate;
     const firstClerk = {
@@ -177,6 +185,25 @@ test('pending OAuth transfer opens sign-in-or-up when sign-up still needs fields
     if (previousWindow === undefined) delete globalThis.window;
     else globalThis.window = previousWindow;
   }
+});
+
+test('pending OAuth transfer swallows setActive rejection', async () => {
+  const {completePendingOAuthTransfer} = await importBundle(
+    new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
+  );
+  const transferable = {
+    status: 'needs_identifier',
+    identifier: null,
+    firstFactorVerification: {status: 'transferable', error: {code: 'external_account_not_found'}},
+  };
+  await assert.doesNotReject(() => completePendingOAuthTransfer({
+    client: {
+      signIn: transferable,
+      signUp: {create: async () => ({status: 'complete', createdSessionId: 'sess_github'})},
+    },
+    setActive: async () => { throw new Error('session activate failed'); },
+    openSignIn() {},
+  }));
 });
 
 test('return URL helper stores, reads, clears and restores only same-origin pages', async () => {
@@ -469,8 +496,13 @@ test('every production SignInButton and openSignIn entry uses the shared sign-in
   assert.doesNotMatch(sources['src/components/auth/ClerkSignInButton.tsx'], /onClickCapture=\{rememberClerkReturnUrl\}/);
   assert.doesNotMatch(sources['src/components/auth/ClerkSignInButton.tsx'], /onPointerDownCapture=\{rememberClerkReturnUrl\}/);
   assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /restoreClerkReturnUrl\(\)/);
-  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /completePendingOAuthTransfer\(clerk\)/);
+  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /completePendingOAuthTransfer\(clerk\)\.catch/);
   assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /clerkForceRedirectUrl\(\)/);
+  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /afterSignOutUrl=\{currentPage\}/);
+  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /const currentPage = window\.location\.href/);
+  assert.match(sources['src/components/auth/clerk-signin.ts'], /from '@clerk\/shared\/types'/);
+  assert.doesNotMatch(sources['src/components/auth/clerk-signin.ts'], /strategy\?: string/);
+  assert.doesNotMatch(sources['src/components/auth/clerk-signin.ts'], /setAttribute\('hidden'/);
   assert.match(sources['src/components/reader/BookmarkButton.tsx'], /openClerkSignIn\(clerk\)/);
   assert.equal([...callers.matchAll(/<ClerkSignInButton\b/g)].length, 4);
   assert.doesNotMatch(callers, /<SignInButton\b/);
