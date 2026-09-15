@@ -4,7 +4,7 @@
 
 ## 架构
 
-- Clerk：登录、账户资料和 Billing UI。站点登录入口使用 sign-in-or-up transfer：已有账户直接登录；首次 GitHub/Google OAuth 转到注册创建账户，而不是停在 Account Portal 的 `external_account_not_found`。用户名可选，可在评论等场景稍后设置。GitHub/Google 整页 OAuth 改在 modal 内用 popup 完成，避免 Account Portal 纯 `/sign-in` 丢掉 transfer；若仍留下 transferable 的 sign-in，回到站点后由应用侧 `signUp.create({ transfer: true })` 补完。`forceRedirectUrl` 不含 hash（评论锚点由 `sessionStorage` 恢复），且可能被 Portal 回落到站点首页，因此打开登录时把当前页写入 `sessionStorage`，Clerk 变为已登录后再同源恢复。
+- Clerk：登录、账户资料和 Billing UI。站点登录入口使用 sign-in-or-up transfer：已有账户直接登录；首次 GitHub/Google OAuth 转到注册创建账户，而不是停在 Account Portal 的 `external_account_not_found`。用户名可选，可在评论等场景稍后设置。GitHub/Google 使用整页 redirect OAuth（不是 popup）。托管 Account Portal 的 `/sign-in` 是纯登录页，不能 transfer 未知 OAuth 身份；首次用户回到站点后，由 `BlogClerkProvider` 调用 `completePendingOAuthTransfer`（`signUp.create({ transfer: true })`）在站内完成注册。`forceRedirectUrl` 不含 hash（评论锚点由 `sessionStorage` 恢复），且可能被 Portal 回落到站点首页，因此打开登录时把当前页写入 `sessionStorage`，Clerk 变为已登录后再同源恢复。
 - Convex：认证与授权、评论、喜欢、收藏、通知、咨询、附件、AI 会话和流式状态。
 - `@convex-dev/agent`：AI thread、message 和 stream delta 持久化。
 - Cloudflare AI Search：公开文章检索与回答生成；不保存私人账户数据。

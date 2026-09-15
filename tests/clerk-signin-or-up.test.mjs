@@ -12,7 +12,7 @@ const expectedRedirect = {
   forceRedirectUrl: currentPageWithoutHash,
   signUpForceRedirectUrl: currentPageWithoutHash,
   withSignUp: true,
-  oauthFlow: 'popup',
+  oauthFlow: 'redirect',
 };
 
 async function importBundle(entryUrl, plugins = []) {
@@ -399,7 +399,7 @@ test('SignInPanel modal entry spreads the shared sign-in-or-up options', async (
     const props = globalThis.__clerkSignInFixture.buttons[0];
     assert.equal(props.mode, 'modal');
     assert.equal(props.withSignUp, true);
-    assert.equal(props.oauthFlow, 'popup');
+    assert.equal(props.oauthFlow, 'redirect');
     assert.equal(props.forceRedirectUrl, currentPageWithoutHash);
     assert.equal(props.signUpForceRedirectUrl, currentPageWithoutHash);
     assert.equal(session.getItem(clerkReturnUrlStorageKey), null,
@@ -480,7 +480,8 @@ test('every production SignInButton and openSignIn entry uses the shared sign-in
     sources['src/components/reader/BookmarkButton.tsx'],
   ].join('\n');
   assert.match(sources['src/components/auth/clerk-signin.ts'], /withSignUp:\s*true/);
-  assert.match(sources['src/components/auth/clerk-signin.ts'], /oauthFlow:\s*'popup'/);
+  assert.match(sources['src/components/auth/clerk-signin.ts'], /oauthFlow:\s*'redirect'/);
+  assert.doesNotMatch(sources['src/components/auth/clerk-signin.ts'], /oauthFlow:\s*'popup'/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /transferable:\s*true/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /rememberClerkReturnUrl\(\)/);
   assert.match(sources['src/components/auth/clerk-signin.ts'], /continuation:\s*'transfer_to_sign_up'/);
@@ -497,6 +498,7 @@ test('every production SignInButton and openSignIn entry uses the shared sign-in
   assert.doesNotMatch(sources['src/components/auth/ClerkSignInButton.tsx'], /onPointerDownCapture=\{rememberClerkReturnUrl\}/);
   assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /restoreClerkReturnUrl\(\)/);
   assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /completePendingOAuthTransfer\(clerk\)\.catch/);
+  assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /Cold load after redirect OAuth/);
   assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /clerkForceRedirectUrl\(\)/);
   assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /afterSignOutUrl=\{currentPage\}/);
   assert.match(sources['src/components/auth/BlogClerkProvider.tsx'], /const currentPage = window\.location\.href/);
