@@ -1,6 +1,17 @@
 /** Vite rejects the whole dynamic import if a CSS preload link errors. */
 
 export const CHAT_LOAD_RETRY_DELAY_MS = 400;
+export const STALE_CHAT_ASSET_RELOAD_KEY = 'blog-chat-stale-asset-reload';
+
+/**
+ * @param {unknown} value
+ */
+export function isAssetLoadErrorMessage(value) {
+  return typeof value === 'string' && (
+    /Unable to preload CSS/i.test(value)
+    || /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(value)
+  );
+}
 
 /**
  * @param {unknown} error
@@ -13,9 +24,7 @@ export function isCssPreloadError(error) {
  * @param {unknown} error
  */
 export function isAssetLoadError(error) {
-  if (!(error instanceof Error)) return false;
-  return isCssPreloadError(error)
-    || /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(error.message);
+  return error instanceof Error && isAssetLoadErrorMessage(error.message);
 }
 
 /**
@@ -27,12 +36,13 @@ export function isClerkLoadError(error) {
 }
 
 /**
- * A first failure is often a stale hashed chunk, a CSS preload, or a race
- * while SearchCommand unmounts and the assistant root mounts.
+ * Clerk races and mount races can succeed on a second import. A missing hashed
+ * chunk cannot; `reloadForStaleChatAsset` handles that instead of retrying.
  * @param {unknown} error
  */
 export function isRetriableChatLoadError(error) {
-  if (isClerkLoadError(error) || isAssetLoadError(error)) return true;
+  if (isAssetLoadError(error)) return false;
+  if (isClerkLoadError(error)) return true;
   if (error instanceof TypeError) return true;
   return error instanceof Error && /ChunkLoadError/i.test(error.name);
 }
@@ -58,6 +68,42 @@ export function chatLoadFailureCopy(error, phase = 'import') {
 export function needsChatPageRefresh(error, phase = 'import') {
   if (isAssetLoadError(error)) return true;
   return phase === 'import' && error instanceof TypeError;
+}
+
+/**
+ * Stale hashed chunks after a deploy are recovered in the UI. Reporting them
+ * to Sentry duplicates the refresh guidance on every open tab.
+ * @param {unknown} error
+ * @param {'import' | 'mount'} [phase]
+ */
+export function shouldReportChatLoadError(error, phase = 'import') {
+  return !needsChatPageRefresh(error, phase);
+}
+
+/**
+ * A missing hashed import cannot be retried; reload once to pick up new HTML.
+ * @param {Pick<Storage, 'getItem' | 'setItem'>} [storage]
+ * @param {() => void} [reload]
+ */
+export function reloadForStaleChatAsset(storage, reload) {
+  try {
+    storage ??= globalThis.sessionStorage;
+    if (storage.getItem(STALE_CHAT_ASSET_RELOAD_KEY) === '1') return false;
+    storage.setItem(STALE_CHAT_ASSET_RELOAD_KEY, '1');
+  } catch {
+    return false;
+  }
+  (reload ?? (() => globalThis.location.reload()))();
+  return true;
+}
+
+/**
+ * @param {Pick<Storage, 'removeItem'>} [storage]
+ */
+export function clearStaleChatAssetReload(storage) {
+  try {
+    (storage ?? globalThis.sessionStorage).removeItem(STALE_CHAT_ASSET_RELOAD_KEY);
+  } catch {}
 }
 
 /**

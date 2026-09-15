@@ -103,7 +103,13 @@ const server = createServer((request, response) => {
   if (request.url === '/loader.js') {
     response.setHeader('Content-Type', 'text/javascript'); response.end(loader);
   } else if (request.url === '/monitoring.js') {
-    response.setHeader('Content-Type', 'text/javascript'); response.end('export function captureFeatureError() {}');
+    response.setHeader('Content-Type', 'text/javascript'); response.end(`
+      export function captureFeatureError(error, feature, operation) {
+        const list = window.__featureErrors || [];
+        list.push({feature, operation, name: error instanceof Error ? error.name : '', message: error instanceof Error ? error.message : String(error)});
+        window.__featureErrors = list;
+      }
+    `);
   } else if (request.url === '/chat-chunk.js') {
     if (mode === 'missing') {response.statusCode = 404; response.end('missing');}
     else if (mode === 'pending') pending = response;
@@ -159,15 +165,39 @@ try {
   assert.equal(await page.locator('[data-chat-load-detail]').evaluate(element => element.textContent), "Cannot read properties of undefined (reading 'useAuth')");
   assert.equal(await page.getByRole('button', {name: '重新加载', exact: true}).isVisible(), true);
   assert.equal(await page.getByText('检查网络后重试').count(), 0, 'A React mount failure is not reported as a silent network failure');
+  assert.equal(await page.evaluate(() => (window.__featureErrors || []).some(entry => entry.feature === 'chat' && entry.operation === 'mount')), true,
+    'A React mount failure remains visible to monitoring');
 
   mode = 'missing';
+  await page.evaluate(() => sessionStorage.removeItem('blog-assistant-ui'));
   await page.reload();
   await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
-  await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: '缺失 chunk 时应提示刷新'}})));
-  await page.getByRole('status').filter({hasText: '若页面刚更新，请刷新后再试'}).waitFor();
-  assert.equal(await page.getByRole('button', {name: '重新加载', exact: true}).isVisible(), true);
-  assert.equal(await page.getByRole('button', {name: '刷新页面', exact: true}).isVisible(), true);
-  assert.equal(await page.getByText('检查网络后重试').count(), 0, 'A missing chunk is not reported as a silent network failure');
+  const reloaded = page.waitForEvent('load');
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: '缺失 chunk 时应自动刷新'}})));
+  await reloaded;
+  assert.equal(await page.evaluate(() => sessionStorage.getItem('blog-chat-stale-asset-reload')), '1',
+    'A stale hashed assistant chunk marks a one-shot document reload');
+  await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
+  await page.waitForFunction(() => {
+    const panel = document.querySelector('#blog-chat-panel');
+    return panel instanceof HTMLDialogElement && !panel.open && sessionStorage.getItem('blog-assistant-ui') === null;
+  });
+  assert.equal(await page.evaluate(() => (window.__featureErrors || []).length), 0, 'The auto reload must not report the replaced chunk');
+
+  let extraLoads = 0;
+  const onExtraLoad = () => { extraLoads += 1; };
+  page.on('load', onExtraLoad);
+  try {
+    await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: '刷新后仍缺失则提示'}})));
+    await page.getByRole('status').filter({hasText: '若页面刚更新，请刷新后再试'}).waitFor();
+    assert.equal(await page.getByRole('button', {name: '重新加载', exact: true}).isVisible(), true);
+    assert.equal(await page.getByRole('button', {name: '刷新页面', exact: true}).isVisible(), true);
+    assert.equal(await page.getByText('检查网络后重试').count(), 0, 'A missing chunk is not reported as a silent network failure');
+    assert.equal(extraLoads, 0, 'A second stale import shows refresh guidance instead of looping');
+    assert.equal(await page.evaluate(() => (window.__featureErrors || []).length), 0, 'Refresh guidance must not captureException');
+  } finally {
+    page.off('load', onExtraLoad);
+  }
 
   await page.addInitScript(() => {
     const proto = HTMLDialogElement.prototype;
@@ -221,6 +251,7 @@ try {
   assert.equal(await page.evaluate(() => window.__chatMounts), mountsAfterOpen, 'A later close/reopen must keep the healthy mount after a mount-less quiet dismiss');
 
   mode = 'ok';
+  await page.evaluate(() => sessionStorage.setItem('blog-chat-stale-asset-reload', '1'));
   await page.setViewportSize({width: 320, height: 720});
   await page.reload();
   await page.locator('[data-chat-launcher]').waitFor({state: 'visible'});
@@ -237,7 +268,9 @@ try {
   await page.locator('.assistant-workspace').waitFor();
   await page.waitForFunction(() => document.querySelector('textarea[aria-label="向 AI 博客助手提问"]')?.value === '移动端 showModal 失败仍应打开');
   assert.equal(await page.getByText('助手未能加载').count(), 0);
-  console.log('Ask AI loader: CSS preload is cancelled, mount retries once, React mount errors are distinct from network, a missing chunk asks for a refresh, and a mobile showModal failure still opens the assistant.');
+  assert.equal(await page.evaluate(() => sessionStorage.getItem('blog-chat-stale-asset-reload')), null,
+    'A successful assistant mount clears the one-shot stale reload mark');
+  console.log('Ask AI loader: CSS preload is cancelled, mount retries once, React mount errors are distinct from network, a missing chunk auto-reloads once then asks for a refresh without Sentry, and a mobile showModal failure still opens the assistant.');
 } finally {
   await browser?.close();
   server.closeAllConnections();
@@ -279,7 +312,13 @@ const signedServer = createServer((request, response) => {
   if (request.url === '/signed-loader.js') {
     response.setHeader('Content-Type', 'text/javascript'); response.end(signedInLoader);
   } else if (request.url === '/monitoring.js') {
-    response.setHeader('Content-Type', 'text/javascript'); response.end('export function captureFeatureError() {}');
+    response.setHeader('Content-Type', 'text/javascript'); response.end(`
+      export function captureFeatureError(error, feature, operation) {
+        const list = window.__featureErrors || [];
+        list.push({feature, operation, name: error instanceof Error ? error.name : '', message: error instanceof Error ? error.message : String(error)});
+        window.__featureErrors = list;
+      }
+    `);
   } else {response.setHeader('Content-Type', 'text/html'); response.end(signedHtml);}
 });
 await new Promise(resolve => signedServer.listen(0, '127.0.0.1', resolve));
