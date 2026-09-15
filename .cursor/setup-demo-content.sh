@@ -18,7 +18,7 @@ if [ -f "$BLOG_DIR/_index.md" ]; then
 fi
 
 echo "[demo-content] Scaffolding placeholder Blog content in $BLOG_DIR"
-mkdir -p "$BLOG_DIR/posts" "$BLOG_DIR/docs" "$BLOG_DIR/weekly" "$BLOG_DIR/static" "$BLOG_DIR/scripts"
+mkdir -p "$BLOG_DIR/posts" "$BLOG_DIR/docs" "$BLOG_DIR/static" "$BLOG_DIR/scripts"
 
 cat > "$BLOG_DIR/_index.md" <<'EOF'
 ---
@@ -84,15 +84,9 @@ description: 文档占位页面。
 2. `BLOG_DIR=/path/to/Blog npm run dev`
 EOF
 
-cat > "$BLOG_DIR/weekly/001.md" <<'EOF'
----
-title: Weekly 第 001 期
-date: 2026-09-08
-description: Weekly 宽布局占位条目。
----
-
-Weekly 占位条目。
-EOF
+# Note: the placeholder intentionally omits a `weekly` section. The weekly list
+# uses a custom paginator that only renders with multiple pages (40 issues per
+# page), which real content always has; a single placeholder issue would not.
 
 # prepare-assets copies this reviewed public download from the content repo.
 cat > "$BLOG_DIR/scripts/upload-r2-image.py" <<'EOF'
