@@ -123,7 +123,7 @@ test('separate comment, One Tap and assistant trees do not reuse a headless wind
   });
 });
 
-test('provider uses one callback page for both native flows and retains the article hash', () => {
+test('provider configures one native combined sign-in root and retains the article hash', () => {
   const href = 'https://example.test/docs/article/?view=full#comments';
   const clerk = uiClerk();
   const nativePopup = async () => {};
@@ -132,7 +132,7 @@ test('provider uses one callback page for both native flows and retains the arti
     renderToStaticMarkup(createElement(BlogClerkProvider, null, createElement('span', null, 'ok')));
     const [options] = globalThis.__clerkOptions;
     assert.equal(options.signInUrl, '/sso-callback/');
-    assert.equal(options.signUpUrl, '/sso-callback/?intent=signUp', 'Direct SignUp must use the same site callback page, not the Account Portal');
+    assert.equal(Object.hasOwn(options, 'signUpUrl'), false, 'A separate sign-up URL would split the native combined flow');
     assert.equal(options.signInFallbackRedirectUrl, href);
     assert.equal(options.signUpFallbackRedirectUrl, href);
     assert.equal(options.afterSignOutUrl, href);
@@ -149,7 +149,6 @@ test('provider callback fallback points home instead of restarting sign-in', () 
   for (const href of [
     'https://example.test/sso-callback',
     'https://example.test/sso-callback/?intent=signIn#/create/sso-callback',
-    'https://example.test/sso-callback/?intent=signUp#/sso-callback',
   ]) {
     withWindow(undefined, () => {
       renderToStaticMarkup(createElement(BlogClerkProvider, null, createElement('span', null, 'ok')));

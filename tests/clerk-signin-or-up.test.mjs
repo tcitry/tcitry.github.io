@@ -8,7 +8,8 @@ import {renderToStaticMarkup} from 'react-dom/server';
 const currentPage = 'https://example.test/docs/article/?view=full#comments';
 const expectedRedirect = {
   forceRedirectUrl: currentPage,
-  signInForceRedirectUrl: currentPage,
+  signUpForceRedirectUrl: currentPage,
+  withSignUp: true,
   oauthFlow: 'popup',
 };
 
@@ -49,8 +50,8 @@ test('native modal options preserve the complete article URL and comment hash', 
   withPage(() => {
     assert.deepEqual(panelClerkRedirect(), expectedRedirect);
     const opened = [];
-    openClerkSignIn({openSignUp: props => opened.push(props)});
-    assert.deepEqual(opened, [expectedRedirect]);
+    openClerkSignIn({openSignIn: props => opened.push(props)});
+    assert.deepEqual(opened, [{...expectedRedirect, transferable: true}]);
   });
 });
 
@@ -62,7 +63,7 @@ test('callback fallback avoids a sign-in loop and otherwise preserves query stri
   for (const suffix of ['', '/', '?intent=signIn#/create/sso-callback', '/?sign_up_force_redirect_url=%2Fdocs%2Farticle%2F%23comments#/create/continue']) {
     withPage(() => {
       assert.equal(clerkAfterAuthFallbackUrl(), '/');
-      assert.deepEqual(panelClerkRedirect(), {...expectedRedirect, forceRedirectUrl: '/', signInForceRedirectUrl: '/'});
+      assert.deepEqual(panelClerkRedirect(), {...expectedRedirect, forceRedirectUrl: '/', signUpForceRedirectUrl: '/'});
     }, `https://example.test/sso-callback${suffix}`);
   }
   for (const href of [currentPage, 'https://example.test/?view=full#top', 'https://example.test/sso-callback/extra/#comments']) {
@@ -70,9 +71,8 @@ test('callback fallback avoids a sign-in loop and otherwise preserves query stri
   }
 });
 
-test('one callback selects the official component and preserves continuation redirects', async () => {
+test('callback delegates sign-in, sign-up and continuation to the official combined component', async () => {
   globalThis.__nativeSignIns = [];
-  globalThis.__nativeSignUps = [];
   const {default: SsoCallback} = await importBundle(
     new URL('../src/components/auth/SsoCallback.tsx', import.meta.url),
     [{
@@ -86,10 +86,6 @@ test('one callback selects the official component and preserves continuation red
           export function ClerkFailed() { return null; }
           export function SignIn(props) {
             globalThis.__nativeSignIns.push(props);
-            return null;
-          }
-          export function SignUp(props) {
-            globalThis.__nativeSignUps.push(props);
             return null;
           }
         `}));
@@ -106,21 +102,10 @@ test('one callback selects the official component and preserves continuation red
           'The host must not override native continuation redirects');
       }, `https://example.test/sso-callback/?intent=signIn${hash}`);
     }
-    const signInCount = globalThis.__nativeSignIns.length;
-    for (const hash of ['#/sso-callback', '#/continue', '#/verify-email-address']) {
-      withPage(() => {
-        renderToStaticMarkup(createElement(SsoCallback));
-        assert.deepEqual(globalThis.__nativeSignUps.at(-1), {routing: 'hash', oauthFlow: 'popup'});
-        assert.equal(globalThis.__nativeSignIns.length, signInCount, 'A SignUp continuation must not mount SignIn');
-      }, `https://example.test/sso-callback/?intent=signUp&sign_up_force_redirect_url=%2Farticle%2F%23comments${hash}`);
-    }
-  } finally {
-    delete globalThis.__nativeSignIns;
-    delete globalThis.__nativeSignUps;
-  }
+  } finally { delete globalThis.__nativeSignIns; }
 });
 
-test('the real login button opens the official SignUp modal with both return URLs', async () => {
+test('ClerkSignInButton delegates its modal and full return URL to the official button', async () => {
   globalThis.__nativeSignInButtons = [];
   const {default: ClerkSignInButton} = await importBundle(
     new URL('../src/components/auth/ClerkSignInButton.tsx', import.meta.url),
@@ -129,7 +114,7 @@ test('the real login button opens the official SignUp modal with both return URL
       setup(build) {
         build.onResolve({filter: /^@clerk\/react$/}, () => ({path: 'clerk', namespace: 'native-signin-button-fixture'}));
         build.onLoad({filter: /.*/, namespace: 'native-signin-button-fixture'}, () => ({contents: `
-          export function SignUpButton(props) {
+          export function SignInButton(props) {
             globalThis.__nativeSignInButtons.push(props);
             return props.children;
           }
@@ -146,7 +131,7 @@ test('the real login button opens the official SignUp modal with both return URL
   } finally { delete globalThis.__nativeSignInButtons; }
 });
 
-test('the assistant login entry starts the same official SignUp modal', async () => {
+test('SignInPanel modal entry spreads the shared sign-in-or-up options', async () => {
   globalThis.__clerkSignInFixture = {buttons: []};
   const {default: SignInPanel} = await importBundle(
     new URL('../src/components/auth/SignInPanel.tsx', import.meta.url),
@@ -162,7 +147,7 @@ test('the assistant login entry starts the same official SignUp modal', async ()
               export function ClerkLoaded({children}) { return children; }
               export function ClerkLoading() { return null; }
               export function ClerkFailed() { return null; }
-              export function SignUpButton(props) {
+              export function SignInButton(props) {
                 globalThis.__clerkSignInFixture.buttons.push(props);
                 return props.children ?? null;
               }
@@ -196,10 +181,10 @@ test('the assistant login entry starts the same official SignUp modal', async ()
     assert.equal(globalThis.__clerkSignInFixture.buttons.length, 1);
     const props = globalThis.__clerkSignInFixture.buttons[0];
     assert.equal(props.mode, 'modal');
-    assert.equal(Object.hasOwn(props, 'withSignUp'), false);
+    assert.equal(props.withSignUp, true);
     assert.equal(props.oauthFlow, 'popup');
     assert.equal(props.forceRedirectUrl, currentPage);
-    assert.equal(props.signInForceRedirectUrl, currentPage);
+    assert.equal(props.signUpForceRedirectUrl, currentPage);
   });
   delete globalThis.__clerkSignInFixture;
 });
@@ -220,7 +205,7 @@ test('anonymous bookmark sign-in uses the shared helper instead of a bare openSi
             clerk: `
               export function useAuth() { return {isLoaded: true, userId: null}; }
               export function useClerk() {
-                return {openSignUp: (props) => { globalThis.__bookmarkSignIn.opened.push(props); }};
+                return {openSignIn: (props) => { globalThis.__bookmarkSignIn.opened.push(props); }};
               }
             `,
             convex: `
@@ -251,7 +236,7 @@ test('anonymous bookmark sign-in uses the shared helper instead of a bare openSi
     }));
     assert.equal(typeof globalThis.__bookmarkSignIn.press, 'function');
     globalThis.__bookmarkSignIn.press();
-    assert.deepEqual(globalThis.__bookmarkSignIn.opened, [expectedRedirect]);
+    assert.deepEqual(globalThis.__bookmarkSignIn.opened, [{...expectedRedirect, transferable: true}]);
     delete globalThis.__bookmarkSignIn;
   });
 });
@@ -291,6 +276,6 @@ test('production entries keep native OAuth ownership and the existing One Tap ad
   }
   assert.match(sources['src/components/reader/BookmarkButton.tsx'], /openClerkSignIn\(clerk\)/);
   assert.equal([...callers.matchAll(/<ClerkSignInButton\b/g)].length, 4);
-  assert.doesNotMatch(callers, /<(?:SignInButton|SignUpButton)\b/);
-  assert.doesNotMatch(callers, /open(?:SignIn|SignUp)\(/);
+  assert.doesNotMatch(callers, /<SignInButton\b/);
+  assert.doesNotMatch(callers, /openSignIn\(/);
 });
