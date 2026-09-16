@@ -123,7 +123,7 @@ test('separate comment, One Tap and assistant trees do not reuse a headless wind
   });
 });
 
-test('provider configures one native combined sign-in root and retains the article hash', () => {
+test('provider keeps native auth methods and full return URLs without overriding hosted continuation', () => {
   const href = 'https://example.test/docs/article/?view=full#comments';
   const clerk = uiClerk();
   const nativePopup = async () => {};
@@ -131,8 +131,8 @@ test('provider configures one native combined sign-in root and retains the artic
   withWindow(clerk, () => {
     renderToStaticMarkup(createElement(BlogClerkProvider, null, createElement('span', null, 'ok')));
     const [options] = globalThis.__clerkOptions;
-    assert.equal(options.signInUrl, '/sso-callback/');
-    assert.equal(Object.hasOwn(options, 'signUpUrl'), false, 'A separate sign-up URL would split the native combined flow');
+    assert.equal(Object.hasOwn(options, 'signInUrl'), false, 'Sign-in continuation uses the Clerk instance default');
+    assert.equal(Object.hasOwn(options, 'signUpUrl'), false, 'Sign-up continuation uses the Clerk instance default');
     assert.equal(options.signInFallbackRedirectUrl, href);
     assert.equal(options.signUpFallbackRedirectUrl, href);
     assert.equal(options.afterSignOutUrl, href);
@@ -145,16 +145,16 @@ test('provider configures one native combined sign-in root and retains the artic
   }, href);
 });
 
-test('provider callback fallback points home instead of restarting sign-in', () => {
+test('provider fallback keeps the full originating URL for sign-in and sign-up', () => {
   for (const href of [
-    'https://example.test/sso-callback',
-    'https://example.test/sso-callback/?intent=signIn#/create/sso-callback',
+    'https://example.test/',
+    'https://example.test/docs/article/?view=full#comments',
   ]) {
     withWindow(undefined, () => {
       renderToStaticMarkup(createElement(BlogClerkProvider, null, createElement('span', null, 'ok')));
       const [options] = globalThis.__clerkOptions;
-      assert.equal(options.signInFallbackRedirectUrl, '/');
-      assert.equal(options.signUpFallbackRedirectUrl, '/');
+      assert.equal(options.signInFallbackRedirectUrl, href);
+      assert.equal(options.signUpFallbackRedirectUrl, href);
     }, href);
   }
 });

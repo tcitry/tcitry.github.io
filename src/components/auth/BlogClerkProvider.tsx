@@ -1,7 +1,6 @@
 import {createContext, useContext, type ReactNode} from 'react';
 import {ClerkProvider} from '@clerk/react';
 import type {BrowserClerk, ClerkProp} from '@clerk/react';
-import {clerkAfterAuthFallbackUrl, clerkSignInPath} from './clerk-signin';
 import {clerkRouterPush, clerkRouterReplace} from './clerk-navigation';
 
 const BlogClerkTreeContext = createContext(false);
@@ -32,9 +31,8 @@ export default function BlogClerkProvider({children}: {children: ReactNode}) {
   const nested = useContext(BlogClerkTreeContext);
   if (!key || nested) return children;
   const currentPage = window.location.href;
-  const signInRedirect = clerkAfterAuthFallbackUrl();
   const loadedClerk = loadedClerkInstance();
-  return <ClerkProvider publishableKey={key} signInUrl={clerkSignInPath} {...(loadedClerk ? {Clerk: loadedClerk} : {})} routerPush={clerkRouterPush} routerReplace={clerkRouterReplace} signInFallbackRedirectUrl={signInRedirect} signUpFallbackRedirectUrl={signInRedirect} afterSignOutUrl={currentPage} appearance={{elements: {modalBackdrop: 'blog-clerk-modal'}}}>
+  return <ClerkProvider publishableKey={key} {...(loadedClerk ? {Clerk: loadedClerk} : {})} routerPush={clerkRouterPush} routerReplace={clerkRouterReplace} signInFallbackRedirectUrl={currentPage} signUpFallbackRedirectUrl={currentPage} afterSignOutUrl={currentPage} appearance={{elements: {modalBackdrop: 'blog-clerk-modal'}}}>
     <BlogClerkTreeContext.Provider value={true}>
       {children}
     </BlogClerkTreeContext.Provider>

@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   assetReferences,
-  assertSsoCallback,
+  assertNotFound,
+  removedAuthRoutes,
   hashedAstroAssets,
   publishedAssetPaths,
   retryUntil,
@@ -17,37 +18,16 @@ const html = (assets, extras = '') => `${assets.map(asset => asset.endsWith('.cs
   ? `<link rel="stylesheet" href="${asset}">`
   : `<script type="module" src="${asset}"></script>`).join('')}${extras}`;
 
-const callbackHtml = (fallback = 'Completing sign-in…') => `
-  <link href='https://yindongliang.com/sso-callback/' rel='canonical'>
-  <meta content='nofollow, noindex' name='robots'>
-  <astro-island client='only' component-export='default' component-url='/_astro/SsoCallback.fixture.js'>
-    <p class='loading' role='status'>${fallback}</p>
-    <template data-astro-template='fallback'><p role='status'>${fallback}</p></template>
-  </astro-island>`;
-
-test('SSO callback verification accepts English and Chinese status copy independent of attribute order', () => {
-  assert.doesNotThrow(() => assertSsoCallback(callbackHtml()));
-  assert.doesNotThrow(() => assertSsoCallback(callbackHtml('正在完成登录…')));
-  assert.doesNotThrow(() => assertSsoCallback(callbackHtml('<span>Signing in&#8230;</span>')
-    .replace("class='loading' role='status'", "role=\"status\" class=\"loading\"")));
-});
-
-test('SSO callback verification requires the real client-only island and a visible non-empty fallback', () => {
-  const valid = callbackHtml();
-  assert.throws(() => assertSsoCallback(valid.replace(/<astro-island\b[\s\S]*?<\/astro-island>/, '')), /one SsoCallback Astro island/);
-  assert.throws(() => assertSsoCallback(valid.replace('SsoCallback.fixture.js', 'OtherComponent.fixture.js')), /one SsoCallback Astro island/);
-  assert.throws(() => assertSsoCallback(valid.replace("client='only'", "client='load'")), /must not SSR Clerk/);
-  for (const empty of ['', ' \n ', '&nbsp;&#160;', '<span> </span>', '<!-- loading -->']) {
-    assert.throws(() => assertSsoCallback(callbackHtml(empty)), /non-empty status fallback/);
+test('removed authentication routes require a genuine custom 404, including the former callback', () => {
+  const notFound = {status: 404, body: '<h1>页面未找到</h1>'};
+  assert.ok(removedAuthRoutes.includes('/sso-callback/'));
+  for (const route of [...removedAuthRoutes, '/sso-callback']) {
+    assert.doesNotThrow(() => assertNotFound(notFound, route));
+    for (const status of [200, 301, 302, 307, 308]) {
+      assert.throws(() => assertNotFound({...notFound, status}, route), /real HTTP 404/);
+    }
+    assert.throws(() => assertNotFound({status: 404, body: '<h1>Sign in</h1>'}, route), /Custom 404 missing/);
   }
-  assert.throws(() => assertSsoCallback(valid.replace(/<p class='loading'[^>]*>[\s\S]*?<\/p>/, '')), /non-empty status fallback/, 'An inert template is not visible fallback content');
-});
-
-test('SSO callback verification retains canonical, robots and article-search boundaries', () => {
-  const valid = callbackHtml();
-  assert.throws(() => assertSsoCallback(valid.replace('/sso-callback/', '/wrong/')), /Canonical mismatch/);
-  assert.throws(() => assertSsoCallback(valid.replace('nofollow, noindex', 'index')), /stay out of search indexes/);
-  assert.throws(() => assertSsoCallback(`${valid}<main data-pagefind-body></main>`), /not article search corpus/);
 });
 
 test('assetReferences reads hashed scripts, stylesheets and island URLs', () => {

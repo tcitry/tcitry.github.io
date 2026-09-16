@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { parseArgs } from 'node:util';
 import { parse, parseFragment } from 'parse5';
-import { assertCanonical, assertComments, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertSsoCallback, assertXMLSiteURLs, assetReferences, parseRedirects } from './verify-deployment.mjs';
+import { assertCanonical, assertComments, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects, removedAuthRoutes } from './verify-deployment.mjs';
 import { auditContentLinks } from './internal-links.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), output = path.join(root, 'dist');
 const { values } = parseArgs({ options: { env: { type: 'string' }, help: { type: 'boolean' } } });
@@ -133,7 +133,7 @@ for (const [, navigation] of archiveTOCs) {
     assert.ok(archiveHeadings.has(term.name), `Archives category has no matching heading ID: ${term.name}`);
   }
 }
-for (const url of ['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/links/index.xml', '/sitemap.xml', '/robots.txt', '/404.html', '/favicon.ico', '/apple-touch-icon.png', '/icons/menu.svg', '/icons/chevron-right.svg', '/icons/favicon.ico', '/katex/katex.min.css', '/katex/katex.min.js', '/katex/fonts/KaTeX_Main-Regular.woff2', '/pagefind/pagefind.js', '/pagefind/pagefind-entry.json', '/pagefind/pagefind-worker.js', '/demos/2026/rounded-timeline/index.html', '/labs/index.html', '/labs/agent-replay/index.html', '/sso-callback/index.html']) await access(path.join(output, url));
+for (const url of ['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/links/index.xml', '/sitemap.xml', '/robots.txt', '/404.html', '/favicon.ico', '/apple-touch-icon.png', '/icons/menu.svg', '/icons/chevron-right.svg', '/icons/favicon.ico', '/katex/katex.min.css', '/katex/katex.min.js', '/katex/fonts/KaTeX_Main-Regular.woff2', '/pagefind/pagefind.js', '/pagefind/pagefind-entry.json', '/pagefind/pagefind-worker.js', '/demos/2026/rounded-timeline/index.html', '/labs/index.html', '/labs/agent-replay/index.html']) await access(path.join(output, url));
 assertRobotsPolicy(await readFile(path.join(output, 'robots.txt'), 'utf8'), environment);
 const sitemap = await readFile(path.join(output, 'sitemap.xml'), 'utf8');
 assert.match(sitemap, /<urlset\b/); assertXMLSiteURLs(sitemap, 'sitemap.xml');
@@ -188,12 +188,12 @@ for (const url of ['/chat/', '/me/']) {
   assert.ok(!redirects.some(rule => rule.from === url), `Unpublished account URL does not need a redirect: ${url}`);
   assert.ok(!sitemap.includes(`<loc>https://yindongliang.com${url}</loc>`), `Removed account URL is excluded from sitemap: ${url}`);
 }
-await assert.rejects(access(htmlPath('/sign-in/')), {code: 'ENOENT'}, 'Must not generate a dedicated app /sign-in page');
-const ssoCallback = await readFile(path.join(output, 'sso-callback/index.html'), 'utf8');
-assertSsoCallback(ssoCallback);
-assert.ok(!sitemap.includes('<loc>https://yindongliang.com/sso-callback/</loc>'), 'SSO callback must stay out of the sitemap');
-assertComments(ssoCallback, false, '/sso-callback/');
-for (const asset of assetReferences(ssoCallback, '/sso-callback/')) assets.add(asset);
+for (const url of removedAuthRoutes) {
+  await assert.rejects(access(path.join(output, url)), {code: 'ENOENT'}, `Removed auth path must not be generated: ${url}`);
+  await assert.rejects(access(path.join(output, `${url.slice(0, -1)}.html`)), {code: 'ENOENT'}, `Removed auth page must not be generated: ${url}`);
+  assert.ok(!redirects.some(rule => rule.from === url || rule.from === url.slice(0, -1)), `Removed auth path must return 404 without redirects: ${url}`);
+  assert.ok(!sitemap.includes(`<loc>https://yindongliang.com${url}</loc>`), `Removed auth path must stay out of the sitemap: ${url}`);
+}
 const lab = await readFile(path.join(output, 'labs/index.html'), 'utf8');
 checkPage(lab, '/labs/');
 const replay = await readFile(path.join(output, 'labs/agent-replay/index.html'), 'utf8');

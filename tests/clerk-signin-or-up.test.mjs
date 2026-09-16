@@ -55,54 +55,15 @@ test('native modal options preserve the complete article URL and comment hash', 
   });
 });
 
-test('callback fallback avoids a sign-in loop and otherwise preserves query strings and hashes', async () => {
-  const {clerkSignInPath, clerkAfterAuthFallbackUrl, panelClerkRedirect} = await importBundle(
+test('native modal return URLs always preserve the page, query string and hash', async () => {
+  const {panelClerkRedirect} = await importBundle(
     new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
   );
-  assert.equal(clerkSignInPath, '/sso-callback/');
-  for (const suffix of ['', '/', '?intent=signIn#/create/sso-callback', '/?sign_up_force_redirect_url=%2Fdocs%2Farticle%2F%23comments#/create/continue']) {
+  for (const href of [currentPage, 'https://example.test/?view=full#top', 'https://example.test/docs/article/?q=a%2Fb#comments']) {
     withPage(() => {
-      assert.equal(clerkAfterAuthFallbackUrl(), '/');
-      assert.deepEqual(panelClerkRedirect(), {...expectedRedirect, forceRedirectUrl: '/', signUpForceRedirectUrl: '/'});
-    }, `https://example.test/sso-callback${suffix}`);
+      assert.deepEqual(panelClerkRedirect(), {...expectedRedirect, forceRedirectUrl: href, signUpForceRedirectUrl: href});
+    }, href);
   }
-  for (const href of [currentPage, 'https://example.test/?view=full#top', 'https://example.test/sso-callback/extra/#comments']) {
-    assert.equal(clerkAfterAuthFallbackUrl({href}), href);
-  }
-});
-
-test('callback delegates sign-in, sign-up and continuation to the official combined component', async () => {
-  globalThis.__nativeSignIns = [];
-  const {default: SsoCallback} = await importBundle(
-    new URL('../src/components/auth/SsoCallback.tsx', import.meta.url),
-    [{
-      name: 'native-callback-fixture',
-      setup(build) {
-        build.onResolve({filter: /^@clerk\/react$/}, () => ({path: 'clerk', namespace: 'native-callback-fixture'}));
-        build.onLoad({filter: /.*/, namespace: 'native-callback-fixture'}, () => ({contents: `
-          export function ClerkProvider({children}) { return children; }
-          export function ClerkLoaded({children}) { return children; }
-          export function ClerkLoading() { return null; }
-          export function ClerkFailed() { return null; }
-          export function SignIn(props) {
-            globalThis.__nativeSignIns.push(props);
-            return null;
-          }
-        `}));
-      },
-    }],
-    {'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify('pk_test_fixture')},
-  );
-  try {
-    for (const hash of ['', '#/sso-callback', '#/create/sso-callback', '#/create/continue']) {
-      withPage(() => {
-        const html = renderToStaticMarkup(createElement(SsoCallback));
-        assert.doesNotMatch(html, /<a\b[^>]*href="\/"/);
-        assert.deepEqual(globalThis.__nativeSignIns.at(-1), {routing: 'hash', withSignUp: true, oauthFlow: 'popup'},
-          'The host must not override native continuation redirects');
-      }, `https://example.test/sso-callback/?intent=signIn${hash}`);
-    }
-  } finally { delete globalThis.__nativeSignIns; }
 });
 
 test('ClerkSignInButton delegates its modal and full return URL to the official button', async () => {
@@ -246,13 +207,11 @@ test('production entries keep native OAuth and One Tap ownership', async () => {
     'src/components/auth/clerk-signin.ts',
     'src/components/auth/ClerkSignInButton.tsx',
     'src/components/auth/BlogClerkProvider.tsx',
-    'src/components/auth/SsoCallback.tsx',
     'src/components/auth/GoogleOneTapPrompt.tsx',
     'src/components/auth/SignInPanel.tsx',
     'src/components/auth/AccountButton.tsx',
     'src/components/comments/CommentsRoot.tsx',
     'src/components/reader/BookmarkButton.tsx',
-    'src/pages/sso-callback.astro',
   ];
   const sources = Object.fromEntries(await Promise.all(files.map(async file => [file, await readFile(file, 'utf8')])));
   const callers = [
@@ -264,15 +223,16 @@ test('production entries keep native OAuth and One Tap ownership', async () => {
   assert.match(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /\{...googleOneTapRedirect\(\)\}/);
   assert.doesNotMatch(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /installGoogleOneTapSignInOrUp|useClerk/);
   assert.doesNotMatch(sources['src/components/auth/clerk-signin.ts'], /transfer_to_sign_up|signUp\.create|authenticateWithGoogleOneTap\s*=|handleGoogleOneTapCallback\s*=/);
-  const authHost = ['clerk-signin.ts', 'ClerkSignInButton.tsx', 'BlogClerkProvider.tsx', 'SsoCallback.tsx']
+  const authHost = ['clerk-signin.ts', 'ClerkSignInButton.tsx', 'BlogClerkProvider.tsx']
     .map(file => sources[`src/components/auth/${file}`]).join('\n');
   assert.doesNotMatch(authHost, /clerk_popup_state|startClerkOAuthPopup|installOAuthSsoCallback|runClerkSsoCallback|watchClerkAuthSession|rememberClerkReturnUrl/);
-  assert.doesNotMatch(sources['src/components/auth/SsoCallback.tsx'], /useEffect|handleRedirectCallback|setActive/,
-    'The callback host adds no second effect or transfer owner around the native flow');
-  assert.match(sources['src/pages/sso-callback.astro'], /SsoCallback client:only="react"/);
-  assert.match(sources['src/pages/sso-callback.astro'], /slot="fallback"/);
-  for (const removed of ['sign-in.astro', 'sign-up.astro', 'auth-test.astro']) {
-    await assert.rejects(readFile(new URL('../src/pages/' + removed, import.meta.url)), {code: 'ENOENT'});
+  assert.doesNotMatch(authHost, /sso-callback|clerkSignInPath|clerkAfterAuthFallbackUrl|handleRedirectCallback/,
+    'Continuation stays with Clerk rather than a site-owned callback host');
+  for (const removed of [
+    'src/pages/sign-in.astro', 'src/pages/sign-up.astro', 'src/pages/auth-test.astro',
+    'src/pages/sso-callback.astro', 'src/components/auth/SsoCallback.tsx', 'src/layouts/AuthCallbackLayout.astro',
+  ]) {
+    await assert.rejects(readFile(new URL('../' + removed, import.meta.url)), {code: 'ENOENT'});
   }
   assert.match(sources['src/components/reader/BookmarkButton.tsx'], /openClerkSignIn\(clerk\)/);
   assert.equal([...callers.matchAll(/<ClerkSignInButton\b/g)].length, 4);

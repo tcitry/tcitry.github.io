@@ -10,18 +10,8 @@ type ClerkSignInOpener = {
   openSignIn: (props?: ClerkSignInProps) => unknown;
 };
 
-// The existing route hosts Clerk's complete sign-in-or-up tree. Its hash routes
-// own OAuth callbacks, profile completion, verification and session tasks.
-export const clerkSignInPath = '/sso-callback/';
-
-export function clerkAfterAuthFallbackUrl(location: Pick<Location, 'href'> = window.location) {
-  const url = new URL(location.href);
-  // Visiting the auth page directly must not redirect a signed-in user to itself.
-  return url.pathname.replace(/\/$/, '') === clerkSignInPath.replace(/\/$/, '') ? '/' : url.href;
-}
-
 export function panelClerkRedirect() {
-  const currentPage = clerkAfterAuthFallbackUrl();
+  const currentPage = window.location.href;
   return {
     forceRedirectUrl: currentPage,
     signUpForceRedirectUrl: currentPage,

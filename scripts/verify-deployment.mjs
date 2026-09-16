@@ -39,33 +39,11 @@ export function assertCanonical(html, route) {
   assert.equal(links[0].href, new URL(route, canonicalOrigin).href, `Canonical mismatch: ${route}`);
 }
 
-export function assertSsoCallback(html) {
-  assertCanonical(html, '/sso-callback/');
-  const robots = [...html.matchAll(/<meta\b[^>]*>/gi)].map(([tag]) => attributes(tag));
-  assert.ok(robots.some(tag => tag.name?.toLowerCase() === 'robots' && directives(tag.content).includes('noindex')), 'SSO callback must stay out of search indexes');
-  const islands = [...html.matchAll(/(<astro-island\b[^>]*>)([\s\S]*?)<\/astro-island\s*>/gi)]
-    .map(([, tag, body]) => ({attrs: attributes(tag), body}))
-    .filter(({attrs}) => {
-      try { return /(?:^|\/)SsoCallback(?:\.[^/]+)?\.js$/.test(new URL(attrs['component-url'], canonicalOrigin).pathname); }
-      catch { return false; }
-    });
-  assert.equal(islands.length, 1, 'SSO callback must hydrate one SsoCallback Astro island');
-  const {attrs, body} = islands[0];
-  assert.equal(attrs['component-export'], 'default', 'SSO callback must hydrate the SsoCallback component');
-  assert.equal(attrs.client, 'only', 'SSO callback must not SSR Clerk (window is undefined during prerender)');
-  // Astro also serializes fallback content inside a template. Only the visible
-  // status outside that template demonstrates usable pre-hydration content.
-  const visible = body.replace(/<template\b[^>]*>[\s\S]*?<\/template\s*>/gi, '').replace(/<!--[\s\S]*?-->/g, '');
-  const status = [...visible.matchAll(/<([a-z][\w:-]*)\b[^>]*>/gi)].some(match => {
-    if (attributes(match[0]).role !== 'status') return false;
-    const remainder = visible.slice(match.index + match[0].length);
-    const closing = new RegExp(`<\\/${match[1]}\\s*>`, 'i').exec(remainder);
-    if (!closing) return false;
-    const text = remainder.slice(0, closing.index).replace(/<[^>]*>/g, '').replace(/&nbsp;/gi, ' ');
-    return Boolean(decodeHTML(text).trim());
-  });
-  assert.ok(status, 'SSO callback must show a non-empty status fallback before hydration');
-  assert.doesNotMatch(html, /\bdata-pagefind-body\b/i, 'SSO callback is not article search corpus');
+export const removedAuthRoutes = ['/sign-in/', '/sign-up/', '/auth-test/', '/sso-callback/'];
+
+export function assertNotFound(response, route) {
+  assert.equal(response.status, 404, `Must return a real HTTP 404: ${route}`);
+  assert.match(response.body, /页面未找到/, `Custom 404 missing: ${route}`);
 }
 
 export function assertHtmlIndexing(html, environment, label) {
@@ -338,18 +316,11 @@ async function main() {
     assertXMLSiteURLs(response.body, route);
   }, 'Feeds and sitemap');
   const robots = await ready('/robots.txt', response => { assert.equal(response.status, 200, 'robots.txt status'); return response; }); assertRobotsPolicy(robots.body, environment);
-  for (const route of ['/chat/', '/me/', '/sign-in/', '/demos/2026/cloudflare-product-map/', '/__astro-deployment-verification-missing__/']) {
-    const response = await ready(route, response => { assert.equal(response.status, 404, `Must return a real HTTP 404: ${route}`); return response; });
-    assert.match(response.body, /页面未找到/, `Custom 404 missing: ${route}`); assertComments(response.body, false, route);
+  for (const route of ['/chat/', '/me/', ...removedAuthRoutes, '/sso-callback', '/demos/2026/cloudflare-product-map/', '/__astro-deployment-verification-missing__/']) {
+    const response = await ready(route, response => { assertNotFound(response, route); return response; });
+    assertComments(response.body, false, route);
     if (environment === 'preview') { assertHtmlIndexing(response.body, environment, route); if (!localPreview) assertHeaderIndexing(response.headers.get('x-robots-tag'), environment, route); }
   }
-  const ssoCallback = await ready('/sso-callback/', response => {
-    assert.equal(response.status, 200, 'SSO callback status');
-    assert.match(response.headers.get('content-type') || '', /text\/html/i, 'SSO callback content type');
-    return response;
-  });
-  assertSsoCallback(ssoCallback.body);
-  assertComments(ssoCallback.body, false, '/sso-callback/');
   const redirects = parseRedirects(redirectText);
   assert.ok(redirects.some(rule => rule.from === '/page/1/' && rule.to === '/'), 'Pagination redirect missing');
   for (const from of ['/chat/', '/me/']) assert.ok(!redirects.some(rule => rule.from === from), `Unpublished account URL does not need a redirect: ${from}`);
@@ -361,7 +332,7 @@ async function main() {
     const destination = await request(to); assert.equal(destination.status, 200, `Redirect destination missing: ${to}`);
     assertCanonical(destination.body, to); assertHtmlIndexing(destination.body, environment, to); assertHeaderIndexing(destination.headers.get('x-robots-tag'), environment, to);
   }, 'Legacy redirects');
-  for (const route of localPreview ? [] : ['/labs', '/archives', '/demos/2026/rounded-timeline', '/sso-callback']) {
+  for (const route of localPreview ? [] : ['/labs', '/archives', '/demos/2026/rounded-timeline']) {
     const response = await request(route); assert.equal(response.status, 307, `Trailing-slash redirect: ${route}`);
     assert.ok(response.headers.get('location'), `Trailing-slash Location missing: ${route}`);
     assert.equal(new URL(response.headers.get('location'), origin).href, `${origin}${route}/`, `Trailing-slash target: ${route}`);
