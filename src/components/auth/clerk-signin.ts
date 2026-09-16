@@ -1,5 +1,16 @@
 import type {LoadedClerk} from '@clerk/shared/types';
-import {authWindowState, authWindowUrl, openClerkAuthWindow} from './clerk-auth-window';
+
+type ClerkSignInProps = {
+  forceRedirectUrl?: string;
+  signUpForceRedirectUrl?: string;
+  withSignUp?: boolean;
+  transferable?: boolean;
+  oauthFlow?: 'auto' | 'redirect' | 'popup';
+};
+
+type ClerkSignInOpener = {
+  openSignIn: (props?: ClerkSignInProps) => unknown;
+};
 
 // The existing route hosts Clerk's complete sign-in-or-up tree. Its hash routes
 // own OAuth callbacks, profile completion, verification and session tasks.
@@ -7,16 +18,23 @@ export const clerkSignInPath = '/sso-callback/';
 
 export function clerkAfterAuthFallbackUrl(location: Pick<Location, 'href'> = window.location) {
   const url = new URL(location.href);
-  if (typeof window !== 'undefined' && location === window.location) {
-    const state = authWindowState();
-    if (state) return authWindowUrl(state);
-  }
   // Visiting the auth page directly must not redirect a signed-in user to itself.
   return url.pathname.replace(/\/$/, '') === clerkSignInPath.replace(/\/$/, '') ? '/' : url.href;
 }
 
-export function openClerkSignIn(clerk: Pick<LoadedClerk, 'client' | 'setActive'>, onError: (message: string) => void) {
-  openClerkAuthWindow(clerk, onError);
+export function panelClerkRedirect() {
+  const currentPage = clerkAfterAuthFallbackUrl();
+  return {
+    forceRedirectUrl: currentPage,
+    signUpForceRedirectUrl: currentPage,
+    withSignUp: true,
+    // Clerk owns the popup, callback messages, session activation and navigation.
+    oauthFlow: 'popup' as const,
+  };
+}
+
+export function openClerkSignIn(clerk: ClerkSignInOpener) {
+  clerk.openSignIn({...panelClerkRedirect(), transferable: true});
 }
 
 export function googleOneTapRedirect() {

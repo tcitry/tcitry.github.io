@@ -34,7 +34,7 @@ export default function BookmarkButton({pathname, title, tooltipContainer, descr
 
   async function toggle() {
     if (authState === 'connecting') return;
-    if (authState === 'anonymous') {setError(''); openClerkSignIn(clerk, setError); return;}
+    if (authState === 'anonymous') {openClerkSignIn(clerk); return;}
     if (authState === 'unavailable') {
       if (onAuthRetry) onAuthRetry();
       else retryConvexAuth(refreshConvexToken);
