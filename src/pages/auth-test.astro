@@ -1,0 +1,14 @@
+---
+import AuthCallbackLayout from '../layouts/AuthCallbackLayout.astro';
+import ClerkSignUpTrial from '../components/auth/ClerkSignUpTrial';
+---
+<AuthCallbackLayout title="Account access test" canonicalPath="/auth-test/">
+  <p>This page tests Clerk's official sign-up modal and OAuth popup. Use Sign up for a new account, or Sign in if you've already joined.</p>
+  <p>Clerk may ask you to complete additional steps before returning here.</p>
+  <ClerkSignUpTrial client:only="react"><p slot="fallback" role="status">Loading account access…</p></ClerkSignUpTrial>
+  <noscript><p>JavaScript is required to sign in.</p></noscript>
+</AuthCallbackLayout>
+<style is:global>
+  .auth-trial-actions {display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0;}
+  main > astro-island button {font: inherit; padding: .65rem 1rem; border: 1px solid #a1a1aa; border-radius: .5rem; background: white; color: #18181b; cursor: pointer;}
+</style>

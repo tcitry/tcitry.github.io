@@ -175,3 +175,21 @@ test('BlogClerkProvider types reused window.Clerk as ClerkProvider Clerk prop', 
   assert.match(types, /acceptedUiClerk: ClerkProp = uiClerk/);
   assert.doesNotMatch(provider, /useEffect|watchClerkAuthSession|authenticateWithPopup/);
 });
+
+test('isolated sign-up entry keeps its return target and its callback cannot loop', () => {
+  for (const [href, fallback] of [
+    ['https://example.test/auth-test/?trial=signup#return-target', 'https://example.test/auth-test/?trial=signup#return-target'],
+    ['https://example.test/sign-up', '/'],
+    ['https://example.test/sign-up/?sign_up_force_redirect_url=%2Fauth-test%2F#/sso-callback', '/'],
+  ]) {
+    withWindow(undefined, () => {
+      renderToStaticMarkup(createElement(BlogClerkProvider, {signUpUrl: '/sign-up/'}, 'trial'));
+      const [options] = globalThis.__clerkOptions;
+      assert.equal(options.signUpUrl, '/sign-up/');
+      assert.equal(options.signInUrl, '/sso-callback/');
+      assert.equal(options.signInFallbackRedirectUrl, fallback);
+      assert.equal(options.signUpFallbackRedirectUrl, fallback);
+      assert.equal(options.afterSignOutUrl, href);
+    }, href);
+  }
+});

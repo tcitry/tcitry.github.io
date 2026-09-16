@@ -43,6 +43,47 @@ function withPage(run, href = currentPage) {
   }
 }
 
+test('isolated sign-up trial delegates both return directions and callback completion to Clerk', async () => {
+  const fixture = {
+    name: 'signup-trial-fixture',
+    setup(build) {
+      build.onResolve({filter: /^@clerk\/react$/}, () => ({path: 'clerk', namespace: 'signup-trial-fixture'}));
+      build.onLoad({filter: /.*/, namespace: 'signup-trial-fixture'}, () => ({contents: `
+        export function ClerkProvider({children}) { return children; }
+        export function ClerkLoaded({children}) { return children; }
+        export function ClerkLoading() { return null; }
+        export function ClerkFailed() { return null; }
+        export function useAuth() { return globalThis.__signupTrial.auth; }
+        export function SignUpButton(props) { globalThis.__signupTrial.signup = props; return props.children; }
+        export function SignInButton(props) { globalThis.__signupTrial.signin = props; return props.children; }
+        export function SignOutButton(props) { globalThis.__signupTrial.signout = props; return props.children; }
+        export function SignUp(props) { globalThis.__signupTrial.callback = props; return null; }
+      `}));
+    },
+  };
+  const define = {'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify('pk_test_fixture')};
+  const {default: Trial} = await importBundle(new URL('../src/components/auth/ClerkSignUpTrial.tsx', import.meta.url), [fixture], define);
+  const {default: Callback} = await importBundle(new URL('../src/components/auth/ClerkSignUpCallback.tsx', import.meta.url), [fixture], define);
+  const href = 'https://example.test/auth-test/?trial=signup#return-target';
+  globalThis.__signupTrial = {auth: {isLoaded: true, isSignedIn: false}};
+  try {
+    withPage(() => {
+      renderToStaticMarkup(createElement(Trial));
+      const {children: signUpChild, ...signup} = globalThis.__signupTrial.signup;
+      const {children: signInChild, ...signin} = globalThis.__signupTrial.signin;
+      assert.deepEqual(signup, {mode: 'modal', oauthFlow: 'popup', forceRedirectUrl: href, signInForceRedirectUrl: href});
+      assert.deepEqual(signin, {...expectedRedirect, mode: 'modal', forceRedirectUrl: href, signUpForceRedirectUrl: href});
+      globalThis.__signupTrial.auth.isSignedIn = true;
+      assert.match(renderToStaticMarkup(createElement(Trial)), /signed in/);
+      assert.equal(globalThis.__signupTrial.signout.redirectUrl, href);
+    }, href);
+    withPage(() => {
+      renderToStaticMarkup(createElement(Callback));
+      assert.deepEqual(globalThis.__signupTrial.callback, {routing: 'hash', oauthFlow: 'popup'}, 'Callback must preserve SDK continuation and redirect metadata');
+    }, 'https://example.test/sign-up/?sign_up_force_redirect_url=%2Fauth-test%2F#/sso-callback');
+  } finally { delete globalThis.__signupTrial; }
+});
+
 test('native modal options preserve the complete article URL and comment hash', async () => {
   const {panelClerkRedirect, openClerkSignIn} = await importBundle(
     new URL('../src/components/auth/clerk-signin.ts', import.meta.url),

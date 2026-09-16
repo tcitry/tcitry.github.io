@@ -1,0 +1,8 @@
+---
+import AuthCallbackLayout from '../layouts/AuthCallbackLayout.astro';
+import ClerkSignUpCallback from '../components/auth/ClerkSignUpCallback';
+---
+<AuthCallbackLayout title="Complete your account" canonicalPath="/sign-up/">
+  <ClerkSignUpCallback client:only="react"><p slot="fallback" role="status">Completing sign-up…</p></ClerkSignUpCallback>
+  <noscript><p>JavaScript is required to complete sign-up. Enable it, then try again from the original page.</p></noscript>
+</AuthCallbackLayout>

@@ -1,9 +1,10 @@
 ---
 interface Props {
   title?: string;
+  canonicalPath?: string;
 }
 const title = Astro.props.title || 'Signing you in';
-const canonical = 'https://yindongliang.com/sso-callback/';
+const canonical = new URL(Astro.props.canonicalPath || '/sso-callback/', 'https://yindongliang.com').href;
 ---
 <!doctype html>
 <html lang="en">

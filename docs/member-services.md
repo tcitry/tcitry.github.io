@@ -26,6 +26,12 @@
 
 依据：[Clerk SignIn 属性](https://clerk.com/docs/react/reference/components/authentication/sign-in)、[SignInButton 的 modal 转注册行为](https://clerk.com/docs/react/reference/components/unstyled/sign-in-button)、[重定向配置](https://clerk.com/docs/guides/development/customize-redirect-urls)、[Clerk JS 6.31.0 会话激活与导航源码](https://github.com/clerk/javascript/blob/%40clerk%2Fclerk-js%406.31.0/packages/clerk-js/src/core/clerk.ts#L1949)。本次核对的运行时为 Clerk JS 6.31.0 / UI 1.32.1；本地 React SDK 版本以 lockfile 为准。
 
+### 独立 SignUp 生产试验
+
+`/auth-test/` 提供独立的官方 `SignUpButton mode="modal" oauthFlow="popup"` 入口；站点原登录按钮仍使用上述 SignIn combined flow。只有试验页与 `/sign-up/` 设置 `signUpUrl="/sign-up/"`，后者挂载完整官方 `<SignUp routing="hash" oauthFlow="popup" />`，承接 callback、资料补全与验证。两个页面均 noindex，使用独立页面外壳，避免与文章上的 Clerk islands 竞争配置。
+
+注册成功与已有账户反向登录都回到试验页的完整 URL；Clerk 的会话处理与窗口通信保持原生。该试验不包含 development 日志仪表、自定义 popup 或手写 transfer。Firefox development 实测已确认已有 GitHub 账号从 SignUp 进入时，会经 `external_account_exists` 转登录并让父页经过 callback；这不等于新用户直接注册也必须如此。用户已明确要求在生产实例继续验证首次注册，发布本身不代表该场景通过。
+
 ## 助手面板
 
 右下入口打开统一助手面板：
