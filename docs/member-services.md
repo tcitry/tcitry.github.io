@@ -14,23 +14,18 @@
 ## OAuth popup 与回调
 
 - 维护成本优先：使用 Clerk 官方组件、公开配置和原生 OAuth popup，不覆盖 `authenticateWithPopup` / `authenticateWithRedirect`，不自行实现跨窗口消息、关闭重试或 OAuth transfer。
-- `ClerkProvider` 统一设置相对路径 `signInUrl="/sso-callback/"`，不设置独立 `signUpUrl`。该页面用 `client:only="react"` 挂载 `<SignIn routing="hash" withSignUp oauthFlow="popup" />`，由官方 combined flow 处理 `#/create/sso-callback`、资料补全、邮箱/手机验证、MFA、Protect Check 与 Session Tasks。无需手写 `handleRedirectCallback`。
-- 登录入口仍打开 modal，并传入 `oauthFlow: 'popup'`、`withSignUp: true`。Google 和 GitHub 共用这些配置；One Tap 保留独立适配。原生 popup 通过 Clerk Account Portal 的 `/popup-callback` 完成窗口通信；首次用户需要继续注册时，父页可转到本站完整 SignIn 路由，不进入缺少 combined flow 的纯登录页面。
-- 入口的 `forceRedirectUrl` 和 `signUpForceRedirectUrl` 直接使用当前完整 URL，包含 query 和评论 hash。Clerk 负责 URL 编码及回跳；站点不再通过 sessionStorage 和全局 listener 恢复地址。认证页面本身不覆盖 force URL，尊重 SDK 携带的目标；直接访问认证页时 fallback 为 `/`，避免跳回自身。
+- `ClerkProvider` 设置 `signInUrl="/sso-callback/"` 和 `signUpUrl="/sso-callback/?intent=signUp"`，共用一个 `client:only="react"` 页面。外层 query 的 `intent=signUp` 选择官方 `<SignUp routing="hash" oauthFlow="popup" />`，其他情况使用原有 `<SignIn routing="hash" withSignUp oauthFlow="popup" />`；该选择只负责挂载界面，callback、补资料、验证、MFA、Protect Check 与 Session Tasks 都交给官方组件。旧 `#/create` 续流程继续可用，无需手写 `handleRedirectCallback`。
+- 首页、文章评论、助手账户和未登录收藏的现有入口统一通过官方 `SignUpButton mode="modal" oauthFlow="popup"` 或 `openSignUp()` 打开注册 modal，让新身份直接开始 SignUp。按钮仍展示「登录 / 注册」；已有账号由 Clerk 转登录，也可以使用 modal 内的 Sign in 链接。Google 和 GitHub 共用这些配置；One Tap 保留独立适配。该改动直接作用于真实入口，不保留独立测试页或额外 `/sign-up/` 页面。
+- 直接 SignUp modal 明确指定站内回调，避免未设置注册 URL 时部分续流程落到托管页面；没有新增回调页面或手写 transfer。原生 popup 通过 Clerk Account Portal 的 `/popup-callback` 完成窗口通信。直接开始 SignUp 是为了检验首次注册能否避免 SignIn → SignUp 交接，不保证缺字段、验证、Session Tasks 或已有账号反向登录时主页面不跳转；真实账号由用户直接在生产验收。
+- 入口的 `forceRedirectUrl` 和 `signInForceRedirectUrl` 直接使用当前完整 URL，包含 query 和评论 hash，分别覆盖注册成功与转登录成功。Clerk 负责 URL 编码及回跳；站点不再通过 sessionStorage 和全局 listener 恢复地址。认证页面本身不覆盖 force URL，尊重 SDK 携带的目标；直接访问认证页时 fallback 为 `/`，避免跳回自身。
 - 原生 popup 可能刷新原页面，也可能将后续注册移到原页面；不保证父页滚动位置完全不变。popup 的显示、关闭和错误处理使用 Clerk 默认行为，不再提供站点自定义倒计时、成功确认或 Retry 消息协议。
 - `ClerkProvider` 的公开 `routerPush` / `routerReplace` 接口由本站导航适配：目标与当前完整 URL 相同则直接返回，同文档的不同锚点使用浏览器原生 push / replace 导航，跨文档导航交回公开的 `metadata.windowNavigate` 默认处理。Clerk JS 6.31.0 的默认导航会在仅锚点跳转时也发出卸载信号，使 `setActive` 跳过会话状态恢复；适配让原页登录完成后正常更新 React 状态，无需用户手动刷新，并保留 query 和 hash。不要手工派发 `clerk:beforeunload`，也不要调用内部会话恢复方法。
 - Clerk Dashboard 的 Account Portal 配置无需改变，本站由 Provider 的 `signInUrl` 指定组件入口。GitHub OAuth App 的 Authorization callback 仍为 Clerk Frontend API 的 `oauth_callback`。Web 登录不使用 Native applications 的移动端 SSO 白名单。
 - 切换版本前已打开的旧自定义 popup 需要关闭后刷新原页重试；不保留旧窗口协议兼容层。
 
-验证：单元测试检查共享入口、完整 URL/hash、Provider 的 combined flow 配置、认证页 fallback 和官方组件挂载；`test:browser:clerk-ui` 检查 Astro 多个 island 的 Clerk UI 复用；`test:browser:clerk-navigation` 验证真实浏览器的同页锚点、历史记录、跨页导航，并对照 SDK 默认导航复现错误卸载信号。这些本地 fixture 不替代真实 Google/GitHub 回访、新用户注册与补资料验收，也不证明生产已上线。
+验证：单元测试检查共享入口、完整 URL/hash、Provider 的同页双入口配置、认证页 fallback 和官方组件挂载；`test:browser:clerk-ui` 检查 Astro 多个 island 的 Clerk UI 复用；`test:browser:clerk-navigation` 验证真实浏览器的同页锚点、历史记录、跨页导航，并对照 SDK 默认导航复现错误卸载信号。这些本地 fixture 不替代真实 Google/GitHub 回访、新用户注册与补资料验收，也不证明生产已上线。
 
-依据：[Clerk SignIn 属性](https://clerk.com/docs/react/reference/components/authentication/sign-in)、[SignInButton 的 modal 转注册行为](https://clerk.com/docs/react/reference/components/unstyled/sign-in-button)、[重定向配置](https://clerk.com/docs/guides/development/customize-redirect-urls)、[Clerk JS 6.31.0 会话激活与导航源码](https://github.com/clerk/javascript/blob/%40clerk%2Fclerk-js%406.31.0/packages/clerk-js/src/core/clerk.ts#L1949)。本次核对的运行时为 Clerk JS 6.31.0 / UI 1.32.1；本地 React SDK 版本以 lockfile 为准。
-
-### 独立 SignUp 生产试验
-
-`/auth-test/` 提供独立的官方 `SignUpButton mode="modal" oauthFlow="popup"` 入口；站点原登录按钮仍使用上述 SignIn combined flow。只有试验页与 `/sign-up/` 设置 `signUpUrl="/sign-up/"`，后者挂载完整官方 `<SignUp routing="hash" oauthFlow="popup" />`，承接 callback、资料补全与验证。两个页面均 noindex，使用独立页面外壳，避免与文章上的 Clerk islands 竞争配置。
-
-注册成功与已有账户反向登录都回到试验页的完整 URL；Clerk 的会话处理与窗口通信保持原生。该试验不包含 development 日志仪表、自定义 popup 或手写 transfer。Firefox development 实测已确认已有 GitHub 账号从 SignUp 进入时，会经 `external_account_exists` 转登录并让父页经过 callback；这不等于新用户直接注册也必须如此。用户已明确要求在生产实例继续验证首次注册，发布本身不代表该场景通过。
+依据：[Clerk SignIn 属性](https://clerk.com/docs/react/reference/components/authentication/sign-in)、[SignUpButton 的 modal、combined flow 与反向登录行为](https://clerk.com/docs/react/reference/components/unstyled/sign-up-button)、[重定向配置](https://clerk.com/docs/guides/development/customize-redirect-urls)、[Clerk JS 6.31.0 会话激活与导航源码](https://github.com/clerk/javascript/blob/%40clerk%2Fclerk-js%406.31.0/packages/clerk-js/src/core/clerk.ts#L1949)。本次核对的运行时为 Clerk JS 6.31.0 / UI 1.32.1；本地 React SDK 版本以 lockfile 为准。
 
 ## 助手面板
 

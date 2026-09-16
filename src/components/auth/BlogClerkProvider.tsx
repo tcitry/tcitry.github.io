@@ -1,7 +1,7 @@
 import {createContext, useContext, type ReactNode} from 'react';
 import {ClerkProvider} from '@clerk/react';
 import type {BrowserClerk, ClerkProp} from '@clerk/react';
-import {clerkAfterAuthFallbackUrl, clerkSignInPath} from './clerk-signin';
+import {clerkAfterAuthFallbackUrl, clerkSignInPath, clerkSignUpUrl} from './clerk-signin';
 import {clerkRouterPush, clerkRouterReplace} from './clerk-navigation';
 
 const BlogClerkTreeContext = createContext(false);
@@ -27,16 +27,14 @@ function loadedClerkInstance(): ClerkProp {
   return isUiClerk(clerk) ? clerk : undefined;
 }
 
-export default function BlogClerkProvider({children, signUpUrl}: {children: ReactNode; signUpUrl?: string}) {
+export default function BlogClerkProvider({children}: {children: ReactNode}) {
   const key = clerkPublishableKey();
   const nested = useContext(BlogClerkTreeContext);
   if (!key || nested) return children;
   const currentPage = window.location.href;
-  const signUpPath = signUpUrl ? new URL(signUpUrl, currentPage).pathname.replace(/\/$/, '') : null;
-  const onSignUpPage = signUpPath !== null && new URL(currentPage).pathname.replace(/\/$/, '') === signUpPath;
-  const signInRedirect = onSignUpPage ? '/' : clerkAfterAuthFallbackUrl();
+  const signInRedirect = clerkAfterAuthFallbackUrl();
   const loadedClerk = loadedClerkInstance();
-  return <ClerkProvider publishableKey={key} signInUrl={clerkSignInPath} {...(signUpUrl ? {signUpUrl} : {})} {...(loadedClerk ? {Clerk: loadedClerk} : {})} routerPush={clerkRouterPush} routerReplace={clerkRouterReplace} signInFallbackRedirectUrl={signInRedirect} signUpFallbackRedirectUrl={signInRedirect} afterSignOutUrl={currentPage} appearance={{elements: {modalBackdrop: 'blog-clerk-modal'}}}>
+  return <ClerkProvider publishableKey={key} signInUrl={clerkSignInPath} signUpUrl={clerkSignUpUrl} {...(loadedClerk ? {Clerk: loadedClerk} : {})} routerPush={clerkRouterPush} routerReplace={clerkRouterReplace} signInFallbackRedirectUrl={signInRedirect} signUpFallbackRedirectUrl={signInRedirect} afterSignOutUrl={currentPage} appearance={{elements: {modalBackdrop: 'blog-clerk-modal'}}}>
     <BlogClerkTreeContext.Provider value={true}>
       {children}
     </BlogClerkTreeContext.Provider>

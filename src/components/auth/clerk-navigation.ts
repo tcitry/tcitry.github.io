@@ -5,11 +5,6 @@ type RouterFn = NonNullable<ClerkProviderProps['routerPush']>;
 function navigateClerk(to: string, replace: boolean, metadata?: Parameters<RouterFn>[1]) {
   const current = new URL(window.location.href);
   const destination = new URL(to, current);
-  // Clerk UI removes trailing slashes. These isolated trial routes are Astro
-  // pages; keep their canonical URLs so a completed popup does not reload them.
-  if (destination.origin === current.origin && ['/auth-test', '/sign-up'].includes(destination.pathname)) {
-    destination.pathname += '/';
-  }
   const sameDocument = destination.origin === current.origin
     && destination.pathname === current.pathname && destination.search === current.search;
   if (!sameDocument && metadata?.windowNavigate) {

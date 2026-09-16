@@ -123,7 +123,7 @@ test('separate comment, One Tap and assistant trees do not reuse a headless wind
   });
 });
 
-test('provider configures one native combined sign-in root and retains the article hash', () => {
+test('provider uses one callback page for both native flows and retains the article hash', () => {
   const href = 'https://example.test/docs/article/?view=full#comments';
   const clerk = uiClerk();
   const nativePopup = async () => {};
@@ -132,7 +132,7 @@ test('provider configures one native combined sign-in root and retains the artic
     renderToStaticMarkup(createElement(BlogClerkProvider, null, createElement('span', null, 'ok')));
     const [options] = globalThis.__clerkOptions;
     assert.equal(options.signInUrl, '/sso-callback/');
-    assert.equal(Object.hasOwn(options, 'signUpUrl'), false, 'A separate sign-up URL would split the native combined flow');
+    assert.equal(options.signUpUrl, '/sso-callback/?intent=signUp', 'Direct SignUp must use the same site callback page, not the Account Portal');
     assert.equal(options.signInFallbackRedirectUrl, href);
     assert.equal(options.signUpFallbackRedirectUrl, href);
     assert.equal(options.afterSignOutUrl, href);
@@ -149,6 +149,7 @@ test('provider callback fallback points home instead of restarting sign-in', () 
   for (const href of [
     'https://example.test/sso-callback',
     'https://example.test/sso-callback/?intent=signIn#/create/sso-callback',
+    'https://example.test/sso-callback/?intent=signUp#/sso-callback',
   ]) {
     withWindow(undefined, () => {
       renderToStaticMarkup(createElement(BlogClerkProvider, null, createElement('span', null, 'ok')));
@@ -174,22 +175,4 @@ test('BlogClerkProvider types reused window.Clerk as ClerkProvider Clerk prop', 
   assert.match(types, /rejectedWeakClerk: ClerkProp = weakClerk/);
   assert.match(types, /acceptedUiClerk: ClerkProp = uiClerk/);
   assert.doesNotMatch(provider, /useEffect|watchClerkAuthSession|authenticateWithPopup/);
-});
-
-test('isolated sign-up entry keeps its return target and its callback cannot loop', () => {
-  for (const [href, fallback] of [
-    ['https://example.test/auth-test/?trial=signup#return-target', 'https://example.test/auth-test/?trial=signup#return-target'],
-    ['https://example.test/sign-up', '/'],
-    ['https://example.test/sign-up/?sign_up_force_redirect_url=%2Fauth-test%2F#/sso-callback', '/'],
-  ]) {
-    withWindow(undefined, () => {
-      renderToStaticMarkup(createElement(BlogClerkProvider, {signUpUrl: '/sign-up/'}, 'trial'));
-      const [options] = globalThis.__clerkOptions;
-      assert.equal(options.signUpUrl, '/sign-up/');
-      assert.equal(options.signInUrl, '/sso-callback/');
-      assert.equal(options.signInFallbackRedirectUrl, fallback);
-      assert.equal(options.signUpFallbackRedirectUrl, fallback);
-      assert.equal(options.afterSignOutUrl, href);
-    }, href);
-  }
 });

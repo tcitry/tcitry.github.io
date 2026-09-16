@@ -1,20 +1,11 @@
 import type {LoadedClerk} from '@clerk/shared/types';
 
-type ClerkSignInProps = {
-  forceRedirectUrl?: string;
-  signUpForceRedirectUrl?: string;
-  withSignUp?: boolean;
-  transferable?: boolean;
-  oauthFlow?: 'auto' | 'redirect' | 'popup';
-};
+type ClerkSignInOpener = Pick<LoadedClerk, 'openSignUp'>;
 
-type ClerkSignInOpener = {
-  openSignIn: (props?: ClerkSignInProps) => unknown;
-};
-
-// The existing route hosts Clerk's complete sign-in-or-up tree. Its hash routes
-// own OAuth callbacks, profile completion, verification and session tasks.
+// One existing page hosts the official component for the requested flow.
+// Clerk's hash routes own callbacks, verification and session tasks.
 export const clerkSignInPath = '/sso-callback/';
+export const clerkSignUpUrl = `${clerkSignInPath}?intent=signUp`;
 
 export function clerkAfterAuthFallbackUrl(location: Pick<Location, 'href'> = window.location) {
   const url = new URL(location.href);
@@ -26,15 +17,15 @@ export function panelClerkRedirect() {
   const currentPage = clerkAfterAuthFallbackUrl();
   return {
     forceRedirectUrl: currentPage,
-    signUpForceRedirectUrl: currentPage,
-    withSignUp: true,
+    signInForceRedirectUrl: currentPage,
     // Clerk owns the popup, callback messages, session activation and navigation.
     oauthFlow: 'popup' as const,
   };
 }
 
 export function openClerkSignIn(clerk: ClerkSignInOpener) {
-  clerk.openSignIn({...panelClerkRedirect(), transferable: true});
+  // Start new identities at SignUp; Clerk handles existing-account transfer.
+  clerk.openSignUp(panelClerkRedirect());
 }
 
 export function googleOneTapRedirect() {

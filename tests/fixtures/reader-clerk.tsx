@@ -44,6 +44,7 @@ export function useClerk() {
   return {
     signOut: async () => switchSession(null, null),
     openSignIn: () => switchSession('fixture-a', 'session-a'),
+    openSignUp: () => switchSession('fixture-a', 'session-a'),
     openUserProfile: () => {},
   };
 }
@@ -74,6 +75,8 @@ export function SignInButton({children}: {children?: ReactNode}) {
   }
   return <button type="button" onClick={signIn}>{children ?? '登录 / 注册'}</button>;
 }
+export const SignUpButton = SignInButton;
+
 export function UserButton({fallback}: {fallback?: ReactNode} = {}) {
   const {userId} = useAuth();
   if (!userId) return fallback ?? null;

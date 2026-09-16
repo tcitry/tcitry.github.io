@@ -81,20 +81,6 @@ try {
   assert.deepEqual(upstream, {...initial, clerkUnloads: 1}, 'The installed Clerk default emits a synthetic unload for the same hash URL without unloading the document');
   await same.close();
 
-  for (const path of ['/auth-test/', '/sign-up/']) {
-    const trial = await openArticle();
-    await trial.goto(`${base}${path}?trial=signup#return-target`);
-    await trial.waitForFunction(() => window.navigationFixture);
-    const before = await state(trial);
-    for (const method of ['clerkRouterPush', 'clerkRouterReplace']) {
-      const to = `${path.slice(0, -1)}?trial=signup#return-target`;
-      await trial.evaluate(({method, to}) => window.navigationFixture.navigate(method, to), {method, to});
-      await settle(trial);
-      assert.deepEqual(await state(trial), before, 'A slashless Clerk return to a canonical trial route must keep the document and active session update');
-    }
-    await trial.close();
-  }
-
   const hashes = await openArticle();
   const beforeHash = await state(hashes);
   await hashes.evaluate(() => window.navigationFixture.navigate('clerkRouterPush', '#replies'));

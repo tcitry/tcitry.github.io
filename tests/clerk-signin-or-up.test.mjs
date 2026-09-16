@@ -8,8 +8,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 const currentPage = 'https://example.test/docs/article/?view=full#comments';
 const expectedRedirect = {
   forceRedirectUrl: currentPage,
-  signUpForceRedirectUrl: currentPage,
-  withSignUp: true,
+  signInForceRedirectUrl: currentPage,
   oauthFlow: 'popup',
 };
 
@@ -43,47 +42,6 @@ function withPage(run, href = currentPage) {
   }
 }
 
-test('isolated sign-up trial delegates both return directions and callback completion to Clerk', async () => {
-  const fixture = {
-    name: 'signup-trial-fixture',
-    setup(build) {
-      build.onResolve({filter: /^@clerk\/react$/}, () => ({path: 'clerk', namespace: 'signup-trial-fixture'}));
-      build.onLoad({filter: /.*/, namespace: 'signup-trial-fixture'}, () => ({contents: `
-        export function ClerkProvider({children}) { return children; }
-        export function ClerkLoaded({children}) { return children; }
-        export function ClerkLoading() { return null; }
-        export function ClerkFailed() { return null; }
-        export function useAuth() { return globalThis.__signupTrial.auth; }
-        export function SignUpButton(props) { globalThis.__signupTrial.signup = props; return props.children; }
-        export function SignInButton(props) { globalThis.__signupTrial.signin = props; return props.children; }
-        export function SignOutButton(props) { globalThis.__signupTrial.signout = props; return props.children; }
-        export function SignUp(props) { globalThis.__signupTrial.callback = props; return null; }
-      `}));
-    },
-  };
-  const define = {'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify('pk_test_fixture')};
-  const {default: Trial} = await importBundle(new URL('../src/components/auth/ClerkSignUpTrial.tsx', import.meta.url), [fixture], define);
-  const {default: Callback} = await importBundle(new URL('../src/components/auth/ClerkSignUpCallback.tsx', import.meta.url), [fixture], define);
-  const href = 'https://example.test/auth-test/?trial=signup#return-target';
-  globalThis.__signupTrial = {auth: {isLoaded: true, isSignedIn: false}};
-  try {
-    withPage(() => {
-      renderToStaticMarkup(createElement(Trial));
-      const {children: signUpChild, ...signup} = globalThis.__signupTrial.signup;
-      const {children: signInChild, ...signin} = globalThis.__signupTrial.signin;
-      assert.deepEqual(signup, {mode: 'modal', oauthFlow: 'popup', forceRedirectUrl: href, signInForceRedirectUrl: href});
-      assert.deepEqual(signin, {...expectedRedirect, mode: 'modal', forceRedirectUrl: href, signUpForceRedirectUrl: href});
-      globalThis.__signupTrial.auth.isSignedIn = true;
-      assert.match(renderToStaticMarkup(createElement(Trial)), /signed in/);
-      assert.equal(globalThis.__signupTrial.signout.redirectUrl, href);
-    }, href);
-    withPage(() => {
-      renderToStaticMarkup(createElement(Callback));
-      assert.deepEqual(globalThis.__signupTrial.callback, {routing: 'hash', oauthFlow: 'popup'}, 'Callback must preserve SDK continuation and redirect metadata');
-    }, 'https://example.test/sign-up/?sign_up_force_redirect_url=%2Fauth-test%2F#/sso-callback');
-  } finally { delete globalThis.__signupTrial; }
-});
-
 test('native modal options preserve the complete article URL and comment hash', async () => {
   const {panelClerkRedirect, openClerkSignIn} = await importBundle(
     new URL('../src/components/auth/clerk-signin.ts', import.meta.url),
@@ -91,8 +49,8 @@ test('native modal options preserve the complete article URL and comment hash', 
   withPage(() => {
     assert.deepEqual(panelClerkRedirect(), expectedRedirect);
     const opened = [];
-    openClerkSignIn({openSignIn: props => opened.push(props)});
-    assert.deepEqual(opened, [{...expectedRedirect, transferable: true}]);
+    openClerkSignIn({openSignUp: props => opened.push(props)});
+    assert.deepEqual(opened, [expectedRedirect]);
   });
 });
 
@@ -104,7 +62,7 @@ test('callback fallback avoids a sign-in loop and otherwise preserves query stri
   for (const suffix of ['', '/', '?intent=signIn#/create/sso-callback', '/?sign_up_force_redirect_url=%2Fdocs%2Farticle%2F%23comments#/create/continue']) {
     withPage(() => {
       assert.equal(clerkAfterAuthFallbackUrl(), '/');
-      assert.deepEqual(panelClerkRedirect(), {...expectedRedirect, forceRedirectUrl: '/', signUpForceRedirectUrl: '/'});
+      assert.deepEqual(panelClerkRedirect(), {...expectedRedirect, forceRedirectUrl: '/', signInForceRedirectUrl: '/'});
     }, `https://example.test/sso-callback${suffix}`);
   }
   for (const href of [currentPage, 'https://example.test/?view=full#top', 'https://example.test/sso-callback/extra/#comments']) {
@@ -112,8 +70,9 @@ test('callback fallback avoids a sign-in loop and otherwise preserves query stri
   }
 });
 
-test('callback delegates sign-in, sign-up and continuation to the official combined component', async () => {
+test('one callback selects the official component and preserves continuation redirects', async () => {
   globalThis.__nativeSignIns = [];
+  globalThis.__nativeSignUps = [];
   const {default: SsoCallback} = await importBundle(
     new URL('../src/components/auth/SsoCallback.tsx', import.meta.url),
     [{
@@ -127,6 +86,10 @@ test('callback delegates sign-in, sign-up and continuation to the official combi
           export function ClerkFailed() { return null; }
           export function SignIn(props) {
             globalThis.__nativeSignIns.push(props);
+            return null;
+          }
+          export function SignUp(props) {
+            globalThis.__nativeSignUps.push(props);
             return null;
           }
         `}));
@@ -143,10 +106,21 @@ test('callback delegates sign-in, sign-up and continuation to the official combi
           'The host must not override native continuation redirects');
       }, `https://example.test/sso-callback/?intent=signIn${hash}`);
     }
-  } finally { delete globalThis.__nativeSignIns; }
+    const signInCount = globalThis.__nativeSignIns.length;
+    for (const hash of ['#/sso-callback', '#/continue', '#/verify-email-address']) {
+      withPage(() => {
+        renderToStaticMarkup(createElement(SsoCallback));
+        assert.deepEqual(globalThis.__nativeSignUps.at(-1), {routing: 'hash', oauthFlow: 'popup'});
+        assert.equal(globalThis.__nativeSignIns.length, signInCount, 'A SignUp continuation must not mount SignIn');
+      }, `https://example.test/sso-callback/?intent=signUp&sign_up_force_redirect_url=%2Farticle%2F%23comments${hash}`);
+    }
+  } finally {
+    delete globalThis.__nativeSignIns;
+    delete globalThis.__nativeSignUps;
+  }
 });
 
-test('ClerkSignInButton delegates its modal and full return URL to the official button', async () => {
+test('the real login button opens the official SignUp modal with both return URLs', async () => {
   globalThis.__nativeSignInButtons = [];
   const {default: ClerkSignInButton} = await importBundle(
     new URL('../src/components/auth/ClerkSignInButton.tsx', import.meta.url),
@@ -155,7 +129,7 @@ test('ClerkSignInButton delegates its modal and full return URL to the official 
       setup(build) {
         build.onResolve({filter: /^@clerk\/react$/}, () => ({path: 'clerk', namespace: 'native-signin-button-fixture'}));
         build.onLoad({filter: /.*/, namespace: 'native-signin-button-fixture'}, () => ({contents: `
-          export function SignInButton(props) {
+          export function SignUpButton(props) {
             globalThis.__nativeSignInButtons.push(props);
             return props.children;
           }
@@ -172,7 +146,7 @@ test('ClerkSignInButton delegates its modal and full return URL to the official 
   } finally { delete globalThis.__nativeSignInButtons; }
 });
 
-test('SignInPanel modal entry spreads the shared sign-in-or-up options', async () => {
+test('the assistant login entry starts the same official SignUp modal', async () => {
   globalThis.__clerkSignInFixture = {buttons: []};
   const {default: SignInPanel} = await importBundle(
     new URL('../src/components/auth/SignInPanel.tsx', import.meta.url),
@@ -188,7 +162,7 @@ test('SignInPanel modal entry spreads the shared sign-in-or-up options', async (
               export function ClerkLoaded({children}) { return children; }
               export function ClerkLoading() { return null; }
               export function ClerkFailed() { return null; }
-              export function SignInButton(props) {
+              export function SignUpButton(props) {
                 globalThis.__clerkSignInFixture.buttons.push(props);
                 return props.children ?? null;
               }
@@ -222,10 +196,10 @@ test('SignInPanel modal entry spreads the shared sign-in-or-up options', async (
     assert.equal(globalThis.__clerkSignInFixture.buttons.length, 1);
     const props = globalThis.__clerkSignInFixture.buttons[0];
     assert.equal(props.mode, 'modal');
-    assert.equal(props.withSignUp, true);
+    assert.equal(Object.hasOwn(props, 'withSignUp'), false);
     assert.equal(props.oauthFlow, 'popup');
     assert.equal(props.forceRedirectUrl, currentPage);
-    assert.equal(props.signUpForceRedirectUrl, currentPage);
+    assert.equal(props.signInForceRedirectUrl, currentPage);
   });
   delete globalThis.__clerkSignInFixture;
 });
@@ -246,7 +220,7 @@ test('anonymous bookmark sign-in uses the shared helper instead of a bare openSi
             clerk: `
               export function useAuth() { return {isLoaded: true, userId: null}; }
               export function useClerk() {
-                return {openSignIn: (props) => { globalThis.__bookmarkSignIn.opened.push(props); }};
+                return {openSignUp: (props) => { globalThis.__bookmarkSignIn.opened.push(props); }};
               }
             `,
             convex: `
@@ -277,7 +251,7 @@ test('anonymous bookmark sign-in uses the shared helper instead of a bare openSi
     }));
     assert.equal(typeof globalThis.__bookmarkSignIn.press, 'function');
     globalThis.__bookmarkSignIn.press();
-    assert.deepEqual(globalThis.__bookmarkSignIn.opened, [{...expectedRedirect, transferable: true}]);
+    assert.deepEqual(globalThis.__bookmarkSignIn.opened, [expectedRedirect]);
     delete globalThis.__bookmarkSignIn;
   });
 });
@@ -312,9 +286,11 @@ test('production entries keep native OAuth ownership and the existing One Tap ad
     'The callback host adds no second effect or transfer owner around the native flow');
   assert.match(sources['src/pages/sso-callback.astro'], /SsoCallback client:only="react"/);
   assert.match(sources['src/pages/sso-callback.astro'], /slot="fallback"/);
-  await assert.rejects(readFile(new URL('../src/pages/sign-in.astro', import.meta.url)), {code: 'ENOENT'});
+  for (const removed of ['sign-in.astro', 'sign-up.astro', 'auth-test.astro']) {
+    await assert.rejects(readFile(new URL('../src/pages/' + removed, import.meta.url)), {code: 'ENOENT'});
+  }
   assert.match(sources['src/components/reader/BookmarkButton.tsx'], /openClerkSignIn\(clerk\)/);
   assert.equal([...callers.matchAll(/<ClerkSignInButton\b/g)].length, 4);
-  assert.doesNotMatch(callers, /<SignInButton\b/);
-  assert.doesNotMatch(callers, /openSignIn\(/);
+  assert.doesNotMatch(callers, /<(?:SignInButton|SignUpButton)\b/);
+  assert.doesNotMatch(callers, /open(?:SignIn|SignUp)\(/);
 });
