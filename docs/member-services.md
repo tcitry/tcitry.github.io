@@ -4,7 +4,7 @@
 
 ## 架构
 
-- Clerk：登录、账户资料和 Billing UI。站点使用官方 Clerk modal 与原生 GitHub/Google OAuth popup。现有 `/sso-callback/` 挂载完整官方登录注册组件，承接需要继续注册、验证或补资料的流程。窗口通信、会话激活及回跳由 Clerk 管理；允许原页面刷新或承接后续步骤。实现与验收边界见下节。
+- Clerk：登录、账户资料和 Billing UI。原有登录入口打开由本站管理的单个登录窗口；窗口内的 `/sso-callback/` 使用官方登录注册组件完成 Google/GitHub 授权、注册与后续步骤。认证完成后原页面更新会话，收到确认的登录窗口倒计时关闭。实现与验收边界见下节。
 - Convex：认证与授权、评论、喜欢、收藏、通知、咨询、附件、AI 会话和流式状态。
 - `@convex-dev/agent`：AI thread、message 和 stream delta 持久化。
 - Cloudflare AI Search：公开文章检索与回答生成；不保存私人账户数据。
@@ -13,20 +13,19 @@
 
 ## OAuth popup 与回调
 
-2026-09-16 生产试验回退：统一从 SignUp modal 开始并未满足 GitHub 新用户全程留在 popup 的目标，用户还报告 Google 非 One Tap 出现回调页面跳转。因此入口恢复官方 SignIn modal + combined flow；已有 OAuth 账号从 SignUp 开始时可能需要反向转登录，不能把强制注册当作消除回调导航的通用方案。`/auth-test/` 与独立 `/sign-up/` 保持删除。GitHub 首次注册的 popup 体验仍未解决，恢复原配置不代表已通过该项验收。
+2026-09-16 调整：普通登录改为“本站打开一个窗口，Clerk 在该窗口内完成认证”。原页面不再先打开 modal，也不再调用 Clerk 的 `oauthFlow: 'popup'`。这是对窗口管理的明确接管；认证表单、OAuth、登录转注册、验证和 Session Tasks 仍由 Clerk 官方组件处理。`/auth-test/` 与独立 `/sign-up/` 保持删除。
 
-- 维护成本优先：使用 Clerk 官方组件、公开配置和原生 OAuth popup，不覆盖 `authenticateWithPopup` / `authenticateWithRedirect`，不自行实现跨窗口消息、关闭重试或 OAuth transfer。
-- `ClerkProvider` 统一设置相对路径 `signInUrl="/sso-callback/"`，不设置独立 `signUpUrl`。该页面用 `client:only="react"` 挂载 `<SignIn routing="hash" withSignUp oauthFlow="popup" />`，由官方 combined flow 处理 `#/create/sso-callback`、资料补全、邮箱/手机验证、MFA、Protect Check 与 Session Tasks。无需手写 `handleRedirectCallback`。
-- 登录入口仍打开 modal，并传入 `oauthFlow: 'popup'`、`withSignUp: true`。Google 和 GitHub 共用这些配置；One Tap 保留独立适配。原生 popup 通过 Clerk Account Portal 的 `/popup-callback` 完成窗口通信；首次用户需要继续注册时，父页可转到本站完整 SignIn 路由，不进入缺少 combined flow 的纯登录页面。
-- 入口的 `forceRedirectUrl` 和 `signUpForceRedirectUrl` 直接使用当前完整 URL，包含 query 和评论 hash。Clerk 负责 URL 编码及回跳；站点不再通过 sessionStorage 和全局 listener 恢复地址。认证页面本身不覆盖 force URL，尊重 SDK 携带的目标；直接访问认证页时 fallback 为 `/`，避免跳回自身。
-- 原生 popup 可能刷新原页面，也可能将后续注册移到原页面；不保证父页滚动位置完全不变。popup 的显示、关闭和错误处理使用 Clerk 默认行为，不再提供站点自定义倒计时、成功确认或 Retry 消息协议。
-- `ClerkProvider` 的公开 `routerPush` / `routerReplace` 接口由本站导航适配：目标与当前完整 URL 相同则直接返回，同文档的不同锚点使用浏览器原生 push / replace 导航，跨文档导航交回公开的 `metadata.windowNavigate` 默认处理。Clerk JS 6.31.0 的默认导航会在仅锚点跳转时也发出卸载信号，使 `setActive` 跳过会话状态恢复；适配让原页登录完成后正常更新 React 状态，无需用户手动刷新，并保留 query 和 hash。不要手工派发 `clerk:beforeunload`，也不要调用内部会话恢复方法。
-- Clerk Dashboard 的 Account Portal 配置无需改变，本站由 Provider 的 `signInUrl` 指定组件入口。GitHub OAuth App 的 Authorization callback 仍为 Clerk Frontend API 的 `oauth_callback`。Web 登录不使用 Native applications 的移动端 SSO 白名单。
-- 切换版本前已打开的旧自定义 popup 需要关闭后刷新原页重试；不保留旧窗口协议兼容层。
+- 首页、助手、文章评论、匿名喜欢及收藏共用 `openClerkAuthWindow()`。它在原始按钮事件中同步打开 `/sso-callback/?auth_window=<随机标记>`，请求 popup 窗口尺寸；Google 与 GitHub 使用同一路径。浏览器仍决定最终窗口外观，弹窗被拦截时入口显示重试提示。
+- 窗口内用 `client:only="react"` 挂载 `<SignIn routing="hash" withSignUp oauthFlow="redirect" />`。`redirect` 在这个已打开的窗口内前往 OAuth 提供方并返回，避免再启动一层 OAuth popup。`ClerkProvider` 保留相对 `signInUrl="/sso-callback/"` 与官方 combined flow；`#/sso-callback`、`#/create/sso-callback`、资料补全、验证和 Session Tasks 都由官方路由承接。
+- 窗口的标记保存在其自身 `sessionStorage`，供跨域授权返回后恢复。窗口模式下登录与注册的 force/fallback URL 均指向该次尝试的 `/sso-callback/` 完成地址。原页面不参与这些跳转，因此其文章 URL、query、hash 和页面状态保持原位。无窗口标记的旧回调继续尊重原有 redirect 参数。
+- 只有 `session.status === 'active'` 且没有 `currentTask` 才进入窗口完成界面。窗口通过随机标记对应的同源 `BroadcastChannel` 通知原页；原页调用公开 `client.reload()`，确认收到的 session ID 属于当前浏览器 client、状态为 active 且无待办，再用公开 `setActive()` 更新会话。消息本身不作为已登录凭据，不传递 JWT 或 OAuth token。
+- 原页确认会话后发回确认消息，窗口显示英文成功文案并倒计时 3 秒关闭。未收到确认时最多重试 30 秒，然后提示回到原标签页刷新；不提前自动关闭。原页监听最多保留 15 分钟，不通过轮询 `popup.closed` 判断 OAuth 是否结束，避免跨域 COOP 切断窗口引用时过早清理。
+- 本站维护窗口、同源通知、确认和关闭；不覆盖 Clerk 的认证方法，不手写 OAuth transfer 或 `handleRedirectCallback`。Google One Tap 保留独立适配。已有 `routerPush` / `routerReplace` 仍避免同页锚点跳转产生错误卸载信号。
+- Clerk Dashboard 与 OAuth 提供方配置无需因本方案改变。GitHub OAuth App 的 Authorization callback 仍为 Clerk Frontend API 的 `oauth_callback`。切换版本后应关闭旧认证窗口并刷新原页面，再从原按钮开始。
 
-验证：单元测试检查共享入口、完整 URL/hash、Provider 的 combined flow 配置、认证页 fallback 和官方组件挂载；`test:browser:clerk-ui` 检查 Astro 多个 island 的 Clerk UI 复用；`test:browser:clerk-navigation` 验证真实浏览器的同页锚点、历史记录、跨页导航，并对照 SDK 默认导航复现错误卸载信号。这些本地 fixture 不替代真实 Google/GitHub 回访、新用户注册与补资料验收，也不证明生产已上线。
+验证边界：本地检查覆盖窗口状态、消息确认、真实 Clerk client 会话校验条件与官方组件配置；既有 `test:browser:clerk-ui`、`test:browser:clerk-navigation` 覆盖多 island 复用及导航适配。这些 fixture 不替代真实 OAuth 验收。用户已明确要求先完成检查与生产部署，再自行从原登录入口验证 Google/GitHub 回访、新用户注册及补资料；本轮不代用户执行真实账户测试。生产上线以部署记录及线上版本为准，不能把构建成功写成真实登录已通过。
 
-依据：[Clerk SignIn 属性](https://clerk.com/docs/react/reference/components/authentication/sign-in)、[SignInButton 的 modal 转注册行为](https://clerk.com/docs/react/reference/components/unstyled/sign-in-button)、[重定向配置](https://clerk.com/docs/guides/development/customize-redirect-urls)、[Clerk JS 6.31.0 会话激活与导航源码](https://github.com/clerk/javascript/blob/%40clerk%2Fclerk-js%406.31.0/packages/clerk-js/src/core/clerk.ts#L1949)。本次核对的运行时为 Clerk JS 6.31.0 / UI 1.32.1；本地 React SDK 版本以 lockfile 为准。
+依据：[Clerk SignIn 属性](https://clerk.com/docs/react/reference/components/authentication/sign-in)、[重定向配置](https://clerk.com/docs/guides/development/customize-redirect-urls)、[公开 setActive 参数](https://clerk.com/docs/reference/types/set-active-params)、[Clerk JS 6.32.0 源码](https://github.com/clerk/javascript/blob/%40clerk%2Fclerk-js%406.32.0/packages/clerk-js/src/core/clerk.ts)、[UI 1.33.0 modal combined-flow 修复](https://github.com/clerk/javascript/pull/9758)。本次实际浏览器运行时为 Clerk JS 6.32.0 / UI 1.33.0；CDN 运行时可独立于站点发布更新，本地 React SDK 版本以 lockfile 为准。
 
 ## 助手面板
 
