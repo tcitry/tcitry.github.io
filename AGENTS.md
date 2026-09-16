@@ -17,7 +17,7 @@
 - 全站正文宽度以文章页为基准。Weekly 列表是宽布局例外：每页 40 期，桌面 4 列，并保留无 JavaScript 可访问的分页链接。
 - 主题默认代码块已被本站 HeroUI Pro CodeBlock 替换，不得退回主题默认展示。
 - 登录、AI 对话、个人内容、咨询、会员和账户操作统一进入右侧助手面板；评论与当前文章收藏保留在文章页。`/chat/`、`/me/` 和旧 Worker `/api/chat` 不属于兼容 URL。
-- 登录按钮必须先打开官方 Clerk modal；只有在 modal 内选择 Google / GitHub 后才启动 OAuth popup。不得把官方登录表单整体移入独立 popup，也不得用托管页面跳转替代此入口。修复 callback 时保留该交互顺序；恢复入口与解决额外 callback tab 必须分别说明验收状态。
+- 登录与注册仅保留 Google 和 Google One Tap；GitHub 认证连接按对应 Clerk 实例配置禁用，不删除既有用户或历史 GitHub Discussions。登录按钮必须先打开官方 Clerk modal，选择 Google 后才启动原生 OAuth popup；不得把登录表单整体移入独立窗口，也不得用托管页面跳转替代此入口。Google One Tap 直接使用官方组件，不覆盖认证或 callback 方法，不自行创建账号或执行 transfer。连接配置、代码部署与真实登录验收分别说明状态。
 - 助手只使用 Clerk + Convex Agent。AI Search 匿名搜索与登录后 AI 对话共用既有 `tcitry-blog-search` 及关联 Gateway `tcitry-blog-chat`；不得重新引入 Worker 聊天或检索桥。
 - 评论使用 Convex，以 canonical pathname 关联文章。未登录只返回聚合数量；正文、回复、附件和个人状态必须在后端鉴权。历史 GitHub Discussions 在另行迁移前保持不变。
 - 私人收藏、评论、咨询、附件和 AI 会话不得进入公开 AI Search 语料。

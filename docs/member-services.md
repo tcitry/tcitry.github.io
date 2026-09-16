@@ -4,31 +4,32 @@
 
 ## 架构
 
-- Clerk：登录、账户资料和 Billing UI。站点使用官方 Clerk modal 与原生 GitHub/Google OAuth popup。现有 `/sso-callback/` 挂载完整官方登录注册组件，承接需要继续注册、验证或补资料的流程。窗口通信、会话激活及回跳由 Clerk 管理；允许原页面刷新或承接后续步骤。实现与验收边界见下节。
+- Clerk：登录、账户资料和 Billing UI。认证入口限定为 Google OAuth 和 Google One Tap，使用官方 Clerk modal、原生 Google OAuth popup 与官方 `<GoogleOneTap />`。现有 `/sso-callback/` 挂载完整官方登录注册组件，承接需要继续注册、验证或补资料的流程。窗口通信、会话激活及回跳由 Clerk 管理；允许原页面刷新或承接后续步骤。实现与验收边界见下节。
 - Convex：认证与授权、评论、喜欢、收藏、通知、咨询、附件、AI 会话和流式状态。
 - `@convex-dev/agent`：AI thread、message 和 stream delta 持久化。
 - Cloudflare AI Search：公开文章检索与回答生成；不保存私人账户数据。
 
 浏览器使用 Clerk 为 Convex integration 提供的 audience `convex` session token。Convex 从 `ctx.auth.getUserIdentity()` 获取身份，业务函数不得信任客户端提交的用户 ID、角色、claims 或 `isPro`。
 
-## OAuth popup 与回调
+## Google 登录与回调
 
-2026-09-16 入口纠正：已撤回“点击登录直接打开装有 SignIn 表单的独立窗口”方案，恢复原页面官方 Clerk modal，只有点击其中的 Google / GitHub 才启动 OAuth popup。这是恢复既定交互，不代表额外 callback tab 已修复。后续修复必须保留 modal → OAuth popup 的顺序，不得再次整体搬走登录表单。
+2026-09-16 方案收敛：登录与注册仅保留 Google 和 Google One Tap。普通登录保持「原页面官方 Clerk modal → 选择 Google → 原生 OAuth popup」，One Tap 直接挂载官方组件。删除此前对 One Tap 认证与 callback 方法的覆盖，以及手写的新用户创建和 transfer；登录、注册与验证由 Clerk 处理。
 
-2026-09-16 生产试验回退：统一从 SignUp modal 开始并未满足 GitHub 新用户全程留在 popup 的目标，用户还报告 Google 非 One Tap 出现回调页面跳转。因此入口恢复官方 SignIn modal + combined flow；已有 OAuth 账号从 SignUp 开始时可能需要反向转登录，不能把强制注册当作消除回调导航的通用方案。`/auth-test/` 与独立 `/sign-up/` 保持删除。GitHub 首次注册的 popup 体验仍未解决，恢复原配置不代表已通过该项验收。
+**配置状态（2026-09-16）**：development 与 production 均已通过 Clerk CLI 更新，并通过 Frontend API 读回核验。GitHub connection 的 `enabled`、`authenticatable` 均为 `false`；邮箱与用户名的 `used_for_sign_in` 均为 `false`，邮箱 `sign_in_strategies=[]`，密码 `enabled`、`required` 均为 `false`。production 的 `identification_strategies` 仅包含 `oauth_google`，密码状态为 `off`；公开登录入口保留 Google OAuth 与 Google One Tap。
 
-- 维护成本优先：使用 Clerk 官方组件、公开配置和原生 OAuth popup，不覆盖 `authenticateWithPopup` / `authenticateWithRedirect`，不自行实现跨窗口消息、关闭重试或 OAuth transfer。
-- `ClerkProvider` 统一设置相对路径 `signInUrl="/sso-callback/"`，不设置独立 `signUpUrl`。该页面用 `client:only="react"` 挂载 `<SignIn routing="hash" withSignUp oauthFlow="popup" />`，由官方 combined flow 处理 `#/create/sso-callback`、资料补全、邮箱/手机验证、MFA、Protect Check 与 Session Tasks。无需手写 `handleRedirectCallback`。
-- 登录入口仍打开 modal，并传入 `oauthFlow: 'popup'`、`withSignUp: true`。Google 和 GitHub 共用这些配置；One Tap 保留独立适配。原生 popup 通过 Clerk Account Portal 的 `/popup-callback` 完成窗口通信；首次用户需要继续注册时，父页可转到本站完整 SignIn 路由，不进入缺少 combined flow 的纯登录页面。
-- 入口的 `forceRedirectUrl` 和 `signUpForceRedirectUrl` 直接使用当前完整 URL，包含 query 和评论 hash。Clerk 负责 URL 编码及回跳；站点不再通过 sessionStorage 和全局 listener 恢复地址。认证页面本身不覆盖 force URL，尊重 SDK 携带的目标；直接访问认证页时 fallback 为 `/`，避免跳回自身。
-- 原生 popup 可能刷新原页面，也可能将后续注册移到原页面；不保证父页滚动位置完全不变。popup 的显示、关闭和错误处理使用 Clerk 默认行为，不再提供站点自定义倒计时、成功确认或 Retry 消息协议。
-- `ClerkProvider` 的公开 `routerPush` / `routerReplace` 接口由本站导航适配：目标与当前完整 URL 相同则直接返回，同文档的不同锚点使用浏览器原生 push / replace 导航，跨文档导航交回公开的 `metadata.windowNavigate` 默认处理。Clerk JS 6.31.0 的默认导航会在仅锚点跳转时也发出卸载信号，使 `setActive` 跳过会话状态恢复；适配让原页登录完成后正常更新 React 状态，无需用户手动刷新，并保留 query 和 hash。不要手工派发 `clerk:beforeunload`，也不要调用内部会话恢复方法。
-- Clerk Dashboard 的 Account Portal 配置无需改变，本站由 Provider 的 `signInUrl` 指定组件入口。GitHub OAuth App 的 Authorization callback 仍为 Clerk Frontend API 的 `oauth_callback`。Web 登录不使用 Native applications 的移动端 SSO 白名单。
-- 切换版本前已打开的旧自定义 popup 需要关闭后刷新原页重试；不保留旧窗口协议兼容层。
+邮箱仍要求提供并验证，供 Billing 等账户功能使用；用户名保持可选，允许注册或后续为评论设置。Billing 与 One Tap client 配置在此次调整前后保持一致。此次未删除账号、撤销会话或清理历史密码数据，也未修改历史 GitHub Discussions；“仅保留 Google”描述当前公开登录入口与普通身份方式。平台配置读回成功不代表此次代码已部署，也不代表真实 OAuth 已验收。
 
-验证：单元测试检查共享入口、完整 URL/hash、Provider 的 combined flow 配置、认证页 fallback 和官方组件挂载；`test:browser:clerk-ui` 检查 Astro 多个 island 的 Clerk UI 复用；`test:browser:clerk-navigation` 验证真实浏览器的同页锚点、历史记录、跨页导航，并对照 SDK 默认导航复现错误卸载信号。这些本地 fixture 不替代真实 Google/GitHub 回访、新用户注册与补资料验收，也不证明生产已上线。
+- `ClerkProvider` 设置相对 `signInUrl="/sso-callback/"`，不设置独立 `signUpUrl`。该页面以 `client:only="react"` 挂载 `<SignIn routing="hash" withSignUp oauthFlow="popup" />`，由官方 combined flow 处理 `#/create/sso-callback`、资料补全、验证、MFA、Protect Check 与 Session Tasks。
+- 普通入口使用官方 `SignInButton mode="modal"` 或 `openSignIn()`，传入 `oauthFlow: 'popup'`、`withSignUp: true`。原生 popup 的窗口通信与会话激活交给 Clerk；本站不覆盖 `authenticateWithPopup` / `authenticateWithRedirect`，不维护窗口消息、关闭重试或手写 `handleRedirectCallback`。
+- 入口的 `forceRedirectUrl` 和 `signUpForceRedirectUrl` 使用当前完整 URL，保留 query 与评论 hash。认证页面尊重 SDK 携带的返回目标；直接访问认证页时 fallback 为 `/`，避免跳回自身。
+- Google One Tap 仅在 production 配置使用 `pk_live_` 且用户未登录时展示，登录与注册成功目标同样为当前完整 URL。本站不改写 `authenticateWithGoogleOneTap` 或 `handleGoogleOneTapCallback`，不调用 `signUp.create()` 补做首次注册。
+- 原生 popup 仍可能将需要继续注册或验证的流程交回原页面；上述官方配置不能作为“所有步骤必定留在 popup”的保证。之前整体移动登录表单到独立窗口的方案已撤回，`/auth-test/` 与独立 `/sign-up/` 保持删除。
+- Provider 的公开 `routerPush` / `routerReplace` 适配继续保留：目标与当前 URL 完全相同时直接返回，同文档不同锚点使用浏览器原生导航，跨文档交回 `metadata.windowNavigate`。这是针对此前 Clerk JS 6.31.0 同页锚点导航产生卸载信号的修复，不手工派发 `clerk:beforeunload` 或调用内部会话恢复方法。
+- Account Portal 页面路径无需随此调整改变。停用 GitHub 认证不代表迁移、删除或认领历史 GitHub Discussions。
 
-依据：[Clerk SignIn 属性](https://clerk.com/docs/react/reference/components/authentication/sign-in)、[SignInButton 的 modal 转注册行为](https://clerk.com/docs/react/reference/components/unstyled/sign-in-button)、[重定向配置](https://clerk.com/docs/guides/development/customize-redirect-urls)、[Clerk JS 6.31.0 会话激活与导航源码](https://github.com/clerk/javascript/blob/%40clerk%2Fclerk-js%406.31.0/packages/clerk-js/src/core/clerk.ts#L1949)。本次核对的运行时为 Clerk JS 6.31.0 / UI 1.32.1；本地 React SDK 版本以 lockfile 为准。
+验证边界：单元测试覆盖官方组件挂载、配置门槛、完整返回 URL、Provider 多 island 复用，以及认证和 callback 方法未被修改。既有 `test:browser:clerk-ui` 与 `test:browser:clerk-navigation` 是可用的浏览器检查入口，本轮不代用户运行浏览器或真实账号测试。连接禁用、生产发布成功和用户完成 Google 首次注册或回访是三个独立结果，不能相互替代。
+
+依据：[Clerk SignIn 属性](https://clerk.com/docs/react/reference/components/authentication/sign-in)、[SignInButton](https://clerk.com/docs/react/reference/components/unstyled/sign-in-button)、[GoogleOneTap](https://clerk.com/docs/react/reference/components/authentication/google-one-tap)、[重定向配置](https://clerk.com/docs/guides/development/customize-redirect-urls)。最近一次线上核对的运行时为 Clerk JS 6.32.0 / UI 1.33.0（2026-09-16）；此前 6.31.0 导航源码是历史排查依据。CDN 运行时可独立于站点部署更新，代码回退不会自动回退该版本；本地 React SDK 版本以 lockfile 为准。
 
 ## 助手面板
 
@@ -42,7 +43,7 @@
 
 会员状态和订阅管理位于 Clerk 头像菜单，不设置独立会员 tab。切换用户或 session 时销毁旧 Convex client，并清空私人列表、选择状态和草稿，防止上一账户数据短暂可见。
 
-Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录时展示。其独立适配继续处理首次 Google 用户的 sign-in-or-up transfer，并将成功目标设为当前页（含 hash）；不通过全局 listener 发起 transfer。
+Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录时展示；使用官方组件及当前页返回参数，首次注册与会话处理交给 Clerk。
 
 ## AI 对话
 

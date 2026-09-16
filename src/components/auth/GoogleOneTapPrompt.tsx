@@ -1,11 +1,9 @@
-import {GoogleOneTap, useClerk, useUser} from '@clerk/react';
+import {GoogleOneTap, useUser} from '@clerk/react';
 import BlogClerkProvider, {clerkPublishableKey} from './BlogClerkProvider';
-import {googleOneTapRedirect, installGoogleOneTapSignInOrUp} from './clerk-signin';
+import {googleOneTapRedirect} from './clerk-signin';
 
 function SignedOutPrompt() {
-  const clerk = useClerk();
   const {isLoaded, isSignedIn} = useUser();
-  if (isLoaded) installGoogleOneTapSignInOrUp(clerk);
   if (!isLoaded || isSignedIn) return null;
   return <GoogleOneTap {...googleOneTapRedirect()} />;
 }

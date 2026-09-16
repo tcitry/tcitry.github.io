@@ -241,7 +241,7 @@ test('anonymous bookmark sign-in uses the shared helper instead of a bare openSi
   });
 });
 
-test('production entries keep native OAuth ownership and the existing One Tap adapter', async () => {
+test('production entries keep native OAuth and One Tap ownership', async () => {
   const files = [
     'src/components/auth/clerk-signin.ts',
     'src/components/auth/ClerkSignInButton.tsx',
@@ -262,8 +262,8 @@ test('production entries keep native OAuth ownership and the existing One Tap ad
     sources['src/components/reader/BookmarkButton.tsx'],
   ].join('\n');
   assert.match(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /\{...googleOneTapRedirect\(\)\}/);
-  assert.match(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /installGoogleOneTapSignInOrUp\(clerk\)/);
-  assert.match(sources['src/components/auth/clerk-signin.ts'], /continuation:\s*'transfer_to_sign_up'/);
+  assert.doesNotMatch(sources['src/components/auth/GoogleOneTapPrompt.tsx'], /installGoogleOneTapSignInOrUp|useClerk/);
+  assert.doesNotMatch(sources['src/components/auth/clerk-signin.ts'], /transfer_to_sign_up|signUp\.create|authenticateWithGoogleOneTap\s*=|handleGoogleOneTapCallback\s*=/);
   const authHost = ['clerk-signin.ts', 'ClerkSignInButton.tsx', 'BlogClerkProvider.tsx', 'SsoCallback.tsx']
     .map(file => sources[`src/components/auth/${file}`]).join('\n');
   assert.doesNotMatch(authHost, /clerk_popup_state|startClerkOAuthPopup|installOAuthSsoCallback|runClerkSsoCallback|watchClerkAuthSession|rememberClerkReturnUrl/);
