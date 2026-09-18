@@ -4,7 +4,7 @@ import styles from './ScrollCapsuleNavbar.module.css';
 
 const collapseAt = 30;
 const expandAt = 8;
-const sections = ['Overview', 'Anatomy', 'Motion', 'Trade-offs'];
+const sections = ['Overview', 'Anatomy', 'Motion', 'Verification'];
 
 export default function ScrollCapsuleNavbar() {
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -67,7 +67,7 @@ export default function ScrollCapsuleNavbar() {
             <div className={styles.links}>
               {sections.map(section => <a href={`#capsule-${section.toLowerCase()}`} key={section}>{section}</a>)}
             </div>
-            <a className={styles.action} href="#capsule-trade-offs">Read notes</a>
+            <a className={styles.action} href="#capsule-verification">Inspect state</a>
           </nav>
         </div>
 
@@ -79,7 +79,7 @@ export default function ScrollCapsuleNavbar() {
             <section id={`capsule-${section.toLowerCase()}`} key={section}>
               <span>0{index + 2}</span>
               <h3>{section}</h3>
-              <p>{index === 0 ? '导航只维护一个布尔状态，视觉变化全部交给 CSS。' : index === 1 ? '外层控制位置与宽度，内层 nav 只负责品牌、链接和操作。' : index === 2 ? '双阈值避免临界滚动位置反复切换，requestAnimationFrame 合并高频读取。' : '这种设计辨识度高，但增加状态、CSS、主题与响应式维护成本。'}</p>
+              <p>{index === 0 ? '导航只维护一个布尔状态，视觉变化全部交给 CSS。' : index === 1 ? '外层控制位置与宽度，内层 nav 只负责品牌、链接和操作。' : index === 2 ? '双阈值避免临界滚动位置反复切换，requestAnimationFrame 合并高频读取。' : '滚动超过 30px 后进入胶囊状态，回到 8px 内恢复展开状态。'}</p>
             </section>
           ))}
         </article>
