@@ -48,12 +48,13 @@ function Notifications({onOpenConsultation}: Props) {
       {results.map(item => {
         const target = item.target;
         const label = notificationLabel(item);
+        const unread = item.readAt === null && target;
         const content = <>
-          <span className={styles.notificationTitle}>{item.readAt === null && <span className={styles.unread} aria-label="未读" />}{label}</span>
+          <span className={styles.notificationTitle}>{unread && <span className={styles.unread} aria-label="未读" />}{label}</span>
           <span className={styles.detail}>{target?.kind === 'consultation' ? target.title : target?.kind === 'comment' ? decodeURIComponent(target.pathname) : '这条消息已不可查看。'}</span>
           <time className={styles.date} dateTime={new Date(item.createdAt).toISOString()}>{new Intl.DateTimeFormat('zh-CN', {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}).format(item.createdAt)}</time>
         </>;
-        return <li className={styles.item} key={item._id} data-unread={item.readAt === null || undefined}>
+        return <li className={styles.item} key={item._id} data-unread={unread || undefined}>
           {target?.kind === 'comment' ? <a className={styles.link} href={`${target.pathname}#comment-${target.commentId}`} aria-busy={opening === item._id} onClick={(event: MouseEvent<HTMLAnchorElement>) => {
             if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
             event.preventDefault();
