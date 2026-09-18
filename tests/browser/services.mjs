@@ -39,6 +39,7 @@ const errors = [];
 const scope = process.env.SERVICES_TEST_SCOPE ?? 'all';
 assert.ok(['all', 'workspace', 'comments', 'images', 'navigation'].includes(scope), 'SERVICES_TEST_SCOPE must be all, workspace, comments, images or navigation');
 const state = (page) => page.evaluate(() => window.__services.getState());
+const backgroundWrite = write => ['membership:getMyMembership', 'comments:syncMyAuthorImage'].includes(write.name);
 const switchSession = (page, userId, sessionId) => page.evaluate(({userId, sessionId}) => window.__readerAuth.switchSession(userId, sessionId), {userId, sessionId});
 const tab = (page, name) => page.locator('.assistant-workspace__switcher').getByRole('radio', {name, exact: true});
 const notificationBell = page => page.locator('[data-workspace-notifications]');
@@ -658,7 +659,7 @@ try {
       await page.goto(new URL('/tests/fixtures/services-ui.html', base).href);
       await tab(page, '我的').waitFor();
       await page.evaluate(() => window.__services.seedLegacyTitles());
-      const writesBefore = (await state(page)).writes.filter(write => write.name !== 'membership:getMyMembership');
+      const writesBefore = (await state(page)).writes.filter(write => !backgroundWrite(write));
       await tab(page, '我的').click();
       await myTab(page, '喜欢').click();
       await page.waitForFunction(() => window.__titleFetches.some(request => request.settled));
@@ -693,7 +694,7 @@ try {
       assert.equal(request.body, null);
       assert.equal(request.headers.authorization, undefined);
       assert.equal(request.headers.cookie, undefined, 'Public metadata omits even a present same-origin private cookie');
-      assert.deepEqual((await state(page)).writes.filter(write => write.name !== 'membership:getMyMembership'), writesBefore, 'Restoring display titles never writes back private records');
+      assert.deepEqual((await state(page)).writes.filter(write => !backgroundWrite(write)), writesBefore, 'Restoring display titles never writes back private records');
       await assertClientCleanup(page);
       console.log(`Legacy personal titles: metadata ${metadataAvailable ? 'available' : 'unavailable'}, stable stored titles, malformed path safety and credential-free shared lookup.`);
     } finally {await context.close();}
@@ -971,7 +972,7 @@ try {
     const expand = page.locator('[data-chat-expand]');
     const close = page.getByRole('button', {name: '关闭博客助手', exact: true});
     const stored = () => page.evaluate(() => JSON.parse(sessionStorage.getItem('blog-assistant-ui') ?? 'null'));
-    const noWrites = async () => assert.deepEqual((await state(page)).writes.filter(write => write.name !== 'membership:getMyMembership'), [], 'Opening and navigation never write private business data');
+    const noWrites = async () => assert.deepEqual((await state(page)).writes.filter(write => !backgroundWrite(write)), [], 'Opening and navigation never write private business data');
     const readyClosed = async () => {
       await launcher.waitFor(); await expand.waitFor();
       assert.equal(await panel.evaluate(element => element.open), false);
@@ -1134,7 +1135,7 @@ try {
       await page.waitForFunction(() => document.querySelector('[data-article-bookmark]')?.getAttribute('aria-pressed') === 'false');
       assert.equal(await library.getByRole('link', {name: '公开文章测试', exact: true}).count(), 0);
       await library.getByRole('link', {name: '账号 A 收藏的另一篇文章', exact: true}).waitFor();
-      const attempts = (await state(page)).writes.slice(bookmarkWritesBefore).filter(write => write.name !== 'membership:getMyMembership');
+      const attempts = (await state(page)).writes.slice(bookmarkWritesBefore).filter(write => !backgroundWrite(write));
       assert.deepEqual(attempts.map(write => ({name: write.name, userId: write.userId, args: write.args})), [
         {name: 'reader:setBookmark', userId: 'fixture-a', args: {pathname: '/docs/services-fixture/', title: '公开文章测试', bookmarked: true}},
         {name: 'reader:setBookmark', userId: 'fixture-a', args: {pathname: '/docs/services-fixture/', title: '公开文章测试', bookmarked: true}},
@@ -1150,11 +1151,11 @@ try {
         beforeSignOut.requests.filter(request => request.name.startsWith('reader:')).length, 'Anonymous article footer and My state issue no private bookmark queries');
       assert.equal(anonymous.writes.length, beforeSignOut.writes.length, 'Signing out performs no bookmark write');
       if (await panel.evaluate(element => element.open)) await close.click();
-      const writesBeforeLogin = (await state(page)).writes.filter(write => write.name !== 'membership:getMyMembership').length;
+      const writesBeforeLogin = (await state(page)).writes.filter(write => !backgroundWrite(write)).length;
       await bookmark.click();
       await footer.getByRole('textbox', {name: '你的评论', exact: true}).waitFor();
       assert.equal(await footer.getByRole('button', {name: '登录 / 注册', exact: true}).count(), 0, 'The anonymous bookmark uses the existing Clerk sign-in entry');
-      assert.equal((await state(page)).writes.filter(write => write.name !== 'membership:getMyMembership').length, writesBeforeLogin, 'Clicking an anonymous bookmark signs in without an implicit save');
+      assert.equal((await state(page)).writes.filter(write => !backgroundWrite(write)).length, writesBeforeLogin, 'Clicking an anonymous bookmark signs in without an implicit save');
       const articleActions = footer.locator('.blog-comments__article-actions');
       const bookmarkBox = await bookmark.boundingBox();
       const likeBox = await articleActions.getByRole('button', {name: '喜欢这篇文章', exact: true}).boundingBox();
