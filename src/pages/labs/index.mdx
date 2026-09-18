@@ -7,6 +7,7 @@ layout: ../../layouts/LabsLayout.astro
 import AgentReplay from '../../components/demos/AgentReplay';
 import HeroUIShowcase from '../../components/demos/HeroUIShowcase';
 import HeroUIProShowcase from '../../components/demos/HeroUIProShowcase';
+import ScrollCapsuleNavbar from '../../components/demos/ScrollCapsuleNavbar';
 import SvelteCounter from '../../components/demos/SvelteCounter.svelte';
 import Notice from '@tcitry/astro-book/components/Notice';
 import packageJson from '../../../package.json';
@@ -17,6 +18,7 @@ export const demoDirectory = [
   {name: '无穷海岸 · 分形探索', description: '全屏探索曼德勃罗集合，切换八个位置与五种配色。', links: [{label: '打开页面', href: '/demos/2026/infinite-coast/'}, {label: '玩法说明', href: '/docs/Frontend/Tooling/infinite-coast/'}]},
   {name: 'Three.js · 3D 场景', description: '换形状、颜色与灯光，拖动查看物体，认识 3D 场景。', links: [{label: '打开页面', href: '/demos/2026/threejs-basics/'}]},
   {name: 'CSS · 圆弧时间线', description: '观察卡片之间的圆弧连接线怎样随页面宽度调整。', links: [{label: '打开页面', href: '/demos/2026/rounded-timeline/'}]},
+  {name: 'React · 滚动玻璃胶囊导航', description: '滚动内部页面，观察全宽导航通过双阈值收缩为玻璃胶囊。', links: [{label: '本页体验', href: '#react滚动玻璃胶囊导航'}, {label: '技术说明', href: '/docs/Frontend/React/scroll-aware-glass-capsule-navbar/'}]},
   {name: 'HeroUI Pro · 选择与评价', description: '试用句子里的选择器和星级评分，查看即时反馈。', links: [{label: '本页体验', href: '#heroui-pro选择与评价'}]},
   {name: 'HeroUI Pro · 消息回放', description: '暂停、调速和重放一段包含步骤、来源与代码的回答。', links: [{label: '本页体验', href: '#heroui-pro完整的消息过程'}, {label: '独立页面', href: '/labs/agent-replay/'}]},
   {name: 'HeroUI · 编辑与预览', description: '编辑内容、切换样式，观察表单与预览如何同步。', links: [{label: '本页体验', href: '#heroui编辑与即时预览'}]},
@@ -47,6 +49,12 @@ export const demoDirectory = [
     ))}
   </ul>
 </div>
+
+## React：滚动玻璃胶囊导航
+
+这个归档案例展示一种已从产品组件中移除、但仍有教学价值的交互：导航在页面顶部保持全宽透明，滚动后收缩为居中的玻璃胶囊。使用内部滚动区域体验，不会改变 Labs 页自身的阅读位置。
+
+<ScrollCapsuleNavbar client:visible />
 
 ## HeroUI Pro：选择与评价
 

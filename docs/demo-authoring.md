@@ -46,6 +46,7 @@ src/components/demos/
   HeroUIProShowcase.tsx       HeroUI Pro InlineSelect 与 Rating 的即时反馈
   HeroUIShowcase.tsx          HeroUI 编辑/预览、按钮状态、标签与折叠面板
   AgentReplay.tsx             React 状态、HeroUI 控件、HeroUI Pro 消息/步骤
+  ScrollCapsuleNavbar.tsx     滚动阈值、玻璃胶囊形态与工程取舍归档
   SvelteCounter.svelte        Svelte 状态、派生值与双向绑定
   DemoSurface.module.css     将 Book 主题变量传给 demo 的 HeroUI tokens
 src/pages/labs/
