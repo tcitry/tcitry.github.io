@@ -192,11 +192,11 @@ function queryValue(client: ConvexReactClient, name: string, args: Record<string
   }
   if (name === 'notifications:hasUnread') {
     if (!userId) throw new Error('Services fixture: anonymous unread notifications');
-    return notifications.some(notification => notification.recipient === userId && notification.readAt === null);
+    return notifications.some(notification => notification.recipient === userId && notification.readAt === null && notification.target);
   }
   if (name === 'notifications:unreadCount') {
     if (!userId) throw new Error('Services fixture: anonymous unread notifications');
-    return Math.min(notifications.filter(notification => notification.recipient === userId && notification.readAt === null).length, 100);
+    return Math.min(notifications.filter(notification => notification.recipient === userId && notification.readAt === null && notification.target).length, 100);
   }
   if (name === 'commentImages:getUrl') {
     if (!userId) throw new Error('Services fixture: anonymous image URL query');

@@ -107,14 +107,22 @@ export const list = query({
   },
 });
 
+async function accessibleUnreadCount(ctx: QueryCtx, recipient: string) {
+  const unread = await ctx.db.query("notifications")
+    .withIndex("by_recipient_and_readAt", q => q.eq("recipient", recipient).eq("readAt", undefined))
+    .take(UNREAD_COUNT_CAP + 1);
+  let count = 0;
+  for (const row of unread) {
+    if (await currentTarget(ctx, row)) count++;
+  }
+  return count;
+}
+
 export const hasUnread = query({
   args: {}, returns: v.boolean(),
   handler: async ctx => {
     const {tokenIdentifier: recipient} = await requireCommentIdentity(ctx);
-    const unread = await ctx.db.query("notifications")
-      .withIndex("by_recipient_and_readAt", q => q.eq("recipient", recipient).eq("readAt", undefined))
-      .first();
-    return unread !== null;
+    return (await accessibleUnreadCount(ctx, recipient)) > 0;
   },
 });
 
@@ -122,10 +130,7 @@ export const unreadCount = query({
   args: {}, returns: v.number(),
   handler: async ctx => {
     const {tokenIdentifier: recipient} = await requireCommentIdentity(ctx);
-    const unread = await ctx.db.query("notifications")
-      .withIndex("by_recipient_and_readAt", q => q.eq("recipient", recipient).eq("readAt", undefined))
-      .take(UNREAD_COUNT_CAP + 1);
-    return unread.length;
+    return accessibleUnreadCount(ctx, recipient);
   },
 });
 

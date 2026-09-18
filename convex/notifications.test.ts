@@ -102,7 +102,8 @@ describe("private reply notifications", () => {
     expect(JSON.stringify(inbox)).not.toMatch(/Erase parent|Erase reply/);
     await bob.mutation(api.comments.remove, {id: replyId});
     expect((await alice.query(api.notifications.list, {paginationOpts})).page[0].target).toBeNull();
-    expect(await alice.query(api.notifications.hasUnread, {})).toBe(true);
+    expect(await alice.query(api.notifications.hasUnread, {})).toBe(false);
+    expect(await alice.query(api.notifications.unreadCount, {})).toBe(0);
   });
 
   test("only successful author replies create one notification; replay is idempotent and expired members retain access", async () => {
@@ -137,6 +138,7 @@ describe("private reply notifications", () => {
     // Reading a stored notification rechecks current consultation access.
     await t.run(ctx => ctx.db.patch("consultationThreads", threadId, {owner: `${issuer}|other`}));
     expect((await alice.query(api.notifications.list, {paginationOpts})).page[0].target).toBeNull();
+    expect(await alice.query(api.notifications.unreadCount, {})).toBe(0);
   });
 
   test("failed cross-page replies create no notifications and callers cannot supply recipients", async () => {
@@ -174,12 +176,22 @@ describe("private reply notifications", () => {
   test("unread lookup includes older pages and ignores every defined read timestamp and other recipients", async () => {
     const {t, alice, bob} = setup();
     const [oldUnread, secondUnread] = await t.run(async ctx => {
-      const first = await ctx.db.insert("notifications", {recipient: `${issuer}|alice`, kind: "comment_reply", createdAt: 1});
-      const second = await ctx.db.insert("notifications", {recipient: `${issuer}|alice`, kind: "consultation_reply", createdAt: 2});
+      const parentId = await ctx.db.insert("comments", {pathname, owner: `${issuer}|alice`, authorName: "Alice", body: "Parent", createdAt: 0});
+      const replyId = await ctx.db.insert("comments", {pathname, owner: `${issuer}|bob`, authorName: "Bob", body: "Reply", createdAt: 1, parentId});
+      const bobParent = await ctx.db.insert("comments", {pathname, owner: `${issuer}|bob`, authorName: "Bob", body: "Bob parent", createdAt: 2});
+      const bobReply = await ctx.db.insert("comments", {pathname, owner: `${issuer}|alice`, authorName: "Alice", body: "Reply to Bob", createdAt: 3, parentId: bobParent});
+      const threadId = await ctx.db.insert("consultationThreads", {
+        owner: `${issuer}|alice`, title: "Thread", status: "replied", createdAt: 0, updatedAt: 1, requestId: "request_unread_lookup",
+      });
+      const messageId = await ctx.db.insert("consultationMessages", {
+        threadId, sender: "author", content: "Author reply", createdAt: 1, requestId: "request_unread_msg01", senderIdentity: `${issuer}|author`,
+      });
+      const first = await ctx.db.insert("notifications", {recipient: `${issuer}|alice`, kind: "comment_reply", commentId: replyId, createdAt: 1});
+      const second = await ctx.db.insert("notifications", {recipient: `${issuer}|alice`, kind: "consultation_reply", threadId, messageId, createdAt: 2});
       for (let index = 0; index < 30; index++) {
-        await ctx.db.insert("notifications", {recipient: `${issuer}|alice`, kind: "comment_reply", createdAt: 10 + index, readAt: index});
+        await ctx.db.insert("notifications", {recipient: `${issuer}|alice`, kind: "comment_reply", commentId: replyId, createdAt: 10 + index, readAt: index});
       }
-      await ctx.db.insert("notifications", {recipient: `${issuer}|bob`, kind: "comment_reply", createdAt: 100});
+      await ctx.db.insert("notifications", {recipient: `${issuer}|bob`, kind: "comment_reply", commentId: bobReply, createdAt: 100});
       return [first, second];
     });
     const firstPage = await alice.query(api.notifications.list, {paginationOpts});
@@ -227,11 +239,13 @@ describe("private reply notifications", () => {
   test("unreadCount caps the badge without scanning every read row", async () => {
     const {t, alice} = setup();
     await t.run(async ctx => {
+      const parentId = await ctx.db.insert("comments", {pathname, owner: `${issuer}|alice`, authorName: "Alice", body: "Parent", createdAt: 0});
+      const commentId = await ctx.db.insert("comments", {pathname, owner: `${issuer}|bob`, authorName: "Bob", body: "Reply", createdAt: 1, parentId});
       for (let index = 0; index < 120; index++) {
-        await ctx.db.insert("notifications", {recipient: `${issuer}|alice`, kind: "comment_reply", createdAt: index});
+        await ctx.db.insert("notifications", {recipient: `${issuer}|alice`, kind: "comment_reply", commentId, createdAt: index});
       }
       for (let index = 0; index < 40; index++) {
-        await ctx.db.insert("notifications", {recipient: `${issuer}|alice`, kind: "new_comment", createdAt: 200 + index, readAt: index});
+        await ctx.db.insert("notifications", {recipient: `${issuer}|alice`, kind: "new_comment", commentId, createdAt: 200 + index, readAt: index});
       }
     });
     expect(await alice.query(api.notifications.unreadCount, {})).toBe(100);
