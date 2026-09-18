@@ -229,7 +229,7 @@ try {
       assert.equal(await page.locator('[data-notification-unread]').count(), 0, 'The author cannot see another recipient’s unread badge');
       await switchSession(page, 'fixture-a', 'session-notification-badge');
       await page.locator('[data-notification-unread]').waitFor();
-      assert.equal(await notificationBell(page).getAttribute('aria-label'), '消息（2 条未读）');
+      assert.equal(await notificationBell(page).getAttribute('aria-label'), '消息（1 条未读）');
       await page.evaluate(() => window.__services.markAllNotificationsRead('fixture-a'));
       await page.locator('[data-notification-unread]').waitFor({state: 'hidden'});
       assert.equal(await notificationBell(page).getAttribute('aria-label'), '消息');
@@ -507,7 +507,7 @@ try {
       await switchSession(page, 'fixture-a', 'session-a-notifications');
       await notifications.getByRole('button', {name: /博主回复了你的咨询/}).waitFor();
       await page.locator('[data-notification-unread]').waitFor();
-      const unreadTotal = (await state(page)).notifications.filter(item => item.recipient === 'fixture-a' && item.readAt === null).length;
+      const unreadTotal = (await state(page)).notifications.filter(item => item.recipient === 'fixture-a' && item.readAt === null && item.target).length;
       assert.equal(await notificationBell(page).getAttribute('aria-label'), `消息（${unreadTotal} 条未读）`);
       assert.equal(await notificationBell(page).getAttribute('aria-pressed'), 'true');
       const unavailable = notifications.locator('li').filter({hasText: '这条消息已不可查看。'});
@@ -924,7 +924,7 @@ try {
     await widgetPage.waitForFunction(() => document.querySelector('[data-chat-launcher]')?.hasAttribute('data-signed-in'));
     await widgetPage.evaluate(() => window.__services.seedPersonal());
     await widgetPage.locator('[data-chat-launcher] [data-notification-unread]').waitFor();
-    assert.equal(await launcher.getAttribute('aria-label'), '打开博客助手（2 条未读）');
+    assert.equal(await launcher.getAttribute('aria-label'), '打开博客助手（1 条未读）');
     await switchSession(widgetPage, 'fixture-author', 'session-author-callback');
     await widgetPage.locator('[data-chat-launcher] [data-notification-unread]').waitFor({state: 'hidden'});
     assert.equal(await launcher.getAttribute('aria-label'), '打开博客助手');
