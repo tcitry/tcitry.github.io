@@ -18,32 +18,45 @@ function setup() {
   return {
     t, alice: t.withIdentity(aliceIdentity),
     bob: t.withIdentity({issuer, subject: "bob", preferredUsername: "Bob"}),
-    author: t.withIdentity({issuer, subject: "author"}),
+    author: t.withIdentity({issuer, subject: "author", preferredUsername: "Author"}),
   };
 }
 afterEach(() => vi.unstubAllEnvs());
 
 describe("private reply notifications", () => {
   test("comment replies notify only the saved parent owner without storing bodies or images", async () => {
-    const {t, alice, bob} = setup();
+    const {t, alice, bob, author} = setup();
     expect(await alice.query(api.notifications.hasUnread, {})).toBe(false);
     const parentId = await alice.mutation(api.comments.add, {pathname, body: "Private parent content"});
+    expect(await author.query(api.notifications.unreadCount, {})).toBe(1);
+    expect((await author.query(api.notifications.list, {paginationOpts})).page[0]).toMatchObject({
+      kind: "new_comment", target: {kind: "comment", pathname, commentId: parentId, threaded: false},
+    });
     const replyId = await bob.mutation(api.comments.add, {pathname, body: "Private reply content", parentId});
     expect(await alice.query(api.notifications.hasUnread, {})).toBe(true);
     expect(await bob.query(api.notifications.hasUnread, {})).toBe(false);
+    expect(await author.query(api.notifications.hasUnread, {})).toBe(true);
+    expect(await alice.query(api.notifications.unreadCount, {})).toBe(1);
+    expect(await author.query(api.notifications.unreadCount, {})).toBe(2);
     const aliceInbox = (await alice.query(api.notifications.list, {paginationOpts})).page;
     expect(aliceInbox).toEqual([{
       _id: expect.any(String), kind: "comment_reply", createdAt: expect.any(Number), readAt: null,
       target: {kind: "comment", pathname, commentId: replyId},
     }]);
     expect((await bob.query(api.notifications.list, {paginationOpts})).page).toEqual([]);
+    expect((await author.query(api.notifications.list, {paginationOpts})).page[0]).toEqual({
+      _id: expect.any(String), kind: "new_comment", createdAt: expect.any(Number), readAt: null,
+      target: {kind: "comment", pathname, commentId: replyId, threaded: true},
+    });
     const raw = await t.run(ctx => ctx.db.query("notifications").take(5));
-    expect(raw[0].recipient).toBe(`${issuer}|alice`);
+    expect(new Set(raw.map(row => row.recipient))).toEqual(new Set([`${issuer}|alice`, `${issuer}|author`]));
     expect(JSON.stringify(raw)).not.toMatch(/Private|body|images|authorName/);
     const nextReply = await alice.mutation(api.comments.add, {pathname, body: "Reply to Bob", parentId: replyId});
     expect((await bob.query(api.notifications.list, {paginationOpts})).page[0].target).toEqual({kind: "comment", pathname, commentId: nextReply});
+    expect((await author.query(api.notifications.list, {paginationOpts})).page[0].target).toEqual({kind: "comment", pathname, commentId: nextReply, threaded: true});
     await alice.mutation(api.comments.add, {pathname, body: "Reply to self", parentId});
     expect((await alice.query(api.notifications.list, {paginationOpts})).page).toHaveLength(1);
+    expect(await author.query(api.notifications.unreadCount, {})).toBe(4);
   });
 
   test("anonymous and other accounts cannot list or mark another recipient's notification", async () => {
@@ -53,10 +66,11 @@ describe("private reply notifications", () => {
     const id = (await alice.query(api.notifications.list, {paginationOpts})).page[0]._id;
     await expect(t.query(api.notifications.list, {paginationOpts})).rejects.toThrow("UNAUTHENTICATED");
     await expect(t.query(api.notifications.hasUnread, {})).rejects.toThrow("UNAUTHENTICATED");
+    await expect(t.query(api.notifications.unreadCount, {})).rejects.toThrow("UNAUTHENTICATED");
     await expect(t.mutation(api.notifications.markRead, {id})).rejects.toThrow("UNAUTHENTICATED");
     for (const outsider of [bob, t.withIdentity({...aliceIdentity, issuer: "https://other.example.test"})]) {
       expect((await outsider.query(api.notifications.list, {paginationOpts})).page).toEqual([]);
-      expect(await outsider.query(api.notifications.hasUnread, {})).toBe(false);
+      expect(await outsider.query(api.notifications.unreadCount, {})).toBe(0);
       await expect(outsider.mutation(api.notifications.markRead, {id})).rejects.toThrow("NOT_FOUND");
     }
     await expect(bob.query(api.notifications.list, {
@@ -70,6 +84,7 @@ describe("private reply notifications", () => {
     })).rejects.toThrow();
     await alice.mutation(api.notifications.markRead, {id});
     expect(await alice.query(api.notifications.hasUnread, {})).toBe(false);
+    expect(await alice.query(api.notifications.unreadCount, {})).toBe(0);
     const readAt = (await alice.query(api.notifications.list, {paginationOpts})).page[0].readAt;
     expect(readAt).toEqual(expect.any(Number));
     await alice.mutation(api.notifications.markRead, {id});
@@ -96,18 +111,26 @@ describe("private reply notifications", () => {
     const reply = {threadId, content: "Private author reply", requestId: "request_reply_00001"};
     await expect(bob.action(api.consultations.reply, reply)).rejects.toThrow("NOT_FOUND");
     expect((await alice.query(api.notifications.list, {paginationOpts})).page).toEqual([]);
+    expect((await author.query(api.notifications.list, {paginationOpts})).page).toEqual([{
+      _id: expect.any(String), kind: "consultation_message", createdAt: expect.any(Number), readAt: null,
+      target: expect.objectContaining({kind: "consultation", threadId, title: "Private consultation title"}),
+    }]);
     const messageId = await author.action(api.consultations.reply, reply);
     await author.action(api.consultations.reply, reply);
-    await alice.action(api.consultations.send, {threadId, content: "Private followup", requestId: "request_followup_01"});
+    const followupId = await alice.action(api.consultations.send, {threadId, content: "Private followup", requestId: "request_followup_01"});
     const lapsed = t.withIdentity({...aliceIdentity, pla: "u:free"});
     const notifications = (await lapsed.query(api.notifications.list, {paginationOpts})).page;
     expect(await lapsed.query(api.notifications.hasUnread, {})).toBe(true);
-    expect(await author.query(api.notifications.hasUnread, {})).toBe(false);
+    expect(await author.query(api.notifications.hasUnread, {})).toBe(true);
+    expect(await author.query(api.notifications.unreadCount, {})).toBe(2);
     expect(notifications).toHaveLength(1);
     expect(notifications[0]).toMatchObject({kind: "consultation_reply", target: {kind: "consultation", threadId, messageId, title: "Private consultation title"}});
     expect(JSON.stringify(notifications)).not.toMatch(/Private author reply|Private first message|Private followup/);
     expect(JSON.stringify(await t.run(ctx => ctx.db.query("notifications").take(5)))).not.toMatch(/Private/);
-    expect((await author.query(api.notifications.list, {paginationOpts})).page).toEqual([]);
+    expect((await author.query(api.notifications.list, {paginationOpts})).page.map(row => row.target)).toEqual([
+      {kind: "consultation", threadId, messageId: followupId, title: "Private consultation title"},
+      expect.objectContaining({kind: "consultation", threadId, title: "Private consultation title"}),
+    ]);
     await alice.mutation(api.consultations.close, {threadId});
     await expect(author.action(api.consultations.reply, {...reply, requestId: "request_closed_0001"})).rejects.toThrow("THREAD_CLOSED");
     expect((await alice.query(api.notifications.list, {paginationOpts})).page).toHaveLength(1);
@@ -119,13 +142,14 @@ describe("private reply notifications", () => {
   test("failed cross-page replies create no notifications and callers cannot supply recipients", async () => {
     const {t, alice, bob} = setup();
     const parentId = await alice.mutation(api.comments.add, {pathname, body: "Parent"});
+    expect(await t.run(ctx => ctx.db.query("notifications").collect())).toHaveLength(1);
     await expect(bob.mutation(api.comments.add, {pathname: "/posts/other/", body: "Wrong page", parentId})).rejects.toThrow("INVALID_ARGUMENT");
     await expect(bob.mutation(api.comments.add, {
       pathname, body: "Forged recipient", parentId,
       // @ts-expect-error Reply recipients cannot be chosen by the sender.
       recipient: `${issuer}|other`,
     })).rejects.toThrow();
-    expect(await t.run(ctx => ctx.db.query("notifications").take(1))).toEqual([]);
+    expect(await t.run(ctx => ctx.db.query("notifications").collect())).toHaveLength(1);
   });
 
   test("notifications paginate newest first without leaking other recipients", async () => {
@@ -167,7 +191,50 @@ describe("private reply notifications", () => {
     expect(await alice.query(api.notifications.hasUnread, {})).toBe(true);
     await alice.mutation(api.notifications.markRead, {id: secondUnread});
     expect(await alice.query(api.notifications.hasUnread, {})).toBe(false);
+    expect(await alice.query(api.notifications.unreadCount, {})).toBe(0);
     expect(await bob.query(api.notifications.hasUnread, {})).toBe(true);
+    expect(await bob.query(api.notifications.unreadCount, {})).toBe(1);
     expect((await t.run(ctx => ctx.db.get("notifications", oldUnread)))?.readAt).toEqual(expect.any(Number));
+  });
+
+  test("author sees new comments and threaded replies without duplicating a reply on the author's own comment", async () => {
+    const {t, alice, bob, author} = setup();
+    const topId = await alice.mutation(api.comments.add, {pathname, body: "Top-level"});
+    const authorParent = await author.mutation(api.comments.add, {pathname, body: "Author parent"});
+    const replyOnAuthor = await bob.mutation(api.comments.add, {pathname, body: "Reply on author", parentId: authorParent});
+    const authorOwn = await author.mutation(api.comments.add, {pathname, body: "Author reply to self", parentId: authorParent});
+    expect((await author.query(api.notifications.list, {paginationOpts})).page.map(row => row.target)).toEqual([
+      {kind: "comment", pathname, commentId: replyOnAuthor},
+      {kind: "comment", pathname, commentId: topId, threaded: false},
+    ]);
+    expect((await author.query(api.notifications.list, {paginationOpts})).page.map(row => row.kind)).toEqual(["comment_reply", "new_comment"]);
+    expect(await author.query(api.notifications.unreadCount, {})).toBe(2);
+    expect((await alice.query(api.notifications.list, {paginationOpts})).page).toEqual([]);
+    expect(JSON.stringify(await t.run(ctx => ctx.db.query("notifications").take(10)))).not.toMatch(/Top-level|Author parent|Reply on author|Author reply to self/);
+    expect(authorOwn).toEqual(expect.any(String));
+  });
+
+  test("unconfigured author identity creates no site-wide notifications", async () => {
+    const {t, alice, bob, author} = setup();
+    vi.stubEnv("CONSULTATION_ADMIN_TOKEN_IDENTIFIER", "");
+    const parentId = await alice.mutation(api.comments.add, {pathname, body: "Parent"});
+    await bob.mutation(api.comments.add, {pathname, body: "Reply", parentId});
+    expect((await author.query(api.notifications.list, {paginationOpts})).page).toEqual([]);
+    expect((await alice.query(api.notifications.list, {paginationOpts})).page).toHaveLength(1);
+    expect(await t.run(ctx => ctx.db.query("notifications").collect())).toHaveLength(1);
+  });
+
+  test("unreadCount caps the badge without scanning every read row", async () => {
+    const {t, alice} = setup();
+    await t.run(async ctx => {
+      for (let index = 0; index < 120; index++) {
+        await ctx.db.insert("notifications", {recipient: `${issuer}|alice`, kind: "comment_reply", createdAt: index});
+      }
+      for (let index = 0; index < 40; index++) {
+        await ctx.db.insert("notifications", {recipient: `${issuer}|alice`, kind: "new_comment", createdAt: 200 + index, readAt: index});
+      }
+    });
+    expect(await alice.query(api.notifications.unreadCount, {})).toBe(100);
+    expect(await alice.query(api.notifications.hasUnread, {})).toBe(true);
   });
 });

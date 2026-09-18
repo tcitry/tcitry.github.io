@@ -40,6 +40,7 @@ export function mountChat(target: HTMLElement, onClose: () => void, onReady: () 
   </MountBoundary>;
   const render = () => {
     if (island) {
+      if (target.querySelector('[data-chat-load-status]')) target.replaceChildren();
       island.mount(target, tree());
       return;
     }

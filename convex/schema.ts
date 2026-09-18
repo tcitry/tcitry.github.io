@@ -50,7 +50,13 @@ export default defineSchema({
     .index("by_pathname_and_owner", ["pathname", "owner"])
     .index("by_owner_and_createdAt", ["owner", "createdAt"]),
   notifications: defineTable({
-    recipient: v.string(), kind: v.union(v.literal("comment_reply"), v.literal("consultation_reply")),
+    recipient: v.string(),
+    kind: v.union(
+      v.literal("comment_reply"),
+      v.literal("new_comment"),
+      v.literal("consultation_reply"),
+      v.literal("consultation_message"),
+    ),
     createdAt: v.number(), readAt: v.optional(v.number()),
     commentId: v.optional(v.id("comments")), threadId: v.optional(v.id("consultationThreads")),
     messageId: v.optional(v.id("consultationMessages")),

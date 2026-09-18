@@ -12,6 +12,7 @@ import ConvexSession, {ConvexAuthGate, ServiceBoundary} from '../auth/ConvexSess
 import {ChatSession} from './ChatSession';
 import type {AssistantView} from '../../scripts/assistant-ui-state.mjs';
 import type {ChatPromptRequest} from './AgentChat';
+import {formatUnreadCount, unreadMessagesLabel} from './unread-count';
 import surface from '../demos/DemoSurface.module.css';
 import '../../styles/chat.css';
 
@@ -44,7 +45,8 @@ function WorkspaceContent({onClose, onReady, view, myOpened, selectView, request
   const {isLoaded} = useAuth();
   const {isAuthenticated, isLoading} = useConvexAuth();
   const role = useQuery(api.membership.getConsultationRole, isAuthenticated ? {} : 'skip');
-  const hasUnread = useQuery(api.notifications.hasUnread, isAuthenticated ? {} : 'skip');
+  const unreadCount = useQuery(api.notifications.unreadCount, isAuthenticated ? {} : 'skip');
+  const unreadLabel = unreadMessagesLabel(unreadCount);
   const isAuthor = isAuthenticated && role?.isAdmin === true;
   const activeView = view === 'admin' && !isAuthor ? 'consult' : view;
   const [notificationThread, setNotificationThread] = useState<Id<'consultationThreads'> | null>(null);
@@ -74,7 +76,7 @@ function WorkspaceContent({onClose, onReady, view, myOpened, selectView, request
       <div className="assistant-workspace__tabs" ref={tabRail}>
       <Segment aria-label="助手功能" size="sm" className="w-auto" selectedKey={activeView} onSelectionChange={(key) => {
         const next = String(key) as AssistantView;
-        if (next === 'consult') setNotificationThread(null);
+        if (next === 'consult' || next === 'admin') setNotificationThread(null);
         selectView(next);
       }}>
         {views.map((item) => <Segment.Item key={item.id} id={item.id} className="w-auto">{item.label}</Segment.Item>)}
@@ -84,12 +86,12 @@ function WorkspaceContent({onClose, onReady, view, myOpened, selectView, request
       <div className="assistant-workspace__actions">
         <Tooltip delay={400}>
           <Button isIconOnly size="sm" variant="ghost" className="assistant-workspace__notifications"
-            aria-label={hasUnread ? '消息（有未读）' : '消息'} aria-pressed={activeView === 'messages'}
+            aria-label={unreadLabel} aria-pressed={activeView === 'messages'}
             data-workspace-notifications onPress={() => selectView('messages')}>
             <Bell width={20} height={20} aria-hidden="true" />
-            {hasUnread && <span className="assistant-workspace__unread" data-notification-unread aria-hidden="true" />}
+            {unreadCount ? <span className="assistant-workspace__unread" data-notification-unread="bell" aria-hidden="true">{formatUnreadCount(unreadCount)}</span> : null}
           </Button>
-          <Tooltip.Content className="blog-chat__tooltip" placement="bottom end" offset={8} UNSTABLE_portalContainer={tooltipContainer ?? undefined}>{hasUnread ? '消息（有未读）' : '消息'}</Tooltip.Content>
+          <Tooltip.Content className="blog-chat__tooltip" placement="bottom end" offset={8} UNSTABLE_portalContainer={tooltipContainer ?? undefined}>{unreadLabel}</Tooltip.Content>
         </Tooltip>
         <AccountButton />
       </div>
@@ -98,10 +100,10 @@ function WorkspaceContent({onClose, onReady, view, myOpened, selectView, request
       <ConvexAuthGate>
           <div className="assistant-workspace__service" hidden={activeView !== 'chat'}><ServiceView {...dismiss}><AgentChat requestedPrompt={activeView === 'chat' ? requestedPrompt : undefined} onPromptConsumed={onPromptConsumed} /></ServiceView></div>
           {activeView === 'consult' && <ServiceView {...dismiss}><ConsultationsPanel key={notificationThread ?? 'consultations'} initialThreadId={notificationThread ?? undefined} /></ServiceView>}
-          {activeView === 'admin' && isAuthor && <ServiceView {...dismiss}><ConsultationInbox /></ServiceView>}
-          {activeView === 'messages' && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><NotificationsPanel onOpenConsultation={threadId => {
+          {activeView === 'admin' && isAuthor && <ServiceView {...dismiss}><ConsultationInbox key={notificationThread ?? 'inbox'} initialThreadId={notificationThread ?? undefined} /></ServiceView>}
+          {activeView === 'messages' && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><NotificationsPanel onOpenConsultation={(threadId, inbox) => {
             setNotificationThread(threadId);
-            selectView('consult');
+            selectView(inbox ? 'admin' : 'consult');
           }} /></ServiceView></div>}
           <div className="assistant-workspace__personal" hidden={activeView !== 'my'}>
             {myOpened && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><MyPanel /></ServiceView></div>}

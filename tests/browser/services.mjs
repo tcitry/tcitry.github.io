@@ -39,6 +39,7 @@ const errors = [];
 const scope = process.env.SERVICES_TEST_SCOPE ?? 'all';
 assert.ok(['all', 'workspace', 'comments', 'images', 'navigation'].includes(scope), 'SERVICES_TEST_SCOPE must be all, workspace, comments, images or navigation');
 const state = (page) => page.evaluate(() => window.__services.getState());
+const backgroundWrite = write => ['membership:getMyMembership', 'comments:syncMyAuthorImage'].includes(write.name);
 const switchSession = (page, userId, sessionId) => page.evaluate(({userId, sessionId}) => window.__readerAuth.switchSession(userId, sessionId), {userId, sessionId});
 const tab = (page, name) => page.locator('.assistant-workspace__switcher').getByRole('radio', {name, exact: true});
 const notificationBell = page => page.locator('[data-workspace-notifications]');
@@ -228,7 +229,7 @@ try {
       assert.equal(await page.locator('[data-notification-unread]').count(), 0, 'The author cannot see another recipient’s unread badge');
       await switchSession(page, 'fixture-a', 'session-notification-badge');
       await page.locator('[data-notification-unread]').waitFor();
-      assert.equal(await notificationBell(page).getAttribute('aria-label'), '消息（有未读）');
+      assert.equal(await notificationBell(page).getAttribute('aria-label'), '消息（2 条未读）');
       await page.evaluate(() => window.__services.markAllNotificationsRead('fixture-a'));
       await page.locator('[data-notification-unread]').waitFor({state: 'hidden'});
       assert.equal(await notificationBell(page).getAttribute('aria-label'), '消息');
@@ -501,14 +502,15 @@ try {
       assert.equal(await page.locator('[data-notification-unread]').count(), 0, 'Another account cannot inherit the unread badge');
       await notificationBell(page).click();
       const notifications = page.getByRole('region', {name: '消息通知', exact: true});
-      await notifications.getByText('还没有消息。评论回复和博主的咨询回复会出现在这里。', {exact: true}).waitFor();
+      await notifications.getByText('还没有消息。评论和咨询的新动态会出现在这里。', {exact: true}).waitFor();
       assert.equal(await tab(page, '管理').count(), 0);
       await switchSession(page, 'fixture-a', 'session-a-notifications');
       await notifications.getByRole('button', {name: /博主回复了你的咨询/}).waitFor();
       await page.locator('[data-notification-unread]').waitFor();
-      assert.equal(await notificationBell(page).getAttribute('aria-label'), '消息（有未读）');
+      const unreadTotal = (await state(page)).notifications.filter(item => item.recipient === 'fixture-a' && item.readAt === null).length;
+      assert.equal(await notificationBell(page).getAttribute('aria-label'), `消息（${unreadTotal} 条未读）`);
       assert.equal(await notificationBell(page).getAttribute('aria-pressed'), 'true');
-      const unavailable = notifications.locator('li').filter({hasText: '这条回复已不可查看。'});
+      const unavailable = notifications.locator('li').filter({hasText: '这条消息已不可查看。'});
       assert.equal(await unavailable.locator('a, button').count(), 0, 'Unavailable notification targets cannot be opened');
       const unreadBefore = await notifications.locator('[data-unread]').count();
       const replyNotification = (await state(page)).notifications.find(item => item.kind === 'consultation_reply');
@@ -520,9 +522,19 @@ try {
       await page.getByRole('heading', {name: '与博主交流', exact: true}).waitFor();
       await notificationBell(page).click();
       assert.equal(await notifications.locator('[data-unread]').count(), unreadBefore - 1);
+      await switchSession(page, 'fixture-author', 'session-author-notice');
+      await notificationBell(page).click();
+      await notifications.getByRole('button', {name: /咨询有新消息/}).first().click();
+      assert.equal(await tab(page, '管理').getAttribute('aria-checked'), 'true');
+      await page.getByRole('heading', {name: '第一条私人咨询', exact: true}).waitFor();
+      assert.ok((await state(page)).writes.some(write => write.name === 'notifications:markRead' && write.userId === 'fixture-author'),
+        'Opening an author consultation notification marks it read');
+      await switchSession(page, 'fixture-a', 'session-a-comment-link');
+      await notificationBell(page).click();
+      const commentLink = notifications.locator('a[href="/docs/services-fixture/#comment-comment_initial"]');
+      await commentLink.waitFor();
       await page.screenshot({path: join(tmpdir(), `services-notifications-${width}.png`), fullPage: true});
       await assertClientCleanup(page);
-      const commentLink = notifications.locator('a[href="/docs/services-fixture/#comment-comment_initial"]');
       await Promise.all([page.waitForURL('**/docs/services-fixture/#comment-comment_initial'), commentLink.click()]);
       assert.equal(notificationReads.at(-1), 'notification-comment', 'Comment notifications are marked read before navigation');
       await page.waitForFunction(() => document.activeElement?.id === 'comment-comment_initial');
@@ -647,7 +659,7 @@ try {
       await page.goto(new URL('/tests/fixtures/services-ui.html', base).href);
       await tab(page, '我的').waitFor();
       await page.evaluate(() => window.__services.seedLegacyTitles());
-      const writesBefore = (await state(page)).writes.filter(write => write.name !== 'membership:getMyMembership');
+      const writesBefore = (await state(page)).writes.filter(write => !backgroundWrite(write));
       await tab(page, '我的').click();
       await myTab(page, '喜欢').click();
       await page.waitForFunction(() => window.__titleFetches.some(request => request.settled));
@@ -682,7 +694,7 @@ try {
       assert.equal(request.body, null);
       assert.equal(request.headers.authorization, undefined);
       assert.equal(request.headers.cookie, undefined, 'Public metadata omits even a present same-origin private cookie');
-      assert.deepEqual((await state(page)).writes.filter(write => write.name !== 'membership:getMyMembership'), writesBefore, 'Restoring display titles never writes back private records');
+      assert.deepEqual((await state(page)).writes.filter(write => !backgroundWrite(write)), writesBefore, 'Restoring display titles never writes back private records');
       await assertClientCleanup(page);
       console.log(`Legacy personal titles: metadata ${metadataAvailable ? 'available' : 'unavailable'}, stable stored titles, malformed path safety and credential-free shared lookup.`);
     } finally {await context.close();}
@@ -788,7 +800,7 @@ try {
     assert.equal(await notificationBell(widgetPage).count(), 1);
     assert.equal(await widgetPage.locator('[data-notification-unread]').count(), 0);
     assert.equal(await tab(widgetPage, '管理').count(), 0);
-    assert.equal((await state(widgetPage)).requests.filter(request => ['comments:listMine', 'comments:listLikedArticles', 'notifications:list', 'notifications:hasUnread'].includes(request.name)).length, 0,
+    assert.equal((await state(widgetPage)).requests.filter(request => ['comments:listMine', 'comments:listLikedArticles', 'notifications:list', 'notifications:hasUnread', 'notifications:unreadCount'].includes(request.name)).length, 0,
       'Anonymous personal views never request comments, likes or notifications');
     assert.equal((await state(widgetPage)).writes.filter(write => write.name === 'membership:getMyMembership').length, 0,
       'The account menu never queries membership before authentication');
@@ -909,7 +921,13 @@ try {
     await launcher.waitFor({state: 'visible'});
     assert.equal(await launcher.getAttribute('aria-expanded'), 'false');
     assert.equal(await dialog.evaluate(element => element.open), false);
+    await widgetPage.waitForFunction(() => document.querySelector('[data-chat-launcher]')?.hasAttribute('data-signed-in'));
+    await widgetPage.evaluate(() => window.__services.seedPersonal());
+    await widgetPage.locator('[data-chat-launcher] [data-notification-unread]').waitFor();
+    assert.equal(await launcher.getAttribute('aria-label'), '打开博客助手（2 条未读）');
     await switchSession(widgetPage, 'fixture-author', 'session-author-callback');
+    await widgetPage.locator('[data-chat-launcher] [data-notification-unread]').waitFor({state: 'hidden'});
+    assert.equal(await launcher.getAttribute('aria-label'), '打开博客助手');
     await launcher.click();
     await tab(widgetPage, '管理').click();
     await widgetPage.locator('[data-consultations-inbox]').getByRole('heading', {name: '管理', exact: true}).waitFor();
@@ -954,7 +972,7 @@ try {
     const expand = page.locator('[data-chat-expand]');
     const close = page.getByRole('button', {name: '关闭博客助手', exact: true});
     const stored = () => page.evaluate(() => JSON.parse(sessionStorage.getItem('blog-assistant-ui') ?? 'null'));
-    const noWrites = async () => assert.deepEqual((await state(page)).writes.filter(write => write.name !== 'membership:getMyMembership'), [], 'Opening and navigation never write private business data');
+    const noWrites = async () => assert.deepEqual((await state(page)).writes.filter(write => !backgroundWrite(write)), [], 'Opening and navigation never write private business data');
     const readyClosed = async () => {
       await launcher.waitFor(); await expand.waitFor();
       assert.equal(await panel.evaluate(element => element.open), false);
@@ -1117,7 +1135,7 @@ try {
       await page.waitForFunction(() => document.querySelector('[data-article-bookmark]')?.getAttribute('aria-pressed') === 'false');
       assert.equal(await library.getByRole('link', {name: '公开文章测试', exact: true}).count(), 0);
       await library.getByRole('link', {name: '账号 A 收藏的另一篇文章', exact: true}).waitFor();
-      const attempts = (await state(page)).writes.slice(bookmarkWritesBefore).filter(write => write.name !== 'membership:getMyMembership');
+      const attempts = (await state(page)).writes.slice(bookmarkWritesBefore).filter(write => !backgroundWrite(write));
       assert.deepEqual(attempts.map(write => ({name: write.name, userId: write.userId, args: write.args})), [
         {name: 'reader:setBookmark', userId: 'fixture-a', args: {pathname: '/docs/services-fixture/', title: '公开文章测试', bookmarked: true}},
         {name: 'reader:setBookmark', userId: 'fixture-a', args: {pathname: '/docs/services-fixture/', title: '公开文章测试', bookmarked: true}},
@@ -1133,11 +1151,11 @@ try {
         beforeSignOut.requests.filter(request => request.name.startsWith('reader:')).length, 'Anonymous article footer and My state issue no private bookmark queries');
       assert.equal(anonymous.writes.length, beforeSignOut.writes.length, 'Signing out performs no bookmark write');
       if (await panel.evaluate(element => element.open)) await close.click();
-      const writesBeforeLogin = (await state(page)).writes.filter(write => write.name !== 'membership:getMyMembership').length;
+      const writesBeforeLogin = (await state(page)).writes.filter(write => !backgroundWrite(write)).length;
       await bookmark.click();
       await footer.getByRole('textbox', {name: '你的评论', exact: true}).waitFor();
       assert.equal(await footer.getByRole('button', {name: '登录 / 注册', exact: true}).count(), 0, 'The anonymous bookmark uses the existing Clerk sign-in entry');
-      assert.equal((await state(page)).writes.filter(write => write.name !== 'membership:getMyMembership').length, writesBeforeLogin, 'Clicking an anonymous bookmark signs in without an implicit save');
+      assert.equal((await state(page)).writes.filter(write => !backgroundWrite(write)).length, writesBeforeLogin, 'Clicking an anonymous bookmark signs in without an implicit save');
       const articleActions = footer.locator('.blog-comments__article-actions');
       const bookmarkBox = await bookmark.boundingBox();
       const likeBox = await articleActions.getByRole('button', {name: '喜欢这篇文章', exact: true}).boundingBox();

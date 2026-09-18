@@ -5,7 +5,7 @@ import {components} from "./_generated/api";
 import {env, mutation, query, type MutationCtx, type QueryCtx} from "./_generated/server";
 import {canonicalPathname, commentAuthorImageUrl, commentAuthorName, invalid, requireCommentIdentity} from "./commentShared";
 import {bindImages, deleteImages, imageResult, readCommentImages} from "./commentImages";
-import {notifyCommentReply} from "./notifications";
+import {notifyCommentCreated} from "./notifications";
 
 const rateLimiter = new RateLimiter(components.rateLimiter, {
   commentWrites: {kind: "token bucket", rate: 6, period: 60_000, capacity: 3},
@@ -196,7 +196,7 @@ export const add = mutation({
     const id = await ctx.db.insert("comments", {owner, pathname, authorName, body, createdAt: Date.now(), parentId: args.parentId, imageIds, likeCount: 0, ...(authorImageUrl ? {authorImageUrl} : {})});
     await bindImages(ctx, imageIds, id, owner);
     await updateStats(ctx, pathname, stats, 1, 0);
-    if (args.parentId) await notifyCommentReply(ctx, id, args.parentId);
+    await notifyCommentCreated(ctx, id);
     return id;
   },
 });

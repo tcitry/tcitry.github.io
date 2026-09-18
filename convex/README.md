@@ -30,7 +30,7 @@ Convex deployment 使用的业务变量：
 | --- | --- |
 | `reader` | 本人收藏 |
 | `comments` | 评论、回复、文章/评论喜欢和本人列表 |
-| `notifications` | 当前收件人的评论与咨询回复通知 |
+| `notifications` | 当前收件人的评论与咨询通知（读者：本人评论回复与咨询回复；作者：全站新评论、楼中楼回复与新咨询消息） |
 | `consultations` | 本人咨询、作者收件箱、Pro 写入检查 |
 | `commentImages` / HTTP routes | 评论和咨询图片上传、绑定、鉴权读取与清理 |
 | `assistant` | AI 会话、运行状态、限流、取消和流式持久化 |
@@ -45,5 +45,5 @@ Convex deployment 使用的业务变量：
 - 作者身份由完整 `CONSULTATION_ADMIN_TOKEN_IDENTIFIER` 确定。
 - Pro 权益来自已验证 session `pla` claim，并在实际咨询写入时检查。
 - 评论和咨询附件用途隔离，不返回永久公开 Storage URL。
-- 新回复与通知在同一事务写入，自己的回复不通知自己。
+- 新评论、咨询消息与通知在同一事务写入。自己的内容不通知自己；作者已作为评论父级收到回复通知时，不再重复写入全站新评论通知。
 - AI 对话只采用同一账户、同一会话中完整成功的上下文，并保存经过当前发布引用校验的来源。
