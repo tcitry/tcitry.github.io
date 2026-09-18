@@ -183,8 +183,8 @@ function ThreadList({inbox = false, onSelect}: {inbox?: boolean; onSelect: (thre
   </>;
 }
 
-export function ConsultationInbox() {
-  const [selected, setSelected] = useState<SelectedThread | null>(null);
+export function ConsultationInbox({initialThreadId}: {initialThreadId?: Id<'consultationThreads'>} = {}) {
+  const [selected, setSelected] = useState<SelectedThread | null>(initialThreadId ? {id: initialThreadId} : null);
   return <section className={styles.panel} aria-label="咨询收件箱" data-consultations-panel data-consultations-inbox data-sentry-mask data-pagefind-ignore>
     {selected ? <Conversation key={selected.id} threadId={selected.id} title={selected.title} inbox onBack={() => setSelected(null)} /> : <>
       <header className={styles.header}>

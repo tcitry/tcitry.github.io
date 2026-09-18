@@ -37,7 +37,8 @@ const commentImages: CommentImage[] = [];
 const articleLikes = new Map<string, Set<string>>();
 const articleTitleOverrides = new Map<string, string | undefined>();
 const commentLikes = new Map<string, Set<string>>();
-const notifications: { _id: string; recipient: string; kind: 'comment_reply' | 'consultation_reply'; createdAt: number; readAt: number | null; target: null | {kind: 'comment'; pathname: string; commentId: string} | {kind: 'consultation'; threadId: string; messageId: string; title: string} }[] = [];
+type NotificationKind = 'comment_reply' | 'new_comment' | 'consultation_reply' | 'consultation_message';
+const notifications: { _id: string; recipient: string; kind: NotificationKind; createdAt: number; readAt: number | null; target: null | {kind: 'comment'; pathname: string; commentId: string; threaded?: boolean} | {kind: 'consultation'; threadId: string; messageId: string; title: string} }[] = [];
 let rejectNextComment = false;
 let rejectNextConsultation = false;
 let rejectNextDiscard = false;
@@ -66,6 +67,25 @@ for (const conversation of aiConversations) {
   addAiMessage(conversation.threadId, 0, 'user', conversation.title);
   addAiMessage(conversation.threadId, 0, 'assistant', conversation.id === 'ai_a1' ? safeAnswer : conversation.id === 'ai_a2' ? '另一条历史回答。' : '仅账号 B 的历史回答。');
   aiRuns.push({id: `run_${conversation.id}`, conversationId: conversation.id, order: 0, status: 'completed', sources});
+}
+function notifyAuthorComment(comment: Comment) {
+  if (comment.owner === 'fixture-author') return;
+  if (comment.parentId) {
+    const parent = comments.find(item => item.id === comment.parentId);
+    if (parent?.owner === 'fixture-author') return;
+  }
+  notifications.push({
+    _id: `notification_${nextId++}`, recipient: 'fixture-author', kind: 'new_comment', createdAt: comment.createdAt, readAt: null,
+    target: {kind: 'comment', pathname: comment.pathname, commentId: comment.id, threaded: Boolean(comment.parentId)},
+  });
+}
+
+function notifyAuthorConsultation(thread: Thread, message: Message) {
+  if (message.sender !== 'member' || thread.owner === 'fixture-author') return;
+  notifications.push({
+    _id: `notification_${nextId++}`, recipient: 'fixture-author', kind: 'consultation_message', createdAt: message.createdAt, readAt: null,
+    target: {kind: 'consultation', threadId: thread._id, messageId: message._id, title: thread.title},
+  });
 }
 const subscribe = (listener: () => void) => {listeners.add(listener); return () => listeners.delete(listener);};
 const publish = () => {revision++; listeners.forEach(listener => listener());};
@@ -173,6 +193,10 @@ function queryValue(client: ConvexReactClient, name: string, args: Record<string
   if (name === 'notifications:hasUnread') {
     if (!userId) throw new Error('Services fixture: anonymous unread notifications');
     return notifications.some(notification => notification.recipient === userId && notification.readAt === null);
+  }
+  if (name === 'notifications:unreadCount') {
+    if (!userId) throw new Error('Services fixture: anonymous unread notifications');
+    return Math.min(notifications.filter(notification => notification.recipient === userId && notification.readAt === null).length, 100);
   }
   if (name === 'commentImages:getUrl') {
     if (!userId) throw new Error('Services fixture: anonymous image URL query');
@@ -315,7 +339,9 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
       const imageIds = (args.imageIds ?? []) as string[];
       bindConsultationImages(imageIds, userId, id);
       threads.push({_id: id, owner: userId, title: String(args.title), status: 'waiting', createdAt: ++now, updatedAt: now});
-      messages.push({_id: `message_${nextId++}`, threadId: id, sender: 'member', content: String(args.content), createdAt: now, imageIds});
+      const message = {_id: `message_${nextId++}`, threadId: id, sender: 'member' as const, content: String(args.content), createdAt: now, imageIds};
+      messages.push(message);
+      notifyAuthorConsultation(threads.at(-1)!, message);
       publish(); return id;
     }
     if (name === 'consultations:send') {
@@ -328,8 +354,10 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
       const id = `message_${nextId++}`;
       const imageIds = (args.imageIds ?? []) as string[];
       bindConsultationImages(imageIds, userId, thread._id);
-      messages.push({_id: id, threadId: thread._id, sender: 'member', content: String(args.content), createdAt: ++now, imageIds});
+      const message = {_id: id, threadId: thread._id, sender: 'member' as const, content: String(args.content), createdAt: ++now, imageIds};
+      messages.push(message);
       thread.status = 'waiting'; thread.updatedAt = now;
+      notifyAuthorConsultation(thread, message);
       publish(); return id;
     }
     if (name === 'consultations:reply') {
@@ -364,6 +392,17 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
       }
       comments.unshift({id, owner: userId, pathname: String(args.pathname), authorName, body: String(args.body), createdAt: ++now, deleted: false,
         ...(args.parentId ? {parentId: String(args.parentId)} : {}), imageIds});
+      const comment = comments[0];
+      if (comment.parentId) {
+        const parent = comments.find(item => item.id === comment.parentId);
+        if (parent && parent.owner !== userId) {
+          notifications.push({
+            _id: `notification_${nextId++}`, recipient: parent.owner, kind: 'comment_reply', createdAt: comment.createdAt, readAt: null,
+            target: {kind: 'comment', pathname: comment.pathname, commentId: comment.id},
+          });
+        }
+      }
+      notifyAuthorComment(comment);
       publish(); return id;
     }
     if (name === 'comments:setLike' || name === 'comments:setCommentLike') {

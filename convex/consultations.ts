@@ -6,7 +6,7 @@ import type { Doc, Id } from "./_generated/dataModel";
 import { action, internalMutation, mutation, query, type MutationCtx, type QueryCtx } from "./_generated/server";
 import { isConsultationAuthor, requireMemberIdentity, requireProMembership } from "./membership";
 import { bindConsultationImages, imageResult, readConsultationImages } from "./commentImages";
-import { notifyConsultationReply } from "./notifications";
+import { notifyConsultationMessage, notifyConsultationReply } from "./notifications";
 
 const limiter = new RateLimiter(components.rateLimiter, {
   consultationWrites: { kind: "token bucket", rate: 30, period: 60_000, capacity: 10 },
@@ -143,6 +143,7 @@ export const createPaid = internalMutation({
       threadId, sender: "member", senderIdentity: identity.tokenIdentifier, content, requestId, createdAt: now, imageIds: args.imageIds ?? [],
     });
     await bindConsultationImages(ctx, args.imageIds ?? [], threadId, messageId, identity.tokenIdentifier);
+    await notifyConsultationMessage(ctx, threadId, messageId);
     return threadId;
   },
 });
@@ -178,6 +179,7 @@ async function appendMessage(ctx: MutationCtx, args: { threadId: Id<"consultatio
   await bindConsultationImages(ctx, args.imageIds ?? [], args.threadId, messageId, identity.tokenIdentifier);
   await ctx.db.patch("consultationThreads", thread._id, { status: sender === "author" ? "replied" : "waiting", updatedAt: now });
   if (sender === "author") await notifyConsultationReply(ctx, thread._id, messageId);
+  else await notifyConsultationMessage(ctx, thread._id, messageId);
   return messageId;
 }
 

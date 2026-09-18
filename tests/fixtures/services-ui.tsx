@@ -32,7 +32,7 @@ if (view === 'widget') {
   // Exercise the real native launcher script and React mount through navigation.
   root.innerHTML = `<main><h1>公开文章测试</h1></main>
     <div class="blog-chat-widget" data-blog-chat-widget data-reader-pathname="/docs/services-fixture/" data-reader-title="公开文章测试">
-      <button class="blog-chat-widget__launcher" data-chat-launcher aria-label="打开博客助手" aria-expanded="false" hidden>打开</button>
+      <button class="blog-chat-widget__launcher" data-chat-launcher aria-label="打开博客助手" aria-expanded="false" hidden>打开<span data-chat-launcher-face></span><span class="blog-chat-widget__tooltip" aria-hidden="true">博客助手</span></button>
       <button class="blog-chat-widget__expand" type="button" aria-label="展开博客助手" aria-haspopup="dialog" aria-expanded="false" aria-controls="blog-chat-panel" data-chat-expand hidden>
         <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.5 5-5 5 5 5" /></svg>
         <span class="blog-chat-widget__tooltip" aria-hidden="true">展开侧栏</span>

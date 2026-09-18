@@ -220,7 +220,42 @@ html.blog-chat-modal-open { overflow: hidden; scrollbar-gutter: auto; }
 .assistant-workspace__notifications { position: relative; flex: 0 0 2rem; width: 2rem; min-width: 2rem; height: 2rem; min-height: 2rem; padding: 0; border-radius: 50%; color: var(--muted); }
 .assistant-workspace__notifications:is(:hover, :focus-visible) { color: var(--foreground); background: var(--surface-secondary); }
 .assistant-workspace__notifications[aria-pressed="true"] { color: var(--foreground); background: var(--surface-secondary); }
-.assistant-workspace__unread { position: absolute; inset-block-start: 3px; inset-inline-end: 3px; width: 8px; height: 8px; border: 1px solid var(--surface); border-radius: 50%; background: var(--danger); pointer-events: none; }
+.assistant-workspace__unread {
+  position: absolute;
+  inset-block-start: -2px;
+  inset-inline-end: -2px;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 4px;
+  border: 1px solid var(--surface);
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  pointer-events: none;
+}
+.blog-chat-widget__unread {
+  position: absolute;
+  z-index: 2;
+  top: -2px;
+  right: -2px;
+  box-sizing: border-box;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 5px;
+  border: 1px solid var(--chat-bg);
+  border-radius: 999px;
+  background: var(--danger, #dc2626);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  pointer-events: none;
+}
 .assistant-workspace__account { display: block; width: 2rem; min-width: 2rem; height: 2rem; min-height: 2rem; border-radius: 50%; overflow: hidden; }
 .assistant-workspace__edge-actions { position: absolute; z-index: 5; inset-inline-start: 0; top: 50%; transform: translateY(-50%); width: 1.5rem; height: 3.5rem; }
 .assistant-workspace__close { box-sizing: border-box; position: static; transform: none; display: grid; place-items: center; width: 100%; min-width: 0; height: 100%; min-height: 0; margin: 0; padding: 0; border: 1px solid var(--border); border-inline-start: 0; border-radius: 0 .5rem .5rem 0; background: var(--surface); color: var(--muted); box-shadow: 1px 1px 4px #00000008; }

@@ -12,11 +12,21 @@ const bundle = await build({
     'import.meta.env.DEV': 'false',
     'import.meta.env.PUBLIC_SITE_ENV': JSON.stringify('production'),
     'import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY': JSON.stringify('pk_live_fixture'),
+    'import.meta.env.PUBLIC_CONVEX_URL': JSON.stringify(''),
   },
   plugins: [{
     name: 'clerk-ui-fixture',
     setup(build) {
       build.onResolve({filter: /^@clerk\/react$/}, () => ({path: 'clerk', namespace: 'clerk-ui-fixture'}));
+      build.onResolve({filter: /^convex(\/.*)?$/}, () => ({path: 'convex', namespace: 'convex-ui-fixture'}));
+      build.onLoad({filter: /.*/, namespace: 'convex-ui-fixture'}, () => ({contents: `
+        export function useQuery() { return undefined; }
+        export function useConvexAuth() { return {isAuthenticated: false, isLoading: false}; }
+        export function ConvexProviderWithClerk({children}) { return children; }
+        export class ConvexReactClient { close() { return Promise.resolve(); } }
+        export const anyApi = new Proxy({}, {get: () => anyApi});
+        export function componentsGeneric() { return {}; }
+      `, loader: 'js'}));
       build.onLoad({filter: /.*/, namespace: 'clerk-ui-fixture'}, () => ({contents: `
         export function useAuth() { return {isLoaded: true, isSignedIn: false}; }
         export function useUser() { return {isLoaded: true, isSignedIn: false, user: null}; }

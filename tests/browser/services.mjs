@@ -228,7 +228,7 @@ try {
       assert.equal(await page.locator('[data-notification-unread]').count(), 0, 'The author cannot see another recipient’s unread badge');
       await switchSession(page, 'fixture-a', 'session-notification-badge');
       await page.locator('[data-notification-unread]').waitFor();
-      assert.equal(await notificationBell(page).getAttribute('aria-label'), '消息（有未读）');
+      assert.equal(await notificationBell(page).getAttribute('aria-label'), '消息（2 条未读）');
       await page.evaluate(() => window.__services.markAllNotificationsRead('fixture-a'));
       await page.locator('[data-notification-unread]').waitFor({state: 'hidden'});
       assert.equal(await notificationBell(page).getAttribute('aria-label'), '消息');
@@ -501,14 +501,15 @@ try {
       assert.equal(await page.locator('[data-notification-unread]').count(), 0, 'Another account cannot inherit the unread badge');
       await notificationBell(page).click();
       const notifications = page.getByRole('region', {name: '消息通知', exact: true});
-      await notifications.getByText('还没有消息。评论回复和博主的咨询回复会出现在这里。', {exact: true}).waitFor();
+      await notifications.getByText('还没有消息。评论和咨询的新动态会出现在这里。', {exact: true}).waitFor();
       assert.equal(await tab(page, '管理').count(), 0);
       await switchSession(page, 'fixture-a', 'session-a-notifications');
       await notifications.getByRole('button', {name: /博主回复了你的咨询/}).waitFor();
       await page.locator('[data-notification-unread]').waitFor();
-      assert.equal(await notificationBell(page).getAttribute('aria-label'), '消息（有未读）');
+      const unreadTotal = (await state(page)).notifications.filter(item => item.recipient === 'fixture-a' && item.readAt === null).length;
+      assert.equal(await notificationBell(page).getAttribute('aria-label'), `消息（${unreadTotal} 条未读）`);
       assert.equal(await notificationBell(page).getAttribute('aria-pressed'), 'true');
-      const unavailable = notifications.locator('li').filter({hasText: '这条回复已不可查看。'});
+      const unavailable = notifications.locator('li').filter({hasText: '这条消息已不可查看。'});
       assert.equal(await unavailable.locator('a, button').count(), 0, 'Unavailable notification targets cannot be opened');
       const unreadBefore = await notifications.locator('[data-unread]').count();
       const replyNotification = (await state(page)).notifications.find(item => item.kind === 'consultation_reply');
@@ -520,9 +521,19 @@ try {
       await page.getByRole('heading', {name: '与博主交流', exact: true}).waitFor();
       await notificationBell(page).click();
       assert.equal(await notifications.locator('[data-unread]').count(), unreadBefore - 1);
+      await switchSession(page, 'fixture-author', 'session-author-notice');
+      await notificationBell(page).click();
+      await notifications.getByRole('button', {name: /咨询有新消息/}).first().click();
+      assert.equal(await tab(page, '管理').getAttribute('aria-checked'), 'true');
+      await page.getByRole('heading', {name: '第一条私人咨询', exact: true}).waitFor();
+      assert.ok((await state(page)).writes.some(write => write.name === 'notifications:markRead' && write.userId === 'fixture-author'),
+        'Opening an author consultation notification marks it read');
+      await switchSession(page, 'fixture-a', 'session-a-comment-link');
+      await notificationBell(page).click();
+      const commentLink = notifications.locator('a[href="/docs/services-fixture/#comment-comment_initial"]');
+      await commentLink.waitFor();
       await page.screenshot({path: join(tmpdir(), `services-notifications-${width}.png`), fullPage: true});
       await assertClientCleanup(page);
-      const commentLink = notifications.locator('a[href="/docs/services-fixture/#comment-comment_initial"]');
       await Promise.all([page.waitForURL('**/docs/services-fixture/#comment-comment_initial'), commentLink.click()]);
       assert.equal(notificationReads.at(-1), 'notification-comment', 'Comment notifications are marked read before navigation');
       await page.waitForFunction(() => document.activeElement?.id === 'comment-comment_initial');
@@ -788,7 +799,7 @@ try {
     assert.equal(await notificationBell(widgetPage).count(), 1);
     assert.equal(await widgetPage.locator('[data-notification-unread]').count(), 0);
     assert.equal(await tab(widgetPage, '管理').count(), 0);
-    assert.equal((await state(widgetPage)).requests.filter(request => ['comments:listMine', 'comments:listLikedArticles', 'notifications:list', 'notifications:hasUnread'].includes(request.name)).length, 0,
+    assert.equal((await state(widgetPage)).requests.filter(request => ['comments:listMine', 'comments:listLikedArticles', 'notifications:list', 'notifications:hasUnread', 'notifications:unreadCount'].includes(request.name)).length, 0,
       'Anonymous personal views never request comments, likes or notifications');
     assert.equal((await state(widgetPage)).writes.filter(write => write.name === 'membership:getMyMembership').length, 0,
       'The account menu never queries membership before authentication');
@@ -909,7 +920,13 @@ try {
     await launcher.waitFor({state: 'visible'});
     assert.equal(await launcher.getAttribute('aria-expanded'), 'false');
     assert.equal(await dialog.evaluate(element => element.open), false);
+    await widgetPage.waitForFunction(() => document.querySelector('[data-chat-launcher]')?.hasAttribute('data-signed-in'));
+    await widgetPage.evaluate(() => window.__services.seedPersonal());
+    await widgetPage.locator('[data-chat-launcher] [data-notification-unread]').waitFor();
+    assert.equal(await launcher.getAttribute('aria-label'), '打开博客助手（2 条未读）');
     await switchSession(widgetPage, 'fixture-author', 'session-author-callback');
+    await widgetPage.locator('[data-chat-launcher] [data-notification-unread]').waitFor({state: 'hidden'});
+    assert.equal(await launcher.getAttribute('aria-label'), '打开博客助手');
     await launcher.click();
     await tab(widgetPage, '管理').click();
     await widgetPage.locator('[data-consultations-inbox]').getByRole('heading', {name: '管理', exact: true}).waitFor();
