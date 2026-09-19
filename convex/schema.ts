@@ -36,14 +36,25 @@ export default defineSchema({
   }).index("by_conversationId_and_requestId", ["conversationId", "requestId"])
     .index("by_conversationId_and_createdAt", ["conversationId", "createdAt"])
     .index("by_conversationId_and_promptOrder", ["conversationId", "promptOrder"]),
+  // Live comments keep Clerk tokenIdentifier in `owner`. Historical giscus /
+  // GitHub Discussions imports use synthetic owners `github:user:{databaseId}`
+  // so rows stay distinct without claim-by-nickname. Provenance fields below
+  // are optional and only populated by the import job.
   comments: defineTable({
     pathname: v.string(), authorName: v.string(), body: v.string(), createdAt: v.number(),
     parentId: v.optional(v.id("comments")), owner: v.string(),
     deletedAt: v.optional(v.number()), likeCount: v.optional(v.number()),
     imageIds: v.optional(v.array(v.id("commentImages"))),
     authorImageUrl: v.optional(v.string()),
+    importSource: v.optional(v.union(v.literal("github_discussion"), v.literal("giscus"))),
+    externalId: v.optional(v.string()),
+    sourceDiscussionNumber: v.optional(v.number()),
+    githubLogin: v.optional(v.string()),
+    githubUserId: v.optional(v.number()),
+    sourceUrl: v.optional(v.string()),
   }).index("by_pathname_and_createdAt", ["pathname", "createdAt"])
-    .index("by_owner_and_deletedAt_and_createdAt", ["owner", "deletedAt", "createdAt"]),
+    .index("by_owner_and_deletedAt_and_createdAt", ["owner", "deletedAt", "createdAt"])
+    .index("by_externalId", ["externalId"]),
   commentStats: defineTable({pathname: v.string(), commentCount: v.number(), likeCount: v.number()})
     .index("by_pathname", ["pathname"]),
   articleLikes: defineTable({pathname: v.string(), owner: v.string(), title: v.optional(v.string()), createdAt: v.optional(v.number())})
