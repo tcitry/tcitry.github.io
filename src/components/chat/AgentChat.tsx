@@ -15,6 +15,7 @@ import {PromptInput} from '@heroui-pro/react/prompt-input';
 import {PromptSuggestion} from '@heroui-pro/react/prompt-suggestion';
 import {api} from '../../../convex/_generated/api';
 import type {Id} from '../../../convex/_generated/dataModel';
+import {deriveFollowUpSuggestions} from '../../lib/chat-follow-ups';
 import surface from '../demos/DemoSurface.module.css';
 import '../../styles/chat.css';
 import './agent-chat.css';
@@ -80,25 +81,61 @@ function Answer({message, sources}: {message: RenderMessage; sources: Source[]})
   </ChatMessage.Assistant>;
 }
 
-function Turn({conversationId, order, messages}: {conversationId: Id<'assistantConversations'>; order: number; messages: RenderMessage[]}) {
+function FollowUps({prompts, isDisabled, onFollowUp}: {prompts: string[]; isDisabled: boolean; onFollowUp: (prompt: string) => void}) {
+  if (prompts.length < 2) return null;
+  return <div className="agent-chat__follow-ups-wrap" role="region" aria-label="继续追问建议">
+    <PromptSuggestion className="agent-chat__follow-ups">
+      <PromptSuggestion.Header>
+        <PromptSuggestion.Title>继续追问</PromptSuggestion.Title>
+        <PromptSuggestion.Description>选一个问题，修改后发送。</PromptSuggestion.Description>
+      </PromptSuggestion.Header>
+      <PromptSuggestion.Items className="blog-chat__suggestions">
+        {prompts.map(prompt => <PromptSuggestion.Item key={prompt} isDisabled={isDisabled} onPress={() => onFollowUp(prompt)}>{prompt}</PromptSuggestion.Item>)}
+      </PromptSuggestion.Items>
+    </PromptSuggestion>
+  </div>;
+}
+
+function Turn({conversationId, order, messages, isLatest, busy, onFollowUp, onRegenerate, suggestionsDisabled}: {
+  conversationId: Id<'assistantConversations'>; order: number; messages: RenderMessage[];
+  isLatest: boolean; busy: boolean; onFollowUp: (prompt: string) => void;
+  onRegenerate: (prompt: string) => void; suggestionsDisabled: boolean;
+}) {
   // Each loaded turn has one bounded indexed subscription; pagination never loses
   // older citations by limiting a separate run list to the latest N generations.
   const run = useQuery(api.assistant.getRunStates, {conversationId, orders: [order]})?.[0];
   const pending = run?.status === 'queued' || run?.status === 'running';
-  const hasAnswer = messages.some(message => message.role === 'assistant' && message.parts.some(part => part.type === 'text' && part.text));
+  const userPrompt = messages.find(message => message.role === 'user')?.text ?? '';
+  const assistant = messages.find(message => message.role === 'assistant');
+  const answerText = assistant?.parts.filter(part => part.type === 'text').map(part => part.text).join('') ?? '';
+  const hasAnswer = Boolean(answerText);
+  const completed = run?.status === 'completed' && assistant?.status !== 'streaming' && assistant?.status !== 'pending';
+  const followUps = completed && isLatest && !busy
+    ? deriveFollowUpSuggestions(userPrompt, answerText, run?.sources ?? [])
+    : [];
   return <div className="agent-chat__turn">
     {messages.map(message => message.role === 'user'
       ? <ChatMessage.User key={message.key} className="blog-chat__user"><ChatMessage.Bubble><ChatMessage.Content>{message.text}</ChatMessage.Content></ChatMessage.Bubble></ChatMessage.User>
       : message.role === 'assistant' ? <Answer key={message.key} message={message} sources={run?.sources ?? []} /> : null)}
     {pending && !hasAnswer && <ChatLoader.Dots label={run?.sources.length ? '正在整理回答' : '正在检索文章'} />}
     {run?.status === 'canceled' && <p className="blog-chat__notice">已停止生成。{hasAnswer ? '当前回答可能不完整。' : ''}</p>}
-    {run?.status === 'failed' && <p role="alert" className="blog-chat__error">{run.error || '回答未完成，请重新提问。'}</p>}
+    {run?.status === 'failed' && <>
+      <p role="alert" className="blog-chat__error">{run.error || '回答未完成，请重新提问。'}</p>
+      {!busy && userPrompt && <div className="agent-chat__turn-actions">
+        <ChatMessageActions className="blog-chat__actions">
+          <ChatMessageActions.Regenerate size="sm" variant="ghost" aria-label="重新生成" tooltip={false}
+            isDisabled={suggestionsDisabled} onPress={() => onRegenerate(userPrompt)} />
+        </ChatMessageActions>
+      </div>}
+    </>}
+    {followUps.length > 0 && <FollowUps prompts={followUps} isDisabled={suggestionsDisabled} onFollowUp={onFollowUp} />}
   </div>;
 }
 
-function Transcript({conversationId, threadId, onHasMessages, onSuggestion, suggestionsDisabled}: {
+function Transcript({conversationId, threadId, onHasMessages, onSuggestion, onRegenerate, busy, suggestionsDisabled}: {
   conversationId: Id<'assistantConversations'>; threadId: string; onHasMessages: (value: boolean) => void;
-  onSuggestion: (prompt: string) => void; suggestionsDisabled: boolean;
+  onSuggestion: (prompt: string) => void; onRegenerate: (prompt: string) => void; busy: boolean;
+  suggestionsDisabled: boolean;
 }) {
   const messages = useUIMessages(api.assistant.listThreadMessages, {threadId}, {initialNumItems: 20, stream: true});
   const turns = useMemo(() => {
@@ -114,7 +151,9 @@ function Transcript({conversationId, threadId, onHasMessages, onSuggestion, sugg
         {messages.status === 'CanLoadMore' && <Button variant="ghost" size="sm" onPress={() => messages.loadMore(20)}>查看更早的消息</Button>}
         {messages.status === 'LoadingMore' && <ChatLoader.Dots label="正在加载更早的消息" />}
         {!turns.length && <Welcome onSuggestion={onSuggestion} isDisabled={suggestionsDisabled} />}
-        {turns.map(turn => <Turn key={turn.order} conversationId={conversationId} {...turn} />)}
+        {turns.map((turn, index) => <Turn key={turn.order} conversationId={conversationId} {...turn}
+          isLatest={index === turns.length - 1} busy={busy} onFollowUp={onSuggestion} onRegenerate={onRegenerate}
+          suggestionsDisabled={suggestionsDisabled} />)}
       </>}
     </ChatConversation.Content>
     <ChatConversation.ScrollButton aria-label="回到最新回答" tooltip={false} />
@@ -192,8 +231,8 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
     setSelected(item.id); setHasMessages(false); setHistoryOpen(false); setValue(''); setError(''); retry.current = null;
   }
 
-  async function submit() {
-    const prompt = value.trim();
+  async function submit(overridePrompt?: string) {
+    const prompt = (overridePrompt ?? value).trim();
     if (locked.current || busy || !prompt || prompt.length > 2000) return;
     locked.current = true; setSubmitting(true); setError('');
     try {
@@ -206,6 +245,12 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
       retry.current = null; setValue(''); setAnnouncement('问题已保存。');
     } catch (failure) { setError(errorMessage(failure)); }
     finally { locked.current = false; setSubmitting(false); }
+  }
+
+  function regenerate(prompt: string) {
+    if (locked.current || busy || submitting || !prompt.trim()) return;
+    retry.current = currentId ? {conversationId: currentId, prompt: prompt.trim(), requestId: crypto.randomUUID()} : null;
+    void submit(prompt);
   }
 
   async function stop() {
@@ -246,7 +291,9 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
         </Tooltip>
       </div>
     </div>
-    {conversation && currentId ? <Transcript key={conversation.threadId} conversationId={currentId} threadId={conversation.threadId} onHasMessages={setHasMessages} onSuggestion={chooseSuggestion} suggestionsDisabled={submitting || busy || Boolean(value.trim())} />
+    {conversation && currentId ? <Transcript key={conversation.threadId} conversationId={currentId} threadId={conversation.threadId}
+      onHasMessages={setHasMessages} onSuggestion={chooseSuggestion} onRegenerate={regenerate} busy={busy}
+      suggestionsDisabled={submitting || busy || Boolean(value.trim())} />
       : currentId || conversations.status === 'LoadingFirstPage' ? <div className="agent-chat__welcome"><ChatLoader.Dots label="正在加载对话" /></div>
       : <Welcome onSuggestion={chooseSuggestion} isDisabled={submitting || Boolean(value.trim())} />}
     <div className="blog-chat__composer">

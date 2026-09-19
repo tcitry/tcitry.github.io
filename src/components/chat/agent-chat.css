@@ -38,6 +38,13 @@
 .agent-chat__prompt-request > [role="status"] { color: var(--muted); }
 .agent-chat__requested-text { max-height: 4.8em; overflow-y: auto; overflow-wrap: anywhere; color: var(--foreground); }
 .agent-chat__prompt-actions { display: flex; flex-wrap: wrap; gap: .375rem; }
+.agent-chat__follow-ups { margin-top: .25rem; }
+.agent-chat .agent-chat__follow-ups .prompt-suggestion__title { margin: 0; padding: 0; color: var(--foreground); font-size: .875rem; font-weight: 500; line-height: 1.5; }
+.agent-chat .agent-chat__follow-ups .prompt-suggestion__title::before { content: none; }
+.agent-chat .agent-chat__follow-ups .prompt-suggestion__description { font-size: .8125rem; }
+.agent-chat__follow-ups .blog-chat__suggestions { display: grid; grid-template-columns: minmax(0, 1fr); gap: .5rem; }
+.agent-chat .agent-chat__follow-ups .prompt-suggestion__item { min-height: 2.5rem; font-size: .8125rem; }
+.agent-chat__turn-actions { display: flex; justify-content: flex-start; }
 .agent-chat .blog-chat__composer > .blog-chat__error { margin: 0 0 .625rem; }
 
 @media (max-width: 639px) {
