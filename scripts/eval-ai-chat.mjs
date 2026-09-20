@@ -4,6 +4,7 @@ import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {parseEnv} from 'node:util';
+import {searchRetrievalOptions} from '../src/lib/ai-search-retrieval-options.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const outputDir = path.join(root, '.generated', 'ai-chat-eval');
@@ -40,17 +41,8 @@ async function chatCompletions(base, {question}) {
   const request = {
     messages: [{role: 'user', content: question}],
     stream: true,
-    ai_search_options: {
-      retrieval: {
-        retrieval_type: 'vector',
-        max_num_results: 8,
-        match_threshold: 0.45,
-        return_on_failure: false,
-      },
-      query_rewrite: {enabled: false},
-      reranking: {enabled: false},
-      cache: {enabled: false},
-    },
+    // Match production Convex assistant chat/search retrieval (no content_hash filters in eval).
+    ai_search_options: searchRetrievalOptions(),
   };
   const started = performance.now();
   let attempt = 0;
@@ -191,7 +183,8 @@ async function main() {
   const name = baseline ? `baseline-${timestamp}-${observed}` : `eval-${timestamp}-${observed}`;
   const jsonPath = path.join(outputDir, `${name}.json`);
   const mdPath = path.join(outputDir, `${name}.md`);
-  await writeFile(jsonPath, JSON.stringify({endpoint, observed, generatedAt: new Date().toISOString(), results}, null, 2) + '\n');
+  const retrievalConfig = searchRetrievalOptions();
+  await writeFile(jsonPath, JSON.stringify({endpoint, observed, retrievalConfig, generatedAt: new Date().toISOString(), results}, null, 2) + '\n');
   await writeFile(mdPath, formatReport(results));
   console.log(`\nWrote ${jsonPath}`);
   console.log(`Wrote ${mdPath}`);

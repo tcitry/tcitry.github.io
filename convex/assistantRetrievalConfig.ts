@@ -1,17 +1,9 @@
-export const RETRIEVAL = {
-  retrieval_type: 'hybrid' as const,
-  max_num_results: 10,
-  match_threshold: 0.4,
-  return_on_failure: false,
-};
+import defaults from '../src/lib/ai-search-retrieval-options.json';
 
-export const RERANKING = {
-  enabled: true as const,
-  model: '@cf/baai/bge-reranker-base' as const,
-};
-
-export const QUERY_REWRITE = {enabled: false as const};
-export const CACHE = {enabled: true as const};
+export const RETRIEVAL = defaults.retrieval;
+export const RERANKING = defaults.reranking;
+export const QUERY_REWRITE = defaults.query_rewrite;
+export const CACHE = defaults.cache;
 
 export function chatRetrievalOptions(approvedHashes: string[]) {
   return {
