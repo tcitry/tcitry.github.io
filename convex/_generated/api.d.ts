@@ -16,6 +16,7 @@ import type * as commentImages from "../commentImages.js";
 import type * as commentShared from "../commentShared.js";
 import type * as comments from "../comments.js";
 import type * as consultations from "../consultations.js";
+import type * as giscusImport from "../giscusImport.js";
 import type * as http from "../http.js";
 import type * as membership from "../membership.js";
 import type * as notifications from "../notifications.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   commentShared: typeof commentShared;
   comments: typeof comments;
   consultations: typeof consultations;
+  giscusImport: typeof giscusImport;
   http: typeof http;
   membership: typeof membership;
   notifications: typeof notifications;

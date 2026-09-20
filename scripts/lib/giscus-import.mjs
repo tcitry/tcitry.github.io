@@ -97,6 +97,14 @@ export function pathTermsToCandidates(terms) {
   return [...new Set(terms.map(term => canonicalPathname(term)).filter(Boolean))];
 }
 
+/** Locked production pathname overrides approved for DEV-76. */
+export const APPROVED_PATHNAME_OVERRIDES = {
+  148: '/docs/Apple/SwiftUI/Layout/TabView/',
+  160: '/posts/macos-proxy-client-comparison/',
+};
+
+export const GISCUS_IMPORT_SOURCE = 'github_discussion';
+
 export const KNOWN_DISCUSSION_RISKS = {
   148: {
     kind: 'dual_path',
@@ -217,8 +225,72 @@ export function proposeDiscussionMapping(discussion, site) {
       githubLogin: row.author?.login ?? null,
       githubUserId: row.author?.databaseId ?? null,
       owner: row.author?.databaseId == null ? null : syntheticGithubOwner(row.author.databaseId),
+      body: String(row.body ?? ''),
       bodyPreview: String(row.body ?? '').replace(/\s+/g, ' ').trim().slice(0, 120),
     })),
+  };
+}
+
+export function importAuthorName(githubLogin, githubUserId) {
+  if (typeof githubLogin === 'string') {
+    const trimmed = githubLogin.trim();
+    if (trimmed && trimmed.length <= 80 && !/[\u0000-\u001f\u007f]/u.test(trimmed)) return trimmed;
+  }
+  if (githubUserId != null) return `GitHub#${githubUserId}`;
+  return 'GitHub用户';
+}
+
+export function resolveImportPathname(mapping) {
+  const override = APPROVED_PATHNAME_OVERRIDES[mapping.discussionNumber];
+  if (override) return override;
+  return mapping.proposedPathname;
+}
+
+export function isApprovedForImport(mapping) {
+  const pathname = resolveImportPathname(mapping);
+  if (!pathname) return false;
+  if (APPROVED_PATHNAME_OVERRIDES[mapping.discussionNumber]) return true;
+  return mapping.risks.length === 0;
+}
+
+export function buildProductionImportPlan(discussions, site) {
+  const mappings = discussions.map(discussion => proposeDiscussionMapping(discussion, site));
+  const selected = mappings.filter(mapping => isApprovedForImport(mapping) && mapping.comments.length > 0);
+  const rows = selected.flatMap(mapping => {
+    const pathname = resolveImportPathname(mapping);
+    return mapping.comments
+      .filter(comment => comment.owner && comment.externalId)
+      .map(comment => ({
+        pathname,
+        externalId: comment.externalId,
+        body: comment.body,
+        createdAt: Date.parse(comment.createdAt),
+        parentExternalId: comment.parentExternalId,
+        owner: comment.owner,
+        authorName: importAuthorName(comment.githubLogin, comment.githubUserId),
+        sourceDiscussionNumber: mapping.discussionNumber,
+        githubLogin: comment.githubLogin ?? undefined,
+        githubUserId: comment.githubUserId ?? undefined,
+        sourceUrl: comment.sourceUrl ?? undefined,
+      }))
+      .filter(row => Number.isFinite(row.createdAt));
+  });
+  return {
+    generatedAt: new Date().toISOString(),
+    importSource: GISCUS_IMPORT_SOURCE,
+    totals: {
+      discussions: mappings.length,
+      approvedDiscussions: selected.length,
+      commentsAndReplies: rows.length,
+    },
+    pathnameOverrides: APPROVED_PATHNAME_OVERRIDES,
+    selectedDiscussions: selected.map(mapping => ({
+      discussionNumber: mapping.discussionNumber,
+      pathname: resolveImportPathname(mapping),
+      commentCount: mapping.comments.length,
+      override: Boolean(APPROVED_PATHNAME_OVERRIDES[mapping.discussionNumber]),
+    })),
+    rows,
   };
 }
 
