@@ -49,7 +49,7 @@ let convexAuthOverride: {isAuthenticated: boolean; isLoading: boolean} | null =
 type Source = {id: string; title: string; url: string; sourceKind: 'author'};
 type AiConversation = {id: string; owner: string; threadId: string; title: string; activeRun: string | null; updatedAt: number};
 type AiMessage = {id: string; key: string; role: 'user' | 'assistant'; parts: {type: 'text'; text: string}[]; text: string; order: number; stepOrder: number; status: 'success' | 'streaming'; _creationTime: number; threadId: string};
-type AiRun = {id: string; conversationId: string; order: number; status: 'running' | 'completed' | 'canceled'; sources: Source[]};
+type AiRun = {id: string; conversationId: string; order: number; status: 'running' | 'completed' | 'canceled' | 'failed'; sources: Source[]; error?: string};
 const sources: Source[] = [{id: '1', title: '已核验的 RAG 文章', url: 'https://yindongliang.com/docs/rag-fixture/', sourceKind: 'author'}];
 const safeAnswer = '根据[已核验的文章](https://yindongliang.com/docs/rag-fixture/)回答。\n\n[外部链接](https://example.invalid/unsafe)与 ![图片替代文字](https://example.invalid/unsafe.png) 不应成为可操作链接或图片。';
 const aiConversations: AiConversation[] = [
@@ -538,6 +538,16 @@ Object.assign(window, {__services: {
       run.status = 'completed'; conversation.activeRun = null;
       const message = aiMessages.find(item => item.threadId === conversation.threadId && item.order === run.order && item.role === 'assistant');
       if (message) { message.status = 'success'; message.text = safeAnswer; message.parts = [{type: 'text', text: safeAnswer}]; }
+    }
+    publish();
+  },
+  failAi: (error = '回答暂时无法完成，请稍后重新提问。') => {
+    for (const conversation of aiConversations) {
+      const run = aiRuns.find(item => item.id === conversation.activeRun);
+      if (!run) continue;
+      run.status = 'failed'; run.error = error; conversation.activeRun = null;
+      const message = aiMessages.find(item => item.threadId === conversation.threadId && item.order === run.order && item.role === 'assistant');
+      if (message) { message.status = 'success'; message.text = '失败轮次的部分回答。'; message.parts = [{type: 'text', text: message.text}]; }
     }
     publish();
   },
