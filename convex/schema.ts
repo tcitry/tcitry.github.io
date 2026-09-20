@@ -54,7 +54,8 @@ export default defineSchema({
     sourceUrl: v.optional(v.string()),
   }).index("by_pathname_and_createdAt", ["pathname", "createdAt"])
     .index("by_owner_and_deletedAt_and_createdAt", ["owner", "deletedAt", "createdAt"])
-    .index("by_externalId", ["externalId"]),
+    .index("by_externalId", ["externalId"])
+    .index("by_importSource", ["importSource"]),
   commentStats: defineTable({pathname: v.string(), commentCount: v.number(), likeCount: v.number()})
     .index("by_pathname", ["pathname"]),
   articleLikes: defineTable({pathname: v.string(), owner: v.string(), title: v.optional(v.string()), createdAt: v.optional(v.number())})
