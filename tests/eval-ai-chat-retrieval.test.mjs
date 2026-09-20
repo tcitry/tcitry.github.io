@@ -34,3 +34,10 @@ test('eval script uses shared production retrieval options', async () => {
   assert.doesNotMatch(script, /retrieval_type:\s*'vector'/);
   assert.doesNotMatch(script, /reranking:\s*\{enabled:\s*false\}/);
 });
+
+test('eval script parses AI Search completion SSE chunks events', async () => {
+  const script = await readFile(fileURLToPath(new URL('../scripts/eval-ai-chat.mjs', import.meta.url)), 'utf8');
+  assert.match(script, /consumeCompletionSseBuffer/);
+  assert.match(script, /mapChunkSources/);
+  assert.doesNotMatch(script, /data\.event\s*===\s*'chunks'/);
+});

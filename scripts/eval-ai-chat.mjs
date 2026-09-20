@@ -4,6 +4,7 @@ import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {parseEnv} from 'node:util';
+import {consumeCompletionSseBuffer, mapChunkSources} from '../src/lib/ai-search-completion-sse.mjs';
 import {searchRetrievalOptions} from '../src/lib/ai-search-retrieval-options.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -82,41 +83,26 @@ async function chatCompletions(base, {question}) {
   }
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
-  let text = '';
+  let buffer = '';
+  const onFrame = frame => {
+    if (frame.kind === 'chunks') report.sources = mapChunkSources(frame.chunks);
+    if (frame.kind === 'done') report.totalMs = performance.now() - started;
+    if (frame.kind === 'message') {
+      const data = frame.data;
+      if (data.model && !report.modelObserved) report.modelObserved = data.model;
+      const delta = data.choices?.[0]?.delta?.content ?? '';
+      if (delta) report.answer += delta;
+      if (data.choices?.[0]?.finish_reason) report.finishReason = data.choices[0].finish_reason;
+    }
+  };
   try {
     while (true) {
       const {done, value} = await reader.read();
       if (done) break;
-      text += decoder.decode(value, {stream: true});
-      for (const line of text.split('\n')) {
-        const trimmed = line.trim();
-        if (!trimmed.startsWith('data: ')) continue;
-        const payload = trimmed.slice(6);
-        if (payload === '[DONE]') {
-          report.totalMs = performance.now() - started;
-          continue;
-        }
-        try {
-          const data = JSON.parse(payload);
-          if (data.event === 'chunks') {
-            report.sources = (data.chunks || []).map(chunk => ({
-              key: chunk?.item?.key,
-              score: chunk?.score,
-              title: chunk?.item?.metadata?.canonical_url,
-              hash: chunk?.item?.metadata?.content_hash,
-            }));
-            continue;
-          }
-          if (data.model && !report.modelObserved) report.modelObserved = data.model;
-          const delta = data.choices?.[0]?.delta?.content ?? '';
-          if (delta) report.answer += delta;
-          if (data.choices?.[0]?.finish_reason) report.finishReason = data.choices[0].finish_reason;
-        } catch {
-          // ignore malformed non-DATA lines
-        }
-      }
-      text = text.slice(text.lastIndexOf('\n') + 1);
+      buffer = consumeCompletionSseBuffer(buffer + decoder.decode(value, {stream: true}), onFrame);
     }
+    buffer += decoder.decode();
+    consumeCompletionSseBuffer(buffer, onFrame);
   } catch (error) {
     report.error = String(error?.message ?? error);
   } finally {
