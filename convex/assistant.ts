@@ -1,15 +1,33 @@
-import {Agent, abortStream, createThread, listStreams, listUIMessages, saveMessage, syncStreams, vStreamArgs} from '@convex-dev/agent';
+import {Agent, abortStream, createThread, createTool, listStreams, listUIMessages, saveMessage, syncStreams, vStreamArgs} from '@convex-dev/agent';
 import {RateLimiter} from '@convex-dev/rate-limiter';
+import {jsonSchema, stepCountIs} from 'ai';
 import {paginationOptsValidator, type PaginationOptions} from 'convex/server';
 import {ConvexError, type GenericId, v} from 'convex/values';
 import {components, internal} from './_generated/api';
 import type {Doc, Id} from './_generated/dataModel';
-import {env, internalAction, internalMutation, internalQuery, mutation, query, type MutationCtx, type QueryCtx} from './_generated/server';
-import {publicChatModel, instructions, NO_SOURCES, SAFE_ERROR, type GenerationEvent} from './assistantModel';
+import {env, internalAction, internalMutation, internalQuery, mutation, query, type ActionCtx, type MutationCtx, type QueryCtx} from './_generated/server';
+import {publicChatModel, instructions, toolInstructions, workersAiChatModel, NO_SOURCES, SAFE_ERROR, TOOL_BUDGET, type GenerationEvent, type Snippet, type Source} from './assistantModel';
 import {searchRetrievalOptions} from './assistantRetrievalConfig';
 import {retrievePublicSources} from './assistantPublicSearch';
 
 const sourceValidator = v.object({id: v.string(), title: v.string(), url: v.string(), sourceKind: v.union(v.literal('author'), v.literal('ai-assisted'))});
+const phaseValidator = v.union(v.literal('thinking'), v.literal('searching'), v.literal('writing'));
+type RunMode = 'legacy' | 'tool';
+const DEFAULT_CHAT_MODEL = '@cf/zai-org/glm-5.3';
+const DEFAULT_CHAT_GATEWAY = 'tcitry-blog-chat';
+const TOOL_QUERY_MAX = 200;
+const TOOL_SNIPPET_BUDGET = 14_000;
+const TOOL_TIMEOUT_MS = 6_000;
+const TOOL_TOTAL_TIMEOUT_MS = 12_000;
+
+// ASSISTANT_TOOL_MODE is read once per run here so the run, its logs and the
+// UI agree on the pipeline even if the variable changes mid-flight.
+export function resolveRunMode(ownerId: string, mode = env.ASSISTANT_TOOL_MODE, owners = env.ASSISTANT_TOOL_OWNERS): RunMode {
+  const value = mode?.trim() ?? 'off';
+  if (value === 'on') return 'tool';
+  if (value === 'allowlist') return (owners ?? '').split(',').map(item => item.trim()).filter(Boolean).includes(ownerId) ? 'tool' : 'legacy';
+  return 'legacy';
+}
 
 function extractTopicTerms(messages: {role: string; content: string}[]) {
   const text = messages.map(message => message.content).join(' ');
@@ -149,7 +167,8 @@ export const getRunStates = query({
     if (orders.length > 50 || orders.some(order => !Number.isSafeInteger(order) || order < 0)) throw new ConvexError({code: 'INVALID_ARGUMENT', message: '消息范围无效。'});
     const runs = await Promise.all([...new Set(orders)].map(order => ctx.db.query('assistantRuns')
       .withIndex('by_conversationId_and_promptOrder', q => q.eq('conversationId', conversationId).eq('promptOrder', order)).unique()));
-    return runs.filter(run => run !== null).map(run => ({order: run.promptOrder, status: run.status, sources: run.sources, error: run.error ?? null}));
+    return runs.filter(run => run !== null).map(run => ({order: run.promptOrder, status: run.status, sources: run.sources, error: run.error ?? null,
+      phase: run.phase ?? null, toolCalls: run.toolCalls ?? 0}));
   },
 });
 
@@ -211,8 +230,20 @@ export const start = internalMutation({
     if (run.deadlineAt <= Date.now()) { await settle(ctx, run, 'failed', '回答已超时，请重新提问。'); return null; }
     const conversation = await ctx.db.get('assistantConversations', run.conversationId);
     if (!conversation || conversation.activeRunId !== runId) return null;
-    await ctx.db.patch('assistantRuns', runId, {status: 'running'});
-    return {threadId: conversation.threadId, promptMessageId: run.promptMessageId, promptOrder: run.promptOrder, deadlineAt: run.deadlineAt};
+    const mode = resolveRunMode(run.owner);
+    await ctx.db.patch('assistantRuns', runId, {status: 'running', mode, phase: mode === 'tool' ? 'thinking' : 'searching', toolCalls: 0});
+    return {threadId: conversation.threadId, promptMessageId: run.promptMessageId, promptOrder: run.promptOrder, deadlineAt: run.deadlineAt, mode};
+  },
+});
+
+export const setPhase = internalMutation({
+  args: {runId: v.id('assistantRuns'), phase: phaseValidator, toolCalls: v.optional(v.number())}, returns: v.boolean(),
+  handler: async (ctx, {runId, phase, toolCalls}) => {
+    const run = await ctx.db.get('assistantRuns', runId);
+    if (!run || run.status !== 'running') return false;
+    if (toolCalls !== undefined && (!Number.isInteger(toolCalls) || toolCalls < 0 || toolCalls > TOOL_BUDGET.maxToolCalls)) throw new Error(SAFE_ERROR);
+    await ctx.db.patch('assistantRuns', runId, {phase, ...(toolCalls !== undefined ? {toolCalls} : {})});
+    return true;
   },
 });
 
@@ -256,8 +287,11 @@ export const completedContext = internalQuery({
       const round = response.page.filter(message => message.threadId === conversation.threadId
         && message.order === candidate.promptOrder && message.status === 'success');
       const prompt = round.find(message => message._id === candidate.promptMessageId && message.message?.role === 'user');
-      const answers = round.filter(message => message.message?.role === 'assistant' && prompt && message.stepOrder > prompt.stepOrder);
-      if (!prompt || answers.length !== 1) continue;
+      // A tool-loop round stores one assistant message per step under the same
+      // order; the visible answer is the last text-only step.
+      const answers = round.filter(message => message.message?.role === 'assistant' && prompt && message.stepOrder > prompt.stepOrder
+        && completedText(message.message?.content) !== null).sort((a, b) => b.stepOrder - a.stepOrder);
+      if (!prompt || !answers.length) continue;
       const question = completedText(prompt.message?.content);
       const answer = completedText(answers[0].message?.content);
       if (!question || !answer || question.length > 2000 || answer.length > 12_000) continue;
@@ -276,7 +310,7 @@ export const setSources = internalMutation({
     const run = await ctx.db.get('assistantRuns', runId);
     if (!run || run.status !== 'running') return false;
     if (sources.length > 5) throw new Error(SAFE_ERROR);
-    await ctx.db.patch('assistantRuns', runId, {sources});
+    await ctx.db.patch('assistantRuns', runId, {sources, phase: 'writing'});
     return true;
   },
 });
@@ -298,13 +332,13 @@ export const finish = internalMutation({
 export const generate = internalAction({
   args: {runId: v.id('assistantRuns')}, returns: v.null(),
   handler: async (ctx, {runId}) => {
-    const run: {threadId: string; promptMessageId: string; promptOrder: number; deadlineAt: number} | null = await ctx.runMutation(internal.assistant.start, {runId});
+    const run: {threadId: string; promptMessageId: string; promptOrder: number; deadlineAt: number; mode: RunMode} | null = await ctx.runMutation(internal.assistant.start, {runId});
     if (!run) return null;
     const startedAt = Date.now();
     const trace = (event: {stage: string} & Partial<Omit<GenerationEvent, 'stage'>>) => {
       // Fixed stages, elapsed time, status/error codes and protocol field names. Never pass an
-      // exception, prompt, URL, source text or account identifier to the logger.
-      console.info('assistant_generation', {...event, elapsedMs: Date.now() - startedAt});
+      // exception, prompt, URL, source text, tool query or account identifier to the logger.
+      console.info('assistant_generation', {...event, mode: run.mode, elapsedMs: Date.now() - startedAt});
     };
     let failure: Promise<void> | undefined;
     const fail = () => failure ??= (async () => {
@@ -329,6 +363,10 @@ export const generate = internalAction({
       const previous = context.previousQuestion;
       const current = prompt.content;
       const topicTerms = extractTopicTerms(context.messages);
+      if (run.mode === 'tool') {
+        await generateWithTool(ctx, {runId, run, history: context.messages, topicTerms, controller, assertActive, trace, fail});
+        return null;
+      }
       const retrievalQuery = typeof previous === 'string' && current.length <= 1500
         ? `针对主题「${topicTerms}」的追问。上文：${previous.slice(0, 300)}。当前问题：${current}`
         : current;
@@ -372,3 +410,123 @@ export const generate = internalAction({
     return null;
   },
 });
+
+type ToolRunArgs = {
+  runId: Id<'assistantRuns'>;
+  run: {threadId: string; promptMessageId: string};
+  history: {role: 'user' | 'assistant'; content: string}[];
+  topicTerms: string;
+  controller: AbortController;
+  assertActive: () => Promise<void>;
+  trace: (event: {stage: string} & Partial<Omit<GenerationEvent, 'stage'>>) => void;
+  fail: () => Promise<void>;
+};
+
+export function validateToolQuery(input: unknown): string | null {
+  if (typeof input !== 'string') return null;
+  const query = input.trim();
+  // eslint-disable-next-line no-control-regex
+  if (!query || query.length > TOOL_QUERY_MAX || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(query)) return null;
+  return query;
+}
+
+// Sources are shared across tool calls: stable numbering, URL-level dedupe, at most
+// five entries. Snippets share one character budget so a second call cannot blow the
+// prompt past what the legacy pipeline allowed.
+export function mergeToolSources(state: {sources: Source[]; snippets: Snippet[]; budgetLeft: number},
+    retrieved: {sources: Source[]; snippets: Snippet[]}) {
+  const byUrl = new Map(state.sources.map(source => [source.url, source.id]));
+  const remap = new Map<string, string>();
+  for (const source of retrieved.sources) {
+    const existing = byUrl.get(source.url);
+    if (existing) { remap.set(source.id, existing); continue; }
+    if (state.sources.length >= 5) continue;
+    const id = String(state.sources.length + 1);
+    state.sources.push({...source, id});
+    byUrl.set(source.url, id);
+    remap.set(source.id, id);
+  }
+  const added: Snippet[] = [];
+  for (const snippet of retrieved.snippets) {
+    const id = remap.get(snippet.source);
+    if (!id) continue;
+    if (state.snippets.some(existing => existing.source === id && existing.text === snippet.text)) continue;
+    const text = snippet.text.slice(0, Math.max(0, state.budgetLeft));
+    if (!text) break;
+    state.budgetLeft -= text.length;
+    const merged = {...snippet, source: id, text};
+    state.snippets.push(merged);
+    added.push(merged);
+  }
+  return added;
+}
+
+async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms, controller, assertActive, trace, fail}: ToolRunArgs) {
+  const searchUrl = env.AI_SEARCH_PUBLIC_URL;
+  const accountId = env.CLOUDFLARE_ACCOUNT_ID;
+  const apiToken = env.CLOUDFLARE_API_TOKEN;
+  if (!searchUrl || !accountId || !apiToken) { trace({stage: 'tool_mode_unconfigured'}); throw new Error(SAFE_ERROR); }
+  const state = {sources: [] as Source[], snippets: [] as Snippet[], budgetLeft: TOOL_SNIPPET_BUDGET, toolCalls: 0, toolMs: 0};
+  const shortQuery = (query: string) => query.length < 6 || /^(它|这个|那个|这|那|上面|前面|刚才|this|that|it)/i.test(query);
+  const searchBlog = createTool({
+    description: '检索本站已发布的博客文章与文档。输入检索词（不超过 200 字符），返回编号后的相关片段；回答时用「来源 N」引用编号。',
+    inputSchema: jsonSchema<{query: string}>({type: 'object', properties: {query: {type: 'string', description: '检索词，不超过 200 字符'}},
+      required: ['query'], additionalProperties: false}),
+    execute: async (_toolCtx, input) => {
+      state.toolCalls += 1;
+      trace({stage: 'tool_call', toolCalls: state.toolCalls});
+      if (state.toolCalls > TOOL_BUDGET.maxToolCalls) { trace({stage: 'tool_budget_exceeded'}); throw new Error(SAFE_ERROR); }
+      await assertActive();
+      await ctx.runMutation(internal.assistant.setPhase, {runId, phase: 'searching', toolCalls: state.toolCalls});
+      let query = validateToolQuery(input.query);
+      if (!query) { trace({stage: 'tool_query_invalid'}); return {ok: false as const, reason: 'invalid_query' as const}; }
+      if (shortQuery(query) && topicTerms) {
+        query = `${topicTerms} ${query}`.slice(0, TOOL_QUERY_MAX);
+        trace({stage: 'tool_query_augmented', queryLength: query.length});
+      }
+      const remaining = Math.min(TOOL_TIMEOUT_MS, TOOL_TOTAL_TIMEOUT_MS - state.toolMs);
+      if (remaining <= 0) { trace({stage: 'tool_unavailable'}); return {ok: false as const, reason: 'unavailable' as const}; }
+      const toolController = new AbortController();
+      const onAbort = () => toolController.abort(controller.signal.reason);
+      controller.signal.addEventListener('abort', onAbort, {once: true});
+      const timer = setTimeout(() => toolController.abort(new Error(SAFE_ERROR)), remaining);
+      const startedAt = Date.now();
+      try {
+        const retrieved = await retrievePublicSources(searchUrl, query, toolController.signal,
+          {observe: trace, fallback: false, retrievalOptions: searchRetrievalOptions({queryRewrite: false})});
+        const added = mergeToolSources(state, retrieved);
+        await assertActive();
+        if (!await ctx.runMutation(internal.assistant.setSources, {runId, sources: state.sources})) throw new Error(SAFE_ERROR);
+        trace({stage: 'tool_result', sourceCount: state.sources.length, toolCalls: state.toolCalls});
+        return {ok: true as const, results: added.map(snippet => ({source: Number(snippet.source), title: snippet.title, sourceKind: snippet.sourceKind,
+          updatedAt: snippet.updatedAt, text: snippet.text}))};
+      } catch (error) {
+        if (controller.signal.aborted) throw error;
+        trace({stage: 'tool_unavailable'});
+        return {ok: false as const, reason: 'unavailable' as const};
+      } finally {
+        clearTimeout(timer);
+        controller.signal.removeEventListener('abort', onAbort);
+        state.toolMs += Date.now() - startedAt;
+        if (!controller.signal.aborted) await ctx.runMutation(internal.assistant.setPhase, {runId, phase: 'writing', toolCalls: state.toolCalls}).catch(() => {});
+      }
+    },
+  });
+  const model = workersAiChatModel({accountId, apiToken, gateway: env.ASSISTANT_CHAT_GATEWAY?.trim() || DEFAULT_CHAT_GATEWAY,
+    model: env.ASSISTANT_CHAT_MODEL?.trim() || DEFAULT_CHAT_MODEL}, assertActive, {observe: trace, onFailure: fail, tools: TOOL_BUDGET});
+  const agent = new Agent(components.agent, {name: '博客助手', languageModel: model, tools: {search_blog: searchBlog},
+    instructions: toolInstructions(), contextOptions: {recentMessages: 1, excludeToolMessages: true, searchOtherThreads: false},
+    stopWhen: stepCountIs(TOOL_BUDGET.maxToolCalls + 1)});
+  trace({stage: 'agent_start'});
+  const result = await agent.streamText(ctx, {threadId: run.threadId}, {
+    promptMessageId: run.promptMessageId, maxOutputTokens: 2048, temperature: 0.3, maxRetries: 0, abortSignal: controller.signal,
+  }, {saveStreamDeltas: {throttleMs: 250}, contextHandler: async (_ctx, {threadId, inputPrompt}) => {
+    if (threadId !== run.threadId || inputPrompt.length !== 1 || inputPrompt[0].role !== 'user') throw new Error(SAFE_ERROR);
+    return [...history, ...inputPrompt];
+  }});
+  await result.consumeStream();
+  trace({stage: 'agent_persisted'});
+  if (!(await result.text).trim() || (await result.finishReason) !== 'stop') throw new Error(SAFE_ERROR);
+  await ctx.runMutation(internal.assistant.finish, {runId, failed: false});
+  trace({stage: 'completed', sourceCount: state.sources.length, toolCalls: state.toolCalls});
+}

@@ -33,6 +33,9 @@ export default defineSchema({
     status: v.union(v.literal("queued"), v.literal("running"), v.literal("completed"), v.literal("failed"), v.literal("canceled")),
     sources: v.array(v.object({id: v.string(), title: v.string(), url: v.string(), sourceKind: v.union(v.literal("author"), v.literal("ai-assisted"))})),
     createdAt: v.number(), deadlineAt: v.number(), completedAt: v.optional(v.number()), error: v.optional(v.string()), streamId: v.optional(v.string()),
+    mode: v.optional(v.union(v.literal("legacy"), v.literal("tool"))),
+    phase: v.optional(v.union(v.literal("thinking"), v.literal("searching"), v.literal("writing"))),
+    toolCalls: v.optional(v.number()),
   }).index("by_conversationId_and_requestId", ["conversationId", "requestId"])
     .index("by_conversationId_and_createdAt", ["conversationId", "createdAt"])
     .index("by_conversationId_and_promptOrder", ["conversationId", "promptOrder"]),

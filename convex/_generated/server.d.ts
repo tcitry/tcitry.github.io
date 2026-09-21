@@ -31,8 +31,14 @@ type Env = {
   readonly CONVEX_CLOUD_URL: string;
   readonly CONVEX_SITE_URL: string;
   readonly AI_SEARCH_PUBLIC_URL: string | undefined;
+  readonly ASSISTANT_CHAT_GATEWAY: string | undefined;
+  readonly ASSISTANT_CHAT_MODEL: string | undefined;
+  readonly ASSISTANT_TOOL_MODE: string | undefined;
+  readonly ASSISTANT_TOOL_OWNERS: string | undefined;
   readonly CHAT_ALLOWED_ORIGINS: string | undefined;
   readonly CLERK_PRO_PLAN_SLUG: string | undefined;
+  readonly CLOUDFLARE_ACCOUNT_ID: string | undefined;
+  readonly CLOUDFLARE_API_TOKEN: string | undefined;
   readonly CONSULTATION_ADMIN_TOKEN_IDENTIFIER: string | undefined;
 };
 

@@ -50,6 +50,68 @@ describe('assistant model boundary', () => {
   });
 });
 
+describe('tool-loop middleware', () => {
+  const parts = (items: LanguageModelV4StreamPart[]) => new ReadableStream<LanguageModelV4StreamPart>({start(controller) {
+    for (const item of items) controller.enqueue(item);
+    controller.close();
+  }});
+  const finish = (unified: 'stop' | 'tool-calls' | 'length'): LanguageModelV4StreamPart =>
+    ({type: 'finish', finishReason: {unified, raw: unified}, usage: {inputTokens: {total: 1, noCache: 1, cacheRead: 0, cacheWrite: 0}, outputTokens: {total: 1, text: 1, reasoning: 0}}} as LanguageModelV4StreamPart);
+  const call = (id: string, input = '{"query":"convex"}'): LanguageModelV4StreamPart[] => [
+    {type: 'tool-input-start', id, toolName: 'search_blog'}, {type: 'tool-input-delta', id, delta: input},
+    {type: 'tool-input-end', id}, {type: 'tool-call', toolCallId: id, toolName: 'search_blog', input},
+  ];
+  function toolWrapped(stream: ReadableStream<LanguageModelV4StreamPart>, observe = vi.fn(), middleware = safeModelMiddleware(async () => {}, {tools: {maxToolCalls: 2, maxToolInputBytes: 2048}, observe})) {
+    return {observe, middleware, result: middleware.wrapStream!({model, params: {prompt: []}, doGenerate: async () => {throw new Error('unused');}, doStream: async () => ({stream})})};
+  }
+
+  test('passes tool parts through, allows a zero-text tool-calls step and drops reasoning/raw/source/file', async () => {
+    const {observe, result} = toolWrapped(parts([
+      {type: 'stream-start', warnings: []}, {type: 'reasoning-start', id: 'r'}, {type: 'reasoning-delta', id: 'r', delta: 'secret'}, {type: 'reasoning-end', id: 'r'},
+      {type: 'raw', rawValue: {x: 1}}, {type: 'source', sourceType: 'url', id: 's', url: 'https://evil.example/'} as LanguageModelV4StreamPart,
+      ...call('c1'), finish('tool-calls'),
+    ]));
+    const out = await read((await result).stream);
+    expect(out.map(part => part.type)).toEqual(['stream-start', 'tool-input-start', 'tool-input-delta', 'tool-input-end', 'tool-call', 'finish']);
+    expect(JSON.stringify(out)).not.toMatch(/secret|evil/);
+    expect(observe.mock.calls).toEqual([[{stage: 'tool_call_start', toolCalls: 1}], [{stage: 'chat_finish', finishReason: 'tool-calls', tokenCount: 0, toolCalls: 1}]]);
+  });
+
+  test('legacy middleware without a tool budget drops tool parts and still rejects zero text', async () => {
+    const stream = parts([{type: 'stream-start', warnings: []}, ...call('c1'), finish('tool-calls')]);
+    await expect(read((await wrapped(stream)).stream)).rejects.toThrow(SAFE_ERROR);
+  });
+
+  test('tool-result and approval requests from the provider are rejected immediately', async () => {
+    for (const part of [
+      {type: 'tool-result', toolCallId: 'c1', toolName: 'search_blog', result: {ok: true}},
+      {type: 'tool-approval-request', approvalId: 'a', toolCallId: 'c1'},
+    ] as LanguageModelV4StreamPart[]) {
+      const {result} = toolWrapped(parts([{type: 'stream-start', warnings: []}, part, finish('stop')]));
+      await expect(read((await result).stream)).rejects.toThrow(SAFE_ERROR);
+    }
+  });
+
+  test('rejects more than two tool calls across steps and oversized tool input', async () => {
+    const observe = vi.fn();
+    const middleware = safeModelMiddleware(async () => {}, {tools: {maxToolCalls: 2, maxToolInputBytes: 2048}, observe});
+    for (const id of ['c1', 'c2']) await read((await toolWrapped(parts([...call(id), finish('tool-calls')]), observe, middleware).result).stream);
+    await expect(read((await toolWrapped(parts([...call('c3'), finish('tool-calls')]), observe, middleware).result).stream)).rejects.toThrow(SAFE_ERROR);
+    expect(observe.mock.calls).toContainEqual([{stage: 'tool_budget_exceeded'}]);
+    const big = `{"query":"${'x'.repeat(2100)}"}`;
+    await expect(read((await toolWrapped(parts([...call('c9', big), finish('tool-calls')])).result).stream)).rejects.toThrow(SAFE_ERROR);
+  });
+
+  test('length finish and zero-text stop still fail; first visible text reports ttfb once', async () => {
+    await expect(read((await toolWrapped(parts([{type: 'text-start', id: 't'}, {type: 'text-delta', id: 't', delta: 'a'}, finish('length')])).result).stream)).rejects.toThrow(SAFE_ERROR);
+    await expect(read((await toolWrapped(parts([finish('stop')])).result).stream)).rejects.toThrow(SAFE_ERROR);
+    const {observe, result} = toolWrapped(parts([{type: 'text-start', id: 't'}, {type: 'text-delta', id: 't', delta: '<think>x</think>'},
+      {type: 'text-delta', id: 't', delta: '你好'}, {type: 'text-delta', id: 't', delta: '！'}, {type: 'text-end', id: 't'}, finish('stop')]));
+    await read((await result).stream);
+    expect(observe.mock.calls.filter(([event]) => event.stage === 'first_text_delta')).toHaveLength(1);
+  });
+});
+
 describe('verified public completion SSE', () => {
   test('handles byte-split UTF-8 and CRLF frames, removes source events and forwards OpenAI data in order', async () => {
     const stream = verifiedCompletionStream(bytes(': keepalive\r\n\r\n' + chunks() + delta('中文公开内容。[1]') + delta('', 'stop') + done, 1), [approved]);
@@ -250,7 +312,8 @@ describe('public AI Search language model', () => {
       [{stage: 'chat_sources_verified'}],
       [{stage: 'chat_model', model: 'configured-instance-model'}],
       [{stage: 'chat_done'}],
-      [{stage: 'chat_finish', finishReason: 'stop', tokenCount: 8}],
+      [{stage: 'first_text_delta', ttfbMs: expect.any(Number)}],
+      [{stage: 'chat_finish', finishReason: 'stop', tokenCount: 8, toolCalls: 0}],
     ]);
     expect(JSON.stringify(observe.mock.calls)).not.toMatch(/原始|当前问题|上一个问题|公开回答|search\.example|content_hash/);
   });
