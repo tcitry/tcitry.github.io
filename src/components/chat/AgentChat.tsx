@@ -96,6 +96,13 @@ function FollowUps({prompts, isDisabled, onFollowUp}: {prompts: string[]; isDisa
   </div>;
 }
 
+export function runLoaderLabel(run: {phase?: 'thinking' | 'searching' | 'writing' | null; sources: unknown[]} | undefined) {
+  if (run?.phase === 'thinking') return '正在思考';
+  if (run?.phase === 'writing') return '正在整理回答';
+  if (run?.phase === 'searching') return '正在检索文章';
+  return run?.sources.length ? '正在整理回答' : '正在检索文章';
+}
+
 function Turn({conversationId, order, messages, isLatest, busy, onFollowUp, onRegenerate, suggestionsDisabled}: {
   conversationId: Id<'assistantConversations'>; order: number; messages: RenderMessage[];
   isLatest: boolean; busy: boolean; onFollowUp: (prompt: string) => void;
@@ -117,7 +124,7 @@ function Turn({conversationId, order, messages, isLatest, busy, onFollowUp, onRe
     {messages.map(message => message.role === 'user'
       ? <ChatMessage.User key={message.key} className="blog-chat__user"><ChatMessage.Bubble><ChatMessage.Content>{message.text}</ChatMessage.Content></ChatMessage.Bubble></ChatMessage.User>
       : message.role === 'assistant' ? <Answer key={message.key} message={message} sources={run?.sources ?? []} /> : null)}
-    {pending && !hasAnswer && <ChatLoader.Dots label={run?.sources.length ? '正在整理回答' : '正在检索文章'} />}
+    {pending && !hasAnswer && <ChatLoader.Dots label={runLoaderLabel(run)} />}
     {run?.status === 'canceled' && <p className="blog-chat__notice">已停止生成。{hasAnswer ? '当前回答可能不完整。' : ''}</p>}
     {run?.status === 'failed' && <>
       <p role="alert" className="blog-chat__error">{run.error || '回答未完成，请重新提问。'}</p>

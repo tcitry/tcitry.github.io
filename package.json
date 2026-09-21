@@ -55,6 +55,7 @@
     "ai-chat:eval": "node scripts/eval-ai-chat.mjs",
     "ai-chat:eval:baseline": "node scripts/eval-ai-chat.mjs --baseline",
     "ai-chat:eval:quick": "node scripts/eval-ai-chat.mjs --baseline --sample 10 --delay 2000",
+    "ai-chat:probe": "node scripts/probe-chat-tools.mjs",
     "giscus-import:dry-run": "node scripts/giscus-import-dry-run.mjs",
     "giscus-import:prod": "node scripts/giscus-import-prod.mjs --dry-run",
     "giscus-import:prod:apply": "node scripts/giscus-import-prod.mjs --apply",

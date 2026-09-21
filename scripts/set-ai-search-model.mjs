@@ -9,6 +9,7 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 
 const ALLOWLIST = new Set([
   '@cf/qwen/qwen3.8-27b',
+  '@cf/zai-org/glm-5.3',
   '@cf/zai-org/glm-5.3-flash',
   '@cf/deepseek-ai/deepseek-v4-flash-0731',
 ]);

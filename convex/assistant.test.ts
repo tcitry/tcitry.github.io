@@ -8,6 +8,7 @@ import process from 'node:process';
 import {api, components, internal} from './_generated/api';
 import schema from './schema';
 import {SAFE_ERROR} from './assistantModel';
+import {mergeToolSources, resolveRunMode, validateToolQuery} from './assistant';
 
 const modules = import.meta.glob(['./**/*.ts', './**/*.js', '!./**/*.test.ts']);
 const paginationOpts = {numItems: 20, cursor: null};
@@ -375,6 +376,34 @@ describe('assistant retrieval and generation lifecycle', () => {
     expect(await t.query(internal.assistant.completedContext, {runId})).toBeNull();
   });
 
+  test('completed context keeps a tool-loop round: last text-only assistant step wins, tool steps are skipped', async () => {
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    await t.run(async ctx => {
+      const conversation = await ctx.db.get('assistantConversations', conversationId);
+      const saved = await saveMessage(ctx, components.agent, {threadId: conversation!.threadId, prompt: '工具轮次问题'});
+      // Same order as the prompt, ascending stepOrder: tool call, tool result, final text.
+      await saveMessage(ctx, components.agent, {threadId: conversation!.threadId, promptMessageId: saved.messageId,
+        message: {role: 'assistant', content: [{type: 'tool-call', toolCallId: 'c1', toolName: 'search_blog', input: {query: '内部检索词'}}]}});
+      await saveMessage(ctx, components.agent, {threadId: conversation!.threadId, promptMessageId: saved.messageId,
+        message: {role: 'tool', content: [{type: 'tool-result', toolCallId: 'c1', toolName: 'search_blog', output: {type: 'json', value: {ok: true, results: [{text: '内部片段'}]}}}]}});
+      await saveMessage(ctx, components.agent, {threadId: conversation!.threadId, promptMessageId: saved.messageId,
+        message: {role: 'assistant', content: '工具轮次最终回答。[1]'}});
+      await ctx.db.insert('assistantRuns', {conversationId, owner: conversation!.owner, requestId: 'seed-tool-round-001',
+        promptMessageId: saved.messageId, promptOrder: saved.message.order, status: 'completed', sources: [], createdAt: Date.now(), deadlineAt: Date.now() + 120_000,
+        mode: 'tool', phase: 'writing', toolCalls: 1});
+    });
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '当前问题', requestId});
+    await t.mutation(internal.assistant.start, {runId});
+    const context = await t.query(internal.assistant.completedContext, {runId});
+    expect(context).toEqual({previousQuestion: '工具轮次问题', messages: [
+      {role: 'user', content: '工具轮次问题'}, {role: 'assistant', content: '工具轮次最终回答。[1]'},
+    ]});
+    expect(JSON.stringify(context)).not.toMatch(/内部检索词|内部片段/);
+    const states = await alice.query(api.assistant.getRunStates, {conversationId, orders: [(await t.run(ctx => ctx.db.get('assistantRuns', runId)))!.promptOrder]});
+    expect(states[0]).toMatchObject({status: 'running', phase: 'searching', toolCalls: 0});
+  });
+
   test('completed context does not scan past 32 preceding runs or reuse an incomplete successful pair', async () => {
     const {t, alice} = setup();
     const conversationId = await alice.mutation(api.assistant.createConversation, {});
@@ -435,5 +464,160 @@ describe('assistant retrieval and generation lifecycle', () => {
     const state = await alice.query(api.assistant.getRunStates, {conversationId, orders: [run!.promptOrder]});
     expect(state[0].status).toBe('canceled');
     expect((await alice.query(api.assistant.getConversation, {conversationId})).activeRun).toBeNull();
+  });
+});
+
+describe('search-as-tool helpers', () => {
+  test('resolveRunMode defaults off, honours on, and gates allowlist by owner', () => {
+    expect(resolveRunMode('u1', undefined, undefined)).toBe('legacy');
+    expect(resolveRunMode('u1', 'off', 'u1')).toBe('legacy');
+    expect(resolveRunMode('u1', 'on', undefined)).toBe('tool');
+    expect(resolveRunMode('u1', 'allowlist', ' u0, u1 ')).toBe('tool');
+    expect(resolveRunMode('u2', 'allowlist', 'u0,u1')).toBe('legacy');
+    expect(resolveRunMode('u1', 'bogus', 'u1')).toBe('legacy');
+  });
+
+  test('validateToolQuery trims, caps at 200 chars and refuses control characters', () => {
+    expect(validateToolQuery('  convex agent  ')).toBe('convex agent');
+    expect(validateToolQuery('')).toBeNull(); expect(validateToolQuery('   ')).toBeNull();
+    expect(validateToolQuery(42)).toBeNull();
+    expect(validateToolQuery('x'.repeat(201))).toBeNull(); expect(validateToolQuery('x'.repeat(200))).toHaveLength(200);
+    expect(validateToolQuery('bad\u0000query')).toBeNull(); expect(validateToolQuery('bad\u001bquery')).toBeNull();
+    expect(validateToolQuery('多行\n允许')).toBe('多行\n允许');
+  });
+
+  test('mergeToolSources dedupes by URL, keeps numbering stable, caps at 5 sources and shares one snippet budget', () => {
+    const state = {sources: [] as {id: string; title: string; url: string; sourceKind: 'author' | 'ai-assisted'}[], snippets: [] as {source: string; title: string; sourceKind: 'author' | 'ai-assisted'; text: string}[], budgetLeft: 30};
+    const src = (id: string, n: number) => ({id, title: `T${n}`, url: `https://yindongliang.com/p/${n}/`, sourceKind: 'author' as const});
+    const first = mergeToolSources(state, {sources: [src('1', 1), src('2', 2)], snippets: [{source: '1', title: 'T1', sourceKind: 'author', text: 'aaaaaaaaaa'}, {source: '2', title: 'T2', sourceKind: 'author', text: 'bbbbbbbbbb'}]});
+    expect(first.map(s => s.source)).toEqual(['1', '2']);
+    expect(state.budgetLeft).toBe(10);
+    const second = mergeToolSources(state, {sources: [src('1', 2), src('2', 3), src('3', 4), src('4', 5), src('5', 6), src('6', 7)],
+      snippets: [{source: '1', title: 'T2', sourceKind: 'author', text: 'bbbbbbbbbb'}, {source: '2', title: 'T3', sourceKind: 'author', text: 'cccccccccccccccc'}, {source: '3', title: 'T4', sourceKind: 'author', text: 'dddd'}]});
+    expect(state.sources.map(s => s.id + ':' + s.url)).toEqual(['1:https://yindongliang.com/p/1/', '2:https://yindongliang.com/p/2/', '3:https://yindongliang.com/p/3/', '4:https://yindongliang.com/p/4/', '5:https://yindongliang.com/p/5/']);
+    expect(second).toEqual([{source: '3', title: 'T3', sourceKind: 'author', text: 'cccccccccc'}]);
+    expect(state.budgetLeft).toBe(0);
+    expect(JSON.stringify(second)).not.toContain('http');
+  });
+});
+
+describe('search-as-tool generation lifecycle', () => {
+  const accountId = 'f'.repeat(32);
+  const workersUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/v1/chat/completions`;
+  function toolConfigured() {
+    vi.stubEnv('AI_SEARCH_PUBLIC_URL', publicEndpoint);
+    vi.stubEnv('ASSISTANT_TOOL_MODE', 'on');
+    vi.stubEnv('CLOUDFLARE_ACCOUNT_ID', accountId);
+    vi.stubEnv('CLOUDFLARE_API_TOKEN', 'test-token-value-not-a-real-credential');
+  }
+  const sse = (frames: object[]) => new Response(frames.map(frame => `data: ${JSON.stringify(frame)}\n\n`).join('') + 'data: [DONE]\n\n', {headers: {'content-type': 'text/event-stream'}});
+  const chunk = (delta: object, finish_reason: string | null = null) => ({id: 'wai', object: 'chat.completion.chunk', created: 1, model: '@cf/zai-org/glm-5.3', choices: [{index: 0, delta, finish_reason}]});
+  const toolCallFrames = (query: string) => [chunk({role: 'assistant', tool_calls: [{index: 0, id: 'call_1', type: 'function', function: {name: 'search_blog', arguments: JSON.stringify({query})}}]}), chunk({}, 'tool_calls')];
+
+  test('blog fact: model calls search_blog once, validated sources are persisted, tool output carries no URL, phases progress', async () => {
+    toolConfigured();
+    const calls: {url: string; body: {messages?: {role: string; content?: unknown; tool_calls?: unknown}[]; tools?: unknown; query?: string; reasoning_effort?: string}; headers: Headers}[] = [];
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input); const body = JSON.parse(String(init?.body)); calls.push({url, body, headers: new Headers(init?.headers)});
+      if (url.endsWith('/search')) return Response.json({success: true, result: {chunks: [
+        {item: publicItem(), score: 0.8, text: '契约测试校验服务接口约定。'},
+        {item: {key: reference.key, metadata: {content_hash: 'c'.repeat(64), canonical_url: reference.url, source_kind: 'author'}}, score: 0.9, text: '伪造哈希片段'},
+        {item: {key: reference.key, metadata: {content_hash: reference.hash, canonical_url: 'https://evil.example/phish/', source_kind: 'author'}}, score: 0.9, text: '篡改链接片段'},
+        {item: {key: 'tcitry-blog/private/secret.md', metadata: {content_hash: reference.hash, canonical_url: reference.url, source_kind: 'author'}}, score: 0.9, text: '未知 key 片段'},
+      ]}});
+      const step = calls.filter(call => call.url === workersUrl).length;
+      if (step === 1) return sse(toolCallFrames('契约测试 作用'));
+      return sse([chunk({role: 'assistant', content: '契约测试用于校验接口约定。'}), chunk({content: '[来源 1]'}, 'stop')]);
+    });
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '契约测试有什么作用？', requestId});
+    const generation = t.action(internal.assistant.generate, {runId});
+    await vi.advanceTimersByTimeAsync(1000);
+    await generation;
+    const run = await t.run(ctx => ctx.db.get('assistantRuns', runId));
+    expect(run).toMatchObject({status: 'completed', mode: 'tool', phase: 'writing', toolCalls: 1, sources: [source]});
+    const conversation = await alice.query(api.assistant.getConversation, {conversationId});
+    const messages = await alice.query(api.assistant.listThreadMessages, {threadId: conversation.threadId, paginationOpts});
+    expect(messages.page.filter(message => message.role === 'assistant').map(message => message.text).join('')).toContain('契约测试用于校验接口约定。');
+    const model = calls.filter(call => call.url === workersUrl);
+    expect(model).toHaveLength(2);
+    expect(model[0].headers.get('cf-aig-gateway-id')).toBe('tcitry-blog-chat');
+    expect(model[0].headers.get('authorization')).toMatch(/^Bearer /);
+    expect(model[0].body.reasoning_effort).toBe('low');
+    expect(model[0].body.tools).toHaveLength(1);
+    const toolMessage = model[1].body.messages!.find(message => message.role === 'tool');
+    const toolText = JSON.stringify(toolMessage);
+    expect(toolText).toContain('契约测试校验服务接口约定');
+    expect(toolText).not.toMatch(/https?:|伪造哈希|篡改链接|未知 key|evil\.example/);
+    expect(JSON.stringify(model[1].body.messages)).not.toMatch(/evil\.example|yindongliang\.com/);
+    const search = calls.find(call => call.url.endsWith('/search'))!;
+    expect(search.headers.has('authorization')).toBe(false);
+    expect(search.body.query).toBe('契约测试 作用');
+  });
+
+  test('chitchat: model answers directly with zero searches and no sources', async () => {
+    toolConfigured();
+    const urls: string[] = [];
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL) => {
+      urls.push(String(input));
+      return sse([chunk({role: 'assistant', content: '你好！'}), chunk({content: '有什么可以帮你？'}, 'stop')]);
+    });
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '你好', requestId});
+    const generation = t.action(internal.assistant.generate, {runId});
+    await vi.advanceTimersByTimeAsync(1000);
+    await generation;
+    const run = await t.run(ctx => ctx.db.get('assistantRuns', runId));
+    expect(run).toMatchObject({status: 'completed', mode: 'tool', toolCalls: 0, sources: []});
+    expect(urls).toEqual([workersUrl]);
+  });
+
+  test('search failure returns an unavailable tool result and the model still finishes; a third tool call fails the run safely', async () => {
+    toolConfigured();
+    let modelCalls = 0; let toolMessages: unknown[] = [];
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.endsWith('/search')) return new Response('upstream private failure text', {status: 503});
+      modelCalls += 1;
+      const body = JSON.parse(String(init?.body));
+      toolMessages = body.messages.filter((message: {role: string}) => message.role === 'tool');
+      if (modelCalls === 1) return sse(toolCallFrames('契约测试'));
+      return sse([chunk({role: 'assistant', content: '博客中暂未找到足够依据。'}, 'stop')]);
+    });
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '契约测试有什么作用？', requestId});
+    let generation = t.action(internal.assistant.generate, {runId});
+    await vi.advanceTimersByTimeAsync(1000); await generation;
+    expect(await t.run(ctx => ctx.db.get('assistantRuns', runId))).toMatchObject({status: 'completed', toolCalls: 1, sources: []});
+    expect(JSON.stringify(toolMessages)).toContain('unavailable');
+    expect(JSON.stringify(toolMessages)).not.toContain('upstream private failure');
+
+    modelCalls = 0;
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL) => {
+      if (String(input).endsWith('/search')) return searchResponse();
+      modelCalls += 1;
+      return sse(toolCallFrames(`第 ${modelCalls} 次`));
+    });
+    const second = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '再查一次', requestId: 'question-request-0002'});
+    generation = t.action(internal.assistant.generate, {runId: second});
+    await vi.advanceTimersByTimeAsync(1000); await generation;
+    const run = await t.run(ctx => ctx.db.get('assistantRuns', second));
+    expect(run?.status).toBe('failed'); expect(run?.error).toBe(SAFE_ERROR);
+    expect(modelCalls).toBeLessThanOrEqual(3);
+  });
+
+  test('tool mode without Cloudflare credentials fails safely before any network call', async () => {
+    toolConfigured(); vi.stubEnv('CLOUDFLARE_API_TOKEN', undefined);
+    const fetchSpy = vi.fn(); vi.stubGlobal('fetch', fetchSpy);
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '契约测试有什么作用？', requestId});
+    const generation = t.action(internal.assistant.generate, {runId});
+    await vi.advanceTimersByTimeAsync(1000); await generation;
+    expect(await t.run(ctx => ctx.db.get('assistantRuns', runId))).toMatchObject({status: 'failed', error: SAFE_ERROR, mode: 'tool'});
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });

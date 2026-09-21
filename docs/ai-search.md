@@ -22,7 +22,19 @@ Convex Agent 通过对应 deployment 的 `AI_SEARCH_PUBLIC_URL`：
 3. 调用 `/chat/completions` 生成回答；
 4. 将消息、来源、流式增量和运行终态保存到 Convex。
 
-回答模型与 Gateway 由 AI Search 实例配置决定。Convex 不直接配置 Gateway hostname、Cloudflare Account token 或固定模型；旧 Worker `/api/chat` 和检索桥已删除。
+以上是 legacy 管线（`ASSISTANT_TOOL_MODE=off`，默认）。回答模型与 Gateway 由 AI Search 实例配置决定；Convex 不直接配置 Gateway hostname、Cloudflare Account token 或固定模型。旧 Worker `/api/chat` 和检索桥已删除，不再引入。
+
+#### 检索作为工具（DEV-298，灰度）
+
+`ASSISTANT_TOOL_MODE=allowlist|on` 时，Convex Agent 改为 `streamText + tools + stopWhen` 工具循环（`stepCountIs(3)`）：
+
+1. 模型直接开始生成；博客事实类问题由模型自行调用 `search_blog`，寒暄、元问题、通用技术问题零次检索；
+2. `search_blog` 内部仍调用 `/search` 并经过 `validatePublicChunk` 与 `references.json` 校验；query 去空后非空、≤200 字符、无控制字符，短指代 query 用上文主题词补全一次；
+3. 每 run 最多 2 次工具调用，单次 6 秒、累计 12 秒超时，snippets 共用 14,000 字符预算，来源跨调用去重、编号稳定、最多 5 个；工具结果只含编号、标题、sourceKind、updatedAt、正文，不含 URL；检索失败返回 `{ok:false, reason:'unavailable'}`，不中断整轮；
+4. 生成走 Workers AI OpenAI-compatible endpoint，经 Gateway `ASSISTANT_CHAT_GATEWAY`（默认 `tcitry-blog-chat`），模型 `ASSISTANT_CHAT_MODEL`（默认 `@cf/zai-org/glm-5.3`），需要 Convex deployment 配置 `CLOUDFLARE_ACCOUNT_ID` 与仅限 Workers AI 的 `CLOUDFLARE_API_TOKEN`；请求带 `reasoning_effort: low`（探针实测把无检索首字延迟从 ~2.8s 降到 ~1.7s，工具调用准确率不变；`none` 在 Workers AI 上无效）；AI Search 只承担 `/search`；
+5. run 记录 `mode`、`phase`（thinking / searching / writing）与 `toolCalls`，UI 据此显示「正在思考 / 正在检索文章 / 正在整理回答」。
+
+灰度顺序：`allowlist`（`ASSISTANT_TOOL_OWNERS` 为逗号分隔的 Clerk tokenIdentifier）→ `on`。legacy 管线保留至少两周或 200 次真实 run 后再删除。评测用 `scripts/eval-ai-chat.mjs`，TTFB 定义为第一个非空可见 `delta.content`。
 
 公开 endpoint 本身没有 Clerk 鉴权。站内 AI 对话仍由 Convex 验证身份、会话归属、限流和数据隔离。
 
