@@ -1,7 +1,8 @@
 {
-  "version": 1,
+  "version": 2,
   "models": [
     "instance-default",
+    "@cf/zai-org/glm-5.3",
     "@cf/qwen/qwen3.8-27b",
     "@cf/zai-org/glm-5.3-flash",
     "@cf/deepseek-ai/deepseek-v4-flash-0731"
@@ -11,8 +12,8 @@
       "id": "q01",
       "category": "single-fact",
       "turns": ["博客的 AI 对话现在使用什么模型生成回答？"],
-      "requiredFacts": ["当前生成模型是 @cf/meta/llama-3.3-70b-instruct-fp8-fast"],
-      "forbiddenClaims": ["模型固定为 Qwen", "模型固定为 DeepSeek"],
+      "requiredFacts": ["生成模型由 Convex 环境变量 ASSISTANT_CHAT_MODEL 配置", "默认 @cf/zai-org/glm-5.3", "通过 Cloudflare Workers AI / AI Gateway 调用"],
+      "forbiddenClaims": ["@cf/meta/llama-3.3-70b-instruct-fp8-fast", "模型固定为 Qwen", "模型固定为 DeepSeek", "由 AI Search 实例配置决定"],
       "expectedSourcePatterns": ["/docs/", "/posts/"]
     },
     {
@@ -252,6 +253,78 @@
       "requiredFacts": ["canonical pathname", "URL 归一化"],
       "forbiddenClaims": ["按标题关联"],
       "expectedSourcePatterns": ["/docs/"]
+    },
+    {
+      "id": "q31",
+      "category": "no-retrieval",
+      "turns": ["你好！"],
+      "requiredFacts": [],
+      "forbiddenClaims": [],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": false
+    },
+    {
+      "id": "q32",
+      "category": "no-retrieval",
+      "turns": ["谢谢，回答得很清楚，再见。"],
+      "requiredFacts": [],
+      "forbiddenClaims": [],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": false
+    },
+    {
+      "id": "q33",
+      "category": "no-retrieval",
+      "turns": ["你是谁？你能帮我做什么？"],
+      "requiredFacts": ["博客助手", "回答与本站文章相关的问题"],
+      "forbiddenClaims": ["可以访问用户私信", "可以修改文章"],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": false
+    },
+    {
+      "id": "q34",
+      "category": "no-retrieval",
+      "turns": ["你能记住我们之前聊过的内容吗？"],
+      "requiredFacts": ["同一对话内保留最近几轮上下文"],
+      "forbiddenClaims": ["永久记住所有对话"],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": false
+    },
+    {
+      "id": "q35",
+      "category": "no-retrieval",
+      "turns": ["用一句话解释 TCP 三次握手。"],
+      "requiredFacts": ["SYN", "SYN-ACK", "ACK"],
+      "forbiddenClaims": [],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": false
+    },
+    {
+      "id": "q36",
+      "category": "no-retrieval",
+      "turns": ["Python 里 list 和 tuple 有什么区别？"],
+      "requiredFacts": ["list 可变", "tuple 不可变"],
+      "forbiddenClaims": [],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": false
+    },
+    {
+      "id": "q37",
+      "category": "no-retrieval",
+      "turns": ["帮我把这句话翻译成英文：今天天气不错。"],
+      "requiredFacts": ["weather"],
+      "forbiddenClaims": [],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": false
+    },
+    {
+      "id": "q38",
+      "category": "follow-up",
+      "turns": ["博客评论现在使用什么认证？", "谢谢！"],
+      "requiredFacts": ["Clerk"],
+      "forbiddenClaims": [],
+      "expectedSourcePatterns": ["/docs/"],
+      "expectRetrieval": true
     }
   ]
 }
