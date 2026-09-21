@@ -238,7 +238,7 @@ async function main() {
   const sample = Number(args.find((_, i) => i > 0 && args[i - 1] === '--sample')) || Number.POSITIVE_INFINITY;
   const category = args.find((_, i) => i > 0 && args[i - 1] === '--category');
   assert.ok(Number.isInteger(delayMs) && delayMs >= 0, 'delay must be a non-negative integer');
-  assert.ok(Number.isInteger(sample) && sample > 0, 'sample must be a positive integer');
+  assert.ok(sample === Number.POSITIVE_INFINITY || (Number.isInteger(sample) && sample > 0), 'sample must be a positive integer');
 
   const endpoint = normalizeEndpoint(await loadEnv());
   const fixture = JSON.parse(await readFile(path.join(root, 'tests', 'fixtures', 'ai-chat-eval.json'), 'utf8'));
