@@ -44,6 +44,7 @@ describe('assistant authorization and persisted submissions', () => {
       await expect(client.query(api.assistant.getConversation, {conversationId})).rejects.toThrow();
       await expect(client.mutation(api.assistant.sendMessage, {conversationId, prompt: '问题', requestId})).rejects.toThrow();
       await expect(client.mutation(api.assistant.cancel, {conversationId})).rejects.toThrow();
+      await expect(client.mutation(api.assistant.deleteConversation, {conversationId})).rejects.toThrow();
       await expect(client.query(api.assistant.getRunStates, {conversationId, orders: [0]})).rejects.toThrow();
       await expect(client.query(api.assistant.listThreadMessages, {threadId: conversation.threadId, paginationOpts})).rejects.toThrow();
     }
@@ -102,6 +103,40 @@ describe('assistant authorization and persisted submissions', () => {
     await t.mutation(internal.assistant.expire, {runId});
     expect((await t.run(ctx => ctx.db.get('assistantRuns', runId)))?.status).toBe('failed');
     expect((await alice.query(api.assistant.getConversation, {conversationId})).activeRun).toBeNull();
+  });
+
+  test('deleteConversation removes the conversation, runs and agent thread for the owner only', async () => {
+    const {t, alice, bob} = setup();
+    const keepId = await alice.mutation(api.assistant.createConversation, {});
+    const deleteId = await alice.mutation(api.assistant.createConversation, {});
+    const keep = await alice.query(api.assistant.getConversation, {conversationId: keepId});
+    const doomed = await alice.query(api.assistant.getConversation, {conversationId: deleteId});
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId: deleteId, prompt: '待删除问题', requestId});
+    await alice.mutation(api.assistant.deleteConversation, {conversationId: deleteId});
+    await t.finishAllScheduledFunctions(vi.runAllTimers);
+    expect((await alice.query(api.assistant.listConversations, {paginationOpts})).page.map(item => item.id)).toEqual([keepId]);
+    await expect(alice.query(api.assistant.getConversation, {conversationId: deleteId})).rejects.toThrow('NOT_FOUND');
+    expect(await t.run(ctx => ctx.db.get('assistantRuns', runId))).toBeNull();
+    expect(await t.run(ctx => ctx.db.get('assistantConversations', deleteId))).toBeNull();
+    expect(await t.run(ctx => ctx.runQuery(components.agent.threads.getThread, {threadId: doomed.threadId}))).toBeNull();
+    expect((await alice.query(api.assistant.listThreadMessages, {threadId: keep.threadId, paginationOpts})).page).toEqual([]);
+    await expect(bob.mutation(api.assistant.deleteConversation, {conversationId: deleteId})).rejects.toThrow();
+    await expect(bob.mutation(api.assistant.deleteConversation, {conversationId: keepId})).rejects.toThrow();
+  });
+
+  test('deleteConversation cancels an active run before removing persisted data', async () => {
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '生成中', requestId});
+    await t.mutation(internal.assistant.start, {runId});
+    const conversation = await alice.query(api.assistant.getConversation, {conversationId});
+    expect(conversation.activeRun?.status).toBe('running');
+    await alice.mutation(api.assistant.deleteConversation, {conversationId});
+    await t.finishAllScheduledFunctions(vi.runAllTimers);
+    expect(await t.run(ctx => ctx.db.get('assistantRuns', runId))).toBeNull();
+    expect(await t.run(ctx => ctx.db.get('assistantConversations', conversationId))).toBeNull();
+    expect(await t.run(ctx => ctx.runQuery(components.agent.threads.getThread, {threadId: conversation.threadId}))).toBeNull();
+    expect((await alice.query(api.assistant.listConversations, {paginationOpts})).page).toEqual([]);
   });
 
   test('a legitimate thread cannot be used with another user’s stream cursor', async () => {

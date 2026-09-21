@@ -331,6 +331,20 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
       }
       conversation.activeRun = null; publish(); return null;
     }
+    if (name === 'assistant:deleteConversation') {
+      const conversation = getAiConversation(String(args.conversationId), userId);
+      const run = aiRuns.find(run => run.id === conversation.activeRun);
+      if (run) run.status = 'canceled';
+      for (let index = aiRuns.length - 1; index >= 0; index--) {
+        if (aiRuns[index].conversationId === conversation.id) aiRuns.splice(index, 1);
+      }
+      for (let index = aiMessages.length - 1; index >= 0; index--) {
+        if (aiMessages[index].threadId === conversation.threadId) aiMessages.splice(index, 1);
+      }
+      const conversationIndex = aiConversations.findIndex(item => item.id === conversation.id);
+      if (conversationIndex !== -1) aiConversations.splice(conversationIndex, 1);
+      publish(); return null;
+    }
     if (name === 'consultations:start') {
       if (!consultationsReady) throw new ConvexError({code: 'CONSULTATION_UNAVAILABLE', message: '私人咨询尚未开放，请稍后再来。'});
       if (!membershipConfigured || !pro.has(userId)) throw new ConvexError({code: 'PRO_REQUIRED', message: '发送私人咨询需要有效的 Pro 会员。已有对话仍可查看。'});

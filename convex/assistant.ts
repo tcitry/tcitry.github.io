@@ -1,7 +1,7 @@
 import {Agent, abortStream, createThread, listStreams, listUIMessages, saveMessage, syncStreams, vStreamArgs} from '@convex-dev/agent';
 import {RateLimiter} from '@convex-dev/rate-limiter';
 import {paginationOptsValidator, type PaginationOptions} from 'convex/server';
-import {ConvexError, v} from 'convex/values';
+import {ConvexError, type GenericId, v} from 'convex/values';
 import {components, internal} from './_generated/api';
 import type {Doc, Id} from './_generated/dataModel';
 import {env, internalAction, internalMutation, internalQuery, mutation, query, type MutationCtx, type QueryCtx} from './_generated/server';
@@ -168,6 +168,28 @@ export const cancel = mutation({
     const conversation = await ownedConversation(ctx, conversationId);
     const run = conversation.activeRunId ? await ctx.db.get('assistantRuns', conversation.activeRunId) : null;
     if (run) await settle(ctx, run, 'canceled');
+    return null;
+  },
+});
+
+export const deleteConversation = mutation({
+  args: {conversationId: v.id('assistantConversations')}, returns: v.null(),
+  handler: async (ctx, {conversationId}) => {
+    const conversation = await ownedConversation(ctx, conversationId);
+    const run = conversation.activeRunId ? await ctx.db.get('assistantRuns', conversation.activeRunId) : null;
+    if (run) await settle(ctx, run, 'canceled');
+    let cursor: string | null = null;
+    while (true) {
+      const batch = await ctx.db.query('assistantRuns')
+        .withIndex('by_conversationId_and_createdAt', q => q.eq('conversationId', conversationId))
+        .paginate({cursor, numItems: 100});
+      for (const item of batch.page) await ctx.db.delete('assistantRuns', item._id);
+      if (batch.isDone) break;
+      cursor = batch.continueCursor;
+    }
+    const threadId = conversation.threadId;
+    await ctx.db.delete('assistantConversations', conversationId);
+    await ctx.runMutation(components.agent.threads.deleteAllForThreadIdAsync, {threadId: threadId as GenericId<'threads'>});
     return null;
   },
 });
