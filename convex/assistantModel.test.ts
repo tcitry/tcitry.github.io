@@ -61,7 +61,7 @@ describe('tool-loop middleware', () => {
     {type: 'tool-input-start', id, toolName: 'search_blog'}, {type: 'tool-input-delta', id, delta: input},
     {type: 'tool-input-end', id}, {type: 'tool-call', toolCallId: id, toolName: 'search_blog', input},
   ];
-  function toolWrapped(stream: ReadableStream<LanguageModelV4StreamPart>, observe = vi.fn(), middleware = safeModelMiddleware(async () => {}, {tools: {maxToolCalls: 2, maxToolInputBytes: 2048}, observe})) {
+  function toolWrapped(stream: ReadableStream<LanguageModelV4StreamPart>, observe = vi.fn(), middleware = safeModelMiddleware(async () => {}, {tools: {maxToolCalls: 2, maxToolInputBytes: 2048, toolNames: ['search_blog']}, observe})) {
     return {observe, middleware, result: middleware.wrapStream!({model, params: {prompt: []}, doGenerate: async () => {throw new Error('unused');}, doStream: async () => ({stream})})};
   }
 
@@ -92,9 +92,15 @@ describe('tool-loop middleware', () => {
     }
   });
 
+  test('rejects calls to tools outside the allowlist', async () => {
+    const {result} = toolWrapped(parts([{type: 'stream-start', warnings: []},
+      {type: 'tool-input-start', id: 'x', toolName: 'run_shell'}, {type: 'tool-call', toolCallId: 'x', toolName: 'run_shell', input: '{}'}, finish('tool-calls')]));
+    await expect(read((await result).stream)).rejects.toThrow(SAFE_ERROR);
+  });
+
   test('rejects more than two tool calls across steps and oversized tool input', async () => {
     const observe = vi.fn();
-    const middleware = safeModelMiddleware(async () => {}, {tools: {maxToolCalls: 2, maxToolInputBytes: 2048}, observe});
+    const middleware = safeModelMiddleware(async () => {}, {tools: {maxToolCalls: 2, maxToolInputBytes: 2048, toolNames: ['search_blog']}, observe});
     for (const id of ['c1', 'c2']) await read((await toolWrapped(parts([...call(id), finish('tool-calls')]), observe, middleware).result).stream);
     await expect(read((await toolWrapped(parts([...call('c3'), finish('tool-calls')]), observe, middleware).result).stream)).rejects.toThrow(SAFE_ERROR);
     expect(observe.mock.calls).toContainEqual([{stage: 'tool_budget_exceeded'}]);
