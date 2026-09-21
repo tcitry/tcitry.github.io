@@ -5,18 +5,6 @@ export const RERANKING = defaults.reranking;
 export const QUERY_REWRITE = defaults.query_rewrite;
 export const CACHE = defaults.cache;
 
-export function chatRetrievalOptions(approvedHashes: string[]) {
-  return {
-    retrieval: {
-      ...RETRIEVAL,
-      filters: {content_hash: {$in: approvedHashes}},
-    },
-    query_rewrite: QUERY_REWRITE,
-    reranking: RERANKING,
-    cache: CACHE,
-  };
-}
-
 export function searchRetrievalOptions({queryRewrite}: {queryRewrite?: boolean} = {}) {
   return {
     retrieval: RETRIEVAL,

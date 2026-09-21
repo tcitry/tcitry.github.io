@@ -157,7 +157,7 @@
 **S4** eval / 单测对齐
 **S5** 灰度与清理
 
-**灰度**：Convex env `ASSISTANT_TOOL_MODE = off | allowlist | on`（`allowlist` 配 `ASSISTANT_TOOL_OWNERS`，先只对站长开）。`generate` 入口读一次，写进 `assistantRuns.mode` 和每条日志。
+** rollout（已完成）**：生产仅保留工具循环路径；`generate` 始终 `streamText + tools + stopWhen`，无 `ASSISTANT_TOOL_MODE` 灰度开关。run 仍记录 `phase` 与 `toolCalls` 供 UI 与日志使用。
 **回滚 = 改一个 env 值，不需要重新部署。** 旧 pipeline 代码保留到 burn-in 结束（≥ 2 周或 ≥ 200 次真实 run）再删。
 
 ### 不要做的事

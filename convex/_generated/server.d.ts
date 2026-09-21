@@ -33,8 +33,6 @@ type Env = {
   readonly AI_SEARCH_PUBLIC_URL: string | undefined;
   readonly ASSISTANT_CHAT_GATEWAY: string | undefined;
   readonly ASSISTANT_CHAT_MODEL: string | undefined;
-  readonly ASSISTANT_TOOL_MODE: string | undefined;
-  readonly ASSISTANT_TOOL_OWNERS: string | undefined;
   readonly CHAT_ALLOWED_ORIGINS: string | undefined;
   readonly CLERK_PRO_PLAN_SLUG: string | undefined;
   readonly CLOUDFLARE_ACCOUNT_ID: string | undefined;
