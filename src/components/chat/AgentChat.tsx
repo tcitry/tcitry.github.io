@@ -3,7 +3,7 @@ import {useMutation, usePaginatedQuery, useQuery} from 'convex/react';
 import {useUIMessages, type UIMessage} from '@convex-dev/agent/react';
 import {ConvexError} from 'convex/values';
 import type {Components} from 'react-markdown';
-import {Ellipsis, Plus} from '@gravity-ui/icons';
+import {ClockArrowRotateLeft, Ellipsis, Plus} from '@gravity-ui/icons';
 import {AlertDialog, Button, Dropdown, ListBox, Popover, Tooltip} from '@heroui/react';
 import {ChatConversation} from '@heroui-pro/react/chat-conversation';
 import {ChatLoader} from '@heroui-pro/react/chat-loader';
@@ -333,7 +333,12 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
           </AlertDialog.Container>
         </AlertDialog.Backdrop>
         <Popover isOpen={historyOpen} onOpenChange={setHistoryOpen}>
-          <Button variant="ghost" size="sm" className="agent-chat__history-trigger">历史</Button>
+          <Tooltip delay={400}>
+            <Button variant="ghost" size="sm" isIconOnly className="agent-chat__history-trigger" aria-label="历史对话">
+              <ClockArrowRotateLeft width={18} height={18} aria-hidden="true" />
+            </Button>
+            <Tooltip.Content className="blog-chat__tooltip" placement="bottom end" offset={6} UNSTABLE_portalContainer={portalContainer ?? undefined}>历史对话</Tooltip.Content>
+          </Tooltip>
           <Popover.Content placement="bottom end" offset={8} containerPadding={12} UNSTABLE_portalContainer={portalContainer ?? undefined} className="agent-chat__history-popover" data-agent-history-popover data-sentry-mask>
             <Popover.Dialog className="agent-chat__history" aria-label="已保存的 AI 对话">
               <Popover.Heading className="agent-chat__history-heading">历史对话</Popover.Heading>

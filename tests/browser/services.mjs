@@ -733,7 +733,7 @@ try {
     await deleteDialog.waitFor({state: 'hidden'});
     await ai.getByRole('heading', {name: '第二条已保存对话：关于 Cloudflare AI Search、Convex Agent 与 Clerk 会员服务的长标题记录', exact: true}).waitFor();
     assert.equal(await ai.getByText('已保存的 RAG 问题', {exact: true}).count(), 0, 'Deleting the current conversation switches to another history item');
-    await ai.getByRole('button', {name: '历史', exact: true}).click();
+    await ai.getByRole('button', {name: '历史对话', exact: true}).click();
     const history = aiPage.locator('[data-agent-history-popover]');
     await history.waitFor();
     await history.getByRole('listbox', {name: '选择 AI 对话', exact: true}).waitFor();
@@ -926,7 +926,7 @@ try {
     await tab(widgetPage, 'AI 对话').click();
     const composer = widgetPage.getByRole('textbox', {name: '向 AI 博客助手提问', exact: true});
     await composer.waitFor();
-    const historyButton = widgetPage.getByRole('button', {name: '历史', exact: true});
+    const historyButton = widgetPage.getByRole('button', {name: '历史对话', exact: true});
     await historyButton.click();
     const widgetHistory = widgetPage.locator('[data-agent-history-popover]');
     await widgetHistory.waitFor();
