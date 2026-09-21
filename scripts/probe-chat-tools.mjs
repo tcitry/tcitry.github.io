@@ -2,7 +2,10 @@
 // S0 probe (DEV-298): does the configured Workers AI model emit OpenAI-style
 // function calls reliably through the /ai/v1 chat completions endpoint?
 //
-//   CLOUDFLARE_ACCOUNT_ID=... CLOUDFLARE_API_TOKEN=... node scripts/probe-chat-tools.mjs [--repeat 3] [--reasoning none|default|both]
+//   CLOUDFLARE_ACCOUNT_ID=... CLOUDFLARE_API_TOKEN=... node scripts/probe-chat-tools.mjs [--repeat 3] [--reasoning default|none|low|template|both|all] [--delay 4000]
+//
+// Requests bypass the gateway cache (cf-aig-skip-cache) so timings are real. The
+// gateway rate limit is tight; keep --delay generous and expect 429 retries.
 //
 // Never prints the token. Writes .generated/ai-chat-eval/probe-<ts>.json.
 import assert from 'node:assert/strict';
@@ -24,20 +27,36 @@ const TOOL = {
   },
 };
 
+// How to suppress GLM thinking. `none` is NOT honored by Workers AI (measured 2026-09-21); `low` and `template` both yield 0 reasoning tokens.
+const REASONING_MODES = {
+  default: {},
+  none: {reasoning_effort: 'none'},
+  low: {reasoning_effort: 'low'},
+  template: {chat_template_kwargs: {enable_thinking: false}},
+};
+
 const SYSTEM = '你是 tcitry-blog 的中文博客助手。需要引用本站文章事实时先调用 search_blog；否则直接回答。回答简洁。';
 
 const CASES = [
-  {id: 'retrieval-1', expectTool: true, prompt: 'AI Search 的 embedding 模型是什么？'},
-  {id: 'retrieval-2', expectTool: true, prompt: '博客评论现在使用什么认证？'},
-  {id: 'retrieval-3', expectTool: true, prompt: '本站从 Hugo 迁移到 Astro 后保留了哪些兼容性？'},
+  {id: 'retrieval-1', expectTool: true, prompt: 'AI Search 的 embedding 模型是什么？',
+    result: {title: 'Cloudflare AI Search 配置', text: 'AI Search 的 embedding 模型是 @cf/qwen/qwen3-embedding-0.6b，检索使用 hybrid 模式并开启 bge-reranker-base 重排。'}},
+  {id: 'retrieval-2', expectTool: true, prompt: '博客评论现在使用什么认证？',
+    result: {title: '评论系统迁移到 Convex', text: '博客评论使用 Clerk 登录，Convex 后端校验身份后写入评论；不再使用 Giscus，也不支持匿名评论。'}},
+  {id: 'retrieval-3', expectTool: true, prompt: '本站从 Hugo 迁移到 Astro 后保留了哪些兼容性？',
+    result: {title: '从 Hugo 迁移到 Astro', text: '迁移后保留了历史 URL 和 canonical pathname，评论按 canonical pathname 关联以保持兼容；Hugo 构建配置和 GitHub Pages 工作流已删除。'}},
   {id: 'chitchat-1', expectTool: false, prompt: '你好！'},
   {id: 'meta-1', expectTool: false, prompt: '你是谁？你能帮我做什么？'},
   {id: 'general-1', expectTool: false, prompt: '用一句话解释 TCP 三次握手。'},
   {id: 'general-2', expectTool: false, prompt: 'Python 里 list 和 tuple 有什么区别？'},
 ];
 
-const FAKE_RESULT = JSON.stringify({results: [{n: 1, title: 'Cloudflare AI Search 配置', sourceKind: 'author', updatedAt: '2026-08-01',
-  text: 'AI Search 的 embedding 模型是 @cf/qwen/qwen3-embedding-0.6b，检索使用 hybrid 模式并开启 bge-reranker-base 重排。'}]});
+function fakeResult(testCase) {
+  return JSON.stringify({results: [{n: 1, sourceKind: 'author', updatedAt: '2026-08-01', ...testCase.result}]});
+}
+
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function loadEnv() {
   let text = '';
@@ -61,14 +80,26 @@ function parseSse(text, onData) {
 }
 
 async function stream(cfg, body) {
-  const timer = createTurnTimer();
-  const response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${cfg.accountId}/ai/v1/chat/completions`, {
-    method: 'POST',
-    headers: {authorization: `Bearer ${cfg.token}`, 'content-type': 'application/json', 'cf-aig-gateway-id': cfg.gateway},
-    body: JSON.stringify({...body, model: cfg.model, stream: true}),
-  });
+  let response;
+  let retries = 0;
+  let timer;
+  while (true) {
+    timer = createTurnTimer();
+    response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${cfg.accountId}/ai/v1/chat/completions`, {
+      method: 'POST',
+      headers: {authorization: `Bearer ${cfg.token}`, 'content-type': 'application/json', 'cf-aig-gateway-id': cfg.gateway, 'cf-aig-skip-cache': 'true'},
+      body: JSON.stringify({...body, model: cfg.model, stream: true}),
+    });
+    if (response.status !== 429 || retries >= 4) break;
+    retries++;
+    const retryAfter = Number(response.headers.get('retry-after'));
+    const wait = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : 5000 * retries;
+    console.log(`  429, waiting ${wait}ms (retry ${retries})`);
+    await response.body?.cancel?.().catch(() => {});
+    await sleep(wait);
+  }
   timer.headers();
-  const out = {status: response.status, text: '', reasoningChars: 0, toolCalls: new Map(), finishReason: null, error: null, raw: ''};
+  const out = {status: response.status, retries, text: '', reasoningChars: 0, toolCalls: new Map(), finishReason: null, error: null, raw: ''};
   if (!response.ok) {
     out.error = `HTTP ${response.status}: ${(await response.text().catch(() => '')).slice(0, 300)}`;
     timer.finish();
@@ -108,11 +139,12 @@ async function stream(cfg, body) {
 }
 
 async function runCase(cfg, testCase, reasoning) {
-  const extra = reasoning === 'none' ? {reasoning_effort: 'none'} : {};
+  const extra = REASONING_MODES[reasoning];
+  assert.ok(extra, `unknown reasoning mode ${reasoning}`);
   const messages = [{role: 'system', content: SYSTEM}, {role: 'user', content: testCase.prompt}];
   const first = await stream(cfg, {messages, tools: [TOOL], tool_choice: 'auto', max_tokens: 512, temperature: 0.3, ...extra});
   const result = {id: testCase.id, expectTool: testCase.expectTool, reasoning, first: {
-    status: first.status, error: first.error, finishReason: first.finishReason, headersMs: first.headersMs, ttfbMs: first.ttfbMs, totalMs: first.totalMs,
+    status: first.status, retries: first.retries, error: first.error, finishReason: first.finishReason, headersMs: first.headersMs, ttfbMs: first.ttfbMs, totalMs: first.totalMs,
     textChars: first.text.length, reasoningChars: first.reasoningChars, toolCalls: first.toolCalls,
   }, followUp: null};
   result.toolCalled = first.toolCalls.length > 0;
@@ -125,11 +157,12 @@ async function runCase(cfg, testCase, reasoning) {
     const call = first.toolCalls[0];
     const second = await stream(cfg, {messages: [...messages,
       {role: 'assistant', content: first.text || null, tool_calls: [{id: call.id ?? 'call_0', type: 'function', function: {name: call.name, arguments: call.arguments}}]},
-      {role: 'tool', tool_call_id: call.id ?? 'call_0', content: FAKE_RESULT},
+      {role: 'tool', tool_call_id: call.id ?? 'call_0', content: fakeResult(testCase)},
     ], tools: [TOOL], tool_choice: 'auto', max_tokens: 512, temperature: 0.3, ...extra});
     result.followUp = {status: second.status, error: second.error, finishReason: second.finishReason, ttfbMs: second.ttfbMs, totalMs: second.totalMs,
       textChars: second.text.length, reasoningChars: second.reasoningChars, extraToolCalls: second.toolCalls.length, preview: second.text.slice(0, 120)};
-    result.pass = result.pass && !second.error && second.text.trim().length > 0 && second.finishReason === 'stop';
+    // A second search_blog call is allowed (production caps at 2); a third is not.
+    result.pass = result.pass && !second.error && ((second.text.trim().length > 0 && second.finishReason === 'stop') || second.toolCalls.length === 1);
   }
   return result;
 }
@@ -138,7 +171,8 @@ async function main() {
   const args = process.argv.slice(2);
   const repeat = Number(args.find((_, i) => i > 0 && args[i - 1] === '--repeat')) || 3;
   const reasoningArg = args.find((_, i) => i > 0 && args[i - 1] === '--reasoning') || 'both';
-  const modes = reasoningArg === 'both' ? ['default', 'none'] : [reasoningArg];
+  const delayMs = Number(args.find((_, i) => i > 0 && args[i - 1] === '--delay')) || 3000;
+  const modes = reasoningArg === 'both' ? ['default', 'low'] : reasoningArg === 'all' ? Object.keys(REASONING_MODES) : reasoningArg.split(',');
   const cfg = await loadEnv();
   const results = [];
   for (const reasoning of modes) {
@@ -146,6 +180,7 @@ async function main() {
       for (let i = 0; i < repeat; i++) {
         const result = await runCase(cfg, testCase, reasoning);
         results.push(result);
+        await sleep(delayMs);
         console.log(`[${reasoning}] ${testCase.id} #${i + 1}: ${result.pass ? 'PASS' : 'FAIL'} tool=${result.toolCalled} finish=${result.first.finishReason} ttfb=${Math.round(result.first.ttfbMs ?? -1)}ms total=${Math.round(result.first.totalMs)}ms reasoningChars=${result.first.reasoningChars}${result.first.error ? ' ' + result.first.error : ''}`);
       }
     }
@@ -160,6 +195,9 @@ async function main() {
       retrievalToolRate: ret.length ? ret.filter(r => r.toolCalled).length / ret.length : null,
       noRetrievalFalsePositiveRate: non.length ? non.filter(r => r.toolCalled).length / non.length : null,
       followUpOk: ret.filter(r => r.followUp && !r.followUp.error && r.followUp.finishReason === 'stop').length,
+      followUpReSearched: ret.filter(r => r.followUp && r.followUp.extraToolCalls > 0).length,
+      reasoningCharsP50: percentile(rows.map(r => r.first.reasoningChars), 50),
+      rateLimited: rows.filter(r => r.first.retries > 0 || r.first.error?.includes('429')).length,
       noRetrievalTtfbMs: {p50: percentile(non.map(r => r.first.ttfbMs), 50), p90: percentile(non.map(r => r.first.ttfbMs), 90)},
       toolCallLatencyMs: {p50: percentile(ret.filter(r => r.toolCalled).map(r => r.first.totalMs), 50)},
       followUpTtfbMs: {p50: percentile(ret.map(r => r.followUp?.ttfbMs ?? NaN), 50)},
