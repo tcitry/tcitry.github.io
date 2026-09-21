@@ -16,8 +16,10 @@ const DEFAULT_CHAT_MODEL = '@cf/zai-org/glm-5.3';
 const DEFAULT_CHAT_GATEWAY = 'tcitry-blog-chat';
 const TOOL_QUERY_MAX = 200;
 const TOOL_SNIPPET_BUDGET = 14_000;
-const TOOL_TIMEOUT_MS = 6_000;
-const TOOL_TOTAL_TIMEOUT_MS = 12_000;
+// No-rerank /search probes ~5s; 10s per call leaves headroom without waiting for rerank-scale latency.
+const TOOL_TIMEOUT_MS = 10_000;
+// Two search_blog calls share 18s total (was 6s/12s and aborted before rerank-heavy responses finished).
+const TOOL_TOTAL_TIMEOUT_MS = 18_000;
 const TOOL_REASONING_EFFORT = 'low';
 
 function extractTopicTerms(messages: {role: string; content: string}[]) {

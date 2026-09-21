@@ -16,7 +16,7 @@ test('shared retrieval defaults match production assistant contract', () => {
       return_on_failure: false,
     },
     query_rewrite: {enabled: false},
-    reranking: {enabled: true, model: '@cf/baai/bge-reranker-base'},
+    reranking: {enabled: false, model: '@cf/baai/bge-reranker-base'},
     cache: {enabled: true},
   });
   assert.deepEqual(productionChat.retrieval, {
