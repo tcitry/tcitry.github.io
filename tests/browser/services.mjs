@@ -723,11 +723,22 @@ try {
     const transcript = ai.getByRole('region', {name: 'AI 对话记录', exact: true});
     const composerLayout = ai.locator('.blog-chat__composer');
     const beforeHistory = {transcript: await transcript.boundingBox(), composer: await composerLayout.boundingBox()};
+    await ai.getByRole('button', {name: '对话操作', exact: true}).click();
+    const menu = aiPage.locator('[data-agent-chat-menu-popover]');
+    await menu.waitFor();
+    await menu.getByRole('menuitem', {name: '删除对话', exact: true}).click();
+    const deleteDialog = aiPage.getByRole('alertdialog', {name: '删除对话', exact: true});
+    await deleteDialog.waitFor();
+    await deleteDialog.getByRole('button', {name: '删除对话', exact: true}).click();
+    await deleteDialog.waitFor({state: 'hidden'});
+    await ai.getByRole('heading', {name: '第二条已保存对话：关于 Cloudflare AI Search、Convex Agent 与 Clerk 会员服务的长标题记录', exact: true}).waitFor();
+    assert.equal(await ai.getByText('已保存的 RAG 问题', {exact: true}).count(), 0, 'Deleting the current conversation switches to another history item');
     await ai.getByRole('button', {name: '历史', exact: true}).click();
     const history = aiPage.locator('[data-agent-history-popover]');
     await history.waitFor();
     await history.getByRole('listbox', {name: '选择 AI 对话', exact: true}).waitFor();
-    assert.equal(await history.getByRole('option', {name: '已保存的 RAG 问题', exact: true}).getAttribute('aria-selected'), 'true');
+    assert.equal(await history.getByRole('option', {name: '第二条已保存对话：关于 Cloudflare AI Search、Convex Agent 与 Clerk 会员服务的长标题记录', exact: true}).getAttribute('aria-selected'), 'true');
+    assert.equal(await history.getByRole('option', {name: '已保存的 RAG 问题', exact: true}).count(), 0, 'Deleted conversations disappear from history');
     const assertHistoryGeometry = async (description) => {
       const current = {transcript: await transcript.boundingBox(), composer: await composerLayout.boundingBox()};
       for (const key of ['transcript', 'composer']) {
@@ -797,7 +808,7 @@ try {
     await ai.getByText('仅账号 B 的历史回答。', {exact: true}).waitFor();
     assert.equal(await composer.inputValue(), '');
     const actions = (await state(aiPage)).writes.map(write => write.name);
-    for (const name of ['assistant:createConversation', 'assistant:sendMessage', 'assistant:cancel']) assert.ok(actions.includes(name));
+    for (const name of ['assistant:createConversation', 'assistant:sendMessage', 'assistant:cancel', 'assistant:deleteConversation']) assert.ok(actions.includes(name));
     assert.ok(!actions.some(name => name.startsWith('consultations:')), 'AI interactions never send a human consultation');
     console.log('AI workspace: real AgentChat history, send/stop, hidden-tab completion, citation safety, mobile layout and session isolation.');
   } finally {await aiContext.close();}

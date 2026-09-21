@@ -3,8 +3,8 @@ import {useMutation, usePaginatedQuery, useQuery} from 'convex/react';
 import {useUIMessages, type UIMessage} from '@convex-dev/agent/react';
 import {ConvexError} from 'convex/values';
 import type {Components} from 'react-markdown';
-import {Plus} from '@gravity-ui/icons';
-import {Button, ListBox, Popover, Tooltip} from '@heroui/react';
+import {Ellipsis, Plus} from '@gravity-ui/icons';
+import {AlertDialog, Button, Dropdown, ListBox, Popover, Tooltip} from '@heroui/react';
 import {ChatConversation} from '@heroui-pro/react/chat-conversation';
 import {ChatLoader} from '@heroui-pro/react/chat-loader';
 import {ChatMessage} from '@heroui-pro/react/chat-message';
@@ -167,8 +167,12 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
   const create = useMutation(api.assistant.createConversation);
   const send = useMutation(api.assistant.sendMessage);
   const cancel = useMutation(api.assistant.cancel);
+  const remove = useMutation(api.assistant.deleteConversation);
   const [selected, setSelected] = useState<Id<'assistantConversations'> | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
   const [value, setValue] = useState('');
   const [hasMessages, setHasMessages] = useState(false);
@@ -259,10 +263,68 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
     catch (failure) { setError(errorMessage(failure)); }
   }
 
+  function nextConversationAfterDelete(deletedId: Id<'assistantConversations'>) {
+    const remaining = conversations.results.filter(item => item.id !== deletedId);
+    if (!remaining.length) return null;
+    const index = conversations.results.findIndex(item => item.id === deletedId);
+    return remaining[Math.min(index, remaining.length - 1)]?.id ?? remaining[0]?.id ?? null;
+  }
+
+  async function deleteCurrentConversation() {
+    if (!currentId || locked.current || deleting) return;
+    locked.current = true; setDeleting(true); setError('');
+    const deletedId = currentId;
+    const nextId = nextConversationAfterDelete(deletedId);
+    setSelected(nextId);
+    setHasMessages(false); setHistoryOpen(false); setMenuOpen(false); setDeleteConfirmOpen(false);
+    setValue(''); retry.current = null;
+    try {
+      await remove({conversationId: deletedId});
+      setAnnouncement('对话已删除。');
+    } catch (failure) {
+      setSelected(deletedId);
+      setError(errorMessage(failure));
+    } finally { locked.current = false; setDeleting(false); }
+  }
+
   return <section ref={setPortalContainer} className={`${surface.surface} blog-chat agent-chat not-prose`} aria-label="与 AI 博客助手对话" data-sentry-mask data-pagefind-ignore>
     <div className="blog-chat__header">
       <h2 className="blog-chat__identity agent-chat__title" title={conversation?.title}>{conversation?.title ?? 'AI 博客助手'}</h2>
       <div className="agent-chat__header-actions">
+        <Dropdown isOpen={menuOpen} onOpenChange={open => { if (!currentId || deleting) return; setMenuOpen(open); }}>
+          <Tooltip isDisabled={menuOpen || !currentId}>
+            <Button variant="ghost" size="sm" isIconOnly className="agent-chat__menu" aria-label="对话操作"
+              isDisabled={!currentId || deleting}>
+              <Ellipsis width={18} height={18} aria-hidden="true" />
+            </Button>
+            <Tooltip.Content className="blog-chat__tooltip" placement="bottom end" offset={6} UNSTABLE_portalContainer={portalContainer ?? undefined}>对话操作</Tooltip.Content>
+          </Tooltip>
+          <Dropdown.Popover placement="bottom end" offset={8} containerPadding={12} UNSTABLE_portalContainer={portalContainer ?? undefined} className="agent-chat__menu-popover" data-agent-chat-menu-popover data-sentry-mask>
+            <Dropdown.Menu aria-label="对话操作" onAction={key => {
+              if (key === 'delete') { setMenuOpen(false); setDeleteConfirmOpen(true); }
+            }}>
+              <Dropdown.Item key="delete" id="delete" textValue="删除对话" variant="danger">删除对话</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown.Popover>
+        </Dropdown>
+        <AlertDialog.Backdrop isOpen={deleteConfirmOpen} onOpenChange={open => { if (!deleting) setDeleteConfirmOpen(open); }}>
+          <AlertDialog.Container placement="center">
+            <AlertDialog.Dialog className="agent-chat__delete-dialog" aria-label="删除对话">
+              <AlertDialog.CloseTrigger aria-label="取消" />
+              <AlertDialog.Header>
+                <AlertDialog.Icon status="danger" />
+                <AlertDialog.Heading>删除这条对话？</AlertDialog.Heading>
+              </AlertDialog.Header>
+              <AlertDialog.Body>
+                <p>将永久删除「{conversation?.title ?? '当前对话'}」及其全部消息，此操作无法撤销。</p>
+              </AlertDialog.Body>
+              <AlertDialog.Footer>
+                <Button variant="tertiary" onPress={() => setDeleteConfirmOpen(false)} isDisabled={deleting}>取消</Button>
+                <Button variant="danger" isPending={deleting} onPress={() => { void deleteCurrentConversation(); }}>删除对话</Button>
+              </AlertDialog.Footer>
+            </AlertDialog.Dialog>
+          </AlertDialog.Container>
+        </AlertDialog.Backdrop>
         <Popover isOpen={historyOpen} onOpenChange={setHistoryOpen}>
           <Button variant="ghost" size="sm" className="agent-chat__history-trigger">历史</Button>
           <Popover.Content placement="bottom end" offset={8} containerPadding={12} UNSTABLE_portalContainer={portalContainer ?? undefined} className="agent-chat__history-popover" data-agent-history-popover data-sentry-mask>
