@@ -35,7 +35,7 @@ Convex deployment 使用的业务变量：
 | `commentImages` / HTTP routes | 评论和咨询图片上传、绑定、鉴权读取与清理 |
 | `assistant` | AI 会话、运行状态、限流、取消和流式持久化 |
 | `assistantPublicSearch` | AI Search public endpoint、引用版本和来源校验 |
-| `assistantModel` | `/chat/completions` 模型适配与安全输出 |
+| `assistantModel` | Workers AI 模型适配、工具循环安全输出与流式过滤 |
 
 `@convex-dev/agent` 保存 AI threads/messages/stream deltas，`@convex-dev/rate-limiter` 保护写入和对话频率。私人数据不进入公开 AI Search。
 

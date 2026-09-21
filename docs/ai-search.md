@@ -15,26 +15,16 @@
 
 ### 登录后 AI 对话
 
-Convex Agent 通过对应 deployment 的 `AI_SEARCH_PUBLIC_URL`：
-
-1. 调用 `/search` 预检公开来源；
-2. 只允许通过当前引用版本校验的文档；
-3. 调用 `/chat/completions` 生成回答；
-4. 将消息、来源、流式增量和运行终态保存到 Convex。
-
-以上是 legacy 管线（`ASSISTANT_TOOL_MODE=off`，默认）。回答模型与 Gateway 由 AI Search 实例配置决定；Convex 不直接配置 Gateway hostname、Cloudflare Account token 或固定模型。旧 Worker `/api/chat` 和检索桥已删除，不再引入。
-
-#### 检索作为工具（DEV-298，灰度）
-
-`ASSISTANT_TOOL_MODE=allowlist|on` 时，Convex Agent 改为 `streamText + tools + stopWhen` 工具循环（`stepCountIs(3)`）：
+Convex Agent 通过对应 deployment 的 `AI_SEARCH_PUBLIC_URL` 与 Workers AI 生成回答，检索仅走 AI Search `/search`：
 
 1. 模型直接开始生成；博客事实类问题由模型自行调用 `search_blog`，寒暄、元问题、通用技术问题零次检索；
-2. `search_blog` 内部仍调用 `/search` 并经过 `validatePublicChunk` 与 `references.json` 校验；query 去空后非空、≤200 字符、无控制字符，短指代 query 用上文主题词补全一次；
+2. `search_blog` 内部调用 `/search` 并经过 `validatePublicChunk` 与 `references.json` 校验；query 去空后非空、≤200 字符、无控制字符，短指代 query 用上文主题词补全一次；
 3. 每 run 最多 2 次工具调用，单次 6 秒、累计 12 秒超时，snippets 共用 14,000 字符预算，来源跨调用去重、编号稳定、最多 5 个；工具结果只含编号、标题、sourceKind、updatedAt、正文，不含 URL；检索失败返回 `{ok:false, reason:'unavailable'}`，不中断整轮；
-4. 生成走 Workers AI OpenAI-compatible endpoint，经 Gateway `ASSISTANT_CHAT_GATEWAY`（默认 `tcitry-blog-chat`），模型 `ASSISTANT_CHAT_MODEL`（默认 `@cf/zai-org/glm-5.3`），需要 Convex deployment 配置 `CLOUDFLARE_ACCOUNT_ID` 与仅限 Workers AI 的 `CLOUDFLARE_API_TOKEN`；请求带 `reasoning_effort: low`（探针实测把无检索首字延迟从 ~2.8s 降到 ~1.7s，工具调用准确率不变；`none` 在 Workers AI 上无效）；AI Search 只承担 `/search`；
-5. run 记录 `mode`、`phase`（thinking / searching / writing）与 `toolCalls`，UI 据此显示「正在思考 / 正在检索文章 / 正在整理回答」。
+4. 生成走 Workers AI OpenAI-compatible endpoint，经 Gateway `ASSISTANT_CHAT_GATEWAY`（默认 `tcitry-blog-chat`），模型 `ASSISTANT_CHAT_MODEL`（默认 `@cf/zai-org/glm-5.3`），需要 Convex deployment 配置 `CLOUDFLARE_ACCOUNT_ID` 与仅限 Workers AI 的 `CLOUDFLARE_API_TOKEN`；请求带 `reasoning_effort: low`；AI Search 只承担 `/search`，不再用于生产生成；
+5. run 记录 `phase`（thinking / searching / writing）与 `toolCalls`，UI 据此显示「正在思考 / 正在检索文章 / 正在整理回答」；
+6. 将消息、来源、流式增量和运行终态保存到 Convex。
 
-灰度顺序：`allowlist`（`ASSISTANT_TOOL_OWNERS` 为逗号分隔的 Clerk tokenIdentifier）→ `on`。legacy 管线保留至少两周或 200 次真实 run 后再删除。评测用 `scripts/eval-ai-chat.mjs`，TTFB 定义为第一个非空可见 `delta.content`。
+旧 Worker `/api/chat` 和检索桥已删除，不再引入。评测用 `scripts/eval-ai-chat.mjs`（仍可对 AI Search `/chat/completions` 做实例级探针）；登录助手 TTFB 以 Workers AI 流式首字为准。
 
 公开 endpoint 本身没有 Clerk 鉴权。站内 AI 对话仍由 Convex 验证身份、会话归属、限流和数据隔离。
 
@@ -46,7 +36,7 @@ Convex Agent 通过对应 deployment 的 `AI_SEARCH_PUBLIC_URL`：
 - 不支持的额外路径、query、fragment 或重定向；
 - 构建与 Convex 指向不同实例的配置。
 
-Search 自定义域名保留 `/search` 和 `/chat/completions`。AI Gateway 自定义域名是直接 Gateway 请求入口，不能填入 Search 配置。
+Search 自定义域名保留 `/search`（登录助手检索）与 `/chat/completions`（实例探针/评测，非生产生成路径）。AI Gateway 自定义域名是直接 Gateway 请求入口，不能填入 Search 配置。
 
 ## 实例配置
 
@@ -60,7 +50,7 @@ Search 自定义域名保留 `/search` 和 `/chat/completions`。AI Gateway 自�
 | 数据源 | Built-in storage |
 | Embedding | 实例当前配置；与回答模型分开维护 |
 | Chunk | 以真实中文和技术词召回测试调整 |
-| Public endpoint | 启用 `/search` 与 `/chat/completions` |
+| Public endpoint | 启用 `/search`；`/chat/completions` 仅探针/评测 |
 | Authorized hosts | 只允许实际开发和生产站点 origin |
 | Query rewrite / reranking | 默认关闭，评估后再开启 |
 | Similarity cache | 内容验证阶段关闭 |

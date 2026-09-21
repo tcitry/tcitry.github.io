@@ -47,13 +47,13 @@ Google One Tap 复用同一 Clerk 账户，只在符合生产配置且未登录�
 登录后免费使用 AI 对话，不要求 Pro。链路为：
 
 ```text
-浏览器 → Clerk/Convex → Convex Agent
-       → AI Search /search 预检
-       → AI Search /chat/completions
+浏览器 → Clerk/Convex → Convex Agent（streamText + search_blog 工具循环）
+       → AI Search /search（按需检索）
+       → Workers AI + Gateway tcitry-blog-chat（生成）
        → Convex 保存消息、来源和流式状态
 ```
 
-对应 Convex deployment 的 `AI_SEARCH_PUBLIC_URL` 与前端 `AI_SEARCH_PUBLIC_URL` 指向同一实例。回答模型和 Gateway 由 AI Search 实例配置决定；浏览器不能提交模型、Gateway 或系统提示。
+对应 Convex deployment 的 `AI_SEARCH_PUBLIC_URL` 与前端 `AI_SEARCH_PUBLIC_URL` 指向同一实例。生成模型由 `ASSISTANT_CHAT_MODEL` 与 Gateway `ASSISTANT_CHAT_GATEWAY` 配置；浏览器不能提交模型、Gateway 或系统提示。
 
 每次回答只采用当前发布引用清单中通过 key、canonical URL、content hash 和 source kind 校验的公开文章。没有可信来源时不生成无依据回答。私人会话、评论、咨询、收藏和附件不进入索引。
 

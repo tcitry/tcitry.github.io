@@ -6,13 +6,12 @@ import {ConvexError, type GenericId, v} from 'convex/values';
 import {components, internal} from './_generated/api';
 import type {Doc, Id} from './_generated/dataModel';
 import {env, internalAction, internalMutation, internalQuery, mutation, query, type ActionCtx, type MutationCtx, type QueryCtx} from './_generated/server';
-import {publicChatModel, instructions, toolInstructions, workersAiChatModel, NO_SOURCES, SAFE_ERROR, TOOL_BUDGET, type GenerationEvent, type Snippet, type Source} from './assistantModel';
+import {toolInstructions, workersAiChatModel, NO_SOURCES, SAFE_ERROR, TOOL_BUDGET, type GenerationEvent, type Snippet, type Source} from './assistantModel';
 import {searchRetrievalOptions} from './assistantRetrievalConfig';
 import {retrievePublicSources} from './assistantPublicSearch';
 
 const sourceValidator = v.object({id: v.string(), title: v.string(), url: v.string(), sourceKind: v.union(v.literal('author'), v.literal('ai-assisted'))});
 const phaseValidator = v.union(v.literal('thinking'), v.literal('searching'), v.literal('writing'));
-type RunMode = 'legacy' | 'tool';
 const DEFAULT_CHAT_MODEL = '@cf/zai-org/glm-5.3';
 const DEFAULT_CHAT_GATEWAY = 'tcitry-blog-chat';
 const TOOL_QUERY_MAX = 200;
@@ -20,15 +19,6 @@ const TOOL_SNIPPET_BUDGET = 14_000;
 const TOOL_TIMEOUT_MS = 6_000;
 const TOOL_TOTAL_TIMEOUT_MS = 12_000;
 const TOOL_REASONING_EFFORT = 'low';
-
-// ASSISTANT_TOOL_MODE is read once per run here so the run, its logs and the
-// UI agree on the pipeline even if the variable changes mid-flight.
-export function resolveRunMode(ownerId: string, mode = env.ASSISTANT_TOOL_MODE, owners = env.ASSISTANT_TOOL_OWNERS): RunMode {
-  const value = mode?.trim() ?? 'off';
-  if (value === 'on') return 'tool';
-  if (value === 'allowlist') return (owners ?? '').split(',').map(item => item.trim()).filter(Boolean).includes(ownerId) ? 'tool' : 'legacy';
-  return 'legacy';
-}
 
 function extractTopicTerms(messages: {role: string; content: string}[]) {
   const text = messages.map(message => message.content).join(' ');
@@ -231,9 +221,8 @@ export const start = internalMutation({
     if (run.deadlineAt <= Date.now()) { await settle(ctx, run, 'failed', '回答已超时，请重新提问。'); return null; }
     const conversation = await ctx.db.get('assistantConversations', run.conversationId);
     if (!conversation || conversation.activeRunId !== runId) return null;
-    const mode = resolveRunMode(run.owner);
-    await ctx.db.patch('assistantRuns', runId, {status: 'running', mode, phase: mode === 'tool' ? 'thinking' : 'searching', toolCalls: 0});
-    return {threadId: conversation.threadId, promptMessageId: run.promptMessageId, promptOrder: run.promptOrder, deadlineAt: run.deadlineAt, mode};
+    await ctx.db.patch('assistantRuns', runId, {status: 'running', phase: 'thinking', toolCalls: 0});
+    return {threadId: conversation.threadId, promptMessageId: run.promptMessageId, promptOrder: run.promptOrder, deadlineAt: run.deadlineAt};
   },
 });
 
@@ -333,13 +322,13 @@ export const finish = internalMutation({
 export const generate = internalAction({
   args: {runId: v.id('assistantRuns')}, returns: v.null(),
   handler: async (ctx, {runId}) => {
-    const run: {threadId: string; promptMessageId: string; promptOrder: number; deadlineAt: number; mode: RunMode} | null = await ctx.runMutation(internal.assistant.start, {runId});
+    const run: {threadId: string; promptMessageId: string; promptOrder: number; deadlineAt: number} | null = await ctx.runMutation(internal.assistant.start, {runId});
     if (!run) return null;
     const startedAt = Date.now();
     const trace = (event: {stage: string} & Partial<Omit<GenerationEvent, 'stage'>>) => {
       // Fixed stages, elapsed time, status/error codes and protocol field names. Never pass an
       // exception, prompt, URL, source text, tool query or account identifier to the logger.
-      console.info('assistant_generation', {...event, mode: run.mode, elapsedMs: Date.now() - startedAt});
+      console.info('assistant_generation', {...event, elapsedMs: Date.now() - startedAt});
     };
     let failure: Promise<void> | undefined;
     const fail = () => failure ??= (async () => {
@@ -361,50 +350,8 @@ export const generate = internalAction({
       if (!prompt || prompt.role !== 'user' || typeof prompt.content !== 'string') throw new Error(SAFE_ERROR);
       const context = await ctx.runQuery(internal.assistant.completedContext, {runId});
       if (!context) return null;
-      const previous = context.previousQuestion;
-      const current = prompt.content;
       const topicTerms = extractTopicTerms(context.messages);
-      if (run.mode === 'tool') {
-        await generateWithTool(ctx, {runId, run, history: context.messages, topicTerms, controller, assertActive, trace, fail});
-        return null;
-      }
-      const retrievalQuery = typeof previous === 'string' && current.length <= 1500
-        ? `针对主题「${topicTerms}」的追问。上文：${previous.slice(0, 300)}。当前问题：${current}`
-        : current;
-      trace({stage: 'retrieval_start'});
-      let retrieved = await retrievePublicSources(env.AI_SEARCH_PUBLIC_URL, retrievalQuery, controller.signal,
-        {observe: trace, fallback: false});
-      let usedFallback = false;
-      if (!retrieved.sources.length) {
-        usedFallback = true;
-        await assertActive();
-        trace({stage: 'retrieval_start', fallback: true});
-        retrieved = await retrievePublicSources(env.AI_SEARCH_PUBLIC_URL, current, controller.signal,
-          {observe: trace, fallback: true, retrievalOptions: searchRetrievalOptions({queryRewrite: false})});
-      }
-      await assertActive();
-      if (!await ctx.runMutation(internal.assistant.setSources, {runId, sources: retrieved.sources})) return null;
-      const chatQuery = retrieved.sources.length
-        ? (usedFallback ? current : retrievalQuery)
-        : undefined;
-      const agent = new Agent(components.agent, {name: '博客助手',
-        languageModel: publicChatModel(env.AI_SEARCH_PUBLIC_URL, retrieved.approvedReferences, assertActive, {retrievalQuery: chatQuery, observe: trace, onFailure: fail}),
-        // Read the saved current prompt; contextHandler replaces all other SDK history.
-        instructions: instructions(retrieved.snippets), contextOptions: {recentMessages: 1, excludeToolMessages: true, searchOtherThreads: false},
-      });
-      trace({stage: 'agent_start'});
-      const result = await agent.streamText(ctx, {threadId: run.threadId}, {
-        promptMessageId: run.promptMessageId, maxOutputTokens: 2048, temperature: 0.3, maxRetries: 0,
-        abortSignal: controller.signal,
-      }, {saveStreamDeltas: {throttleMs: 250}, contextHandler: async (_ctx, {threadId, inputPrompt}) => {
-        if (threadId !== run.threadId || inputPrompt.length !== 1 || inputPrompt[0].role !== 'user') throw new Error(SAFE_ERROR);
-        return [...context.messages, ...inputPrompt];
-      }});
-      await result.consumeStream();
-      trace({stage: 'agent_persisted'});
-      if (!(await result.text).trim() || (await result.finishReason) !== 'stop') throw new Error(SAFE_ERROR);
-      await ctx.runMutation(internal.assistant.finish, {runId, failed: false});
-      trace({stage: 'completed', sourceCount: retrieved.sources.length});
+      await generateWithTool(ctx, {runId, run, history: context.messages, topicTerms, controller, assertActive, trace, fail});
     } catch {
       await fail();
     } finally { clearTimeout(timeout); }
@@ -432,8 +379,7 @@ export function validateToolQuery(input: unknown): string | null {
 }
 
 // Sources are shared across tool calls: stable numbering, URL-level dedupe, at most
-// five entries. Snippets share one character budget so a second call cannot blow the
-// prompt past what the legacy pipeline allowed.
+// five entries. Snippets share one character budget so a second call cannot blow the prompt.
 export function mergeToolSources(state: {sources: Source[]; snippets: Snippet[]; budgetLeft: number},
     retrieved: {sources: Source[]; snippets: Snippet[]}) {
   const byUrl = new Map(state.sources.map(source => [source.url, source.id]));
