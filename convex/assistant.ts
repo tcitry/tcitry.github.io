@@ -19,6 +19,7 @@ const TOOL_QUERY_MAX = 200;
 const TOOL_SNIPPET_BUDGET = 14_000;
 const TOOL_TIMEOUT_MS = 6_000;
 const TOOL_TOTAL_TIMEOUT_MS = 12_000;
+const TOOL_REASONING_EFFORT = 'low';
 
 // ASSISTANT_TOOL_MODE is read once per run here so the run, its logs and the
 // UI agree on the pipeline even if the variable changes mid-flight.
@@ -519,7 +520,9 @@ async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms
     stopWhen: stepCountIs(TOOL_BUDGET.maxToolCalls + 1)});
   trace({stage: 'agent_start'});
   const result = await agent.streamText(ctx, {threadId: run.threadId}, {
-    promptMessageId: run.promptMessageId, maxOutputTokens: 2048, temperature: 0.3, maxRetries: 0, abortSignal: controller.signal,
+    promptMessageId: run.promptMessageId, maxOutputTokens: 2048, temperature: 0.3,
+    providerOptions: {'workers-ai': {reasoningEffort: TOOL_REASONING_EFFORT}},
+    maxRetries: 0, abortSignal: controller.signal,
   }, {saveStreamDeltas: {throttleMs: 250}, contextHandler: async (_ctx, {threadId, inputPrompt}) => {
     if (threadId !== run.threadId || inputPrompt.length !== 1 || inputPrompt[0].role !== 'user') throw new Error(SAFE_ERROR);
     return [...history, ...inputPrompt];

@@ -516,7 +516,7 @@ describe('search-as-tool generation lifecycle', () => {
 
   test('blog fact: model calls search_blog once, validated sources are persisted, tool output carries no URL, phases progress', async () => {
     toolConfigured();
-    const calls: {url: string; body: {messages?: {role: string; content?: unknown; tool_calls?: unknown}[]; tools?: unknown; query?: string}; headers: Headers}[] = [];
+    const calls: {url: string; body: {messages?: {role: string; content?: unknown; tool_calls?: unknown}[]; tools?: unknown; query?: string; reasoning_effort?: string}; headers: Headers}[] = [];
     vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input); const body = JSON.parse(String(init?.body)); calls.push({url, body, headers: new Headers(init?.headers)});
       if (url.endsWith('/search')) return Response.json({success: true, result: {chunks: [
@@ -544,6 +544,7 @@ describe('search-as-tool generation lifecycle', () => {
     expect(model).toHaveLength(2);
     expect(model[0].headers.get('cf-aig-gateway-id')).toBe('tcitry-blog-chat');
     expect(model[0].headers.get('authorization')).toMatch(/^Bearer /);
+    expect(model[0].body.reasoning_effort).toBe('low');
     expect(model[0].body.tools).toHaveLength(1);
     const toolMessage = model[1].body.messages!.find(message => message.role === 'tool');
     const toolText = JSON.stringify(toolMessage);
