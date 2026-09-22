@@ -96,18 +96,7 @@
 .blog-chat__table { overflow-x: auto; max-width: 100%; }
 .blog-chat .blog-chat__table table { margin-block: .75rem; width: 100%; font-size: .875rem; }
 .blog-chat .blog-chat__table :is(td, th) { padding: .5rem .75rem; border: 1px solid var(--border); text-align: start; }
-.blog-chat__sources { margin-top: 1rem; }
-.blog-chat .blog-chat__sources .disclosure__heading { margin: 0; padding: 0; font-size: .75rem; font-weight: 500; }
-.blog-chat .blog-chat__sources .disclosure__heading::before { content: none; }
-.blog-chat .blog-chat__sources .disclosure__body { padding: 0; }
-.blog-chat .blog-chat__sources .disclosure__content { border-top: 0; }
-.blog-chat__source-list { display: grid; grid-template-columns: 1fr; gap: .5rem; padding-block: .5rem; }
-.blog-chat__source { min-width: 0; width: 100%; height: auto; }
-.blog-chat .blog-chat__source-link { display: flex; width: 100%; height: auto; padding: 0; border: 0; background: transparent; }
-.blog-chat .blog-chat__source-link .chat-source__trigger-link { display: flex; align-items: start; gap: .5rem; width: 100%; max-width: none; height: auto; min-height: 2.75rem; padding: .625rem .75rem; border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent); border-radius: .75rem; background: var(--surface); white-space: normal; font-size: .8125rem; line-height: 1.6; color: var(--foreground); text-decoration: none; }
-.blog-chat .chat-source__title { min-width: 0; flex: 1; white-space: normal; overflow: visible; text-overflow: clip; }
-.blog-chat__source-number { color: var(--accent); flex-shrink: 0; }
-.blog-chat__source-kind { margin-left: auto; white-space: nowrap; color: var(--muted); font-size: .6875rem; padding-top: .125rem; }
+@import "./citations.css";
 .blog-chat__actions { opacity: 1; margin-top: .5rem; }
 .blog-chat .blog-chat__notice, .blog-chat .blog-chat__error { margin: .75rem 0 0; font-size: .8125rem; line-height: 1.7; color: var(--muted); }
 .blog-chat .blog-chat__error { color: var(--danger-soft-foreground); }
@@ -124,12 +113,6 @@
   .blog-chat .prompt-input__textarea { font-size: 1rem; }
   .blog-chat__header-actions .button, .blog-chat .prompt-input__send { width: 2.75rem; min-width: 2.75rem; height: 2.75rem; min-height: 2.75rem; }
   .blog-chat__header { padding-block: .375rem; }
-}
-
-@media (max-width: 480px) {
-  .blog-chat__source-kind { display: block; margin-left: 0; }
-  .blog-chat .blog-chat__source-link .chat-source__trigger-link { flex-wrap: wrap; }
-  .blog-chat .chat-source__title { flex: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -51,7 +51,7 @@ type AiConversation = {id: string; owner: string; threadId: string; title: strin
 type AiMessage = {id: string; key: string; role: 'user' | 'assistant'; parts: {type: 'text'; text: string}[]; text: string; order: number; stepOrder: number; status: 'success' | 'streaming'; _creationTime: number; threadId: string};
 type AiRun = {id: string; conversationId: string; order: number; status: 'running' | 'completed' | 'canceled' | 'failed'; sources: Source[]; error?: string};
 const sources: Source[] = [{id: '1', title: '已核验的 RAG 文章', url: 'https://yindongliang.com/docs/rag-fixture/', sourceKind: 'author'}];
-const safeAnswer = '根据[已核验的文章](https://yindongliang.com/docs/rag-fixture/)回答。\n\n[外部链接](https://example.invalid/unsafe)与 ![图片替代文字](https://example.invalid/unsafe.png) 不应成为可操作链接或图片。';
+const safeAnswer = '根据已核验的文章[1]回答。\n\n[外部链接](https://example.invalid/unsafe)与 ![图片替代文字](https://example.invalid/unsafe.png) 不应成为可操作链接或图片。';
 const aiConversations: AiConversation[] = [
   {id: 'ai_a1', owner: 'fixture-a', threadId: 'agent_a1', title: '已保存的 RAG 问题', activeRun: null, updatedAt: now},
   {id: 'ai_a2', owner: 'fixture-a', threadId: 'agent_a2', title: '第二条已保存对话：关于 Cloudflare AI Search、Convex Agent 与 Clerk 会员服务的长标题记录', activeRun: null, updatedAt: now - 1},

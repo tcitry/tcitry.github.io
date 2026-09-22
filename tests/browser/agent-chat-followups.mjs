@@ -59,7 +59,7 @@ try {
   await page.goto(base.href);
   const ai = page.getByRole('region', {name: '与 AI 博客助手对话', exact: true});
   const composer = page.getByRole('textbox', {name: '向 AI 博客助手提问', exact: true});
-  await ai.getByRole('link', {name: '已核验的文章', exact: true}).waitFor();
+  await ai.getByRole('link', {name: '[1]', exact: true}).waitFor();
   await ai.getByRole('region', {name: '继续追问建议', exact: true}).waitFor();
   const followUps = ai.locator('.agent-chat__follow-ups .prompt-suggestion__item');
   assert.ok((await followUps.count()) >= 2 && (await followUps.count()) <= 3, 'Completed answers expose follow-up suggestions');
@@ -77,7 +77,7 @@ try {
   await composer.fill('继续生成并保留来源');
   await ai.getByRole('button', {name: '发送问题', exact: true}).click();
   await page.evaluate(() => window.__services.completeAi());
-  await ai.getByRole('link', {name: '已核验的文章', exact: true}).waitFor();
+  await ai.getByRole('link', {name: '[1]', exact: true}).waitFor();
   await ai.getByRole('region', {name: '继续追问建议', exact: true}).waitFor();
   await ai.getByRole('button', {name: '新对话', exact: true}).click();
   await composer.fill('触发失败的问题');
