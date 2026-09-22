@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {useEffect, useMemo, useRef, useState, type ReactNode} from 'react';
 import {useMutation, usePaginatedQuery, useQuery} from 'convex/react';
 import {useUIMessages, type UIMessage} from '@convex-dev/agent/react';
 import {ConvexError} from 'convex/values';
@@ -23,8 +23,19 @@ type RenderMessage = Pick<UIMessage, 'id' | 'key' | 'role' | 'parts' | 'text' | 
 export type ChatPromptRequest = {id: string; text: string};
 const suggestions = ['Convex 适合哪些应用场景？', '如何用 Git 管理代码提交？', 'Durable Objects 如何保存状态？'];
 
+function ConversationShell({children, busy}: {children: ReactNode; busy?: boolean}) {
+  return <ChatConversation className="blog-chat__conversation" role="region" aria-label="AI 对话记录" aria-busy={busy || undefined} tabIndex={0}>
+    <ChatConversation.Content className="blog-chat__messages">{children}</ChatConversation.Content>
+    <ChatConversation.ScrollButton aria-label="回到最新回答" tooltip={false} />
+  </ChatConversation>;
+}
+
+function PendingConversation({label}: {label: string}) {
+  return <ChatLoader.Dots className="blog-chat__pending" label={label} />;
+}
+
 function Welcome({onSuggestion, isDisabled}: {onSuggestion: (prompt: string) => void; isDisabled: boolean}) {
-  return <PromptSuggestion className="agent-chat__welcome">
+  return <PromptSuggestion className="blog-chat__welcome agent-chat__welcome">
     <PromptSuggestion.Header>
       <PromptSuggestion.Title>从一个问题开始</PromptSuggestion.Title>
       <PromptSuggestion.Description>查找公开文章、梳理要点。选一个问题，修改后发送。</PromptSuggestion.Description>
@@ -104,7 +115,7 @@ function Turn({conversationId, order, messages, isLatest, busy, onFollowUp, onRe
     {messages.map(message => message.role === 'user'
       ? <ChatMessage.User key={message.key} className="blog-chat__user"><ChatMessage.Bubble><ChatMessage.Content>{message.text}</ChatMessage.Content></ChatMessage.Bubble></ChatMessage.User>
       : message.role === 'assistant' ? <Answer key={message.key} message={message} sources={run?.sources ?? []} /> : null)}
-    {pending && !hasAnswer && <ChatLoader.Dots label={runLoaderLabel(run)} />}
+    {pending && !hasAnswer && userPrompt && <ChatLoader.Dots className="blog-chat__pending" label={runLoaderLabel(run)} />}
     {run?.status === 'canceled' && <p className="blog-chat__notice">已停止生成。{hasAnswer ? '当前回答可能不完整。' : ''}</p>}
     {run?.status === 'failed' && <>
       <p role="alert" className="blog-chat__error">{run.error || '回答未完成，请重新提问。'}</p>
@@ -119,10 +130,10 @@ function Turn({conversationId, order, messages, isLatest, busy, onFollowUp, onRe
   </div>;
 }
 
-function Transcript({conversationId, threadId, onHasMessages, onSuggestion, onRegenerate, busy, suggestionsDisabled}: {
-  conversationId: Id<'assistantConversations'>; threadId: string; onHasMessages: (value: boolean) => void;
-  onSuggestion: (prompt: string) => void; onRegenerate: (prompt: string) => void; busy: boolean;
-  suggestionsDisabled: boolean;
+function Transcript({conversationId, threadId, expectEmpty, onHasMessages, onSuggestion, onRegenerate, busy, suggestionsDisabled}: {
+  conversationId: Id<'assistantConversations'>; threadId: string; expectEmpty?: boolean;
+  onHasMessages: (value: boolean) => void; onSuggestion: (prompt: string) => void; onRegenerate: (prompt: string) => void;
+  busy: boolean; suggestionsDisabled: boolean;
 }) {
   const messages = useUIMessages(api.assistant.listThreadMessages, {threadId}, {initialNumItems: 20, stream: true});
   const turns = useMemo(() => {
@@ -132,19 +143,21 @@ function Transcript({conversationId, threadId, onHasMessages, onSuggestion, onRe
   }, [messages.results]);
   const hasMessages = turns.length > 0;
   useEffect(() => { onHasMessages(hasMessages); }, [hasMessages, onHasMessages]);
-  return <ChatConversation className="blog-chat__conversation" role="region" aria-label="AI 对话记录" tabIndex={0}>
-    <ChatConversation.Content className="blog-chat__messages">
-      {messages.status === 'LoadingFirstPage' ? <ChatLoader.Dots label="正在加载对话" /> : <>
+  const loadingFirstPage = messages.status === 'LoadingFirstPage';
+  return <ConversationShell busy={loadingFirstPage && !expectEmpty}>
+    {loadingFirstPage
+      ? (expectEmpty
+        ? <Welcome onSuggestion={onSuggestion} isDisabled={suggestionsDisabled} />
+        : <PendingConversation label="正在加载对话" />)
+      : <>
         {messages.status === 'CanLoadMore' && <Button variant="ghost" size="sm" onPress={() => messages.loadMore(20)}>查看更早的消息</Button>}
-        {messages.status === 'LoadingMore' && <ChatLoader.Dots label="正在加载更早的消息" />}
+        {messages.status === 'LoadingMore' && <PendingConversation label="正在加载更早的消息" />}
         {!turns.length && <Welcome onSuggestion={onSuggestion} isDisabled={suggestionsDisabled} />}
         {turns.map((turn, index) => <Turn key={turn.order} conversationId={conversationId} {...turn}
           isLatest={index === turns.length - 1} busy={busy} onFollowUp={onSuggestion} onRegenerate={onRegenerate}
           suggestionsDisabled={suggestionsDisabled} />)}
       </>}
-    </ChatConversation.Content>
-    <ChatConversation.ScrollButton aria-label="回到最新回答" tooltip={false} />
-  </ChatConversation>;
+  </ConversationShell>;
 }
 
 export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: {
@@ -168,6 +181,7 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
   const [error, setError] = useState('');
   const [announcement, setAnnouncement] = useState('');
   const locked = useRef(false);
+  const awaitingConversation = useRef<Id<'assistantConversations'> | null>(null);
   const retry = useRef<{conversationId: Id<'assistantConversations'>; prompt: string; requestId: string} | null>(null);
   const input = useRef<HTMLTextAreaElement>(null);
   const receivedPrompts = useRef(new Set<string>());
@@ -178,6 +192,9 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
   useEffect(() => {
     if (!selected && conversations.results[0]) setSelected(conversations.results[0].id);
   }, [selected, conversations.results]);
+  useEffect(() => {
+    if (conversation && awaitingConversation.current === currentId) awaitingConversation.current = null;
+  }, [conversation, currentId]);
   useEffect(() => {
     if (!requestedPrompt || submitting || locked.current || receivedPrompts.current.has(requestedPrompt.id)) return;
     receivedPrompts.current.add(requestedPrompt.id);
@@ -211,7 +228,11 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
   async function newConversation() {
     if (locked.current) return;
     locked.current = true; setSubmitting(true); setError('');
-    try { const id = await create(); setSelected(id); setHasMessages(false); setHistoryOpen(false); setValue(''); retry.current = null; }
+    try {
+      const id = await create();
+      awaitingConversation.current = id;
+      setSelected(id); setHasMessages(false); setHistoryOpen(false); setValue(''); retry.current = null;
+    }
     catch (failure) { setError(errorMessage(failure)); }
     finally { locked.current = false; setSubmitting(false); }
   }
@@ -286,7 +307,7 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
             </Button>
             <Tooltip.Content className="blog-chat__tooltip" placement="bottom end" offset={6} UNSTABLE_portalContainer={portalContainer ?? undefined}>对话操作</Tooltip.Content>
           </Tooltip>
-          <Dropdown.Popover placement="bottom end" offset={8} containerPadding={12} UNSTABLE_portalContainer={portalContainer ?? undefined} className="agent-chat__menu-popover" data-agent-chat-menu-popover data-sentry-mask>
+          <Dropdown.Popover placement="bottom end" offset={8} containerPadding={12} UNSTABLE_portalContainer={portalContainer ?? undefined} className={`${surface.surface} agent-chat__menu-popover`} data-agent-chat-menu-popover data-sentry-mask>
             <Dropdown.Menu aria-label="对话操作" onAction={key => {
               if (key === 'delete') { setMenuOpen(false); setDeleteConfirmOpen(true); }
             }}>
@@ -319,10 +340,10 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
             </Button>
             <Tooltip.Content className="blog-chat__tooltip" placement="bottom end" offset={6} UNSTABLE_portalContainer={portalContainer ?? undefined}>历史对话</Tooltip.Content>
           </Tooltip>
-          <Popover.Content placement="bottom end" offset={8} containerPadding={12} UNSTABLE_portalContainer={portalContainer ?? undefined} className="agent-chat__history-popover" data-agent-history-popover data-sentry-mask>
+          <Popover.Content placement="bottom end" offset={8} containerPadding={12} UNSTABLE_portalContainer={portalContainer ?? undefined} className={`${surface.surface} agent-chat__history-popover`} data-agent-history-popover data-sentry-mask>
             <Popover.Dialog className="agent-chat__history" aria-label="已保存的 AI 对话">
               <Popover.Heading className="agent-chat__history-heading">历史对话</Popover.Heading>
-              {conversations.status === 'LoadingFirstPage' && <ChatLoader.Dots label="正在加载对话列表" />}
+              {conversations.status === 'LoadingFirstPage' && <PendingConversation label="正在加载对话列表" />}
               {!conversations.results.length && conversations.status !== 'LoadingFirstPage' && <p className="agent-chat__history-empty">还没有保存的对话。</p>}
               {conversations.results.length > 0 && <ListBox aria-label="选择 AI 对话" className="agent-chat__history-list" selectionMode="single" selectedKeys={currentId ? [currentId] : []} shouldSelectOnPressUp escapeKeyBehavior="none" autoFocus onSelectionChange={keys => {
                 if (keys === 'all') return;
@@ -335,7 +356,7 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
                 </ListBox.Item>)}
               </ListBox>}
               {conversations.status === 'CanLoadMore' && <Button variant="ghost" size="sm" className="agent-chat__history-more" onPress={() => conversations.loadMore(20)}>更多对话</Button>}
-              {conversations.status === 'LoadingMore' && <ChatLoader.Dots label="正在加载更多对话" />}
+              {conversations.status === 'LoadingMore' && <PendingConversation label="正在加载更多对话" />}
             </Popover.Dialog>
           </Popover.Content>
         </Popover>
@@ -345,11 +366,18 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
         </Tooltip>
       </div>
     </div>
-    {conversation && currentId ? <Transcript key={conversation.threadId} conversationId={currentId} threadId={conversation.threadId}
-      onHasMessages={setHasMessages} onSuggestion={chooseSuggestion} onRegenerate={regenerate} busy={busy}
-      suggestionsDisabled={submitting || busy || Boolean(value.trim())} />
-      : currentId || conversations.status === 'LoadingFirstPage' ? <div className="agent-chat__welcome"><ChatLoader.Dots label="正在加载对话" /></div>
-      : <Welcome onSuggestion={chooseSuggestion} isDisabled={submitting || Boolean(value.trim())} />}
+    {conversation && currentId
+      ? <Transcript key={conversation.threadId} conversationId={currentId} threadId={conversation.threadId}
+          expectEmpty={awaitingConversation.current === currentId}
+          onHasMessages={setHasMessages} onSuggestion={chooseSuggestion} onRegenerate={regenerate} busy={busy}
+          suggestionsDisabled={submitting || busy || Boolean(value.trim())} />
+      : currentId && awaitingConversation.current === currentId
+        ? <ConversationShell><Welcome onSuggestion={chooseSuggestion} isDisabled={submitting || Boolean(value.trim())} /></ConversationShell>
+        : currentId
+          ? <ConversationShell busy><PendingConversation label="正在加载对话" /></ConversationShell>
+          : conversations.status === 'LoadingFirstPage'
+            ? <ConversationShell busy><PendingConversation label="正在加载对话" /></ConversationShell>
+            : <ConversationShell><Welcome onSuggestion={chooseSuggestion} isDisabled={submitting || Boolean(value.trim())} /></ConversationShell>}
     <div className="blog-chat__composer">
       <div className="blog-chat__sr-only" role="status" aria-live="polite">{announcement}</div>
       {pendingPrompt && <div className="agent-chat__prompt-request" role="group" aria-label="待使用的搜索问题">
