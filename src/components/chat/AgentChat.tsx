@@ -294,7 +294,7 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
             </Dropdown.Menu>
           </Dropdown.Popover>
         </Dropdown>
-        <AlertDialog.Backdrop isOpen={deleteConfirmOpen} onOpenChange={open => { if (!deleting) setDeleteConfirmOpen(open); }}>
+        <AlertDialog.Backdrop className={surface.surface} isOpen={deleteConfirmOpen} onOpenChange={open => { if (!deleting) setDeleteConfirmOpen(open); }} UNSTABLE_portalContainer={portalContainer ?? undefined}>
           <AlertDialog.Container placement="center">
             <AlertDialog.Dialog className="agent-chat__delete-dialog" aria-label="删除对话">
               <AlertDialog.CloseTrigger aria-label="取消" />

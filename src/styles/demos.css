@@ -27,6 +27,7 @@
 @import "@heroui-pro/react/css/components/chain-of-thought.css" layer(components);
 @import "@heroui-pro/react/css/components/text-shimmer.css" layer(components);
 @import "@heroui-pro/react/css/components/chat-source.css" layer(components);
+@import "@heroui-pro/react/css/components/hover-card.css" layer(components);
 @import "./citations.css";
 @import "@heroui-pro/react/css/components/chat-message-actions.css" layer(components);
 @import "@heroui-pro/react/css/components/code-block.css" layer(components);

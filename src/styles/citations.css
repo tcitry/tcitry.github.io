@@ -1,3 +1,13 @@
+/* ChatSource hover previews portal to document.body without .surface tokens. */
+.hover-card__content {
+  --overlay: var(--body-background, #fff);
+  --overlay-foreground: var(--body-font-color, #343a40);
+  --overlay-shadow: 0 8px 30px #00000024, 0 0 0 1px color-mix(in srgb, var(--body-font-color, #343a40) 18%, var(--body-background, #fff));
+  --muted: color-mix(in srgb, var(--body-font-color, #343a40) 70%, var(--body-background, #fff));
+  --foreground: var(--body-font-color, #343a40);
+  --radius: 0.5rem;
+}
+
 .blog-chat__sources { margin-top: .75rem; }
 .blog-chat .blog-chat__sources .disclosure__heading { margin: 0; padding: 0; }
 .blog-chat .blog-chat__sources .disclosure__heading::before { content: none; }

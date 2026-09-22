@@ -15,7 +15,8 @@ export function citationMarkdownComponents(sources: readonly ChatCitationSource[
         const source = byId.get(href.slice(CITE_PREFIX.length));
         if (!source) return <span>{children}</span>;
         return <ChatSource href={source.url} title={source.title} description={sourcePreviewDescription(source)} className="blog-chat__inline-cite">
-          <ChatSource.Trigger label={`[${source.id}]`} target="_blank" rel="noopener noreferrer" />
+          <ChatSource.Trigger target="_blank" rel="noopener noreferrer">[{source.id}]</ChatSource.Trigger>
+          <ChatSource.Preview />
         </ChatSource>;
       }
       return allowedUrls.has(href ?? '')

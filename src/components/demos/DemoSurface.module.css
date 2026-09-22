@@ -58,6 +58,7 @@
   --surface-hover: color-mix(in srgb, var(--foreground) 4%, var(--surface));
   --overlay: var(--background);
   --overlay-foreground: var(--foreground);
+  --backdrop: rgba(0, 0, 0, 0.5);
   --default: var(--gray-200, #e9ecef);
   --default-foreground: var(--foreground);
   --segment: var(--surface);
