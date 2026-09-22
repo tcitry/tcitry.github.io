@@ -27,12 +27,6 @@
 .agent-chat .agent-chat__history-empty { margin: 0; padding: .5rem; color: var(--muted); font-size: .875rem; }
 .agent-chat__history-more { flex-shrink: 0; margin-top: .375rem; }
 .agent-chat__turn { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
-.agent-chat .blog-chat__source-link .chat-source__trigger-link { flex-wrap: nowrap; gap: .625rem; font-size: .875rem; line-height: 1.6; }
-.agent-chat .blog-chat__source-link .chat-source__trigger-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.agent-chat .blog-chat__source-number { min-width: 1.5rem; text-align: center; font-weight: 500; font-variant-numeric: tabular-nums; }
-.agent-chat__source-copy { display: flex; flex: 1; min-width: 0; flex-direction: column; align-items: flex-start; gap: .375rem; }
-.agent-chat .agent-chat__source-copy .chat-source__title { display: block; width: 100%; overflow-wrap: anywhere; }
-.agent-chat .blog-chat__source-kind { display: inline-flex; margin: 0; padding: .0625rem .375rem; border-radius: var(--radius-sm); background: var(--surface-secondary); color: var(--muted); font-size: .6875rem; line-height: 1.5; }
 .agent-chat__welcome { margin: auto 0; padding: 1.25rem; color: var(--muted); font-size: .875rem; line-height: 1.8; }
 .agent-chat .agent-chat__welcome .prompt-suggestion__title { margin: 0; padding: 0; color: var(--foreground); font-size: 1.125rem; font-weight: 500; line-height: 1.5; }
 .agent-chat .agent-chat__welcome .prompt-suggestion__title::before { content: none; }

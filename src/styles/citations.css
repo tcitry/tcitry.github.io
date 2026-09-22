@@ -1,0 +1,11 @@
+.blog-chat__sources { margin-top: .75rem; }
+.blog-chat .blog-chat__sources .disclosure__heading { margin: 0; padding: 0; }
+.blog-chat .blog-chat__sources .disclosure__heading::before { content: none; }
+.blog-chat .blog-chat__sources .disclosure__body { padding: 0; }
+.blog-chat__inline-cite { display: inline-flex; vertical-align: baseline; margin-inline: .125rem; transform: translateY(.125rem); }
+.blog-chat__inline-cite .chat-source__trigger-link { max-width: none; padding-inline: .5rem; font-variant-numeric: tabular-nums; color: var(--accent); }
+.blog-chat__answer .blog-chat__answer .markdown__paragraph { margin: .75rem 0; }
+.blog-chat__answer .markdown__paragraph:first-child { margin-top: 0; }
+.blog-chat__answer .markdown__paragraph:last-child { margin-bottom: 0; }
+.blog-chat__answer .markdown__paragraph + .markdown__paragraph { margin-top: 0; }
+.blog-chat__inline-cite + .blog-chat__inline-cite { margin-inline-start: 0; }

@@ -139,7 +139,7 @@ try {
       assert.equal(await tab(page, '我的').getAttribute('aria-checked'), 'true', 'New assistant sessions begin with My');
       assert.equal(await page.locator('.assistant-workspace__switcher [role=radio]').first().textContent(), '我的');
       await tab(page, 'AI 对话').click();
-      await page.getByRole('link', {name: '已核验的文章', exact: true}).waitFor();
+      await page.getByRole('link', {name: '[1]', exact: true}).waitFor();
       assert.equal(await tab(page, '管理').count(), 0, 'Ordinary members have no author inbox entry');
       await switchSession(page, 'fixture-author', 'session-author');
       await tab(page, '管理').waitFor();
@@ -712,8 +712,9 @@ try {
     assert.equal(await tab(aiPage, '我的').getAttribute('aria-checked'), 'true');
     await tab(aiPage, 'AI 对话').click();
     const ai = aiPage.getByRole('region', {name: '与 AI 博客助手对话', exact: true});
-    await ai.getByRole('link', {name: '已核验的文章', exact: true}).waitFor();
-    assert.equal(await ai.getByRole('link', {name: '已核验的文章', exact: true}).getAttribute('href'), 'https://yindongliang.com/docs/rag-fixture/');
+    await ai.getByRole('link', {name: '[1]', exact: true}).waitFor();
+    assert.equal(await ai.getByRole('link', {name: '[1]', exact: true}).getAttribute('href'), 'https://yindongliang.com/docs/rag-fixture/');
+    await ai.getByRole('button', {name: '1 篇来源', exact: true}).waitFor();
     assert.equal(await ai.locator('a[href*="example.invalid"]').count(), 0, 'Answer links are restricted to retrieved citations');
     assert.equal(await ai.locator('.blog-chat__answer img').count(), 0, 'Untrusted Markdown images render as text');
     await ai.getByRole('heading', {name: '已保存的 RAG 问题', exact: true}).waitFor();
@@ -774,7 +775,7 @@ try {
     await aiPage.locator('[data-reader-library]').waitFor();
     await aiPage.evaluate(() => window.__services.completeAi());
     await tab(aiPage, 'AI 对话').click();
-    await ai.getByRole('link', {name: '已核验的文章', exact: true}).waitFor();
+    await ai.getByRole('link', {name: '[1]', exact: true}).waitFor();
     assert.equal(await ai.getByRole('button', {name: '停止生成', exact: true}).count(), 0, 'Completion updates while the AI tab is hidden');
     assert.equal(await composer.inputValue(), '');
     await ai.getByRole('region', {name: '继续追问建议', exact: true}).waitFor();

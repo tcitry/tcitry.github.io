@@ -1,10 +1,11 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {Button, Chip, Label, Slider} from '@heroui/react';
 import {ChainOfThought} from '@heroui-pro/react/chain-of-thought';
 import {ChatMessage} from '@heroui-pro/react/chat-message';
-import {ChatSource, ChatSources} from '@heroui-pro/react/chat-source';
 import {ChatMessageActions} from '@heroui-pro/react/chat-message-actions';
 import {CodeBlock} from '@heroui-pro/react/code-block';
+import {Markdown} from '@heroui-pro/react/markdown';
+import {CitationSourcesFooter, citationMarkdownComponents, injectCitationLinks} from '../chat/citations';
 import {trackDemoStart} from '../../lib/analytics';
 import '../../styles/demos.css';
 import styles from './DemoSurface.module.css';
@@ -15,9 +16,14 @@ const steps = [
   {label: '生成展示', detail: '逐段回放预先编写的回答，展示流式消息的交互。'},
 ];
 
+const replaySources = [
+  {id: '1', title: 'Astro-book', url: 'https://github.com/tcitry/astro-book', sourceKind: 'author' as const},
+  {id: '2', title: 'HeroUI Pro Chat Message', url: 'https://heroui.pro/docs/react/components/chat-message', sourceKind: 'ai-assisted' as const},
+];
+
 const answer = [
-  '文章由 Astro 在构建时生成完整 HTML。',
-  '这个交互区域是一棵独立的 React 组件树，使用 HeroUI 控件和 HeroUI Pro 消息组件。',
+  '文章由 Astro 在构建时生成完整 HTML [1]。',
+  '这个交互区域是一棵独立的 React 组件树，使用 HeroUI 控件和 HeroUI Pro 消息组件 [2]。',
   '同一份组件同时用于 MDX 文章和独立页面；同页的 Svelte 组件管理自己的状态。',
   '演示只回放本地数据，没有请求模型，也没有保存或发送输入。',
 ];
@@ -52,6 +58,7 @@ export default function AgentReplay() {
   const status = playing ? '正在回放' : complete ? '回放完成' : frame ? '已暂停' : '等待开始';
   const visibleSteps = steps.slice(0, Math.min(frame, steps.length));
   const visibleAnswer = answer.slice(0, Math.max(0, frame - steps.length));
+  const citationComponents = useMemo(() => citationMarkdownComponents(replaySources), []);
 
   function reset() {
     trackDemoStart('agent-replay', 'reset');
@@ -144,20 +151,16 @@ export default function AgentReplay() {
             ) : <div className="rounded-lg bg-surface-secondary p-4 text-sm leading-relaxed text-muted">点击「开始回放」，查看步骤展开与消息逐段出现。</div>}
             {visibleAnswer.length > 0 && (
               <ChatMessage.Content className="mt-4 space-y-3 text-sm leading-relaxed">
-                {visibleAnswer.map((paragraph) => <div key={paragraph}>{paragraph}</div>)}
+                {visibleAnswer.map(paragraph => <Markdown key={paragraph} className="blog-chat__answer" components={citationComponents}>
+                  {injectCitationLinks(paragraph, replaySources)}
+                </Markdown>)}
               </ChatMessage.Content>
             )}
             {complete && <CodeBlock className="mt-3 min-w-0 max-w-full rounded-xl">
               <CodeBlock.Header className="flex-wrap gap-2"><span className="text-xs text-muted">MDX · 复用同一个组件</span><CodeBlock.CopyButton code={embedCode} aria-label="复制嵌入代码" /></CodeBlock.Header>
               <CodeBlock.Code code={embedCode} language="tsx" theme="github-light" darkTheme="github-dark" />
             </CodeBlock>}
-            {complete && <ChatSources defaultExpanded className="mt-3 min-w-0">
-              <ChatSources.Trigger>继续阅读 · 2 个参考来源</ChatSources.Trigger>
-              <ChatSources.Content><ChatSources.List>
-                <ChatSource enablePreview={false} href="https://github.com/tcitry/astro-book" title="Astro-book" />
-                <ChatSource enablePreview={false} href="https://heroui.pro/docs/react/components/chat-message" title="HeroUI Pro" />
-              </ChatSources.List></ChatSources.Content>
-            </ChatSources>}
+            {complete && <CitationSourcesFooter sources={replaySources} className="blog-chat__sources mt-3 min-w-0" />}
             {visibleAnswer.length > 0 && <ChatMessageActions className="mt-2 flex-wrap opacity-100">
               <ChatMessageActions.Copy size="sm" variant="ghost" isDisabled={!hydrated} isCopied={copied} onPress={copyAnswer} aria-label={copied ? '回答已复制' : '复制演示回答'} />
               <ChatMessageActions.Regenerate size="sm" variant="ghost" isDisabled={!hydrated || playing} onPress={() => {setFrame(0); setPlaying(true); setCopied(false); trackDemoStart('agent-replay', 'replay');}} aria-label="重新回放演示" />

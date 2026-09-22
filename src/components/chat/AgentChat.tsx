@@ -2,25 +2,23 @@ import {useEffect, useMemo, useRef, useState} from 'react';
 import {useMutation, usePaginatedQuery, useQuery} from 'convex/react';
 import {useUIMessages, type UIMessage} from '@convex-dev/agent/react';
 import {ConvexError} from 'convex/values';
-import type {Components} from 'react-markdown';
 import {ClockArrowRotateLeft, Ellipsis, Plus} from '@gravity-ui/icons';
 import {AlertDialog, Button, Dropdown, ListBox, Popover, Tooltip} from '@heroui/react';
 import {ChatConversation} from '@heroui-pro/react/chat-conversation';
 import {ChatLoader} from '@heroui-pro/react/chat-loader';
 import {ChatMessage} from '@heroui-pro/react/chat-message';
 import {ChatMessageActions} from '@heroui-pro/react/chat-message-actions';
-import {ChatSource, ChatSources} from '@heroui-pro/react/chat-source';
 import {Markdown} from '@heroui-pro/react/markdown';
 import {PromptInput} from '@heroui-pro/react/prompt-input';
 import {PromptSuggestion} from '@heroui-pro/react/prompt-suggestion';
 import {api} from '../../../convex/_generated/api';
 import type {Id} from '../../../convex/_generated/dataModel';
 import {deriveFollowUpSuggestions} from '../../lib/chat-follow-ups';
+import {CitationSourcesFooter, injectCitationLinks, type ChatCitationSource, useCitationMarkdownComponents} from './citations';
 import surface from '../demos/DemoSurface.module.css';
 import '../../styles/chat.css';
 import './agent-chat.css';
 
-type Source = {id: string; title: string; url: string; sourceKind: 'author' | 'ai-assisted'};
 type RenderMessage = Pick<UIMessage, 'id' | 'key' | 'role' | 'parts' | 'text' | 'order' | 'stepOrder' | 'status' | '_creationTime'>;
 export type ChatPromptRequest = {id: string; text: string};
 const suggestions = ['Convex 适合哪些应用场景？', '如何用 Git 管理代码提交？', 'Durable Objects 如何保存状态？'];
@@ -42,34 +40,16 @@ function errorMessage(error: unknown) {
   return '暂时无法完成操作，请稍后重试。';
 }
 
-function Answer({message, sources}: {message: RenderMessage; sources: Source[]}) {
+function Answer({message, sources}: {message: RenderMessage; sources: ChatCitationSource[]}) {
   const [copied, setCopied] = useState(false);
   const [copyFailed, setCopyFailed] = useState(false);
   const text = message.parts.filter(part => part.type === 'text').map(part => part.text).join('');
-  const components = useMemo<Components>(() => ({
-    a: ({href, children}) => sources.some(source => source.url === href)
-      ? <a href={href} target="_blank" rel="noopener noreferrer">{children}</a> : <span>{children}</span>,
-    img: ({alt}) => alt ? <span>{alt}</span> : null,
-    h1: ({children}) => <h3>{children}</h3>, h2: ({children}) => <h3>{children}</h3>,
-    table: ({children}) => <div className="blog-chat__table"><table>{children}</table></div>,
-  }), [sources]);
+  const answer = useMemo(() => injectCitationLinks(text, sources), [text, sources]);
+  const components = useCitationMarkdownComponents(sources);
   return <ChatMessage.Assistant className="blog-chat__assistant" data-message-state={message.status}>
     <ChatMessage.Body className="blog-chat__body">
-      {text && <ChatMessage.Content><Markdown id={message.key} components={components} className="blog-chat__answer">{text}</Markdown></ChatMessage.Content>}
-      {sources.length > 0 && <ChatSources defaultExpanded className="blog-chat__sources">
-        <ChatSources.Trigger>参考文章 · {sources.length}</ChatSources.Trigger>
-        <ChatSources.Content><ChatSources.List className="blog-chat__source-list">
-          {sources.map(source => <ChatSource key={source.id} href={source.url} title={source.title} enablePreview={false} className="blog-chat__source">
-            <ChatSource.Trigger target="_blank" rel="noopener noreferrer" className="blog-chat__source-link">
-              <span className="blog-chat__source-number">[{source.id}]</span>
-              <span className="agent-chat__source-copy">
-                <ChatSource.Title>{source.title}</ChatSource.Title>
-                {source.sourceKind === 'ai-assisted' && <span className="blog-chat__source-kind">AI 整理</span>}
-              </span>
-            </ChatSource.Trigger>
-          </ChatSource>)}
-        </ChatSources.List></ChatSources.Content>
-      </ChatSources>}
+      {text && <ChatMessage.Content><Markdown id={message.key} components={components} className="blog-chat__answer">{answer}</Markdown></ChatMessage.Content>}
+      <CitationSourcesFooter sources={sources} />
       {text && message.status !== 'streaming' && message.status !== 'pending' && <ChatMessageActions className="blog-chat__actions">
         <ChatMessageActions.Copy isCopied={copied} aria-label={copied ? '回答和出处已复制' : '复制回答和出处'} tooltip={false} onPress={async () => {
           try { await navigator.clipboard.writeText(`${text}\n\n${sources.map(source => `[${source.id}] ${source.title} ${source.url}`).join('\n')}`); setCopied(true); setCopyFailed(false); }
