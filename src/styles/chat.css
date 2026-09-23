@@ -6,6 +6,7 @@
 @import "@heroui/styles/components/textarea.css" layer(components);
 @import "@heroui/styles/components/disclosure.css" layer(components);
 @import "@heroui/styles/components/tooltip.css" layer(components);
+@import "@heroui-pro/react/css/components/hover-card.css" layer(components);
 @import "@heroui-pro/react/css/components/chat-conversation.css" layer(components);
 @import "@heroui-pro/react/css/components/chat-message.css" layer(components);
 @import "@heroui-pro/react/css/components/chat-message-actions.css" layer(components);
@@ -69,6 +70,9 @@
 .blog-chat__messages { gap: 1.75rem; padding: 2rem 1rem 1.5rem; min-width: 0; }
 .blog-chat__messages:has(> .blog-chat__welcome) { flex: 1 0 auto; }
 .blog-chat__welcome { margin-block: auto 0; padding-block: .5rem; gap: 1.25rem; }
+.blog-chat__pending { margin: 0; padding-block: .25rem; color: var(--muted); font-size: .8125rem; line-height: 1.6; }
+.blog-chat__pending.chat-loader__dots { display: inline-flex; align-items: center; gap: .25rem; }
+.agent-chat__turn > .blog-chat__pending { margin-top: -.25rem; }
 .blog-chat .prompt-suggestion__title { margin: 0; font-size: 1.125rem; }
 .blog-chat .prompt-suggestion__description { max-width: 100%; margin: 0; color: var(--muted); line-height: 1.7; }
 .blog-chat__suggestions { display: grid; grid-template-columns: 1fr; gap: .625rem; margin-top: 0; }
