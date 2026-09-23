@@ -730,7 +730,22 @@ try {
     await menu.getByRole('menuitem', {name: '删除对话', exact: true}).click();
     const deleteDialog = aiPage.getByRole('alertdialog', {name: '删除对话', exact: true});
     await deleteDialog.waitFor();
-    await deleteDialog.getByRole('button', {name: '删除对话', exact: true}).click();
+    const deleteDangerButton = deleteDialog.getByRole('button', {name: '删除对话', exact: true});
+    const deleteDangerDefault = await deleteDangerButton.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return {backgroundColor: style.backgroundColor, width: rect.width, height: rect.height};
+    });
+    await deleteDangerButton.hover();
+    const deleteDangerHover = await deleteDangerButton.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return {backgroundColor: style.backgroundColor, width: rect.width, height: rect.height};
+    });
+    assert.notEqual(deleteDangerHover.backgroundColor, 'rgba(0, 0, 0, 0)', 'Delete dialog danger button keeps an opaque background on hover');
+    assert.ok(deleteDangerHover.width >= deleteDangerDefault.width * 0.9, 'Delete dialog danger button does not collapse on hover');
+    assert.ok(deleteDangerHover.height >= deleteDangerDefault.height * 0.9, 'Delete dialog danger button height stays stable on hover');
+    await deleteDangerButton.click();
     await deleteDialog.waitFor({state: 'hidden'});
     await ai.getByRole('heading', {name: '第二条已保存对话：关于 Cloudflare AI Search、Convex Agent 与 Clerk 会员服务的长标题记录', exact: true}).waitFor();
     assert.equal(await ai.getByText('已保存的 RAG 问题', {exact: true}).count(), 0, 'Deleting the current conversation switches to another history item');
