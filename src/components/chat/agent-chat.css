@@ -16,6 +16,10 @@
 .agent-chat__header-actions .agent-chat__new { width: 2.25rem; padding: 0; }
 .agent-chat__menu-popover { width: min(12rem, calc(100vw - 2rem)); max-width: calc(100% - 1.5rem); overflow: hidden; color: var(--foreground); background: var(--overlay); box-shadow: var(--overlay-shadow); }
 .agent-chat__delete-dialog { width: min(24rem, calc(100vw - 2rem)); }
+.agent-chat__delete-dialog .alert-dialog__footer .button { flex-shrink: 0; }
+.agent-chat__delete-dialog .alert-dialog__footer .button--danger:is(:hover, :active, [data-hovered="true"], [data-pressed="true"]) {
+  background-color: var(--button-bg-hover, var(--button-bg));
+}
 .agent-chat__history-popover { width: min(20rem, calc(100vw - 2rem)); max-width: calc(100% - 1.5rem); overflow: hidden; color: var(--foreground); background: var(--overlay); box-shadow: var(--overlay-shadow); }
 .agent-chat__history .blog-chat__pending { padding: .5rem; }
 .agent-chat .agent-chat__history { display: flex; min-height: 0; max-height: min(24rem, 60dvh); flex-direction: column; padding: .5rem; }
