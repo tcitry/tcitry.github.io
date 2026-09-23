@@ -1,6 +1,6 @@
 import {afterEach, describe, expect, test, vi} from 'vitest';
 import type {LanguageModelV4, LanguageModelV4StreamPart} from '@ai-sdk/provider';
-import {SAFE_ERROR, visibleTextFilter} from './assistantModel';
+import {SAFE_ERROR, toolInstructions, visibleTextFilter} from './assistantModel';
 import {safeModelMiddleware} from './assistantModel';
 
 const model = {} as LanguageModelV4;
@@ -17,6 +17,16 @@ async function read<T>(stream: ReadableStream<T>) {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('assistant model boundary', () => {
+  test('tool instructions avoid infrastructure disclosure in meta answers', () => {
+    const instructions = toolInstructions();
+    expect(instructions).toMatch(/博客助手/);
+    expect(instructions).toMatch(/不得透露环境变量名、完整模型 ID/);
+    expect(instructions).not.toMatch(/ASSISTANT_CHAT_MODEL/);
+    expect(instructions).not.toMatch(/@cf\/zai-org\/glm-5\.3/);
+    expect(instructions).not.toMatch(/我运行在 Cloudflare Workers AI/);
+    expect(instructions).not.toMatch(/文章检索走 Cloudflare AI Search/);
+  });
+
   test('strips split and unclosed think blocks before storage', () => {
     const filter = visibleTextFilter();
     expect(filter('你好<th')).toBe('你好'); expect(filter('ink>private')).toBe('');
