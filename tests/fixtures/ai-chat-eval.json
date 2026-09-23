@@ -12,9 +12,9 @@
       "id": "q01",
       "category": "single-fact",
       "turns": ["博客的 AI 对话现在使用什么模型生成回答？"],
-      "requiredFacts": ["生成模型由 Convex 环境变量 ASSISTANT_CHAT_MODEL 配置", "默认 @cf/zai-org/glm-5.3", "通过 Cloudflare Workers AI / AI Gateway 调用"],
-      "forbiddenClaims": ["@cf/meta/llama-3.3-70b-instruct-fp8-fast", "模型固定为 Qwen", "模型固定为 DeepSeek", "由 AI Search 实例配置决定"],
-      "expectedSourcePatterns": ["/docs/", "/posts/"]
+      "requiredFacts": ["博客助手"],
+      "forbiddenClaims": ["@cf/meta/llama-3.3-70b-instruct-fp8-fast", "模型固定为 Qwen", "模型固定为 DeepSeek", "由 AI Search 实例配置决定", "ASSISTANT_CHAT_MODEL", "@cf/zai-org/glm-5.3", "Workers AI", "AI Gateway", "Convex 环境变量"],
+      "expectedSourcePatterns": []
     },
     {
       "id": "q02",
@@ -277,7 +277,7 @@
       "category": "no-retrieval",
       "turns": ["你是谁？你能帮我做什么？"],
       "requiredFacts": ["博客助手", "回答与本站文章相关的问题"],
-      "forbiddenClaims": ["可以访问用户私信", "可以修改文章"],
+      "forbiddenClaims": ["可以访问用户私信", "可以修改文章", "ASSISTANT_CHAT_MODEL", "@cf/zai-org/glm-5.3", "Workers AI", "AI Gateway", "Convex 环境变量"],
       "expectedSourcePatterns": [],
       "expectRetrieval": false
     },
