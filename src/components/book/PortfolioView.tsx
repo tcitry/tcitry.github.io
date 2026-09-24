@@ -1,5 +1,4 @@
 import {Button, Card, Chip, Label} from '@heroui/react';
-import {ItemCard} from '@heroui-pro/react/item-card';
 import {NativeSelect} from '@heroui-pro/react/native-select';
 import type {PortfolioItem} from './special-pages';
 import {projectIdFromHref} from '../../lib/project-analytics';
@@ -17,13 +16,6 @@ export default function PortfolioView({items}: {items: PortfolioItem[]}) {
       </div>
       <Chip size="sm" variant="soft"><Chip.Label>{items.length} 个项目</Chip.Label></Chip>
     </header>
-
-    <ItemCard className={styles.summary} variant="secondary" data-book-island>
-      <ItemCard.Content>
-        <ItemCard.Title className={styles.summaryText}>从想法到作品</ItemCard.Title>
-        <ItemCard.Description className={styles.summaryText}>按时间倒序记录，保留项目介绍、技术标签和相关链接。</ItemCard.Description>
-      </ItemCard.Content>
-    </ItemCard>
 
     <div className={`${styles.header} ${styles.filter}`} data-book-island data-pagefind-ignore>
       <NativeSelect className="w-full max-w-[18rem]" fullWidth>

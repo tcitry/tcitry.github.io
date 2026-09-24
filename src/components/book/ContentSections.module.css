@@ -80,8 +80,6 @@
 
 .section .title { margin: 0; font-size: 1.875rem; font-weight: 650; line-height: 1.2; }
 .section .intro { margin: 0.5rem 0 0; color: var(--muted); font-size: 0.875rem; line-height: 1.65; }
-.section .summary { min-width: 0; margin-bottom: 1.5rem; border-radius: 1rem; }
-.section .summaryText { white-space: normal; overflow-wrap: anywhere; }
 .section .count { white-space: nowrap; color: var(--muted); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
 .section .controls { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
 .section .controls :global(.button) { min-height: 2.5rem; white-space: normal; }
@@ -203,7 +201,6 @@
   .section .title { font-size: 1.625rem; }
   .section .header { align-items: flex-start; }
   .section .projectCard { padding: 1rem; }
-  .section .summary { align-items: flex-start; flex-wrap: wrap; }
 }
 
 @media (prefers-reduced-motion: reduce) {
