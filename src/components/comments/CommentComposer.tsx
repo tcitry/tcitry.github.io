@@ -1,0 +1,98 @@
+import {forwardRef, useImperativeHandle, useMemo, useRef} from 'react';
+import {Bold, Code, Italic, Link, ListOl, ListUl, QuoteOpen} from '@gravity-ui/icons';
+import {RichTextEditor} from '@heroui-pro/react/rich-text-editor';
+import {Markdown} from '@tiptap/markdown';
+import type {Editor, JSONContent} from '@tiptap/core';
+import {COMMENT_BODY_MAX_LENGTH, isCommentBodyOverLimit} from './comment-markdown';
+
+const EMPTY_DOC: JSONContent = {type: 'doc', content: [{type: 'paragraph'}]};
+
+export interface CommentComposerHandle {
+  focus: () => void;
+}
+
+interface CommentComposerProps {
+  resetKey: number;
+  body: string;
+  onChange: (body: string) => void;
+  isDisabled?: boolean;
+  placeholder?: string;
+}
+
+function serializeBody(editor: Editor) {
+  return (editor.getMarkdown?.() ?? editor.getText()).trimEnd();
+}
+
+const CommentComposer = forwardRef<CommentComposerHandle, CommentComposerProps>(function CommentComposer(
+  {resetKey, body, onChange, isDisabled = false, placeholder = '分享你的想法，也可以添加图片…'},
+  ref,
+) {
+  const editorRef = useRef<Editor | null>(null);
+  const markdownExtension = useMemo(() => [Markdown], []);
+  const overLimit = isCommentBodyOverLimit(body);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      editorRef.current?.commands.focus('end');
+    },
+  }), []);
+
+  return <RichTextEditor
+    key={resetKey}
+    id="comment-body"
+    className="blog-comments__editor"
+    aria-label="你的评论"
+    defaultValue={EMPTY_DOC}
+    extensions={markdownExtension}
+    isDisabled={isDisabled}
+    placeholder={placeholder}
+    onValueChange={(_value, details) => {
+      editorRef.current = details.editor;
+      onChange(serializeBody(details.editor));
+    }}
+    editorOptions={{
+      onCreate: ({editor}) => {
+        editorRef.current = editor;
+      },
+      onDestroy: () => {
+        editorRef.current = null;
+      },
+    }}
+  >
+    <RichTextEditor.Shell>
+      <RichTextEditor.Toolbar aria-label="评论格式">
+        <RichTextEditor.ToolbarGroup>
+          <RichTextEditor.ToggleButton command="bold" tooltip="粗体"><Bold width={16} height={16} /></RichTextEditor.ToggleButton>
+          <RichTextEditor.ToggleButton command="italic" tooltip="斜体"><Italic width={16} height={16} /></RichTextEditor.ToggleButton>
+          <RichTextEditor.ToggleButton command="code" tooltip="行内代码"><Code width={16} height={16} /></RichTextEditor.ToggleButton>
+        </RichTextEditor.ToolbarGroup>
+        <RichTextEditor.ToolbarSeparator />
+        <RichTextEditor.ToolbarGroup>
+          <RichTextEditor.LinkPopover>
+            <RichTextEditor.LinkPopover.Trigger tooltip="链接"><Link width={16} height={16} /></RichTextEditor.LinkPopover.Trigger>
+            <RichTextEditor.LinkPopover.Content>
+              <RichTextEditor.LinkPopover.Input placeholder="https://example.com" />
+              <RichTextEditor.LinkPopover.Actions>
+                <RichTextEditor.LinkPopover.UnsetButton />
+                <RichTextEditor.LinkPopover.ApplyButton />
+              </RichTextEditor.LinkPopover.Actions>
+            </RichTextEditor.LinkPopover.Content>
+          </RichTextEditor.LinkPopover>
+        </RichTextEditor.ToolbarGroup>
+        <RichTextEditor.ToolbarSeparator />
+        <RichTextEditor.ToolbarGroup>
+          <RichTextEditor.ToggleButton command="blockquote" tooltip="引用"><QuoteOpen width={16} height={16} /></RichTextEditor.ToggleButton>
+          <RichTextEditor.ToggleButton command="codeBlock" tooltip="代码块"><Code width={16} height={16} /></RichTextEditor.ToggleButton>
+          <RichTextEditor.ToggleButton command="bulletList" tooltip="无序列表"><ListUl width={16} height={16} /></RichTextEditor.ToggleButton>
+          <RichTextEditor.ToggleButton command="orderedList" tooltip="有序列表"><ListOl width={16} height={16} /></RichTextEditor.ToggleButton>
+        </RichTextEditor.ToolbarGroup>
+      </RichTextEditor.Toolbar>
+      <RichTextEditor.Content />
+    </RichTextEditor.Shell>
+    <span className="blog-comments__sr-only" aria-live="polite">
+      {overLimit ? `评论已超过 ${COMMENT_BODY_MAX_LENGTH.toLocaleString()} 字上限，请缩短后再发布。` : ''}
+    </span>
+  </RichTextEditor>;
+});
+
+export default CommentComposer;

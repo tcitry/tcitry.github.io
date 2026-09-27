@@ -36,10 +36,29 @@ test('comment bodies, account usernames and reply names cannot introduce markup 
     replyTo: {id: 'parent', authorName: '<svg onload="alert(5)">', deleted: false},
   }));
   const tags = elements(parseFragment(html)).map(node => node.tagName);
-  assert.ok(!tags.some(tag => ['script', 'img', 'svg', 'a'].includes(tag)), 'Untrusted text must not create elements or links');
+  assert.ok(!tags.some(tag => ['script', 'img', 'svg'].includes(tag)), 'Untrusted text must not create executable elements');
+  assert.equal(tags.filter(tag => tag === 'a').length, 0, 'Unsafe markdown links must not become anchors');
   assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
-  assert.match(html, /javascript:alert\(3\)/, 'Markdown remains literal text');
+  assert.match(html, /javascript:alert\(3\)/, 'Unsafe markdown links remain literal text');
   assert.match(html, /回复 &lt;svg/);
+});
+
+test('comment bodies render markdown formatting and safe external links', () => {
+  const html = render(comment({body: '**加粗** 与 [示例](https://example.com)'}));
+  const tags = elements(parseFragment(html));
+  const links = tags.filter(node => node.tagName === 'a');
+  assert.match(html, /加粗/);
+  assert.equal(links.length, 1);
+  assert.equal(links[0].attrs.find(attr => attr.name === 'href')?.value, 'https://example.com');
+  assert.equal(links[0].attrs.find(attr => attr.name === 'rel')?.value, 'nofollow noopener noreferrer ugc');
+  assert.equal(links[0].attrs.find(attr => attr.name === 'target')?.value, '_blank');
+});
+
+test('plain-text comment bodies preserve line breaks through markdown rendering', () => {
+  const html = render(comment({body: '第一行\n第二行'}));
+  assert.match(html, /第一行/);
+  assert.match(html, /第二行/);
+  assert.match(html, /<br|<div class="markdown__paragraph">/);
 });
 
 test('loaded reply parents receive a local anchor while their account names stay escaped', () => {

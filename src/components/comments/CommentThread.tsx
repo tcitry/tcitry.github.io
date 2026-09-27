@@ -1,11 +1,13 @@
 import {useEffect, useId, useRef, useState, type SubmitEvent} from 'react';
 import {useAuth, useSession, useUser} from '@clerk/react';
-import {Avatar, Button, Label, TextArea, TextField, Tooltip} from '@heroui/react';
+import {Avatar, Button, Tooltip} from '@heroui/react';
 import {DropZone} from '@heroui-pro/react';
 import {useConvexAuth, useMutation, usePaginatedQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
 import type {Id} from '../../../convex/_generated/dataModel';
 import {useRefreshConvexToken} from '../auth/convex-token-refresh';
+import CommentComposer, {type CommentComposerHandle} from './CommentComposer';
+import {COMMENT_BODY_MAX_LENGTH, isCommentBodyOverLimit} from './comment-markdown';
 import CommentContent, {type CommentItem} from './CommentContent';
 import {HeartIcon, ImageIcon} from './CommentIcons';
 import {commentImageLimit, commentImageTypes, uploadCommentImage} from './comment-image-upload';
@@ -63,6 +65,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
   const syncedAuthorImage = useRef(false);
   const syncingAuthorImage = useRef(false);
   const [body, setBody] = useState('');
+  const [composerKey, setComposerKey] = useState(0);
   const [images, setImages] = useState<DraftImage[]>([]);
   const imageCount = useRef(0);
   const [replyTo, setReplyTo] = useState<Pick<CommentItem, 'id' | 'authorName'> | null>(null);
@@ -81,7 +84,8 @@ export default function CommentThread({pathname}: {pathname: string}) {
   const active = useRef(true);
   const previews = useRef(new Set<string>());
   const upload = useRef<AbortController | null>(null);
-  const input = useRef<HTMLTextAreaElement | null>(null);
+  const composer = useRef<CommentComposerHandle | null>(null);
+  const bodyOverLimit = isCommentBodyOverLimit(body);
   const accountUsername = user?.username?.trim() || '';
   const needsUsername = !accountUsername || usernameUnavailable;
   useEffect(() => {
@@ -180,8 +184,13 @@ export default function CommentThread({pathname}: {pathname: string}) {
     finally {if (active.current) setPending(false);}
   }
 
+  function clearComposer() {
+    setBody('');
+    setComposerKey(key => key + 1);
+  }
+
   async function submitComment() {
-    if (pending || (!body.trim() && images.length === 0)) return;
+    if (pending || bodyOverLimit || (!body.trim() && images.length === 0)) return;
     setPending(true); setError(''); setNotice('');
     const controller = new AbortController(); upload.current = controller;
     try {
@@ -203,7 +212,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
       if (!active.current) return;
       await add({pathname, body, ...(replyTo ? {parentId: replyTo.id} : {}), ...(imageIds.length ? {imageIds} : {})});
       if (!active.current) return;
-      setBody(''); setReplyTo(null); setImages([]); setNotice('评论已发布。');
+      clearComposer(); setReplyTo(null); setImages([]); setNotice('评论已发布。');
       imageCount.current = 0;
       for (const url of previews.current) URL.revokeObjectURL(url); previews.current.clear();
     } catch (failure) {
@@ -228,6 +237,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
       await postAfterUsernameSaved();
       return;
     }
+    if (bodyOverLimit) {setError(`评论不能超过 ${COMMENT_BODY_MAX_LENGTH.toLocaleString()} 字。`); return;}
     if (!body.trim() && images.length === 0) return;
     await submitComment();
   }
@@ -258,7 +268,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
       if (!active.current) return;
       setImages(remaining);
       if (remaining.length) {setError('图片暂未移除，请稍后重试。'); return;}
-      setReplyTo(null); setBody('');
+      clearComposer(); setReplyTo(null);
     } finally {if (active.current) setPending(false);}
   }
 
@@ -271,7 +281,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
         catch {if (active.current) setError('喜欢未能保存，请稍后重试。');}
         finally {if (active.current) setBusyLike(null);}
       }}><HeartIcon filled={comment.likedByMe} /><span>{comment.likeCount.toLocaleString()}</span></Button>
-      <Button size="sm" variant="ghost" onPress={() => {setReplyTo({id: comment.id, authorName: comment.authorName}); input.current?.focus();}}>回复</Button>
+      <Button size="sm" variant="ghost" onPress={() => {setReplyTo({id: comment.id, authorName: comment.authorName}); composer.current?.focus();}}>回复</Button>
       {comment.canDelete && (deleteId === comment.id ? <>
         <span>删除这条评论？</span><Button size="sm" variant="danger-soft" isPending={pending} onPress={() => {void deleteComment(comment.id);}}>确认删除</Button>
         <Button size="sm" variant="ghost" isDisabled={pending} onPress={() => setDeleteId(null)}>取消</Button>
@@ -311,10 +321,7 @@ export default function CommentThread({pathname}: {pathname: string}) {
           {user?.imageUrl && <Avatar.Image src={user.imageUrl} alt="" />}<Avatar.Fallback>{accountUsername.slice(0, 1) || '我'}</Avatar.Fallback>
         </Avatar><strong>{accountUsername || '设置用户名'}</strong></div>
         <div className="blog-comments__write">
-          <TextField value={body} onChange={setBody} isDisabled={pending || usernamePending}>
-            <Label className="blog-comments__sr-only">你的评论</Label>
-            <TextArea ref={input} id="comment-body" maxLength={4_000} rows={4} placeholder="分享你的想法，也可以添加图片…" />
-          </TextField>
+          <CommentComposer ref={composer} resetKey={composerKey} body={body} onChange={setBody} isDisabled={pending || usernamePending} />
           {images.length > 0 && <div className="blog-comments__draft-images">
             {images.map((image, index) => <div className="blog-comments__draft-image" key={image.key}>
               <img src={image.preview} alt={`待发布图片 ${index + 1}`} />
@@ -343,8 +350,8 @@ export default function CommentThread({pathname}: {pathname: string}) {
             <DropZone.Input accept={commentImageTypes.join(',')} multiple onSelect={files => selectImages(Array.from(files))} />
           </DropZone>
           <div className="blog-comments__submit">
-            <span className="blog-comments__char-count">{body.length.toLocaleString()} / 4,000</span>
-            <Button type="submit" size="sm" variant="primary" className="blog-comments__publish" isPending={pending || usernamePending} isDisabled={!body.trim() && !images.length}>发布评论</Button>
+            <span className={`blog-comments__char-count${bodyOverLimit ? ' blog-comments__char-count--over' : ''}`} aria-live="polite">{body.length.toLocaleString()} / {COMMENT_BODY_MAX_LENGTH.toLocaleString()}</span>
+            <Button type="submit" size="sm" variant="primary" className="blog-comments__publish" isPending={pending || usernamePending} isDisabled={bodyOverLimit || (!body.trim() && !images.length)}>发布评论</Button>
             <Button type="button" size="sm" variant="ghost" className="blog-comments__cancel" isDisabled={pending || usernamePending || (!replyTo && !body.trim() && !images.length)} onPress={() => {void cancelComposer();}}>取消</Button>
           </div>
         </div>
