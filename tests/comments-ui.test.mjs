@@ -64,7 +64,7 @@ test('signed-in Convex gaps explain likes instead of silently disabling them', (
 
 test('composer typography relies on HeroUI defaults with minimal blog sizing', () => {
   assert.match(commentsCss, /\.blog-comments__composer[^{]*\{[^}]*font-size:\s*var\(--font-size-smaller/);
-  assert.match(commentsCss, /\.blog-comments__composer-name[^{]*\{[^}]*font-size:\s*var\(--font-size-smaller/);
+  assert.match(commentsCss, /\.blog-comments__editor-author/);
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror > \* \+ \*[^{]*\{[^}]*margin-top:/);
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror p[^{]*\{[^}]*min-height:\s*0/);
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button[^{]*\{[^}]*color:\s*var\(--muted\)/);
@@ -111,10 +111,10 @@ test('top-level and nested avatars share the same space above the header', () =>
 
 test('composer uses HeroUI Card structure and native RichTextEditor shell', () => {
   assert.match(thread, /<Card className="blog-comments__composer"/);
-  assert.match(thread, /<Card\.Header className="blog-comments__composer-author"/);
+  assert.doesNotMatch(thread, /<Card\.Header className="blog-comments__composer-author"/);
   assert.match(thread, /<Card\.Content className="blog-comments__write"/);
   assert.match(thread, /<Card\.Footer className="blog-comments__toolbar"/);
-  assert.match(thread, /<Card\.Title className="blog-comments__composer-name"/);
+  assert.doesNotMatch(thread, /<Card\.Title className="blog-comments__composer-name"/);
   assert.match(commentsCss, /@import "@heroui\/styles\/components\/card\.css"/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__shell[^{]*\{[^}]*border:\s*0/);
 });
@@ -137,9 +137,11 @@ test('composer toolbar buttons use HeroUI ghost icon controls and distinct code 
   assert.match(thread, /text-xs text-muted tabular-nums/);
 });
 
-test('composer author and footer actions follow the original horizontal layout', () => {
-  assert.match(commentsCss, /\.blog-comments__composer-author[^{]*\{[^}]*flex-direction:\s*row/);
-  assert.match(commentsCss, /\.blog-comments__composer-author[^{]*\{[^}]*justify-content:\s*start/);
+test('composer author avatar and footer actions follow the requested layout', () => {
+  assert.match(thread, /blog-comments__editor-author/);
+  assert.match(thread, /aria-label=\{authorName\}/);
+  assert.match(thread, /<Tooltip\.Content placement="bottom end">\{authorName\}<\/Tooltip\.Content>/);
+  assert.match(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*margin-left:\s*auto/);
   const submit = thread.slice(thread.indexOf('className="blog-comments__submit"'), thread.indexOf('</Card.Footer>'));
   const countIndex = submit.indexOf('blog-comments__char-count');
   const cancelIndex = submit.indexOf('blog-comments__cancel');

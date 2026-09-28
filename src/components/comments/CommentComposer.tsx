@@ -1,5 +1,6 @@
 import {forwardRef, useImperativeHandle, useMemo, useRef} from 'react';
 import {Bold, Code, CurlyBrackets, Italic, Link, ListOl, ListUl, QuoteOpen} from '@gravity-ui/icons';
+import {Avatar, Tooltip} from '@heroui/react';
 import {RichTextEditor} from '@heroui-pro/react/rich-text-editor';
 import {Markdown} from '@tiptap/markdown';
 import type {Editor, JSONContent} from '@tiptap/core';
@@ -15,6 +16,8 @@ interface CommentComposerProps {
   resetKey: number;
   body: string;
   onChange: (body: string) => void;
+  authorName: string;
+  authorImageUrl?: string;
   isDisabled?: boolean;
   placeholder?: string;
 }
@@ -24,7 +27,7 @@ function serializeBody(editor: Editor) {
 }
 
 const CommentComposer = forwardRef<CommentComposerHandle, CommentComposerProps>(function CommentComposer(
-  {resetKey, body, onChange, isDisabled = false, placeholder = '写下你的想法…'},
+  {resetKey, body, onChange, authorName, authorImageUrl, isDisabled = false, placeholder = '写下你的想法…'},
   ref,
 ) {
   const editorRef = useRef<Editor | null>(null);
@@ -86,6 +89,13 @@ const CommentComposer = forwardRef<CommentComposerHandle, CommentComposerProps>(
           <RichTextEditor.ToggleButton command="bulletList" isIconOnly size="sm" variant="ghost" tooltip="无序列表"><ListUl width={16} height={16} /></RichTextEditor.ToggleButton>
           <RichTextEditor.ToggleButton command="orderedList" isIconOnly size="sm" variant="ghost" tooltip="有序列表"><ListOl width={16} height={16} /></RichTextEditor.ToggleButton>
         </RichTextEditor.ToolbarGroup>
+        <Tooltip>
+          <Avatar size="sm" className="blog-comments__editor-author" aria-label={authorName}>
+            {authorImageUrl && <Avatar.Image src={authorImageUrl} alt="" />}
+            <Avatar.Fallback>{authorName.slice(0, 1) || '我'}</Avatar.Fallback>
+          </Avatar>
+          <Tooltip.Content placement="bottom end">{authorName}</Tooltip.Content>
+        </Tooltip>
       </RichTextEditor.Toolbar>
       <RichTextEditor.Content />
     </RichTextEditor.Shell>

@@ -1,6 +1,6 @@
 import {useEffect, useId, useRef, useState, type SubmitEvent} from 'react';
 import {useAuth, useSession, useUser} from '@clerk/react';
-import {Avatar, Button, Card, Tooltip} from '@heroui/react';
+import {Button, Card, Tooltip} from '@heroui/react';
 import {DropZone, useDropZonePickerContext} from '@heroui-pro/react';
 import {useConvexAuth, useMutation, usePaginatedQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
@@ -326,15 +326,8 @@ export default function CommentThread({pathname, title}: {pathname: string; titl
         error={usernameError} pending={pending || usernamePending} onSave={() => {void saveUsername();}} />}
       {replyTo && <div className="blog-comments__reply-target"><span>回复 {replyTo.authorName}</span><Button size="sm" variant="ghost" onPress={() => setReplyTo(null)}>取消回复</Button></div>}
       <Card className="blog-comments__composer" variant="secondary">
-        <Card.Header className="blog-comments__composer-author">
-          <Avatar size="sm">
-            {user?.imageUrl && <Avatar.Image src={user.imageUrl} alt="" />}
-            <Avatar.Fallback>{accountUsername.slice(0, 1) || '我'}</Avatar.Fallback>
-          </Avatar>
-          <Card.Title className="blog-comments__composer-name">{accountUsername || '设置用户名'}</Card.Title>
-        </Card.Header>
         <Card.Content className="blog-comments__write">
-          <CommentComposer ref={composer} resetKey={composerKey} body={body} onChange={setBody} isDisabled={pending || usernamePending} />
+          <CommentComposer ref={composer} resetKey={composerKey} body={body} onChange={setBody} authorName={accountUsername || '设置用户名'} authorImageUrl={user?.imageUrl} isDisabled={pending || usernamePending} />
           {images.length > 0 && <div className="blog-comments__draft-images">
             {images.map((image, index) => <div className="blog-comments__draft-image" key={image.key}>
               <img src={image.preview} alt={`待发布图片 ${index + 1}`} />

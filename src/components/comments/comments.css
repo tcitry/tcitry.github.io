@@ -84,15 +84,13 @@
 .blog-comments__form > [data-overlay-container],
 .blog-comments__composer > [data-overlay-container] { display: contents; }
 
-.blog-comments__composer-author, .blog-comments__header {
+.blog-comments__header {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: start;
   gap: .5rem;
   min-width: 0;
 }
-.blog-comments__composer-name, .blog-comments__header strong {
+.blog-comments__header strong {
   margin: 0;
   overflow-wrap: anywhere;
   font-size: var(--font-size-smaller, .875rem);
@@ -147,6 +145,15 @@
 }
 .blog-comments__editor .rich-text-editor__toolbar-button[data-active="true"] {
   color: var(--accent);
+}
+.blog-comments__editor .rich-text-editor__toolbar {
+  justify-content: space-between;
+  align-items: center;
+  gap: .5rem;
+}
+.blog-comments__editor-author {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .blog-comments__toolbar {
@@ -296,7 +303,7 @@
 .blog-comments__reply-main .blog-comments__actions { margin: 0 0 0 calc(var(--comment-avatar) + .25rem); padding: 0; }
 
 .blog-comments__avatar,
-.blog-comments__composer-author .avatar,
+.blog-comments__editor-author,
 .blog-comments__header .avatar {
   position: relative;
   z-index: 1;
