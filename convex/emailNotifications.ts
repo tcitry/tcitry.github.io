@@ -3,7 +3,7 @@ import type {Doc, Id} from "./_generated/dataModel";
 import {internal} from "./_generated/api";
 import {env, internalAction, internalMutation, type MutationCtx} from "./_generated/server";
 import {
-  EMAIL_THROTTLE_MS, articleTitleFromPath, commentThreadKey, emailFrom, markdownExcerpt,
+  EMAIL_THROTTLE_MS, articleTitleFromPath, commentThreadKey, emailFrom, emailSendingEnabled, markdownExcerpt,
   resendConfigured, siteUrl,
 } from "./emailShared";
 import {categoryEnabled} from "./emailPreferences";
@@ -39,12 +39,14 @@ export const prepareCommentReplyEmail = internalMutation({
   args: {notificationId: v.id("notifications"), now: v.number()},
   returns: sendPayload,
   handler: async (ctx, {notificationId, now}) => {
+    const notification = await ctx.db.get("notifications", notificationId);
+    if (!emailSendingEnabled()) {
+      return {kind: "skip" as const, notificationId, recipient: notification?.recipient ?? "", reason: "sending_disabled"};
+    }
     const existingLog = await ctx.db.query("emailSendLog").withIndex("by_notificationId", q => q.eq("notificationId", notificationId)).unique();
     if (existingLog?.status === "sent") {
-      const notification = await ctx.db.get("notifications", notificationId);
       return {kind: "skip" as const, notificationId, recipient: notification?.recipient ?? "", reason: "already_logged"};
     }
-    const notification = await ctx.db.get("notifications", notificationId);
     if (!notification || notification.kind !== "comment_reply" || !notification.commentId) {
       return {kind: "skip" as const, notificationId, recipient: notification?.recipient ?? "", reason: "invalid_notification"};
     }

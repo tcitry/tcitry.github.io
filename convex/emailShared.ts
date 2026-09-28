@@ -28,6 +28,11 @@ export function resendConfigured() {
   return Boolean(env.RESEND_API_KEY?.trim());
 }
 
+export function emailSendingEnabled() {
+  const value = env.EMAIL_SENDING_ENABLED?.trim().toLowerCase();
+  return value === "1" || value === "true" || value === "yes";
+}
+
 export function verifiedEmail(identity: UserIdentity) {
   const email = identity.email;
   if (typeof email !== "string" || !email.trim()) return null;
@@ -38,14 +43,12 @@ export function verifiedEmail(identity: UserIdentity) {
   return normalized;
 }
 
-export function defaultEmailFlags(owner: string) {
-  const author = env.CONSULTATION_ADMIN_TOKEN_IDENTIFIER?.trim();
-  const isSiteOwner = Boolean(author && author === owner);
+export function defaultEmailFlags() {
   return {
-    enabled: true,
-    commentReply: true,
-    likes: true,
-    newComment: isSiteOwner,
+    enabled: false,
+    commentReply: false,
+    likes: false,
+    newComment: false,
     newsletter: false,
   };
 }

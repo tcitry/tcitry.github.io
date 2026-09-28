@@ -32,7 +32,7 @@ export default function EmailSettingsPanel() {
   }
   const masterDisabled = !preferences.enabled || preferences.emailDisabled;
   return <section className={styles.panel} aria-label="邮件通知设置">
-    <p className="text-sm text-muted">管理发送到 {preferences.cachedEmail ?? '已验证邮箱'} 的邮件通知。未验证邮箱时不会发送邮件。</p>
+    <p className="text-sm text-muted">邮件通知默认全部关闭，需在此主动开启。管理发送到 {preferences.cachedEmail ?? '已验证邮箱'} 的邮件；未验证邮箱时不会发送。</p>
     {preferences.emailDisabled && <p className="text-sm text-danger" role="alert">该邮箱此前退信或被标记为投诉，邮件通知已暂停。如需恢复，请联系站长或重新验证邮箱后开启总开关。</p>}
     {error && <p className="text-sm text-danger" role="alert">{error}</p>}
     {notice && <p className="text-sm text-success" role="status">{notice}</p>}
@@ -56,8 +56,8 @@ export default function EmailSettingsPanel() {
     </div>
     <div className="mt-4">
       <Button size="sm" variant="outline" isDisabled={pending} onPress={() => {void save({
-        enabled: true, commentReply: true, likes: true, newComment: preferences.newComment, newsletter: false,
-      });}}>恢复默认</Button>
+        enabled: false, commentReply: false, likes: false, newComment: false, newsletter: false,
+      });}}>全部关闭</Button>
     </div>
   </section>;
 }

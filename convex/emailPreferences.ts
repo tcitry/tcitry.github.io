@@ -57,7 +57,7 @@ export async function ensureEmailPreferences(ctx: MutationCtx, identity: UserIde
     }
     return existing._id;
   }
-  const defaults = defaultEmailFlags(owner);
+  const defaults = defaultEmailFlags();
   return await ctx.db.insert("emailPreferences", {
     owner,
     ...defaults,
@@ -74,7 +74,7 @@ export const getMine = query({
     const identity = await requireCommentIdentity(ctx);
     const existing = await findByOwner(ctx, identity.tokenIdentifier);
     if (!existing) {
-      const defaults = defaultEmailFlags(identity.tokenIdentifier);
+      const defaults = defaultEmailFlags();
       const email = verifiedEmail(identity);
       return {...defaults, cachedEmail: email, emailDisabled: false};
     }

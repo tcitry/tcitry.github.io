@@ -4,7 +4,6 @@ import {convexTest} from "convex-test";
 import {afterEach, beforeEach, describe, expect, test, vi} from "vitest";
 import process from "node:process";
 import {api, internal} from "./_generated/api";
-import type {Id} from "./_generated/dataModel";
 import schema from "./schema";
 
 const modules = import.meta.glob(["./**/*.ts", "./**/*.js", "!./**/*.test.ts"]);
@@ -15,7 +14,6 @@ const webhookSecret = "whsec_dGVzdC13ZWJob29rLXNlY3JldA==";
 const aliceIdentity = {
   issuer, subject: "alice", preferredUsername: "Alice", email: "alice@example.test", emailVerified: true,
 };
-const bobIdentity = {issuer, subject: "bob", preferredUsername: "Bob", email: "bob@example.test", emailVerified: true};
 
 function setup() {
   const t = convexTest(schema, modules);
@@ -23,7 +21,7 @@ function setup() {
   return {
     t,
     alice: t.withIdentity(aliceIdentity),
-    bob: t.withIdentity(bobIdentity),
+    bob: t.withIdentity({issuer, subject: "bob", preferredUsername: "Bob", email: "bob@example.test", emailVerified: true}),
     author: t.withIdentity({issuer, subject: "author", preferredUsername: "Author", email: "author@example.test", emailVerified: true}),
   };
 }
@@ -39,6 +37,7 @@ beforeEach(() => {
   process.env.CONSULTATION_ADMIN_TOKEN_IDENTIFIER = `${issuer}|author`;
   process.env.SITE_URL = "https://yindongliang.com";
   process.env.RESEND_API_KEY = "re_test_key";
+  process.env.EMAIL_SENDING_ENABLED = "true";
   process.env.RESEND_WEBHOOK_SECRET = webhookSecret;
   vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({id: "email_123"}), {status: 200})));
 });
@@ -48,23 +47,23 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.useRealTimers();
   delete process.env.RESEND_API_KEY;
+  delete process.env.EMAIL_SENDING_ENABLED;
   delete process.env.RESEND_WEBHOOK_SECRET;
   delete process.env.SITE_URL;
   delete process.env.CONSULTATION_ADMIN_TOKEN_IDENTIFIER;
 });
 
 describe("email preferences", () => {
-  test("defaults enable comment replies and likes; site owner also gets new comments; newsletter stays off", async () => {
+  test("defaults keep every switch off until the user opts in", async () => {
     const {alice, author} = setup();
     await alice.mutation(api.comments.add, {pathname, body: "Hello"});
     const member = await alice.query(api.emailPreferences.getMine, {});
     const owner = await author.query(api.emailPreferences.getMine, {});
-    expect(member).toMatchObject({
-      enabled: true, commentReply: true, likes: true, newComment: false, newsletter: false, cachedEmail: "alice@example.test",
-    });
-    expect(owner).toMatchObject({
-      enabled: true, commentReply: true, likes: true, newComment: true, newsletter: false, cachedEmail: "author@example.test",
-    });
+    const off = {
+      enabled: false, commentReply: false, likes: false, newComment: false, newsletter: false,
+    };
+    expect(member).toMatchObject({...off, cachedEmail: "alice@example.test"});
+    expect(owner).toMatchObject({...off, cachedEmail: "author@example.test"});
   });
 
   test("unverified email is not cached and send is skipped", async () => {
@@ -86,10 +85,10 @@ describe("comment reply emails", () => {
   });
 
   test("reply notification sends one email with idempotency and skips duplicate processing", async () => {
-    const {alice, t} = setup();
+    const {t} = setup();
     const notificationId = await t.run(async ctx => {
       await ctx.db.insert("emailPreferences", {
-        owner: `${issuer}|alice`, enabled: true, commentReply: true, likes: true, newComment: false, newsletter: false,
+        owner: `${issuer}|alice`, enabled: true, commentReply: true, likes: false, newComment: false, newsletter: false,
         unsubscribeToken: "token-alice", cachedEmail: "alice@example.test", updatedAt: Date.now(),
       });
       const parentId = await ctx.db.insert("comments", {
@@ -98,7 +97,6 @@ describe("comment reply emails", () => {
       const replyId = await ctx.db.insert("comments", {
         pathname, owner: `${issuer}|bob`, authorName: "Bob", body: "Thanks **friend**", createdAt: 2, parentId, articleTitle: "示例文章",
       });
-      void replyId;
       return await ctx.db.insert("notifications", {
         recipient: `${issuer}|alice`, kind: "comment_reply", commentId: replyId, createdAt: 2,
       });
@@ -121,6 +119,7 @@ describe("comment reply emails", () => {
   test("throttles multiple replies in the same thread within ten minutes", async () => {
     const {alice, bob, t} = setup();
     const charlie = t.withIdentity({issuer, subject: "charlie", preferredUsername: "Charlie", email: "charlie@example.test", emailVerified: true});
+    await bob.mutation(api.emailPreferences.updateMine, {enabled: true, commentReply: true});
     const parentId = await bob.mutation(api.comments.add, {pathname, body: "Parent", articleTitle: "示例文章"});
     await alice.mutation(api.comments.add, {pathname, body: "First", parentId, articleTitle: "示例文章"});
     const firstNotification = await latestReplyNotificationId(t, `${issuer}|bob`);
@@ -135,8 +134,9 @@ describe("comment reply emails", () => {
     expect(vi.mocked(fetch)).toHaveBeenCalledTimes(1);
   });
 
-  test("disabled preferences skip sending without breaking comments", async () => {
+  test("opt-out preferences skip sending without breaking comments", async () => {
     const {alice, bob, t} = setup();
+    await alice.mutation(api.emailPreferences.updateMine, {enabled: true, commentReply: true});
     await alice.mutation(api.emailPreferences.updateMine, {commentReply: false});
     const parentId = await alice.mutation(api.comments.add, {pathname, body: "Parent"});
     await bob.mutation(api.comments.add, {pathname, body: "Reply", parentId});
@@ -147,8 +147,19 @@ describe("comment reply emails", () => {
     expect((await t.run(ctx => ctx.db.query("emailSendLog").collect())).some(row => row.reason === "preferences_disabled")).toBe(true);
   });
 
+  test("default opt-out skips sending even when replies are created", async () => {
+    const {alice, bob, t} = setup();
+    const parentId = await alice.mutation(api.comments.add, {pathname, body: "Parent"});
+    await bob.mutation(api.comments.add, {pathname, body: "Reply", parentId});
+    const notificationId = await latestReplyNotificationId(t);
+    await t.action(internal.emailNotifications.sendCommentReplyEmail, {notificationId});
+    expect(vi.mocked(fetch)).not.toHaveBeenCalled();
+    expect((await t.run(ctx => ctx.db.query("emailSendLog").collect())).some(row => row.reason === "preferences_disabled")).toBe(true);
+  });
+
   test("missing resend config logs and skips without failing comments", async () => {
     const {alice, bob, t} = setup();
+    await alice.mutation(api.emailPreferences.updateMine, {enabled: true, commentReply: true});
     const parentId = await alice.mutation(api.comments.add, {pathname, body: "Parent"});
     await bob.mutation(api.comments.add, {pathname, body: "Reply", parentId});
     const notificationId = await latestReplyNotificationId(t);
@@ -156,6 +167,18 @@ describe("comment reply emails", () => {
     await t.action(internal.emailNotifications.sendCommentReplyEmail, {notificationId});
     expect(vi.mocked(fetch)).not.toHaveBeenCalled();
     expect((await t.run(ctx => ctx.db.query("emailSendLog").collect())).some(row => row.reason === "resend_not_configured")).toBe(true);
+  });
+
+  test("EMAIL_SENDING_ENABLED kill switch blocks sends even with Resend configured", async () => {
+    const {alice, bob, t} = setup();
+    await alice.mutation(api.emailPreferences.updateMine, {enabled: true, commentReply: true});
+    const parentId = await alice.mutation(api.comments.add, {pathname, body: "Parent"});
+    await bob.mutation(api.comments.add, {pathname, body: "Reply", parentId});
+    const notificationId = await latestReplyNotificationId(t);
+    delete process.env.EMAIL_SENDING_ENABLED;
+    await t.action(internal.emailNotifications.sendCommentReplyEmail, {notificationId});
+    expect(vi.mocked(fetch)).not.toHaveBeenCalled();
+    expect((await t.run(ctx => ctx.db.query("emailSendLog").collect())).some(row => row.reason === "sending_disabled")).toBe(true);
   });
 });
 
@@ -165,7 +188,7 @@ describe("unsubscribe token and webhook", () => {
     await alice.mutation(api.comments.add, {pathname, body: "Hello"});
     const token = (await t.run(async ctx => (await ctx.db.query("emailPreferences").unique())?.unsubscribeToken))!;
     await t.mutation(api.emailPreferences.unsubscribeByToken, {token, category: "commentReply"});
-    expect(await t.query(api.emailPreferences.getByToken, {token})).toMatchObject({commentReply: false, enabled: true});
+    expect(await t.query(api.emailPreferences.getByToken, {token})).toMatchObject({commentReply: false, enabled: false});
     await t.mutation(api.emailPreferences.unsubscribeByToken, {token, all: true});
     expect(await t.query(api.emailPreferences.getByToken, {token})).toMatchObject({
       enabled: false, commentReply: false, likes: false, newComment: false, newsletter: false,
