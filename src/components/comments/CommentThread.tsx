@@ -1,7 +1,7 @@
 import {useEffect, useId, useRef, useState, type SubmitEvent} from 'react';
 import {useAuth, useSession, useUser} from '@clerk/react';
-import {Avatar, Button, Tooltip} from '@heroui/react';
-import {DropZone} from '@heroui-pro/react';
+import {Avatar, Button, Card, Tooltip} from '@heroui/react';
+import {DropZone, useDropZonePickerContext} from '@heroui-pro/react';
 import {useConvexAuth, useMutation, usePaginatedQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
 import type {Id} from '../../../convex/_generated/dataModel';
@@ -22,6 +22,11 @@ import surface from '../demos/DemoSurface.module.css';
 interface DraftImage {key: string; file: File; preview: string; imageId?: Id<'commentImages'>; status: 'ready' | 'uploading' | 'uploaded' | 'failed'}
 const linkedComment = () => /^#comment-[a-zA-Z0-9_-]{1,80}$/.test(window.location.hash) ? window.location.hash.slice(1) : '';
 const publishFallback = '评论未能发布，你的文字和图片仍保留在这里，请稍后重试。';
+
+function CommentImageUploadButton({describedBy, isDisabled}: {describedBy: string; isDisabled?: boolean}) {
+  const {openFilePicker} = useDropZonePickerContext();
+  return <Button type="button" isIconOnly size="sm" variant="ghost" aria-label="添加图片" aria-describedby={describedBy} isDisabled={isDisabled} onPress={openFilePicker}><ImageIcon /></Button>;
+}
 
 function discussionThreads(comments: CommentItem[]) {
   const byId = new Map(comments.map(comment => [comment.id, comment]));
@@ -320,11 +325,15 @@ export default function CommentThread({pathname, title}: {pathname: string; titl
       {needsUsername && <CommentUsernameForm username={usernameDraft} onChange={value => {setUsernameDraft(value); setUsernameError('');}}
         error={usernameError} pending={pending || usernamePending} onSave={() => {void saveUsername();}} />}
       {replyTo && <div className="blog-comments__reply-target"><span>回复 {replyTo.authorName}</span><Button size="sm" variant="ghost" onPress={() => setReplyTo(null)}>取消回复</Button></div>}
-      <div className="blog-comments__composer">
-        <div className="blog-comments__composer-author"><Avatar size="sm">
-          {user?.imageUrl && <Avatar.Image src={user.imageUrl} alt="" />}<Avatar.Fallback>{accountUsername.slice(0, 1) || '我'}</Avatar.Fallback>
-        </Avatar><strong>{accountUsername || '设置用户名'}</strong></div>
-        <div className="blog-comments__write">
+      <Card className="blog-comments__composer" variant="secondary">
+        <Card.Header className="blog-comments__composer-author">
+          <Avatar size="sm">
+            {user?.imageUrl && <Avatar.Image src={user.imageUrl} alt="" />}
+            <Avatar.Fallback>{accountUsername.slice(0, 1) || '我'}</Avatar.Fallback>
+          </Avatar>
+          <Card.Title className="blog-comments__composer-name">{accountUsername || '设置用户名'}</Card.Title>
+        </Card.Header>
+        <Card.Content className="blog-comments__write">
           <CommentComposer ref={composer} resetKey={composerKey} body={body} onChange={setBody} isDisabled={pending || usernamePending} />
           {images.length > 0 && <div className="blog-comments__draft-images">
             {images.map((image, index) => <div className="blog-comments__draft-image" key={image.key}>
@@ -334,8 +343,8 @@ export default function CommentThread({pathname, title}: {pathname: string; titl
               <span role="status">{image.status === 'uploading' ? '正在上传…' : image.status === 'failed' ? '上传失败，再次发布可重试。' : image.status === 'uploaded' ? '已上传' : ''}</span>
             </div>)}
           </div>}
-        </div>
-        <div className="blog-comments__toolbar">
+        </Card.Content>
+        <Card.Footer className="blog-comments__toolbar">
           <DropZone className="blog-comments__uploads">
             <DropZone.Area className="blog-comments__drop-area" isDisabled={pending || images.length >= 4} onDrop={async event => {
               const files: File[] = [];
@@ -343,23 +352,23 @@ export default function CommentThread({pathname, title}: {pathname: string; titl
               if (active.current) selectImages(files);
             }}>
               <Tooltip delay={400}>
-                <DropZone.Trigger aria-label="添加图片" aria-describedby={imageDescriptionId} isDisabled={pending || images.length >= 4}><ImageIcon /></DropZone.Trigger>
+                <CommentImageUploadButton describedBy={imageDescriptionId} isDisabled={pending || images.length >= 4} />
                 <Tooltip.Content className={`${surface.surface} blog-comments__upload-tooltip`} placement="top start" offset={8} UNSTABLE_portalContainer={tooltipContainer ?? undefined}>
                   添加图片 · 最多 4 张，每张 5 MB
                 </Tooltip.Content>
               </Tooltip>
-              {images.length > 0 && <span className="blog-comments__image-count" role="status" aria-label={`已选择 ${images.length} 张图片，最多 4 张`}>{images.length}/4</span>}
+              {images.length > 0 && <span className="blog-comments__image-count text-xs text-muted tabular-nums" role="status" aria-label={`已选择 ${images.length} 张图片，最多 4 张`}>{images.length}/4</span>}
               <DropZone.Description id={imageDescriptionId} className="blog-comments__sr-only">最多 4 张，每张 5 MB</DropZone.Description>
             </DropZone.Area>
             <DropZone.Input accept={commentImageTypes.join(',')} multiple onSelect={files => selectImages(Array.from(files))} />
           </DropZone>
           <div className="blog-comments__submit">
-            <span className={`blog-comments__char-count${bodyOverLimit ? ' blog-comments__char-count--over' : ''}`} aria-live="polite">{body.length.toLocaleString()} / {COMMENT_BODY_MAX_LENGTH.toLocaleString()}</span>
-            <Button type="submit" size="sm" variant="primary" className="blog-comments__publish" isPending={pending || usernamePending} isDisabled={bodyOverLimit || (!body.trim() && !images.length)}>发布评论</Button>
             <Button type="button" size="sm" variant="ghost" className="blog-comments__cancel" isDisabled={pending || usernamePending || (!replyTo && !body.trim() && !images.length)} onPress={() => {void cancelComposer();}}>取消</Button>
+            <span className={`blog-comments__char-count text-xs text-muted tabular-nums${bodyOverLimit ? ' blog-comments__char-count--over text-danger' : ''}`} aria-live="polite">{body.length.toLocaleString()} / {COMMENT_BODY_MAX_LENGTH.toLocaleString()}</span>
+            <Button type="submit" size="sm" variant="primary" className="blog-comments__publish" isPending={pending || usernamePending} isDisabled={bodyOverLimit || (!body.trim() && !images.length)}>发布评论</Button>
           </div>
-        </div>
-      </div>
+        </Card.Footer>
+      </Card>
     </form>
     {error && <p className="blog-comments__error" role="alert">{error}</p>}
     <p className="blog-comments__notice" role="status" aria-live="polite">{notice}</p>

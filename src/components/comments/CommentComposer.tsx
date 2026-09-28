@@ -1,5 +1,5 @@
 import {forwardRef, useImperativeHandle, useMemo, useRef} from 'react';
-import {Bold, Code, Italic, Link, ListOl, ListUl, QuoteOpen} from '@gravity-ui/icons';
+import {Bold, Code, CurlyBrackets, Italic, Link, ListOl, ListUl, QuoteOpen} from '@gravity-ui/icons';
 import {RichTextEditor} from '@heroui-pro/react/rich-text-editor';
 import {Markdown} from '@tiptap/markdown';
 import type {Editor, JSONContent} from '@tiptap/core';
@@ -24,7 +24,7 @@ function serializeBody(editor: Editor) {
 }
 
 const CommentComposer = forwardRef<CommentComposerHandle, CommentComposerProps>(function CommentComposer(
-  {resetKey, body, onChange, isDisabled = false, placeholder = '分享你的想法，也可以添加图片…'},
+  {resetKey, body, onChange, isDisabled = false, placeholder = '写下你的想法…'},
   ref,
 ) {
   const editorRef = useRef<Editor | null>(null);
@@ -62,14 +62,14 @@ const CommentComposer = forwardRef<CommentComposerHandle, CommentComposerProps>(
     <RichTextEditor.Shell>
       <RichTextEditor.Toolbar aria-label="评论格式">
         <RichTextEditor.ToolbarGroup>
-          <RichTextEditor.ToggleButton command="bold" tooltip="粗体"><Bold width={16} height={16} /></RichTextEditor.ToggleButton>
-          <RichTextEditor.ToggleButton command="italic" tooltip="斜体"><Italic width={16} height={16} /></RichTextEditor.ToggleButton>
-          <RichTextEditor.ToggleButton command="code" tooltip="行内代码"><Code width={16} height={16} /></RichTextEditor.ToggleButton>
+          <RichTextEditor.ToggleButton command="bold" isIconOnly size="sm" variant="ghost" tooltip="粗体"><Bold width={16} height={16} /></RichTextEditor.ToggleButton>
+          <RichTextEditor.ToggleButton command="italic" isIconOnly size="sm" variant="ghost" tooltip="斜体"><Italic width={16} height={16} /></RichTextEditor.ToggleButton>
+          <RichTextEditor.ToggleButton command="code" isIconOnly size="sm" variant="ghost" tooltip="行内代码"><Code width={16} height={16} /></RichTextEditor.ToggleButton>
         </RichTextEditor.ToolbarGroup>
         <RichTextEditor.ToolbarSeparator />
         <RichTextEditor.ToolbarGroup>
           <RichTextEditor.LinkPopover>
-            <RichTextEditor.LinkPopover.Trigger tooltip="链接"><Link width={16} height={16} /></RichTextEditor.LinkPopover.Trigger>
+            <RichTextEditor.LinkPopover.Trigger isIconOnly size="sm" variant="ghost" tooltip="链接"><Link width={16} height={16} /></RichTextEditor.LinkPopover.Trigger>
             <RichTextEditor.LinkPopover.Content>
               <RichTextEditor.LinkPopover.Input placeholder="https://example.com" />
               <RichTextEditor.LinkPopover.Actions>
@@ -81,10 +81,10 @@ const CommentComposer = forwardRef<CommentComposerHandle, CommentComposerProps>(
         </RichTextEditor.ToolbarGroup>
         <RichTextEditor.ToolbarSeparator />
         <RichTextEditor.ToolbarGroup>
-          <RichTextEditor.ToggleButton command="blockquote" tooltip="引用"><QuoteOpen width={16} height={16} /></RichTextEditor.ToggleButton>
-          <RichTextEditor.ToggleButton command="codeBlock" tooltip="代码块"><Code width={16} height={16} /></RichTextEditor.ToggleButton>
-          <RichTextEditor.ToggleButton command="bulletList" tooltip="无序列表"><ListUl width={16} height={16} /></RichTextEditor.ToggleButton>
-          <RichTextEditor.ToggleButton command="orderedList" tooltip="有序列表"><ListOl width={16} height={16} /></RichTextEditor.ToggleButton>
+          <RichTextEditor.ToggleButton command="blockquote" isIconOnly size="sm" variant="ghost" tooltip="引用"><QuoteOpen width={16} height={16} /></RichTextEditor.ToggleButton>
+          <RichTextEditor.ToggleButton command="codeBlock" isIconOnly size="sm" variant="ghost" tooltip="代码块"><CurlyBrackets width={16} height={16} /></RichTextEditor.ToggleButton>
+          <RichTextEditor.ToggleButton command="bulletList" isIconOnly size="sm" variant="ghost" tooltip="无序列表"><ListUl width={16} height={16} /></RichTextEditor.ToggleButton>
+          <RichTextEditor.ToggleButton command="orderedList" isIconOnly size="sm" variant="ghost" tooltip="有序列表"><ListOl width={16} height={16} /></RichTextEditor.ToggleButton>
         </RichTextEditor.ToolbarGroup>
       </RichTextEditor.Toolbar>
       <RichTextEditor.Content />
