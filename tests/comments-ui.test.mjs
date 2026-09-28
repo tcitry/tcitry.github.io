@@ -130,6 +130,12 @@ test('composer uses HeroUI Pro RichTextEditor with markdown serialization and le
   assert.doesNotMatch(thread, /TextArea/);
 });
 
+test('composer separates toolbar and text with a native HeroUI divider', () => {
+  assert.match(thread, /<Separator className="blog-comments__editor-divider" \/>/);
+  assert.match(commentsCss, /@import "@heroui\/styles\/components\/separator\.css"/);
+  assert.match(commentsCss, /\.blog-comments__editor-divider[^{]*\{[^}]*margin:\s*0/);
+});
+
 test('composer toolbar buttons use HeroUI ghost icon controls and distinct code block icon', () => {
   assert.match(thread, /variant="ghost" tooltip="粗体"/);
   assert.match(thread, /variant="ghost" tooltip="代码块"/);
