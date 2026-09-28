@@ -14,7 +14,9 @@ const app = defineApp({ env: {
   CLOUDFLARE_API_TOKEN: v.optional(v.string()),
   RESEND_API_KEY: v.optional(v.string()),
   RESEND_WEBHOOK_SECRET: v.optional(v.string()),
+  RESEND_AUDIENCE_ID: v.optional(v.string()),
   EMAIL_FROM: v.optional(v.string()),
+  EMAIL_NEWSLETTER_FROM: v.optional(v.string()),
   SITE_URL: v.optional(v.string()),
 } });
 app.use(rateLimiter);

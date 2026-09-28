@@ -15,6 +15,7 @@ import type * as assistantRetrievalConfig from "../assistantRetrievalConfig.js";
 import type * as commentImages from "../commentImages.js";
 import type * as commentShared from "../commentShared.js";
 import type * as comments from "../comments.js";
+import type * as emailNewsletter from "../emailNewsletter.js";
 import type * as emailNotifications from "../emailNotifications.js";
 import type * as emailPreferences from "../emailPreferences.js";
 import type * as emailShared from "../emailShared.js";
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   commentImages: typeof commentImages;
   commentShared: typeof commentShared;
   comments: typeof comments;
+  emailNewsletter: typeof emailNewsletter;
   emailNotifications: typeof emailNotifications;
   emailPreferences: typeof emailPreferences;
   emailShared: typeof emailShared;

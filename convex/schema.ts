@@ -104,6 +104,9 @@ export default defineSchema({
     unsubscribeToken: v.string(),
     cachedEmail: v.optional(v.string()),
     emailDisabledAt: v.optional(v.number()),
+    resendContactId: v.optional(v.string()),
+    resendLastSyncedAt: v.optional(v.number()),
+    resendOutboundSyncAt: v.optional(v.number()),
     updatedAt: v.number(),
   }).index("by_owner", ["owner"])
     .index("by_unsubscribeToken", ["unsubscribeToken"])
