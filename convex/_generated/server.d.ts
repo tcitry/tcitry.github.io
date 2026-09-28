@@ -39,7 +39,6 @@ type Env = {
   readonly CLOUDFLARE_API_TOKEN: string | undefined;
   readonly CONSULTATION_ADMIN_TOKEN_IDENTIFIER: string | undefined;
   readonly EMAIL_FROM: string | undefined;
-  readonly EMAIL_SENDING_ENABLED: string | undefined;
   readonly RESEND_API_KEY: string | undefined;
   readonly RESEND_WEBHOOK_SECRET: string | undefined;
   readonly SITE_URL: string | undefined;

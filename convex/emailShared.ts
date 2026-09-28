@@ -28,11 +28,6 @@ export function resendConfigured() {
   return Boolean(env.RESEND_API_KEY?.trim());
 }
 
-export function emailSendingEnabled() {
-  const value = env.EMAIL_SENDING_ENABLED?.trim().toLowerCase();
-  return value === "1" || value === "true" || value === "yes";
-}
-
 export function verifiedEmail(identity: UserIdentity) {
   const email = identity.email;
   if (typeof email !== "string" || !email.trim()) return null;

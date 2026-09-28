@@ -37,7 +37,6 @@ beforeEach(() => {
   process.env.CONSULTATION_ADMIN_TOKEN_IDENTIFIER = `${issuer}|author`;
   process.env.SITE_URL = "https://yindongliang.com";
   process.env.RESEND_API_KEY = "re_test_key";
-  process.env.EMAIL_SENDING_ENABLED = "true";
   process.env.RESEND_WEBHOOK_SECRET = webhookSecret;
   vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({id: "email_123"}), {status: 200})));
 });
@@ -47,7 +46,6 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.useRealTimers();
   delete process.env.RESEND_API_KEY;
-  delete process.env.EMAIL_SENDING_ENABLED;
   delete process.env.RESEND_WEBHOOK_SECRET;
   delete process.env.SITE_URL;
   delete process.env.CONSULTATION_ADMIN_TOKEN_IDENTIFIER;
@@ -169,17 +167,6 @@ describe("comment reply emails", () => {
     expect((await t.run(ctx => ctx.db.query("emailSendLog").collect())).some(row => row.reason === "resend_not_configured")).toBe(true);
   });
 
-  test("EMAIL_SENDING_ENABLED kill switch blocks sends even with Resend configured", async () => {
-    const {alice, bob, t} = setup();
-    await alice.mutation(api.emailPreferences.updateMine, {enabled: true, commentReply: true});
-    const parentId = await alice.mutation(api.comments.add, {pathname, body: "Parent"});
-    await bob.mutation(api.comments.add, {pathname, body: "Reply", parentId});
-    const notificationId = await latestReplyNotificationId(t);
-    delete process.env.EMAIL_SENDING_ENABLED;
-    await t.action(internal.emailNotifications.sendCommentReplyEmail, {notificationId});
-    expect(vi.mocked(fetch)).not.toHaveBeenCalled();
-    expect((await t.run(ctx => ctx.db.query("emailSendLog").collect())).some(row => row.reason === "sending_disabled")).toBe(true);
-  });
 });
 
 describe("unsubscribe token and webhook", () => {
