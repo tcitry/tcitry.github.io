@@ -5,7 +5,7 @@ export type EmailCategory = "commentReply" | "likes" | "newComment" | "newslette
 
 export const EMAIL_THROTTLE_MS = 10 * 60 * 1000;
 export const DEFAULT_SITE_URL = "https://yindongliang.com";
-export const DEFAULT_EMAIL_FROM = "尹东亮的博客 <notify@notify.yindongliang.com>";
+export const DEFAULT_EMAIL_FROM = "LYon's blog <notify@notify.yindongliang.com>";
 
 export function siteUrl() {
   const value = env.SITE_URL?.trim();
