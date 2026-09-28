@@ -12,6 +12,10 @@ const app = defineApp({ env: {
   ASSISTANT_CHAT_GATEWAY: v.optional(v.string()),
   CLOUDFLARE_ACCOUNT_ID: v.optional(v.string()),
   CLOUDFLARE_API_TOKEN: v.optional(v.string()),
+  RESEND_API_KEY: v.optional(v.string()),
+  RESEND_WEBHOOK_SECRET: v.optional(v.string()),
+  EMAIL_FROM: v.optional(v.string()),
+  SITE_URL: v.optional(v.string()),
 } });
 app.use(rateLimiter);
 app.use(agent);

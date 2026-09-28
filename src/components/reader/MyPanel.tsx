@@ -6,8 +6,14 @@ import styles from './MyPanel.module.css';
 const ReaderRoot = lazy(() => import('./ReaderRoot'));
 const LikedArticlesPanel = lazy(() => import('./LikedArticlesPanel'));
 const MyCommentsPanel = lazy(() => import('./MyCommentsPanel'));
-type PersonalView = 'bookmarks' | 'likes' | 'comments';
-const views = [{id: 'bookmarks', label: '收藏'}, {id: 'likes', label: '喜欢'}, {id: 'comments', label: '评论'}] as const;
+const EmailSettingsPanel = lazy(() => import('./EmailSettingsPanel'));
+type PersonalView = 'bookmarks' | 'likes' | 'comments' | 'email';
+const views = [
+  {id: 'bookmarks', label: '收藏'},
+  {id: 'likes', label: '喜欢'},
+  {id: 'comments', label: '评论'},
+  {id: 'email', label: '邮件通知'},
+] as const;
 
 export default function MyPanel() {
   const [view, setView] = useState<PersonalView>('bookmarks');
@@ -21,6 +27,7 @@ export default function MyPanel() {
       {view === 'bookmarks' && <ReaderRoot library />}
       {view === 'likes' && <LikedArticlesPanel />}
       {view === 'comments' && <MyCommentsPanel />}
+      {view === 'email' && <EmailSettingsPanel />}
     </Suspense>
   </section>;
 }

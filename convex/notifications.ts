@@ -2,6 +2,7 @@ import {paginationOptsValidator, paginationResultValidator, type PaginationOptio
 import {ConvexError, v} from "convex/values";
 import type {Doc, Id} from "./_generated/dataModel";
 import {env, mutation, query, type MutationCtx, type QueryCtx} from "./_generated/server";
+import {internal} from "./_generated/api";
 import {invalid, requireCommentIdentity} from "./commentShared";
 
 export const UNREAD_COUNT_CAP = 99;
@@ -23,7 +24,8 @@ export async function notifyCommentReply(ctx: MutationCtx, commentId: Id<"commen
   const reply = await ctx.db.get("comments", commentId);
   const parent = await ctx.db.get("comments", parentId);
   if (!reply || !parent || reply.parentId !== parentId || reply.pathname !== parent.pathname || parent.owner === reply.owner) return;
-  await ctx.db.insert("notifications", {recipient: parent.owner, kind: "comment_reply", commentId, createdAt: reply.createdAt});
+  const notificationId = await ctx.db.insert("notifications", {recipient: parent.owner, kind: "comment_reply", commentId, createdAt: reply.createdAt});
+  await ctx.scheduler.runAfter(0, internal.emailNotifications.sendCommentReplyEmail, {notificationId});
 }
 
 export async function notifyCommentCreated(ctx: MutationCtx, commentId: Id<"comments">) {
