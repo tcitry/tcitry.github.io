@@ -5,6 +5,7 @@ import {components} from "./_generated/api";
 import {env, mutation, query, type MutationCtx, type QueryCtx} from "./_generated/server";
 import {canonicalPathname, commentAuthorImageUrl, commentAuthorName, invalid, requireCommentIdentity} from "./commentShared";
 import {bindImages, deleteImages, imageResult, readCommentImages} from "./commentImages";
+import {ensureEmailPreferences} from "./emailPreferences";
 import {notifyCommentCreated} from "./notifications";
 
 const rateLimiter = new RateLimiter(components.rateLimiter, {
@@ -175,7 +176,10 @@ export const syncMyAuthorImage = mutation({
 });
 
 export const add = mutation({
-  args: {pathname: v.string(), body: v.string(), parentId: v.optional(v.id("comments")), imageIds: v.optional(v.array(v.id("commentImages")))},
+  args: {
+    pathname: v.string(), body: v.string(), parentId: v.optional(v.id("comments")),
+    imageIds: v.optional(v.array(v.id("commentImages"))), articleTitle: v.optional(v.string()),
+  },
   returns: v.id("comments"),
   handler: async (ctx, args) => {
     const identity = await requireCommentIdentity(ctx);
@@ -185,6 +189,8 @@ export const add = mutation({
     const authorImageUrl = commentAuthorImageUrl(identity);
     const body = args.body.trim();
     const imageIds = args.imageIds ?? [];
+    const articleTitle = args.articleTitle?.trim();
+    if (articleTitle !== undefined && (!articleTitle || articleTitle.length > 160 || /[\u0000-\u001f\u007f]/u.test(articleTitle))) invalid("文章标题须为 1–160 个字符。");
     if ((!body && !imageIds.length) || body.length > 4_000 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(body)) invalid("请填写 1–4,000 字的评论，或上传图片。");
     if (imageIds.length > 4 || new Set(imageIds).size !== imageIds.length) invalid("每条评论最多上传 4 张不同的图片。");
     if (args.parentId) {
@@ -192,8 +198,12 @@ export const add = mutation({
       if (!parent || parent.pathname !== pathname || parent.deletedAt !== undefined) invalid("回复的评论不存在、已删除或不属于当前文章。");
     }
     await rateLimiter.limit(ctx, "commentWrites", {key: owner, throws: true});
+    await ensureEmailPreferences(ctx, identity);
     const stats = await readStats(ctx, pathname);
-    const id = await ctx.db.insert("comments", {owner, pathname, authorName, body, createdAt: Date.now(), parentId: args.parentId, imageIds, likeCount: 0, ...(authorImageUrl ? {authorImageUrl} : {})});
+    const id = await ctx.db.insert("comments", {
+      owner, pathname, authorName, body, createdAt: Date.now(), parentId: args.parentId, imageIds, likeCount: 0,
+      ...(authorImageUrl ? {authorImageUrl} : {}), ...(articleTitle ? {articleTitle} : {}),
+    });
     await bindImages(ctx, imageIds, id, owner);
     await updateStats(ctx, pathname, stats, 1, 0);
     await notifyCommentCreated(ctx, id);

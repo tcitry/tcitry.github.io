@@ -48,7 +48,7 @@ function discussionThreads(comments: CommentItem[]) {
   return threads;
 }
 
-export default function CommentThread({pathname}: {pathname: string}) {
+export default function CommentThread({pathname, title}: {pathname: string; title?: string}) {
   const {getToken, sessionClaims, isLoaded, isSignedIn} = useAuth();
   const {session} = useSession();
   const {user, isLoaded: userLoaded} = useUser();
@@ -210,7 +210,11 @@ export default function CommentThread({pathname}: {pathname: string}) {
         }
       }
       if (!active.current) return;
-      await add({pathname, body, ...(replyTo ? {parentId: replyTo.id} : {}), ...(imageIds.length ? {imageIds} : {})});
+      const articleTitle = title?.replace(/[\u0000-\u001f\u007f\s]+/g, ' ').trim().slice(0, 160);
+      await add({
+        pathname, body, ...(replyTo ? {parentId: replyTo.id} : {}), ...(imageIds.length ? {imageIds} : {}),
+        ...(articleTitle ? {articleTitle} : {}),
+      });
       if (!active.current) return;
       clearComposer(); setReplyTo(null); setImages([]); setNotice('评论已发布。');
       imageCount.current = 0;

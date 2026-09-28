@@ -44,6 +44,7 @@ export default defineSchema({
   // are optional and only populated by the import job.
   comments: defineTable({
     pathname: v.string(), authorName: v.string(), body: v.string(), createdAt: v.number(),
+    articleTitle: v.optional(v.string()),
     parentId: v.optional(v.id("comments")), owner: v.string(),
     deletedAt: v.optional(v.number()), likeCount: v.optional(v.number()),
     imageIds: v.optional(v.array(v.id("commentImages"))),
@@ -93,4 +94,34 @@ export default defineSchema({
   privateNotes: defineTable({ ...pageFields, note: v.string() })
     .index("by_owner_and_pathname", ["owner", "pathname"])
     .index("by_owner_and_updatedAt", ["owner", "updatedAt"]),
+  emailPreferences: defineTable({
+    owner: v.string(),
+    enabled: v.boolean(),
+    commentReply: v.boolean(),
+    likes: v.boolean(),
+    newComment: v.boolean(),
+    newsletter: v.boolean(),
+    unsubscribeToken: v.string(),
+    cachedEmail: v.optional(v.string()),
+    emailDisabledAt: v.optional(v.number()),
+    updatedAt: v.number(),
+  }).index("by_owner", ["owner"])
+    .index("by_unsubscribeToken", ["unsubscribeToken"])
+    .index("by_cachedEmail", ["cachedEmail"]),
+  emailSendLog: defineTable({
+    notificationId: v.optional(v.id("notifications")),
+    recipient: v.string(),
+    email: v.string(),
+    status: v.union(v.literal("sent"), v.literal("skipped"), v.literal("failed")),
+    resendId: v.optional(v.string()),
+    reason: v.optional(v.string()),
+    idempotencyKey: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_notificationId", ["notificationId"])
+    .index("by_recipient_and_createdAt", ["recipient", "createdAt"]),
+  emailThreadThrottle: defineTable({
+    recipient: v.string(),
+    threadKey: v.string(),
+    lastSentAt: v.number(),
+  }).index("by_recipient_and_threadKey", ["recipient", "threadKey"]),
 });

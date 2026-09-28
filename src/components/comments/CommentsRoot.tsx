@@ -75,7 +75,7 @@ function CommentsView({pathname, title, bookmarkable, onRetrySession}: CommentsP
       <p className="blog-comments__hint">登录后发表评论</p>
       <ClerkSignInButton><Button size="sm" variant="primary">登录 / 注册</Button></ClerkSignInButton>
     </div> : authState === 'connecting' ? <AuthLoading label="正在连接登录状态…" />
-      : authState === 'ready' ? <CommentThread pathname={pathname} />
+      : authState === 'ready' ? <CommentThread pathname={pathname} title={title} />
         : <AuthSyncRetry onRetry={onRetrySession} />}
   </div>;
 }

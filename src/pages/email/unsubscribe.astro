@@ -1,0 +1,22 @@
+---
+import BookLayout from '../../layouts/BookLayout.astro';
+import EmailUnsubscribe from '../../components/email/EmailUnsubscribe';
+import {content, createPage, navigation} from '../../lib/site';
+
+const page = createPage({
+  id: '@site:email-unsubscribe',
+  url: '/email/unsubscribe/',
+  title: '邮件通知',
+  description: '管理尹东亮博客的邮件通知与退订设置。',
+  type: 'reader',
+  hidden: true,
+  params: {siteOwned: true, comments: false},
+});
+---
+
+<BookLayout page={page} navigation={navigation} tags={content.tags} categories={content.categories}
+  seo={{title: page.title, description: page.description, canonical: page.url, robots: 'noindex, nofollow'}}>
+  <div class="book-page markdown" style="max-width: 40rem; margin: 2rem auto; padding: 0 1rem;">
+    <EmailUnsubscribe client:load />
+  </div>
+</BookLayout>
