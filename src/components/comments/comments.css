@@ -86,7 +86,9 @@
 
 .blog-comments__composer-author, .blog-comments__header {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: start;
   gap: .5rem;
   min-width: 0;
 }

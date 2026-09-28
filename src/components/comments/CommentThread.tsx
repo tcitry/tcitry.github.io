@@ -363,8 +363,8 @@ export default function CommentThread({pathname, title}: {pathname: string; titl
             <DropZone.Input accept={commentImageTypes.join(',')} multiple onSelect={files => selectImages(Array.from(files))} />
           </DropZone>
           <div className="blog-comments__submit">
-            <Button type="button" size="sm" variant="ghost" className="blog-comments__cancel" isDisabled={pending || usernamePending || (!replyTo && !body.trim() && !images.length)} onPress={() => {void cancelComposer();}}>取消</Button>
             <span className={`blog-comments__char-count text-xs text-muted tabular-nums${bodyOverLimit ? ' blog-comments__char-count--over text-danger' : ''}`} aria-live="polite">{body.length.toLocaleString()} / {COMMENT_BODY_MAX_LENGTH.toLocaleString()}</span>
+            <Button type="button" size="sm" variant="ghost" className="blog-comments__cancel" isDisabled={pending || usernamePending || (!replyTo && !body.trim() && !images.length)} onPress={() => {void cancelComposer();}}>取消</Button>
             <Button type="submit" size="sm" variant="primary" className="blog-comments__publish" isPending={pending || usernamePending} isDisabled={bodyOverLimit || (!body.trim() && !images.length)}>发布评论</Button>
           </div>
         </Card.Footer>

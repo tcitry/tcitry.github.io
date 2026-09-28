@@ -136,3 +136,13 @@ test('composer toolbar buttons use HeroUI ghost icon controls and distinct code 
   assert.match(thread, /placeholder = '写下你的想法…'/);
   assert.match(thread, /text-xs text-muted tabular-nums/);
 });
+
+test('composer author and footer actions follow the original horizontal layout', () => {
+  assert.match(commentsCss, /\.blog-comments__composer-author[^{]*\{[^}]*flex-direction:\s*row/);
+  assert.match(commentsCss, /\.blog-comments__composer-author[^{]*\{[^}]*justify-content:\s*start/);
+  const submit = thread.slice(thread.indexOf('className="blog-comments__submit"'), thread.indexOf('</Card.Footer>'));
+  const countIndex = submit.indexOf('blog-comments__char-count');
+  const cancelIndex = submit.indexOf('blog-comments__cancel');
+  const publishIndex = submit.indexOf('blog-comments__publish');
+  assert.ok(countIndex > 0 && cancelIndex > countIndex && publishIndex > cancelIndex, 'footer order is counter, cancel, publish');
+});
