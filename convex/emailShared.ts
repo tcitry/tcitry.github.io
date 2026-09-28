@@ -6,6 +6,9 @@ export type EmailCategory = "commentReply" | "likes" | "newComment" | "newslette
 export const EMAIL_THROTTLE_MS = 10 * 60 * 1000;
 export const DEFAULT_SITE_URL = "https://yindongliang.com";
 export const DEFAULT_EMAIL_FROM = "LYon's blog <notify@notify.yindongliang.com>";
+export const DEFAULT_NEWSLETTER_FROM = "LYon's blog <newsletter@notify.yindongliang.com>";
+export const RESEND_OUTBOUND_SYNC_GRACE_MS = 60_000;
+export const NEWSLETTER_SYNC_MAX_ATTEMPTS = 5;
 
 export function siteUrl() {
   const value = env.SITE_URL?.trim();
@@ -26,6 +29,31 @@ export function emailFrom() {
 
 export function resendConfigured() {
   return Boolean(env.RESEND_API_KEY?.trim());
+}
+
+export function resendAudienceId() {
+  return env.RESEND_AUDIENCE_ID?.trim() || "";
+}
+
+export function newsletterAudienceConfigured() {
+  return resendConfigured() && Boolean(resendAudienceId());
+}
+
+export function newsletterFrom() {
+  const value = env.EMAIL_NEWSLETTER_FROM?.trim();
+  return value || DEFAULT_NEWSLETTER_FROM;
+}
+
+export function effectiveNewsletterSubscribed(doc: {
+  enabled: boolean;
+  newsletter: boolean;
+  cachedEmail?: string | null;
+  emailDisabledAt?: number | null;
+}) {
+  if (!doc.enabled || !doc.newsletter || doc.emailDisabledAt != null) return false;
+  const email = doc.cachedEmail?.trim().toLowerCase();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 320) return false;
+  return true;
 }
 
 export function verifiedEmail(identity: UserIdentity) {

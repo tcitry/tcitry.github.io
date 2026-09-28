@@ -54,15 +54,28 @@ http.route({
     const record = event as {type?: unknown; data?: unknown};
     if (typeof record.type !== "string") return new Response("Missing type", {status: 400});
     const data = record.data;
-    const email = data && typeof data === "object" && "to" in data && Array.isArray((data as {to?: unknown}).to)
-      ? String((data as {to: unknown[]}).to[0] ?? "")
-      : data && typeof data === "object" && "email" in data
-        ? String((data as {email?: unknown}).email ?? "")
+    const contact = data && typeof data === "object" ? data as {
+      to?: unknown;
+      email?: unknown;
+      id?: unknown;
+      unsubscribed?: unknown;
+      audience_id?: unknown;
+    } : null;
+    const email = contact && Array.isArray(contact.to)
+      ? String(contact.to[0] ?? "")
+      : contact && typeof contact.email === "string"
+        ? contact.email
         : "";
+    const contactId = contact && typeof contact.id === "string" ? contact.id : undefined;
+    const unsubscribed = contact && typeof contact.unsubscribed === "boolean" ? contact.unsubscribed : undefined;
+    const audienceId = contact && typeof contact.audience_id === "string" ? contact.audience_id : undefined;
     await ctx.runMutation(internal.emailWebhook.handleResendEvent, {
       type: record.type,
       email: email || undefined,
       createdAt: Date.now(),
+      contactId,
+      unsubscribed,
+      audienceId,
     });
     return new Response(null, {status: 204});
   }),

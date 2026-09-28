@@ -4,8 +4,9 @@ import type {Doc} from "./_generated/dataModel";
 import {internalMutation, mutation, query, type MutationCtx, type QueryCtx} from "./_generated/server";
 import {invalid, requireCommentIdentity} from "./commentShared";
 import {
-  defaultEmailFlags, newUnsubscribeToken, type EmailCategory, verifiedEmail,
+  defaultEmailFlags, effectiveNewsletterSubscribed, newUnsubscribeToken, type EmailCategory, verifiedEmail,
 } from "./emailShared";
+import {scheduleNewsletterSync} from "./emailNewsletter";
 
 const categoryValidator = v.union(
   v.literal("commentReply"),
@@ -40,6 +41,17 @@ async function findByOwner(ctx: Pick<QueryCtx | MutationCtx, "db">, owner: strin
   return await ctx.db.query("emailPreferences").withIndex("by_owner", q => q.eq("owner", owner)).unique();
 }
 
+async function maybeScheduleNewsletterSync(
+  ctx: Pick<MutationCtx, "scheduler" | "db">,
+  before: Doc<"emailPreferences"> | null,
+  after: Doc<"emailPreferences">,
+) {
+  const wasSubscribed = before ? effectiveNewsletterSubscribed(before) : false;
+  const isSubscribed = effectiveNewsletterSubscribed(after);
+  if (wasSubscribed === isSubscribed && before?.cachedEmail === after.cachedEmail) return;
+  await scheduleNewsletterSync(ctx, after.owner);
+}
+
 async function findByToken(ctx: Pick<QueryCtx | MutationCtx, "db">, token: string) {
   const trimmed = token.trim();
   if (!trimmed || trimmed.length > 128) return null;
@@ -54,6 +66,8 @@ export async function ensureEmailPreferences(ctx: MutationCtx, identity: UserIde
   if (existing) {
     if (email && existing.cachedEmail !== email) {
       await ctx.db.patch("emailPreferences", existing._id, {cachedEmail: email, updatedAt: now});
+      const updated = await ctx.db.get("emailPreferences", existing._id);
+      if (updated) await maybeScheduleNewsletterSync(ctx, existing, updated);
     }
     return existing._id;
   }
@@ -106,6 +120,7 @@ export const updateMine = mutation({
     await ctx.db.patch("emailPreferences", existing._id, patch);
     const updated = await ctx.db.get("emailPreferences", existing._id);
     if (!updated) throw new ConvexError({code: "NOT_FOUND", message: "邮件偏好暂时不可用。"});
+    await maybeScheduleNewsletterSync(ctx, existing, updated);
     return viewFromDoc(updated);
   },
 });
@@ -137,6 +152,7 @@ async function applyUnsubscribe(ctx: MutationCtx, args: {token: string; category
   await ctx.db.patch("emailPreferences", doc._id, patch);
   const updated = await ctx.db.get("emailPreferences", doc._id);
   if (!updated) invalid("退订链接无效或已过期。");
+  await maybeScheduleNewsletterSync(ctx, doc, updated);
   return viewFromDoc(updated);
 }
 
@@ -181,6 +197,7 @@ export const updateByToken = mutation({
     await ctx.db.patch("emailPreferences", doc._id, patch);
     const updated = await ctx.db.get("emailPreferences", doc._id);
     if (!updated) invalid("退订链接无效或已过期。");
+    await maybeScheduleNewsletterSync(ctx, doc, updated);
     return viewFromDoc(updated);
   },
 });
@@ -190,11 +207,14 @@ export async function disableEmailForAddress(ctx: MutationCtx, email: string) {
   if (!normalized) return 0;
   const row = await ctx.db.query("emailPreferences").withIndex("by_cachedEmail", q => q.eq("cachedEmail", normalized)).unique();
   if (!row || row.emailDisabledAt !== undefined) return 0;
+  const before = row;
   await ctx.db.patch("emailPreferences", row._id, {
     enabled: false,
     emailDisabledAt: Date.now(),
     updatedAt: Date.now(),
   });
+  const updated = await ctx.db.get("emailPreferences", row._id);
+  if (updated) await maybeScheduleNewsletterSync(ctx, before, updated);
   return 1;
 }
 

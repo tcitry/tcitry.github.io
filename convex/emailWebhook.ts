@@ -1,17 +1,28 @@
-import {internal} from "./_generated/api";
 import {internalMutation} from "./_generated/server";
 import {v} from "convex/values";
 import {disableEmailForAddress} from "./emailPreferences";
+import {applyResendNewsletterUnsubscribeImpl} from "./emailNewsletter";
 
 export const handleResendEvent = internalMutation({
   args: {
     type: v.string(),
     email: v.optional(v.string()),
     createdAt: v.number(),
+    contactId: v.optional(v.string()),
+    unsubscribed: v.optional(v.boolean()),
+    audienceId: v.optional(v.string()),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
     const type = args.type.trim().toLowerCase();
+    if (type === "contact.updated" && args.email && args.unsubscribed === true) {
+      await applyResendNewsletterUnsubscribeImpl(ctx, {
+        email: args.email,
+        contactId: args.contactId,
+        eventAt: args.createdAt,
+      });
+      return null;
+    }
     if (!args.email) return null;
     if (type === "email.bounced" || type === "email.complained") {
       await disableEmailForAddress(ctx, args.email);
