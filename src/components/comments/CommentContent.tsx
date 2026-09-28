@@ -1,5 +1,6 @@
 import {Avatar} from '@heroui/react';
 import type {Id} from '../../../convex/_generated/dataModel';
+import {CommentBodyMarkdown} from './comment-markdown';
 import CommentImages, {type CommentImage} from './CommentImages';
 
 export interface CommentItem {
@@ -42,7 +43,7 @@ export default function CommentContent({comment, parentLoaded}: {comment: Commen
     </div>
     {comment.replyTo && <p className="blog-comments__reply">{parentLoaded ? <a href={`#comment-${comment.replyTo.id}`}>{reply}</a> : reply}</p>}
     {comment.deleted ? <p className="blog-comments__body blog-comments__deleted">这条评论已删除，回复仍保留。</p> : <>
-      {comment.body && <p className="blog-comments__body">{comment.body}</p>}
+      {comment.body && <div className="blog-comments__body"><CommentBodyMarkdown id={`comment-body-${comment.id}`} body={comment.body} /></div>}
       <CommentImages images={comment.images} />
     </>}
   </>;

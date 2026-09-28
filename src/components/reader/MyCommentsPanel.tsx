@@ -3,6 +3,7 @@ import {Button} from '@heroui/react';
 import {usePaginatedQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
 import {AuthLoading} from '../auth/SignInPanel';
+import {commentBodyExcerpt} from '../comments/comment-markdown';
 import {ImageIcon} from '../comments/CommentIcons';
 import styles from './ReaderPanel.module.css';
 import personal from './MyPanel.module.css';
@@ -28,7 +29,7 @@ function MyComments() {
       {items.map(item => <li className={styles.item} key={item._id}>
         <a className={styles.itemLink} href={`${item.pathname}#comment-${item._id}`}>
           <span className={styles.itemTitle}>{articleTitle(item)}</span>
-          {item.body && <span className={personal.commentBody}>{item.body}</span>}
+          {item.body && <span className={personal.commentBody}>{commentBodyExcerpt(item.body)}</span>}
           <span className={personal.commentMeta}>
             <span>{item.parentId ? '回复' : '评论'}</span>
             <time dateTime={new Date(item.createdAt).toISOString()}>{new Intl.DateTimeFormat('zh-CN', {year: 'numeric', month: 'short', day: 'numeric'}).format(item.createdAt)}</time>

@@ -9,7 +9,14 @@
 @import "@heroui/styles/components/description.css" layer(components);
 @import "@heroui/styles/components/avatar.css" layer(components);
 @import "@heroui/styles/components/tooltip.css" layer(components);
+@import "@heroui/styles/components/toolbar.css" layer(components);
+@import "@heroui/styles/components/separator.css" layer(components);
+@import "@heroui/styles/components/popover.css" layer(components);
+@import "@heroui/styles/components/input.css" layer(components);
 @import "@heroui-pro/react/css/components/drop-zone.css" layer(components);
+@import "@heroui-pro/react/css/components/rich-text-editor.css" layer(components);
+@import "@heroui-pro/react/css/components/markdown.css" layer(components);
+@import "@heroui-pro/react/css/components/code-block.css" layer(components);
 
 /*
   Discussion layout follows giscus hierarchy (bubble, nested replies, timeline, bottom composer).
@@ -122,6 +129,48 @@
   border: 0;
   border-radius: var(--field-radius, var(--comment-radius));
   background: var(--field-background, var(--comment-canvas));
+  min-width: 0;
+}
+.blog-comments__editor {
+  min-width: 0;
+}
+.blog-comments__editor .rich-text-editor__shell {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.blog-comments__editor .rich-text-editor__toolbar.toolbar {
+  min-height: 0;
+  padding: 0 0 .5rem;
+  gap: .25rem;
+}
+.blog-comments__editor .rich-text-editor__toolbar-button {
+  width: 2rem;
+  min-width: 2rem;
+  height: 2rem;
+  min-height: 2rem;
+  color: var(--comment-muted);
+}
+.blog-comments__editor .rich-text-editor__toolbar-button[data-active="true"] {
+  color: var(--comment-accent);
+}
+.blog-comments__editor .rich-text-editor__prosemirror {
+  min-height: 100px;
+  max-height: 500px;
+  padding: 1.125rem 0;
+  overflow-y: auto;
+  font: inherit;
+  font-size: var(--font-size-smaller, .875rem);
+  font-weight: var(--body-font-weight, 400);
+  line-height: 1.5;
+  color: var(--comment-fg);
+}
+.blog-comments__editor .rich-text-editor__prosemirror:focus {
+  outline: none;
+}
+.blog-comments__char-count--over {
+  color: var(--danger, #d1242f);
 }
 .blog-comments__write:focus-within {
   @apply outline-none shadow-none ring-0;
@@ -402,8 +451,33 @@
 .blog-comments__reply { color: var(--comment-muted); font-size: .8125rem; }
 .blog-comments__reply a { color: var(--comment-accent); text-decoration: none; }
 .blog-comments__reply a:hover { text-decoration: underline; }
-.blog-comments__body { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; font-size: .875rem; }
-.blog-comments__deleted { color: var(--comment-muted); }
+.blog-comments__body { overflow-wrap: anywhere; line-height: 1.7; font-size: .875rem; min-width: 0; }
+.blog-comments__body.blog-comments__deleted,
+.blog-comments__deleted { color: var(--comment-muted); white-space: pre-wrap; }
+.blog-comments__markdown {
+  --link: var(--comment-accent);
+  min-width: 0;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+.blog-comments__markdown .markdown__paragraph { margin: 0 0 .75rem; }
+.blog-comments__markdown .markdown__paragraph:last-child { margin-bottom: 0; }
+.blog-comments__markdown :is(ol, ul) { margin: .75rem 0; padding-inline-start: 1.5rem; }
+.blog-comments__markdown ul { list-style: disc; }
+.blog-comments__markdown ol { list-style: decimal; }
+.blog-comments__markdown li { margin-block: .25rem; }
+.blog-comments__markdown a { color: var(--comment-accent); text-decoration: underline; text-underline-offset: .2em; }
+.blog-comments__markdown blockquote { margin: .75rem 0; padding: .125rem 1rem; border-left: 2px solid var(--comment-border); color: var(--comment-muted); }
+.blog-comments__markdown pre { overflow-x: auto; max-width: 100%; }
+.blog-comments__markdown .code-block { max-width: 100%; min-width: 0; margin-block: .75rem; }
+.blog-comments__markdown .markdown__inline-code {
+  padding: .1em .3em;
+  border-radius: .25rem;
+  background: var(--comment-inset);
+  font-size: .9em;
+}
+.blog-comments__markdown-image-alt { color: var(--comment-muted); font-style: italic; }
 
 .blog-comments__actions { display: flex; flex-wrap: wrap; gap: .375rem; align-items: center; color: var(--comment-muted); font-size: .75rem; }
 .blog-comments__pills { display: flex; flex-wrap: wrap; gap: .375rem; align-items: center; }

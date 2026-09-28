@@ -61,7 +61,7 @@ export default defineConfig({
     },
     plugins: [tailwindcss(), blogContentDev()],
     // These renderers are imported on demand, including on pages without React islands.
-    optimizeDeps: { include: ['@heroui-pro/react/code-block', '@heroui-pro/react/command', '@heroui-pro/react/segment', '@heroui-pro/react/empty-state'] },
+    optimizeDeps: { include: ['@heroui-pro/react/code-block', '@heroui-pro/react/command', '@heroui-pro/react/segment', '@heroui-pro/react/empty-state', '@heroui-pro/react/rich-text-editor', '@heroui-pro/react/markdown'] },
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   },
 });

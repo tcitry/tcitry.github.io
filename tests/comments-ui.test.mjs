@@ -3,7 +3,8 @@ import test from 'node:test';
 import {readFileSync} from 'node:fs';
 
 const commentsCss = readFileSync(new URL('../src/components/comments/comments.css', import.meta.url), 'utf8');
-const thread = readFileSync(new URL('../src/components/comments/CommentThread.tsx', import.meta.url), 'utf8');
+const thread = readFileSync(new URL('../src/components/comments/CommentThread.tsx', import.meta.url), 'utf8')
+  + readFileSync(new URL('../src/components/comments/CommentComposer.tsx', import.meta.url), 'utf8');
 const content = readFileSync(new URL('../src/components/comments/CommentContent.tsx', import.meta.url), 'utf8');
 const root = readFileSync(new URL('../src/components/comments/CommentsRoot.tsx', import.meta.url), 'utf8');
 
@@ -66,9 +67,8 @@ test('signed-in Convex gaps explain likes instead of silently disabling them', (
 
 test('composer typography uses Book size tokens instead of mixed Primer/HeroUI scales', () => {
   assert.match(commentsCss, /\.blog-comments__composer[^{]*\{[^}]*font-size:\s*var\(--font-size-smaller/);
-  assert.match(commentsCss, /\.blog-comments__composer textarea\.textarea[^{]*\{[^}]*padding:\s*1\.125rem 0/);
-  assert.match(commentsCss, /\.blog-comments__composer textarea[^{]*\{[^}]*font:\s*inherit/);
-  assert.match(commentsCss, /\.blog-comments__composer textarea::placeholder[^{]*\{[^}]*opacity:\s*1/);
+  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror[^{]*\{[^}]*padding:\s*1\.125rem 0/);
+  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror[^{]*\{[^}]*font:\s*inherit/);
   assert.match(commentsCss, /\.blog-comments__char-count[^}]*font-size:\s*var\(--font-size-smallest/);
   assert.match(commentsCss, /\.blog-comments__submit \.button[^{]*\{[^}]*font-size:\s*var\(--font-size-smallest/);
   assert.match(commentsCss, /\.blog-comments__submit \.button[^{]*\{[^}]*font-weight:\s*500/);
@@ -116,18 +116,25 @@ test('top-level and nested avatars share the same space above the header', () =>
 test('composer placeholder and toolbar share one horizontal inset', () => {
   assert.match(commentsCss, /--comment-composer-x:\s*1rem/);
   assert.match(commentsCss, /\.blog-comments__composer[^{]*\{[^}]*padding:\s*1rem var\(--comment-composer-x\)/);
-  assert.match(commentsCss, /\.blog-comments__composer textarea\.textarea[^{]*\{[^}]*padding:\s*1\.125rem 0/);
+  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror[^{]*\{[^}]*padding:\s*1\.125rem 0/);
   assert.match(commentsCss, /\.blog-comments__toolbar[^{]*\{[^}]*padding:\s*0/);
   assert.match(commentsCss, /\.blog-comments__uploads \.drop-zone__trigger[^{]*\{[^}]*justify-content:\s*start/);
 });
 
+test('composer uses HeroUI Pro RichTextEditor with markdown serialization and length guard', () => {
+  assert.match(thread, /CommentComposer/);
+  assert.match(thread, /COMMENT_BODY_MAX_LENGTH/);
+  assert.match(thread, /isCommentBodyOverLimit/);
+  assert.match(thread, /blog-comments__char-count--over/);
+  assert.match(thread, /@heroui-pro\/react\/rich-text-editor/);
+  assert.doesNotMatch(thread, /TextArea/);
+});
+
 test('composer placeholder is inset and the write area has no field focus chrome', () => {
-  assert.match(commentsCss, /\.blog-comments__composer textarea\.textarea[^{]*\{[^}]*padding:\s*1\.125rem 0/);
+  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror[^{]*\{[^}]*padding:\s*1\.125rem 0/);
   assert.match(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*0/);
   assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*@apply outline-none shadow-none ring-0/);
-  assert.match(commentsCss, /\.blog-comments__composer \.textarea:focus[^{]*\{[^}]*@apply outline-none shadow-none ring-0/);
-  assert.match(commentsCss, /\.blog-comments__composer \.textarea\[data-focus="true"\]/);
-  assert.match(commentsCss, /\.blog-comments__composer \.textarea:focus[^{]*\{[^}]*box-shadow:\s*none/);
+  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__shell[^{]*\{[^}]*border:\s*0/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*1px solid var\(--field-border/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*ring-2 ring-focus/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline-offset:\s*2px/);
