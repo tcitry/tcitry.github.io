@@ -11,12 +11,13 @@ const categories = [
   {key: 'likes' as const, label: '点赞'},
   {key: 'newComment' as const, label: '新评论'},
   {key: 'newsletter' as const, label: 'Newsletter'},
-];
+] as const;
 
 function UnsubscribeView({token}: {token: string}) {
   const preferences = useQuery(api.emailPreferences.getByToken, {token});
   const update = useMutation(api.emailPreferences.updateByToken);
   const unsubscribe = useMutation(api.emailPreferences.unsubscribeByToken);
+  type PreferencePatch = Omit<Parameters<typeof update>[0], 'token'>;
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -42,10 +43,10 @@ function UnsubscribeView({token}: {token: string}) {
   }, [category, preferences, pending, token, unsubscribe]);
   if (preferences === undefined) return <p>正在加载…</p>;
   if (preferences === null) return <p role="alert">退订链接无效或已过期。</p>;
-  async function save(patch: Parameters<typeof update>[0]) {
+  async function save(patch: PreferencePatch) {
     setPending(true); setError(''); setMessage('');
     try {
-      await update({token, ...patch});
+      await update({...patch, token});
       setMessage('已更新邮件通知偏好。');
     } catch {
       setError('暂时无法保存，请稍后重试。');
@@ -70,7 +71,7 @@ function UnsubscribeView({token}: {token: string}) {
         </Switch.Content>
       </Switch>
       {categories.map(item => <Switch key={item.key} size="sm" isSelected={preferences[item.key]} isDisabled={pending || masterDisabled}
-        onChange={value => {void save({[item.key]: value});}}>
+        onChange={value => {void save({[item.key]: value} as PreferencePatch);}}>
         <Switch.Content>
           <Label>{item.label}</Label>
           <Switch.Control><Switch.Thumb /></Switch.Control>
