@@ -14,8 +14,7 @@ const page = createPage({
 });
 ---
 
-<BookLayout page={page} navigation={navigation} tags={content.tags} categories={content.categories}
-  seo={{title: page.title, description: page.description, canonical: page.url, robots: 'noindex, nofollow'}}>
+<BookLayout page={page} navigation={navigation} tags={content.tags} categories={content.categories}>
   <div class="book-page markdown" style="max-width: 40rem; margin: 2rem auto; padding: 0 1rem;">
     <EmailUnsubscribe client:only="react">
       <p slot="fallback">正在加载…</p>
