@@ -33,7 +33,7 @@
 | --- | --- |
 | `RESEND_API_KEY` | Resend API Key |
 | `RESEND_WEBHOOK_SECRET` | Webhook 签名密钥（`whsec_...`） |
-| `EMAIL_FROM` | 发件人，默认 `尹东亮的博客 <notify@notify.yindongliang.com>` |
+| `EMAIL_FROM` | 发件人，默认 `LYon's blog <notify@notify.yindongliang.com>` |
 | `SITE_URL` | 站点 URL，默认 `https://yindongliang.com` |
 
 未配置 `RESEND_API_KEY` 时，评论与站内通知功能正常，仅跳过发信并写入 `emailSendLog`（`resend_not_configured`）。

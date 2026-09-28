@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Button, Description, Label, Switch} from '@heroui/react';
 import {useMutation, useQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
@@ -20,7 +20,10 @@ function UnsubscribeView({token}: {token: string}) {
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const category = useMemo(() => new URLSearchParams(window.location.search).get('category'), []);
+  const [category, setCategory] = useState<string | null>(null);
+  useEffect(() => {
+    setCategory(new URLSearchParams(window.location.search).get('category'));
+  }, []);
   useEffect(() => {
     if (!category || preferences === undefined || preferences === null || pending) return;
     if (category === 'commentReply' || category === 'likes' || category === 'newComment' || category === 'newsletter') {
@@ -93,7 +96,13 @@ function UnsubscribeView({token}: {token: string}) {
 }
 
 export default function EmailUnsubscribe() {
-  const token = useMemo(() => new URLSearchParams(window.location.search).get('token')?.trim() ?? '', []);
+  const [token, setToken] = useState('');
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    setToken(new URLSearchParams(window.location.search).get('token')?.trim() ?? '');
+    setReady(true);
+  }, []);
+  if (!ready) return <p>正在加载…</p>;
   if (!token) return <p role="alert">缺少退订令牌。</p>;
   return <BlogClerkProvider>
     <ConvexSession>
