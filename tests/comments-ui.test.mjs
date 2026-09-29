@@ -68,7 +68,7 @@ test('composer typography relies on HeroUI defaults with minimal blog sizing', (
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror > \* \+ \*[^{]*\{[^}]*margin-top:/);
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror p[^{]*\{[^}]*min-height:\s*0/);
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror[^{]*\{[^}]*padding-top:\s*\.5rem/);
-  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar[^{]*\{[^}]*padding-bottom:\s*0/);
+  assert.match(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*align-self:\s*center/);
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button[^{]*\{[^}]*color:\s*var\(--muted\)/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button[^{]*\{[^}]*width:\s*2rem/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__submit \.button[^{]*\{[^}]*font-size:/);
@@ -150,6 +150,7 @@ test('composer author avatar and footer actions follow the requested layout', ()
   assert.match(thread, /aria-label=\{authorName\}/);
   assert.match(thread, /<Tooltip\.Content placement="bottom end">\{authorName\}<\/Tooltip\.Content>/);
   assert.match(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*margin-left:\s*auto/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar[^{]*\{[^}]*padding-bottom:\s*0/);
   const submit = thread.slice(thread.indexOf('className="blog-comments__submit"'), thread.indexOf('</Card.Footer>'));
   const countIndex = submit.indexOf('blog-comments__char-count');
   const cancelIndex = submit.indexOf('blog-comments__cancel');

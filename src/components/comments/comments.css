@@ -155,11 +155,11 @@
   justify-content: space-between;
   align-items: center;
   gap: .5rem;
-  padding-bottom: 0;
 }
 .blog-comments__editor-author {
   margin-left: auto;
   flex-shrink: 0;
+  align-self: center;
 }
 .blog-comments__editor-divider {
   margin: 0;
