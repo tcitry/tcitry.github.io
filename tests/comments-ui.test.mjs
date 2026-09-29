@@ -69,6 +69,10 @@ test('composer typography relies on HeroUI defaults with minimal blog sizing', (
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror p[^{]*\{[^}]*min-height:\s*0/);
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror[^{]*\{[^}]*padding-top:\s*\.5rem/);
   assert.match(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*align-self:\s*center/);
+  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar[^{]*\{[^}]*min-height:\s*0/);
+  assert.match(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*height:\s*calc\(var\(--spacing/);
+  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar \.button\.button--icon-only\.button--sm/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__avatar,[^{]*\.blog-comments__editor-author/);
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button[^{]*\{[^}]*color:\s*var\(--muted\)/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button[^{]*\{[^}]*width:\s*2rem/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__submit \.button[^{]*\{[^}]*font-size:/);
