@@ -36,19 +36,30 @@ const myTab = (page, name) => page.getByRole('radiogroup', {name: '我的内容�
 const switchMetrics = async (page, name) => page.evaluate((label) => {
   const root = [...document.querySelectorAll('[data-slot="switch"]')].find(node => node.textContent?.includes(label));
   if (!root) return null;
+  const content = root.querySelector('[data-slot="switch-content"]');
   const control = root.querySelector('[data-slot="switch-control"]');
   const thumb = root.querySelector('[data-slot="switch-thumb"]');
   const description = root.querySelector('[data-slot="description"]');
+  const labelEl = root.querySelector('[data-slot="label"]');
+  const rootBox = root.getBoundingClientRect();
+  const controlBox = control?.getBoundingClientRect();
+  const labelBox = labelEl?.getBoundingClientRect();
+  const descriptionBox = description?.getBoundingClientRect();
+  const contentBox = content?.getBoundingClientRect();
   const style = control ? getComputedStyle(control) : null;
   const thumbStyle = thumb ? getComputedStyle(thumb) : null;
   return {
-    controlWidth: control?.getBoundingClientRect().width ?? 0,
-    controlHeight: control?.getBoundingClientRect().height ?? 0,
+    controlWidth: controlBox?.width ?? 0,
+    controlHeight: controlBox?.height ?? 0,
     controlBackground: style?.backgroundColor ?? '',
     thumbWidth: thumb?.getBoundingClientRect().width ?? 0,
-    thumbBackground: thumbStyle?.backgroundColor ?? '',
     checked: root.getAttribute('data-selected') === 'true' || root.getAttribute('aria-checked') === 'true',
-    descriptionBelow: description ? description.getBoundingClientRect().top >= (control?.getBoundingClientRect().bottom ?? 0) - 2 : false,
+    controlRightAligned: controlBox ? Math.abs(rootBox.right - controlBox.right) < 6 : false,
+    descriptionUnderLabel: descriptionBox && labelBox ? descriptionBox.top >= labelBox.bottom - 2 : false,
+    descriptionAlignedWithLabel: descriptionBox && labelBox ? Math.abs(descriptionBox.left - labelBox.left) < 4 : false,
+    verticallyCentered: controlBox && contentBox
+      ? Math.abs((controlBox.top + controlBox.height / 2) - (contentBox.top + contentBox.height / 2)) < 10
+      : false,
   };
 }, name);
 
@@ -67,6 +78,9 @@ try {
   const masterOff = await switchMetrics(page, '启用邮件通知');
   assert.ok(masterOff && masterOff.controlWidth >= 28 && masterOff.controlHeight >= 12, 'master switch renders a visible track');
   assert.ok(masterOff.thumbWidth >= 8, 'master switch renders a visible thumb');
+  assert.ok(masterOff.controlRightAligned, 'switch control aligns to the row end');
+  assert.ok(masterOff.descriptionUnderLabel && masterOff.descriptionAlignedWithLabel, 'description sits under the label without indent');
+  assert.ok(masterOff.verticallyCentered, 'switch control stays vertically centered with the text block');
   await page.screenshot({path: join(artifacts, 'email-settings-off.png'), fullPage: true});
 
   await page.evaluate(() => window.__services.setEmailPreferences('fixture-a', {

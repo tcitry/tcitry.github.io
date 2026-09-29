@@ -1,8 +1,9 @@
 import {useState} from 'react';
-import {Button, Description, Label, Switch} from '@heroui/react';
+import {Button} from '@heroui/react';
 import {useMutation, useQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
 import {AuthLoading} from '../auth/SignInPanel';
+import EmailPreferenceSwitch from './EmailPreferenceSwitch';
 import styles from './MyPanel.module.css';
 import './reader.css';
 
@@ -38,22 +39,21 @@ export default function EmailSettingsPanel() {
     {error && <p className="text-sm text-danger" role="alert">{error}</p>}
     {notice && <p className="text-sm text-success" role="status">{notice}</p>}
     <div className="mt-4 flex flex-col gap-4">
-      <Switch size="sm" isSelected={preferences.enabled && !preferences.emailDisabled} isDisabled={pending || preferences.emailDisabled}
-        onChange={value => {void save({enabled: value});}}>
-        <Switch.Content>
-          <Label>启用邮件通知</Label>
-          <Switch.Control><Switch.Thumb /></Switch.Control>
-        </Switch.Content>
-        <Description>关闭后不会发送任何邮件。</Description>
-      </Switch>
-      {visibleCategories.map(item => <Switch key={item.key} size="sm" isSelected={preferences[item.key]} isDisabled={pending || masterDisabled}
-        onChange={value => {void save({[item.key]: value});}}>
-        <Switch.Content>
-          <Label>{item.label}</Label>
-          <Switch.Control><Switch.Thumb /></Switch.Control>
-        </Switch.Content>
-        <Description>{item.description}</Description>
-      </Switch>)}
+      <EmailPreferenceSwitch
+        label="启用邮件通知"
+        description="关闭后不会发送任何邮件。"
+        isSelected={preferences.enabled && !preferences.emailDisabled}
+        isDisabled={pending || preferences.emailDisabled}
+        onChange={value => {void save({enabled: value});}}
+      />
+      {visibleCategories.map(item => <EmailPreferenceSwitch
+        key={item.key}
+        label={item.label}
+        description={item.description}
+        isSelected={preferences[item.key]}
+        isDisabled={pending || masterDisabled}
+        onChange={value => {void save({[item.key]: value});}}
+      />)}
     </div>
     <div className="mt-4">
       <Button size="sm" variant="outline" isDisabled={pending} onPress={() => {void save({

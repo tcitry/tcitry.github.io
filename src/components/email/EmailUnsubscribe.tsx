@@ -1,10 +1,11 @@
 import {useEffect, useState} from 'react';
-import {Button, Description, Label, Switch} from '@heroui/react';
+import {Button} from '@heroui/react';
 import {useMutation, useQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
 import BlogClerkProvider from '../auth/BlogClerkProvider';
 import ConvexSession from '../auth/ConvexSession';
 import surface from '../demos/DemoSurface.module.css';
+import EmailPreferenceSwitch from '../reader/EmailPreferenceSwitch';
 import '../reader/reader.css';
 
 const categories = [
@@ -63,21 +64,20 @@ function UnsubscribeView({token}: {token: string}) {
     {message && <p className="mt-2 text-sm text-success" role="status">{message}</p>}
     {error && <p className="mt-2 text-sm text-danger" role="alert">{error}</p>}
     <div className="mt-4 flex flex-col gap-4">
-      <Switch size="sm" isSelected={preferences.enabled && !preferences.emailDisabled} isDisabled={pending || preferences.emailDisabled}
-        onChange={value => {void save({enabled: value});}}>
-        <Switch.Content>
-          <Label>启用邮件通知</Label>
-          <Switch.Control><Switch.Thumb /></Switch.Control>
-        </Switch.Content>
-        <Description>关闭后不会发送任何邮件。</Description>
-      </Switch>
-      {visibleCategories.map(item => <Switch key={item.key} size="sm" isSelected={preferences[item.key]} isDisabled={pending || masterDisabled}
-        onChange={value => {void save({[item.key]: value} as PreferencePatch);}}>
-        <Switch.Content>
-          <Label>{item.label}</Label>
-          <Switch.Control><Switch.Thumb /></Switch.Control>
-        </Switch.Content>
-      </Switch>)}
+      <EmailPreferenceSwitch
+        label="启用邮件通知"
+        description="关闭后不会发送任何邮件。"
+        isSelected={preferences.enabled && !preferences.emailDisabled}
+        isDisabled={pending || preferences.emailDisabled}
+        onChange={value => {void save({enabled: value});}}
+      />
+      {visibleCategories.map(item => <EmailPreferenceSwitch
+        key={item.key}
+        label={item.label}
+        isSelected={preferences[item.key]}
+        isDisabled={pending || masterDisabled}
+        onChange={value => {void save({[item.key]: value} as PreferencePatch);}}
+      />)}
     </div>
     <div className="mt-6 flex flex-wrap gap-2">
       <Button size="sm" variant="danger" isDisabled={pending} onPress={() => {void (async () => {
