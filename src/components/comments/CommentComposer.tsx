@@ -63,7 +63,6 @@ const CommentComposer = forwardRef<CommentComposerHandle, CommentComposerProps>(
     key={resetKey}
     id="comment-body"
     className="blog-comments__editor"
-    variant="secondary"
     aria-label="你的评论"
     defaultValue={EMPTY_DOC}
     extensions={editorExtensions}
