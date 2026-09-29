@@ -117,6 +117,7 @@ test('composer uses HeroUI Card structure and native RichTextEditor shell', () =
   assert.match(thread, /<Card\.Footer className="blog-comments__toolbar"/);
   assert.doesNotMatch(thread, /<Card\.Title className="blog-comments__composer-name"/);
   assert.match(commentsCss, /@import "@heroui\/styles\/components\/card\.css"/);
+  assert.match(commentsCss, /@import "@heroui\/styles\/components\/toggle-button\.css"/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__shell[^{]*\{[^}]*border:\s*0/);
 });
 

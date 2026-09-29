@@ -1,6 +1,7 @@
 @reference "../../styles/tailwind.css";
 @import "tw-animate-css";
 @import "@heroui/styles/components/button.css" layer(components);
+@import "@heroui/styles/components/toggle-button.css" layer(components);
 @import "@heroui/styles/components/spinner.css" layer(components);
 @import "@heroui/styles/components/textarea.css" layer(components);
 @import "@heroui/styles/components/textfield.css" layer(components);
