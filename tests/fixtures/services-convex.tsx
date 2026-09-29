@@ -39,6 +39,23 @@ const articleTitleOverrides = new Map<string, string | undefined>();
 const commentLikes = new Map<string, Set<string>>();
 type NotificationKind = 'comment_reply' | 'new_comment' | 'consultation_reply' | 'consultation_message';
 const notifications: { _id: string; recipient: string; kind: NotificationKind; createdAt: number; readAt: number | null; target: null | {kind: 'comment'; pathname: string; commentId: string; threaded?: boolean} | {kind: 'consultation'; threadId: string; messageId: string; title: string} }[] = [];
+type EmailPreferences = {
+  enabled: boolean;
+  commentReply: boolean;
+  likes: boolean;
+  newComment: boolean;
+  newsletter: boolean;
+  cachedEmail: string | null;
+  emailDisabled: boolean;
+};
+const emailPreferences = new Map<string, EmailPreferences>();
+function emailPreferencesView(owner: string) {
+  const prefs = emailPreferences.get(owner) ?? {
+    enabled: false, commentReply: false, likes: false, newComment: false, newsletter: false,
+    cachedEmail: 'fixture@example.test', emailDisabled: false,
+  };
+  return {...prefs, isAdmin: isAuthor(owner)};
+}
 let rejectNextComment = false;
 let rejectNextConsultation = false;
 let rejectNextDiscard = false;
@@ -203,6 +220,10 @@ function queryValue(client: ConvexReactClient, name: string, args: Record<string
     return commentImages.find(image => image.id === args.imageId && (image.owner === userId || image.attached))?.url ?? null;
   }
   if (name === 'membership:getConsultationRole') return {isAdmin: isAuthor(userId), ready: consultationsReady};
+  if (name === 'emailPreferences:getMine') {
+    if (!userId) throw new Error('Services fixture: anonymous email preferences');
+    return emailPreferencesView(userId);
+  }
   if (name === 'consultations:getThread') {
     const thread = getThread(String(args.threadId), userId);
     const readState = threadReadStates.get(thread._id);
@@ -448,6 +469,26 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
       if (comment) {comment.deleted = true; comment.body = ''; comment.imageIds = [];}
       publish(); return null;
     }
+    if (name === 'emailPreferences:updateMine') {
+      const current = emailPreferencesView(userId);
+      const next = {...current};
+      for (const key of ['enabled', 'commentReply', 'likes', 'newComment', 'newsletter'] as const) {
+        if (args[key] === undefined) continue;
+        if (key === 'newComment' && args[key] === true && !isAuthor(userId)) continue;
+        next[key] = Boolean(args[key]);
+      }
+      emailPreferences.set(userId, {
+        enabled: next.enabled,
+        commentReply: next.commentReply,
+        likes: next.likes,
+        newComment: next.newComment,
+        newsletter: next.newsletter,
+        cachedEmail: next.cachedEmail,
+        emailDisabled: next.emailDisabled,
+      });
+      publish();
+      return emailPreferencesView(userId);
+    }
     throw new Error(`Unsupported services fixture write ${name}`);
   }, [client, name]);
 }
@@ -500,6 +541,10 @@ Object.assign(window, {__services: {
     comments.push({id: 'deleted-personal', owner: 'fixture-a', pathname: commentPath, authorName: fixtureUsername('fixture-a')!, body: '已删除个人评论不得展示', createdAt: ++now, deleted: true, imageIds: []});
     notifications.push({_id: 'notification-comment', recipient: 'fixture-a', kind: 'comment_reply', createdAt: ++now, readAt: null, target: {kind: 'comment', pathname: commentPath, commentId: 'comment_initial'}});
     notifications.push({_id: 'notification-unavailable', recipient: 'fixture-a', kind: 'comment_reply', createdAt: ++now, readAt: null, target: null});
+    publish();
+  },
+  setEmailPreferences: (owner: string, patch: Partial<EmailPreferences>) => {
+    emailPreferences.set(owner, {...emailPreferencesView(owner), ...patch});
     publish();
   },
   seedLegacyTitles: () => {

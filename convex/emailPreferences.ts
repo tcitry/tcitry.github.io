@@ -1,8 +1,9 @@
 import {ConvexError, v} from "convex/values";
 import type {UserIdentity} from "convex/server";
 import type {Doc} from "./_generated/dataModel";
-import {internalMutation, mutation, query, type MutationCtx, type QueryCtx} from "./_generated/server";
+import {env, internalMutation, mutation, query, type MutationCtx, type QueryCtx} from "./_generated/server";
 import {invalid, requireCommentIdentity} from "./commentShared";
+import {isConsultationAuthor} from "./membership";
 import {
   defaultEmailFlags, effectiveNewsletterSubscribed, newUnsubscribeToken, type EmailCategory, verifiedEmail,
 } from "./emailShared";
@@ -23,7 +24,13 @@ const preferencesView = v.object({
   newsletter: v.boolean(),
   cachedEmail: v.union(v.string(), v.null()),
   emailDisabled: v.boolean(),
+  isAdmin: v.boolean(),
 });
+
+function isPreferencesAdmin(owner: string) {
+  const author = env.CONSULTATION_ADMIN_TOKEN_IDENTIFIER?.trim();
+  return Boolean(author && author === owner);
+}
 
 function viewFromDoc(doc: Doc<"emailPreferences">) {
   return {
@@ -34,6 +41,7 @@ function viewFromDoc(doc: Doc<"emailPreferences">) {
     newsletter: doc.newsletter,
     cachedEmail: doc.cachedEmail ?? null,
     emailDisabled: doc.emailDisabledAt !== undefined,
+    isAdmin: isPreferencesAdmin(doc.owner),
   };
 }
 
@@ -90,7 +98,12 @@ export const getMine = query({
     if (!existing) {
       const defaults = defaultEmailFlags();
       const email = verifiedEmail(identity);
-      return {...defaults, cachedEmail: email, emailDisabled: false};
+      return {
+        ...defaults,
+        cachedEmail: email,
+        emailDisabled: false,
+        isAdmin: isConsultationAuthor(identity),
+      };
     }
     return viewFromDoc(existing);
   },
@@ -111,8 +124,11 @@ export const updateMine = mutation({
     const existing = await findByOwner(ctx, identity.tokenIdentifier);
     if (!existing) throw new ConvexError({code: "NOT_FOUND", message: "邮件偏好暂时不可用。"});
     const patch: Partial<Doc<"emailPreferences">> = {updatedAt: Date.now()};
+    const isAdmin = isConsultationAuthor(identity);
     for (const key of ["enabled", "commentReply", "likes", "newComment", "newsletter"] as const) {
-      if (args[key] !== undefined) patch[key] = args[key];
+      if (args[key] === undefined) continue;
+      if (key === "newComment" && args[key] === true && !isAdmin) continue;
+      patch[key] = args[key];
     }
     const email = verifiedEmail(identity);
     if (email) patch.cachedEmail = email;
@@ -190,8 +206,11 @@ export const updateByToken = mutation({
     const doc = await findByToken(ctx, args.token);
     if (!doc) invalid("退订链接无效或已过期。");
     const patch: Partial<Doc<"emailPreferences">> = {updatedAt: Date.now()};
+    const isAdmin = isPreferencesAdmin(doc.owner);
     for (const key of ["enabled", "commentReply", "likes", "newComment", "newsletter"] as const) {
-      if (args[key] !== undefined) patch[key] = args[key];
+      if (args[key] === undefined) continue;
+      if (key === "newComment" && args[key] === true && !isAdmin) continue;
+      patch[key] = args[key];
     }
     if (patch.enabled === true && doc.emailDisabledAt !== undefined) patch.emailDisabledAt = undefined;
     await ctx.db.patch("emailPreferences", doc._id, patch);

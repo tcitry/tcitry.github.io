@@ -1,15 +1,17 @@
 import {useEffect, useState} from 'react';
-import {Button, Description, Label, Switch} from '@heroui/react';
+import {Button} from '@heroui/react';
 import {useMutation, useQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
 import BlogClerkProvider from '../auth/BlogClerkProvider';
 import ConvexSession from '../auth/ConvexSession';
 import surface from '../demos/DemoSurface.module.css';
+import EmailPreferenceSwitch from '../reader/EmailPreferenceSwitch';
+import '../reader/reader.css';
 
 const categories = [
   {key: 'commentReply' as const, label: '评论回复'},
   {key: 'likes' as const, label: '点赞'},
-  {key: 'newComment' as const, label: '新评论'},
+  {key: 'newComment' as const, label: '新评论', adminOnly: true},
   {key: 'newsletter' as const, label: 'Newsletter'},
 ] as const;
 
@@ -55,28 +57,27 @@ function UnsubscribeView({token}: {token: string}) {
     }
   }
   const masterDisabled = !preferences.enabled || preferences.emailDisabled;
+  const visibleCategories = categories.filter(item => !('adminOnly' in item && item.adminOnly) || preferences.isAdmin);
   return <div className={surface.surface} data-book-island>
     <h1 className="text-xl font-semibold">邮件通知</h1>
-    <p className="mt-2 text-sm text-muted">无需登录即可管理与此链接关联的邮件通知偏好。</p>
     {preferences.emailDisabled && <p className="mt-2 text-sm text-danger" role="alert">该邮箱此前退信或被标记为投诉，邮件通知已暂停。</p>}
     {message && <p className="mt-2 text-sm text-success" role="status">{message}</p>}
     {error && <p className="mt-2 text-sm text-danger" role="alert">{error}</p>}
     <div className="mt-4 flex flex-col gap-4">
-      <Switch size="sm" isSelected={preferences.enabled && !preferences.emailDisabled} isDisabled={pending || preferences.emailDisabled}
-        onChange={value => {void save({enabled: value});}}>
-        <Switch.Content>
-          <Label>启用邮件通知</Label>
-          <Description>关闭后不会发送任何邮件。</Description>
-          <Switch.Control><Switch.Thumb /></Switch.Control>
-        </Switch.Content>
-      </Switch>
-      {categories.map(item => <Switch key={item.key} size="sm" isSelected={preferences[item.key]} isDisabled={pending || masterDisabled}
-        onChange={value => {void save({[item.key]: value} as PreferencePatch);}}>
-        <Switch.Content>
-          <Label>{item.label}</Label>
-          <Switch.Control><Switch.Thumb /></Switch.Control>
-        </Switch.Content>
-      </Switch>)}
+      <EmailPreferenceSwitch
+        label="启用邮件通知"
+        description="关闭后不会发送任何邮件。"
+        isSelected={preferences.enabled && !preferences.emailDisabled}
+        isDisabled={pending || preferences.emailDisabled}
+        onChange={value => {void save({enabled: value});}}
+      />
+      {visibleCategories.map(item => <EmailPreferenceSwitch
+        key={item.key}
+        label={item.label}
+        isSelected={preferences[item.key]}
+        isDisabled={pending || masterDisabled}
+        onChange={value => {void save({[item.key]: value} as PreferencePatch);}}
+      />)}
     </div>
     <div className="mt-6 flex flex-wrap gap-2">
       <Button size="sm" variant="danger" isDisabled={pending} onPress={() => {void (async () => {
