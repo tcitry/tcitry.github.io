@@ -90,7 +90,7 @@ const CommentComposer = forwardRef<CommentComposerHandle, CommentComposerProps>(
           <RichTextEditor.ToggleButton command="orderedList" isIconOnly size="sm" variant="ghost" tooltip="有序列表"><ListOl width={16} height={16} /></RichTextEditor.ToggleButton>
         </RichTextEditor.ToolbarGroup>
         <Tooltip>
-          <Avatar className="blog-comments__editor-author" aria-label={authorName}>
+          <Avatar size="sm" className="blog-comments__editor-author" aria-label={authorName}>
             {authorImageUrl && <Avatar.Image src={authorImageUrl} alt="" />}
             <Avatar.Fallback>{authorName.slice(0, 1) || '我'}</Avatar.Fallback>
           </Avatar>

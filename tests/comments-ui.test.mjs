@@ -68,11 +68,10 @@ test('composer typography relies on HeroUI defaults with minimal blog sizing', (
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror > \* \+ \*[^{]*\{[^}]*margin-top:/);
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror p[^{]*\{[^}]*min-height:\s*0/);
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror[^{]*\{[^}]*padding-top:\s*\.5rem/);
-  assert.match(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*align-self:\s*center/);
-  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar[^{]*\{[^}]*min-height:\s*0/);
-  assert.match(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*height:\s*calc\(var\(--spacing/);
-  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar \.button\.button--icon-only\.button--sm/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__avatar,[^{]*\.blog-comments__editor-author/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar \{/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar \.button/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*height:/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor-divider/);
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button[^{]*\{[^}]*color:\s*var\(--muted\)/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button[^{]*\{[^}]*width:\s*2rem/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__submit \.button[^{]*\{[^}]*font-size:/);
@@ -137,7 +136,6 @@ test('composer uses HeroUI Pro RichTextEditor with markdown serialization and le
 test('composer separates toolbar and text with a native HeroUI divider', () => {
   assert.match(thread, /<Separator className="blog-comments__editor-divider" \/>/);
   assert.match(commentsCss, /@import "@heroui\/styles\/components\/separator\.css"/);
-  assert.match(commentsCss, /\.blog-comments__editor-divider[^{]*\{[^}]*margin:\s*0/);
 });
 
 test('composer toolbar buttons use HeroUI ghost icon controls and distinct code block icon', () => {
@@ -150,11 +148,10 @@ test('composer toolbar buttons use HeroUI ghost icon controls and distinct code 
 });
 
 test('composer author avatar and footer actions follow the requested layout', () => {
-  assert.match(thread, /blog-comments__editor-author/);
+  assert.match(thread, /<Avatar size="sm" className="blog-comments__editor-author"/);
   assert.match(thread, /aria-label=\{authorName\}/);
   assert.match(thread, /<Tooltip\.Content placement="bottom end">\{authorName\}<\/Tooltip\.Content>/);
   assert.match(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*margin-left:\s*auto/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar[^{]*\{[^}]*padding-bottom:\s*0/);
   const submit = thread.slice(thread.indexOf('className="blog-comments__submit"'), thread.indexOf('</Card.Footer>'));
   const countIndex = submit.indexOf('blog-comments__char-count');
   const cancelIndex = submit.indexOf('blog-comments__cancel');
