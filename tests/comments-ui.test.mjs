@@ -71,7 +71,6 @@ test('composer typography relies on HeroUI defaults with minimal blog sizing', (
   assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar \{/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar \.button/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*height:/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__editor-divider/);
   assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button[^{]*\{[^}]*color:\s*var\(--muted\)/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button[^{]*\{[^}]*width:\s*2rem/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__submit \.button[^{]*\{[^}]*font-size:/);
@@ -136,6 +135,7 @@ test('composer uses HeroUI Pro RichTextEditor with markdown serialization and le
 test('composer separates toolbar and text with a native HeroUI divider', () => {
   assert.match(thread, /<Separator className="blog-comments__editor-divider" \/>/);
   assert.match(commentsCss, /@import "@heroui\/styles\/components\/separator\.css"/);
+  assert.match(commentsCss, /\.blog-comments__editor-divider[^{]*\{[^}]*margin:\s*0/);
 });
 
 test('composer toolbar buttons use HeroUI ghost icon controls and distinct code block icon', () => {
