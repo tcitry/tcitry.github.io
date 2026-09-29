@@ -3,10 +3,13 @@ import test from 'node:test';
 import {
   assetReferences,
   assertNotFound,
+  assertPagefindEntryMatches,
   removedAuthRoutes,
   hashedAstroAssets,
+  pagefindAssetsFromEntry,
   publishedAssetPaths,
   retryUntil,
+  waitForPublishedPagefindEntry,
   waitForPublishedRelease,
 } from '../scripts/verify-deployment.mjs';
 
@@ -157,6 +160,46 @@ test('waitForPublishedRelease defaults fail a stuck previous revision after the 
   assert.equal(requests, 31);
   assert.deepEqual(delays, Array(30).fill(10000));
   assert.equal(delays.reduce((total, ms) => total + ms, 0), 300000);
+});
+
+const pagefindEntry = (hash, wasm = 'unknown') => ({
+  languages: {
+    'zh-cn': { hash: `zh-cn_${hash}`, wasm, page_count: 42 },
+  },
+});
+
+test('waitForPublishedPagefindEntry waits for a stale live entry to match this release', async () => {
+  const expected = pagefindEntry('d45d35214ec84', 'abc123');
+  const stale = pagefindEntry('a86b1ab05aa7d', 'old456');
+  const requests = [];
+  let generation = 0;
+  const fetchImpl = async url => {
+    requests.push(String(url));
+    generation += 1;
+    const entry = generation < 3 ? stale : expected;
+    return json(entry);
+  };
+  const live = await waitForPublishedPagefindEntry({
+    origin: 'https://yindongliang.com', expected, fetchImpl, releaseToken: 'a'.repeat(40),
+    attempts: 4, delayMs: 0, sleep: async () => {},
+  });
+  assert.deepEqual(live, expected);
+  assert.equal(requests.length, 3);
+  assert.match(requests[0], /\/pagefind\/pagefind-entry\.json\?verify=a{40}-1$/);
+  assert.deepEqual(pagefindAssetsFromEntry(expected), [
+    '/pagefind/pagefind.zh-cn_d45d35214ec84.pf_meta',
+    '/pagefind/wasm.abc123.pagefind',
+  ]);
+});
+
+test('waitForPublishedPagefindEntry fails with expected vs live hashes when propagation never converges', async () => {
+  const expected = pagefindEntry('d45d35214ec84', 'abc123');
+  const stale = pagefindEntry('a86b1ab05aa7d', 'old456');
+  await assert.rejects(() => waitForPublishedPagefindEntry({
+    origin: 'https://yindongliang.com', expected, fetchImpl: async () => json(stale),
+    attempts: 2, delayMs: 0, sleep: async () => {},
+  }), /expected hash zh-cn_d45d35214ec84 wasm abc123, live hash zh-cn_a86b1ab05aa7d wasm old456/);
+  assert.throws(() => assertPagefindEntryMatches(expected, stale), /expected hash zh-cn_d45d35214ec84 wasm abc123, live hash zh-cn_a86b1ab05aa7d wasm old456/);
 });
 
 test('waitForPublishedRelease retries a 200 JSON body served as HTML until the JSON content type arrives', async () => {

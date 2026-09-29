@@ -159,6 +159,68 @@ export async function retryUntil(run, { attempts = publishedRetry.attempts, dela
   throw lastError;
 }
 
+export function pagefindLanguageFingerprints(entry) {
+  const languages = entry?.languages || {};
+  return Object.fromEntries(Object.entries(languages).sort(([left], [right]) => left.localeCompare(right)).map(([language, data]) => [
+    language,
+    { hash: data.hash, wasm: data.wasm || 'unknown' },
+  ]));
+}
+
+export function formatPagefindEntryMismatch(expected, live) {
+  const expectedFingerprints = pagefindLanguageFingerprints(expected);
+  const liveFingerprints = pagefindLanguageFingerprints(live);
+  const details = [];
+  for (const language of [...new Set([...Object.keys(expectedFingerprints), ...Object.keys(liveFingerprints)])].sort()) {
+    const expectedLanguage = expectedFingerprints[language];
+    const liveLanguage = liveFingerprints[language];
+    if (!expectedLanguage) details.push(`${language}: unexpected live language (hash ${liveLanguage.hash})`);
+    else if (!liveLanguage) details.push(`${language}: missing live language (expected hash ${expectedLanguage.hash})`);
+    else if (expectedLanguage.hash !== liveLanguage.hash || expectedLanguage.wasm !== liveLanguage.wasm) {
+      details.push(`${language}: expected hash ${expectedLanguage.hash} wasm ${expectedLanguage.wasm}, live hash ${liveLanguage.hash} wasm ${liveLanguage.wasm}`);
+    }
+  }
+  return details.join('; ');
+}
+
+export function assertPagefindEntryMatches(expected, live) {
+  const expectedFingerprints = pagefindLanguageFingerprints(expected);
+  const liveFingerprints = pagefindLanguageFingerprints(live);
+  assert.deepEqual(liveFingerprints, expectedFingerprints,
+    `Pagefind entry does not match this release (${formatPagefindEntryMismatch(expected, live)})`);
+}
+
+export function pagefindAssetsFromEntry(entry) {
+  const assets = [];
+  for (const language of Object.values(entry.languages || {})) {
+    assert.ok(language.page_count > 0 && language.hash, 'Pagefind index must contain pages');
+    assets.push(`/pagefind/pagefind.${language.hash}.pf_meta`);
+    assets.push(`/pagefind/wasm.${language.wasm || 'unknown'}.pagefind`);
+  }
+  return assets;
+}
+
+export async function waitForPublishedPagefindEntry({
+  origin, expected, fetchImpl = fetch, timeout = 30_000,
+  attempts = publishedReleaseRetry.attempts, delayMs = publishedReleaseRetry.delayMs,
+  sleep: wait = sleep, onRetry, releaseToken = 'verify',
+} = {}) {
+  assert.ok(Object.keys(expected?.languages || {}).length > 0, 'Expected Pagefind entry missing languages');
+  return retryUntil(async attempt => {
+    const url = new URL('/pagefind/pagefind-entry.json', origin);
+    url.searchParams.set('verify', `${releaseToken}-${attempt}`);
+    const response = await fetchImpl(url, {
+      redirect: 'manual', cache: 'no-store', signal: AbortSignal.timeout(timeout),
+      headers: { 'cache-control': 'no-cache' },
+    });
+    assert.equal(response.status, 200, 'Pagefind entry status');
+    assert.match(response.headers.get('content-type') || '', /application\/json/i, 'Pagefind entry must return JSON');
+    const live = await response.json();
+    assertPagefindEntryMatches(expected, live);
+    return live;
+  }, { attempts, delayMs, sleep: wait, onRetry });
+}
+
 export async function waitForPublishedRelease({ origin, expected, fetchImpl = fetch, timeout = 30_000, attempts = publishedReleaseRetry.attempts, delayMs = publishedReleaseRetry.delayMs, sleep: wait = sleep, onRetry } = {}) {
   assert.match(expected?.siteCommit || '', /^[a-f0-9]{40}$/, 'Local release marker missing siteCommit');
   assert.match(expected?.contentCommit || '', /^[a-f0-9]{40}$/, 'Local release marker missing contentCommit');
@@ -341,14 +403,21 @@ async function main() {
   for (const route of selected) {
     for (const asset of publishedAssetPaths({ publishedHtml: results.get(route).body, localHtml: localPages.get(route), route })) assets.add(asset);
   }
-  const entry = await ready('/pagefind/pagefind-entry.json', response => { assert.equal(response.status, 200, 'Pagefind entry status'); return response; });
-  const index = JSON.parse(entry.body);
-  assert.ok(Object.keys(index.languages || {}).length > 0, 'Pagefind languages missing');
-  for (const language of Object.values(index.languages)) {
-    assert.ok(language.page_count > 0 && language.hash, 'Pagefind index must contain pages');
-    assets.add(`/pagefind/pagefind.${language.hash}.pf_meta`);
-    assets.add(`/pagefind/wasm.${language.wasm || 'unknown'}.pagefind`);
+  const expectedPagefindEntry = JSON.parse(await readFile(path.join(dist, 'pagefind/pagefind-entry.json'), 'utf8'));
+  assert.ok(Object.keys(expectedPagefindEntry.languages || {}).length > 0, 'Pagefind languages missing');
+  if (localPreview) {
+    await ready('/pagefind/pagefind-entry.json', response => {
+      assert.equal(response.status, 200, 'Pagefind entry status');
+      assertPagefindEntryMatches(expectedPagefindEntry, JSON.parse(response.body));
+      return response;
+    });
+  } else {
+    await waitForPublishedPagefindEntry({
+      origin, expected: expectedPagefindEntry, timeout, releaseToken,
+      onRetry: attempt => { if (attempt === 1) console.log('Waiting for Pagefind entry to match this release'); },
+    });
   }
+  for (const asset of pagefindAssetsFromEntry(expectedPagefindEntry)) assets.add(asset);
   for (const directory of ['index', 'fragment']) {
     const files = await readdir(path.join(root, 'dist/pagefind', directory));
     const sample = files.sort().find(file => file.endsWith(`.pf_${directory}`));
