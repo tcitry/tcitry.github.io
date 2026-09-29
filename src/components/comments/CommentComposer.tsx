@@ -1,6 +1,6 @@
 import {forwardRef, useImperativeHandle, useMemo, useRef} from 'react';
 import {Bold, Code, CurlyBrackets, Italic, Link, ListOl, ListUl, QuoteOpen} from '@gravity-ui/icons';
-import {Avatar, Separator, Tooltip} from '@heroui/react';
+import {Avatar, Tooltip} from '@heroui/react';
 import {RichTextEditor} from '@heroui-pro/react/rich-text-editor';
 import {Markdown} from '@tiptap/markdown';
 import type {Editor, JSONContent} from '@tiptap/core';
@@ -97,7 +97,6 @@ const CommentComposer = forwardRef<CommentComposerHandle, CommentComposerProps>(
           <Tooltip.Content placement="bottom end">{authorName}</Tooltip.Content>
         </Tooltip>
       </RichTextEditor.Toolbar>
-      <Separator className="blog-comments__editor-divider" />
       <RichTextEditor.Content />
     </RichTextEditor.Shell>
     <span className="blog-comments__sr-only" aria-live="polite">

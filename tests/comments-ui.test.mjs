@@ -65,14 +65,11 @@ test('signed-in Convex gaps explain likes instead of silently disabling them', (
 test('composer typography relies on HeroUI defaults with minimal blog sizing', () => {
   assert.match(commentsCss, /\.blog-comments__composer[^{]*\{[^}]*font-size:\s*var\(--font-size-smaller/);
   assert.match(commentsCss, /\.blog-comments__editor-author/);
-  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror > \* \+ \*[^{]*\{[^}]*margin-top:/);
-  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror p[^{]*\{[^}]*min-height:\s*0/);
-  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror[^{]*\{[^}]*padding-top:\s*\.5rem/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar \{/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar \.button/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*height:/);
-  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button[^{]*\{[^}]*color:\s*var\(--muted\)/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button[^{]*\{[^}]*width:\s*2rem/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button/);
   assert.doesNotMatch(commentsCss, /\.blog-comments__submit \.button[^{]*\{[^}]*font-size:/);
 });
 
@@ -132,10 +129,10 @@ test('composer uses HeroUI Pro RichTextEditor with markdown serialization and le
   assert.doesNotMatch(thread, /TextArea/);
 });
 
-test('composer separates toolbar and text with a native HeroUI divider', () => {
-  assert.match(thread, /<Separator className="blog-comments__editor-divider" \/>/);
-  assert.match(commentsCss, /@import "@heroui\/styles\/components\/separator\.css"/);
-  assert.match(commentsCss, /\.blog-comments__editor-divider[^{]*\{[^}]*margin:\s*0/);
+test('composer separates toolbar and text with native RichTextEditor spacing only', () => {
+  assert.match(thread, /<RichTextEditor\.Toolbar[\s\S]*<\/RichTextEditor\.Toolbar>\s*<RichTextEditor\.Content \/>/);
+  assert.doesNotMatch(thread, /<Separator className="blog-comments__editor-divider" \/>/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor-divider/);
 });
 
 test('composer toolbar buttons use HeroUI ghost icon controls and distinct code block icon', () => {
