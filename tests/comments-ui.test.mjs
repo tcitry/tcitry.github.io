@@ -21,11 +21,8 @@ test('comment chrome uses DemoSurface / HeroUI tokens instead of Primer greens',
   assert.match(commentsCss, /\.blog-comments__tl-line/);
   assert.match(commentsCss, /left:\s*30px/);
   assert.match(commentsCss, /1px dashed/);
-  assert.match(commentsCss, /\.blog-comments__write:focus-within/);
-  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*@apply outline-none shadow-none ring-0/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*ring-2 ring-focus/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*box-shadow:\s*0 0 0 2px var\(--comment-accent/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline-offset:\s*2px/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__composer[^{]*\{[^}]*border:\s*1px solid/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__composer[^{]*\{[^}]*box-shadow:/);
   assert.match(commentsCss, /\.blog-comments__bubble/);
   assert.match(commentsCss, /\.blog-comments__replies/);
   assert.doesNotMatch(commentsCss, /#1f883d|#238636|#d0d7de|#f6f8fa|#0969da/);
@@ -65,15 +62,15 @@ test('signed-in Convex gaps explain likes instead of silently disabling them', (
   assert.doesNotMatch(root, /isDisabled=\{Boolean\(userId && \(!isAuthenticated/);
 });
 
-test('composer typography uses Book size tokens instead of mixed Primer/HeroUI scales', () => {
+test('composer typography relies on HeroUI defaults with minimal blog sizing', () => {
   assert.match(commentsCss, /\.blog-comments__composer[^{]*\{[^}]*font-size:\s*var\(--font-size-smaller/);
-  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror[^{]*\{[^}]*padding:\s*1\.125rem 0/);
-  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror[^{]*\{[^}]*font:\s*inherit/);
-  assert.match(commentsCss, /\.blog-comments__char-count[^}]*font-size:\s*var\(--font-size-smallest/);
-  assert.match(commentsCss, /\.blog-comments__submit \.button[^{]*\{[^}]*font-size:\s*var\(--font-size-smallest/);
-  assert.match(commentsCss, /\.blog-comments__submit \.button[^{]*\{[^}]*font-weight:\s*500/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__submit > span[^{]*\{[^}]*font-size:\s*\.6875rem/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__image-count[^{]*\{[^}]*font-size:\s*\.6875rem/);
+  assert.match(commentsCss, /\.blog-comments__editor-author/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar \{/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar \.button/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*height:/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__toolbar-button/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__submit \.button[^{]*\{[^}]*font-size:/);
 });
 
 test('shared comment image chrome keeps consultation layout and scopes comment-only colors', () => {
@@ -113,12 +110,15 @@ test('top-level and nested avatars share the same space above the header', () =>
   assert.doesNotMatch(commentsCss, /\.blog-comments__bubble > \.blog-comments__header[^{]*\{[^}]*padding:\s*\.5rem 1rem 0/);
 });
 
-test('composer placeholder and toolbar share one horizontal inset', () => {
-  assert.match(commentsCss, /--comment-composer-x:\s*1rem/);
-  assert.match(commentsCss, /\.blog-comments__composer[^{]*\{[^}]*padding:\s*1rem var\(--comment-composer-x\)/);
-  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror[^{]*\{[^}]*padding:\s*1\.125rem 0/);
-  assert.match(commentsCss, /\.blog-comments__toolbar[^{]*\{[^}]*padding:\s*0/);
-  assert.match(commentsCss, /\.blog-comments__uploads \.drop-zone__trigger[^{]*\{[^}]*justify-content:\s*start/);
+test('composer uses HeroUI Card structure and native RichTextEditor shell', () => {
+  assert.match(thread, /<Card className="blog-comments__composer"/);
+  assert.doesNotMatch(thread, /<Card\.Header className="blog-comments__composer-author"/);
+  assert.match(thread, /<Card\.Content className="blog-comments__write"/);
+  assert.match(thread, /<Card\.Footer className="blog-comments__toolbar"/);
+  assert.doesNotMatch(thread, /<Card\.Title className="blog-comments__composer-name"/);
+  assert.match(commentsCss, /@import "@heroui\/styles\/components\/card\.css"/);
+  assert.match(commentsCss, /@import "@heroui\/styles\/components\/toggle-button\.css"/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor \.rich-text-editor__shell[^{]*\{[^}]*border:\s*0/);
 });
 
 test('composer uses HeroUI Pro RichTextEditor with markdown serialization and length guard', () => {
@@ -130,12 +130,29 @@ test('composer uses HeroUI Pro RichTextEditor with markdown serialization and le
   assert.doesNotMatch(thread, /TextArea/);
 });
 
-test('composer placeholder is inset and the write area has no field focus chrome', () => {
-  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__prosemirror[^{]*\{[^}]*padding:\s*1\.125rem 0/);
-  assert.match(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*0/);
-  assert.match(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*@apply outline-none shadow-none ring-0/);
-  assert.match(commentsCss, /\.blog-comments__editor \.rich-text-editor__shell[^{]*\{[^}]*border:\s*0/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__write[^{]*\{[^}]*border:\s*1px solid var\(--field-border/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*ring-2 ring-focus/);
-  assert.doesNotMatch(commentsCss, /\.blog-comments__write:focus-within[^{]*\{[^}]*outline-offset:\s*2px/);
+test('composer separates toolbar and text with native RichTextEditor spacing only', () => {
+  assert.match(thread, /<RichTextEditor\.Toolbar[\s\S]*<\/RichTextEditor\.Toolbar>\s*<RichTextEditor\.Content \/>/);
+  assert.doesNotMatch(thread, /<Separator className="blog-comments__editor-divider" \/>/);
+  assert.doesNotMatch(commentsCss, /\.blog-comments__editor-divider/);
+});
+
+test('composer toolbar buttons use HeroUI ghost icon controls and distinct code block icon', () => {
+  assert.match(thread, /variant="ghost" tooltip="粗体"/);
+  assert.match(thread, /variant="ghost" tooltip="代码块"/);
+  assert.match(thread, /CurlyBrackets/);
+  assert.doesNotMatch(thread, /command="codeBlock"[^>]*><Code /);
+  assert.match(thread, /placeholder = '写下你的想法…'/);
+  assert.match(thread, /text-xs text-muted tabular-nums/);
+});
+
+test('composer author avatar and footer actions follow the requested layout', () => {
+  assert.match(thread, /<Avatar size="sm" className="blog-comments__editor-author"/);
+  assert.match(thread, /aria-label=\{authorName\}/);
+  assert.match(thread, /<Tooltip\.Content placement="bottom end">\{authorName\}<\/Tooltip\.Content>/);
+  assert.match(commentsCss, /\.blog-comments__editor-author[^{]*\{[^}]*margin-left:\s*auto/);
+  const submit = thread.slice(thread.indexOf('className="blog-comments__submit"'), thread.indexOf('</Card.Footer>'));
+  const countIndex = submit.indexOf('blog-comments__char-count');
+  const cancelIndex = submit.indexOf('blog-comments__cancel');
+  const publishIndex = submit.indexOf('blog-comments__publish');
+  assert.ok(countIndex > 0 && cancelIndex > countIndex && publishIndex > cancelIndex, 'footer order is counter, cancel, publish');
 });

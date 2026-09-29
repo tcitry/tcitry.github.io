@@ -84,6 +84,7 @@ if (view === 'widget') {
         await import('@tcitry/astro-book/styles.css');
         document.documentElement.setAttribute('data-astro-book', '');
         document.documentElement.dataset.bookTheme = 'light';
+        await import('@tcitry/astro-book/client');
         createRoot(root).render(<main className="services-comments"><div className="book-page">
           <div id="main-content" className="markdown" style={{minHeight: '380px'}}><h1>公开文章测试</h1><p>文章正文与评论共用真实博客样式。</p></div>
           <footer className="book-footer"><nav aria-label="文章导航"><a href="#main-content">返回文章</a></nav>
