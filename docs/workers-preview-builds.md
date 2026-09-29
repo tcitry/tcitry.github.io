@@ -9,7 +9,7 @@
 | `main` | `npm run build:workers` | `npm run deploy:verified` |
 | 其他分支 | `npm run build:preview` | `npm run deploy:preview` |
 
-`build:workers` / `deploy:verified` 在非 `main` 分支会立即失败；`build:preview` / `deploy:preview` 在 `main` 分支或检测到生产 Clerk / Convex / deploy key 时会立即失败。
+`build:workers` / `deploy:verified` 在非 `main` 分支会立即失败；`build:preview` / `deploy:preview` 在 `main` 分支或 `PREVIEW_*` 指向生产配置时会立即失败。Workers Builds 的生产与非生产分支 **共享** 同一组变量与密钥，因此预览构建会 **忽略并剥离** 环境中的 `CONVEX_DEPLOY_KEY`（`prod:`）、`wrangler.jsonc` 生产 `PUBLIC_*`、`AI_SEARCH_PUBLIC_URL` 与 Cloudflare/Clerk 凭据，只使用 `PREVIEW_*` 映射出的 staging 值；任何子进程（npm、Astro、Convex CLI、Wrangler）都不会收到生产 deploy key。
 
 Workers Builds 通过 `WORKERS_CI_BRANCH` 识别分支（见 [Cloudflare 文档](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/#environment-variables)）。
 

@@ -16,6 +16,7 @@ export async function runWorkersContentBuild({
   validateConfiguration,
   npmSteps,
   successMessage,
+  sanitizeBaseEnv = base => base,
 }) {
   const repository = process.env.BLOG_CONTENT_REPOSITORY;
   const requestedCommit = process.env.BLOG_CONTENT_COMMIT;
@@ -42,7 +43,7 @@ export async function runWorkersContentBuild({
   const abort = () => controller.abort();
   process.once('SIGINT', abort);
   process.once('SIGTERM', abort);
-  const env = { ...process.env, BLOG_DIR: checkout, PUBLIC_SITE_ENV: siteEnvironment };
+  const env = sanitizeBaseEnv({ ...process.env, BLOG_DIR: checkout, PUBLIC_SITE_ENV: siteEnvironment });
   delete env.BLOG_READ_TOKEN;
   delete env.BLOG_CONTENT_REPOSITORY;
   delete env.BLOG_CONTENT_COMMIT;

@@ -151,15 +151,25 @@ export function assertPreviewReaderSources(env = process.env) {
   return { mapped, reader };
 }
 
-export function assertNoProductionReaderValues(env = process.env) {
-  if (typeof env.PUBLIC_CLERK_PUBLISHABLE_KEY === 'string' && /^pk_live_/.test(env.PUBLIC_CLERK_PUBLISHABLE_KEY)) {
-    assert.fail('Preview Workers Builds cannot use a production Clerk publishable key. Configure PREVIEW_PUBLIC_CLERK_PUBLISHABLE_KEY instead.');
+/** Remove shared Workers Builds production reader values and deploy credentials from preview child env. */
+export function stripAmbientProductionEnv(env, root) {
+  const stripped = { ...env };
+  const wrangler = root ? wranglerPublicVars(root) : {};
+  for (const name of ['CONVEX_DEPLOY_KEY', 'CONVEX_DEPLOYMENT', 'AI_SEARCH_PUBLIC_URL']) delete stripped[name];
+  if (/^pk_live_/.test(stripped.PUBLIC_CLERK_PUBLISHABLE_KEY ?? '') || stripped.PUBLIC_CLERK_PUBLISHABLE_KEY === wrangler.PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    delete stripped.PUBLIC_CLERK_PUBLISHABLE_KEY;
   }
-  const convexUrl = env.PUBLIC_CONVEX_URL?.replace(/\/$/, '');
-  if (convexUrl === PRODUCTION_CONVEX_URL) {
-    assert.fail('Preview Workers Builds cannot use the production Convex URL. Configure PREVIEW_PUBLIC_CONVEX_URL instead.');
+  const convexUrl = stripped.PUBLIC_CONVEX_URL?.replace(/\/$/, '');
+  if (convexUrl === PRODUCTION_CONVEX_URL || convexUrl === wrangler.PUBLIC_CONVEX_URL?.replace(/\/$/, '')) {
+    delete stripped.PUBLIC_CONVEX_URL;
   }
-  if (typeof env.CONVEX_DEPLOY_KEY === 'string' && /^prod:/.test(env.CONVEX_DEPLOY_KEY)) {
-    assert.fail('Preview Workers Builds cannot use a production Convex deploy key. Configure PREVIEW_CONVEX_DEPLOY_KEY instead.');
+  for (const name of Object.keys(stripped)) {
+    if (/^(?:CLERK_|CONVEX_)/.test(name) || /^(?:CLOUDFLARE_|CF_)/.test(name)) delete stripped[name];
   }
+  return stripped;
+}
+
+export function createPreviewProcessEnv(env = process.env, root) {
+  const { mapped } = assertPreviewReaderSources(env);
+  return { mapped, env: { ...stripAmbientProductionEnv(env, root), PUBLIC_SITE_ENV: 'preview', ...mapped } };
 }
