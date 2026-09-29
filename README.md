@@ -44,5 +44,6 @@ Keep private content, secrets, generated files, and installed commercial compone
 ## Documentation
 
 - [Local preview and verification](docs/astro-preview.md)
+- [Workers Builds preview deployments](docs/workers-preview-builds.md)
 - [Demo authoring](docs/demo-authoring.md)
 - [Build and deployment](docs/continuous-deployment.md)
