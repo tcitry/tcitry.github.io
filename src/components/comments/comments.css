@@ -16,8 +16,6 @@
 @import "@heroui/styles/components/input.css" layer(components);
 @import "@heroui-pro/react/css/components/drop-zone.css" layer(components);
 @import "@heroui-pro/react/css/components/rich-text-editor.css" layer(components);
-@import "@heroui-pro/react/css/components/markdown.css" layer(components);
-@import "@heroui-pro/react/css/components/code-block.css" layer(components);
 
 /*
   Discussion layout follows giscus hierarchy (bubble, nested replies, timeline, bottom composer).

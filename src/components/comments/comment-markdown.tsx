@@ -1,3 +1,4 @@
+import './comment-markdown.css';
 import {useMemo} from 'react';
 import type {Components} from 'react-markdown';
 import {Markdown} from '@heroui-pro/react/markdown';

@@ -1,0 +1,3 @@
+@reference "../../styles/tailwind.css";
+@import "@heroui-pro/react/css/components/markdown.css" layer(components);
+@import "@heroui-pro/react/css/components/code-block.css" layer(components);

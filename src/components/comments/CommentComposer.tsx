@@ -2,8 +2,8 @@ import {forwardRef, useImperativeHandle, useMemo, useRef} from 'react';
 import {Bold, Code, CurlyBrackets, Italic, Link, ListOl, ListUl, QuoteOpen} from '@gravity-ui/icons';
 import {Avatar, Tooltip} from '@heroui/react';
 import {RichTextEditor} from '@heroui-pro/react/rich-text-editor';
+import {Extension, type Editor, type JSONContent} from '@tiptap/core';
 import {Markdown} from '@tiptap/markdown';
-import type {Editor, JSONContent} from '@tiptap/core';
 import {COMMENT_BODY_MAX_LENGTH, isCommentBodyOverLimit} from './comment-markdown';
 
 const EMPTY_DOC: JSONContent = {type: 'doc', content: [{type: 'paragraph'}]};
@@ -31,7 +31,26 @@ const CommentComposer = forwardRef<CommentComposerHandle, CommentComposerProps>(
   ref,
 ) {
   const editorRef = useRef<Editor | null>(null);
-  const markdownExtension = useMemo(() => [Markdown], []);
+  const editorExtensions = useMemo(() => [
+    Markdown,
+    // HeroUI Pro expects block spacing from `.rich-text-editor__prosemirror > * + *`;
+    // reset browser paragraph margins that survive astro-book's no-preflight baseline.
+    Extension.create({
+      name: 'commentComposerBlockMargins',
+      addGlobalAttributes() {
+        return [{
+          types: ['paragraph'],
+          attributes: {
+            style: {
+              default: 'margin:0',
+              parseHTML: (element) => element.getAttribute('style') ?? 'margin:0',
+              renderHTML: (attributes) => ({style: attributes.style ?? 'margin:0'}),
+            },
+          },
+        }];
+      },
+    }),
+  ], []);
   const overLimit = isCommentBodyOverLimit(body);
 
   useImperativeHandle(ref, () => ({
@@ -44,9 +63,10 @@ const CommentComposer = forwardRef<CommentComposerHandle, CommentComposerProps>(
     key={resetKey}
     id="comment-body"
     className="blog-comments__editor"
+    variant="secondary"
     aria-label="你的评论"
     defaultValue={EMPTY_DOC}
-    extensions={markdownExtension}
+    extensions={editorExtensions}
     isDisabled={isDisabled}
     placeholder={placeholder}
     onValueChange={(_value, details) => {
