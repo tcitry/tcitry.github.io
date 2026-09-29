@@ -20,7 +20,9 @@ async function fixture(t) {
   await writeFile(path.join(directory, 'tmp', 'unrelated'), 'keep');
   const script = path.join(directory, 'scripts', 'workers-build.mjs');
   await copyFile(source, script);
-  await copyFile(new URL('../scripts/reader-config.mjs', import.meta.url), path.join(directory, 'scripts/reader-config.mjs'));
+  for (const file of ['reader-config.mjs', 'workers-build-shared.mjs', 'ci-branch.mjs']) {
+    await copyFile(new URL(`../scripts/${file}`, import.meta.url), path.join(directory, 'scripts', file));
+  }
   await mkdir(path.join(directory, 'src/lib'), {recursive: true});
   await copyFile(new URL('../src/lib/public-ai-search-url.mjs', import.meta.url), path.join(directory, 'src/lib/public-ai-search-url.mjs'));
   const log = path.join(directory, 'commands.jsonl');
@@ -90,6 +92,7 @@ if (process.env.FIXTURE_FAIL === script) process.exit(1);
     PUBLIC_CONVEX_URL: 'https://production-fixture-123.convex.cloud',
     AI_SEARCH_PUBLIC_URL: 'https://fixture.search.ai.cloudflare.com/search',
     CONVEX_DEPLOY_KEY: 'prod:production-fixture-123|fixture-convex-secret', CLERK_SECRET_KEY: 'fixture-unused-clerk-secret',
+    WORKERS_CI: '1', WORKERS_CI_BRANCH: 'main',
   };
   delete env.PUBLIC_SITE_ENV;
   delete env.BLOG_CONTENT_COMMIT;
@@ -108,6 +111,14 @@ if (process.env.FIXTURE_FAIL === script) process.exit(1);
     },
   };
 }
+
+test('Workers build rejects non-main branches before any command runs', async t => {
+  const context = await fixture(t);
+  const result = await context.run({ WORKERS_CI_BRANCH: 'feature/preview' });
+  assert.equal(result.code, 1);
+  assert.match(result.output, /only run on main/);
+  assert.deepEqual(result.commands, []);
+});
 
 test('Workers build rejects missing or unsafe configuration before any command runs', async t => {
   for (const [overrides, expected] of [
@@ -184,7 +195,7 @@ test('Workers build defaults to the fetched main commit with full history, scope
   assert.ok([resolve, checkout, revision, remote].every(command => !command.contentToken && !command.proToken));
   const testStep = steps.find(step => step.args.at(-1) === 'test');
   assert.equal(testStep.siteEnvironment, undefined);
-  assert.ok(result.commands.filter(command => command !== testStep).every(command => command.siteEnvironment === 'production'));
+  assert.ok(steps.filter(step => step !== testStep).every(step => step.siteEnvironment === 'production'));
   assert.ok(steps.every(step => step.contentExists));
   assert.equal(new Set(steps.map(step => step.blog)).size, 1);
   assert.deepEqual(await readdir(path.join(context.directory, 'tmp')), ['unrelated']);
@@ -229,7 +240,7 @@ test('Workers build preserves explicit production through the final verification
   const steps = result.commands.filter(command => command.command === 'npm');
   const testStep = steps.find(step => step.args.at(-1) === 'test');
   assert.equal(testStep.siteEnvironment, undefined);
-  assert.ok(result.commands.filter(command => command !== testStep).every(command => command.siteEnvironment === 'production'));
+  assert.ok(steps.filter(step => step !== testStep).every(step => step.siteEnvironment === 'production'));
   assert.deepEqual(steps.map(step => step.args.at(-1)), ['setup', 'build', 'check', 'test', 'verify:release']);
   assert.deepEqual(steps.map(step => step.proToken), [true, false, false, false, false]);
   assert.ok(steps.every(step => !step.contentToken && !step.repository));

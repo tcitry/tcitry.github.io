@@ -9,7 +9,7 @@
 - `master` / `hugo-book`：迁移前 Hugo 备份，不参与当前发布。
 - Blog 内容仓库 `main`：独立更新，通过通知触发站点云端构建。
 
-只有一个 Wrangler 环境和一个生产 Worker。`PUBLIC_SITE_ENV=production` 控制产物收录策略，不代表第二个 Cloudflare 环境。`www.yindongliang.com` 的 301 跳转由 Cloudflare Redirect Rule 维护，不需要额外 Worker。
+只有一个生产 Worker（`tcitry-blog`）承接 `yindongliang.com` 流量。`PUBLIC_SITE_ENV=production` 控制产物收录策略，不代表第二个 Cloudflare 环境。非 `main` 分支通过 `wrangler versions upload` 发布 **不承接生产流量** 的预览版本；配置与手动步骤见 [Workers Builds 预览部署](workers-preview-builds.md)。`www.yindongliang.com` 的 301 跳转由 Cloudflare Redirect Rule 维护，不需要额外 Worker。
 
 ## 配置位置
 
@@ -75,7 +75,7 @@ Workers Builds 的 GitHub check 对应 `deploy:verified` 的硬失败步骤：�
 
 ## Workers Builds
 
-Workers Builds 仅构建站点仓库 `main`。`build:workers` 会：
+Workers Builds 在 `main` 上运行 `build:workers` / `deploy:verified`；其他分支运行 `build:preview` / `deploy:preview`（见 [Workers Builds 预览部署](workers-preview-builds.md)）。`build:workers` 会：
 
 1. 获取 Blog 远端 `main` 并解析为固定提交；
 2. 在隔离目录安装准确依赖；

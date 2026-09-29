@@ -20,7 +20,7 @@ async function fixture(t) {
   for (const subdirectory of [content, site, 'site/scripts', 'site/dist', 'site/.generated', 'site/node_modules/wrangler/bin', 'site/node_modules/convex/bin']) {
     await mkdir(path.isAbsolute(subdirectory) ? subdirectory : path.join(directory, subdirectory), { recursive: true });
   }
-  for (const file of ['release-manifest.mjs', 'verify-release.mjs', 'deploy-verified.mjs', 'theme-package.mjs', 'reader-config.mjs', 'reader-build.mjs', 'finalize-build.mjs', 'build-site.mjs', 'verify-convex-target.mjs']) {
+  for (const file of ['release-manifest.mjs', 'verify-release.mjs', 'deploy-verified.mjs', 'theme-package.mjs', 'reader-config.mjs', 'reader-build.mjs', 'finalize-build.mjs', 'build-site.mjs', 'verify-convex-target.mjs', 'ci-branch.mjs']) {
     await copyFile(new URL(`../scripts/${file}`, import.meta.url), path.join(site, 'scripts', file));
   }
   await mkdir(path.join(site, 'src/lib'), {recursive: true});
@@ -106,7 +106,8 @@ if (args[0] === 'env') {
     PUBLIC_CLERK_PUBLISHABLE_KEY: reader.clerkPublishableKey, PUBLIC_CONVEX_URL: reader.convexUrl,
     AI_SEARCH_PUBLIC_URL: reader.aiSearchUrl,
     CONVEX_DEPLOY_KEY: 'prod:production-fixture-123|fixture-convex-secret',
-    CONVEX_DEPLOYMENT: 'dev:development-fixture', CLERK_SECRET_KEY: 'fixture-unused-clerk-secret' };
+    CONVEX_DEPLOYMENT: 'dev:development-fixture', CLERK_SECRET_KEY: 'fixture-unused-clerk-secret',
+    WORKERS_CI: '1', WORKERS_CI_BRANCH: 'main' };
   return { directory, site, content, contentCommit, git,
     async run(script, overrides = {}) {
       try { return { ...await execute(process.execPath, [path.join(site, 'scripts', script)], { cwd: site, env: { ...env, ...overrides } }), code: 0 }; }

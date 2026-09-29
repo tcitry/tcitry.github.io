@@ -6,12 +6,14 @@ import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { assertSealedRelease, assetHashes } from './release-manifest.mjs';
 import { assertClerkIssuer, assertConvexSearchURL, assertProductionDeployKey, loadReaderEnvironment, readProductionReaderConfig, withoutReaderSecrets } from './reader-config.mjs';
+import { assertProductionWorkersBranch } from './ci-branch.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const execute = promisify(execFile);
 const convexEnvFile = path.join(root, '.generated/convex-release.env');
 
 try {
+  assertProductionWorkersBranch();
   const manifest = JSON.parse(await readFile(path.join(root, '.generated/release.json'), 'utf8'));
   const assets = await assertSealedRelease(root, manifest);
   const configured = loadReaderEnvironment(root);
