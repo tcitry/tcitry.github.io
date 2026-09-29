@@ -60,8 +60,16 @@ describe("email preferences", () => {
     const off = {
       enabled: false, commentReply: false, likes: false, newComment: false, newsletter: false,
     };
-    expect(member).toMatchObject({...off, cachedEmail: "alice@example.test"});
-    expect(owner).toMatchObject({...off, cachedEmail: "author@example.test"});
+    expect(member).toMatchObject({...off, cachedEmail: "alice@example.test", isAdmin: false});
+    expect(owner).toMatchObject({...off, cachedEmail: "author@example.test", isAdmin: true});
+  });
+
+  test("only site admin can enable new comment notifications", async () => {
+    const {alice, author} = setup();
+    await alice.mutation(api.emailPreferences.updateMine, {enabled: true, newComment: true});
+    expect(await alice.query(api.emailPreferences.getMine, {})).toMatchObject({newComment: false, isAdmin: false});
+    await author.mutation(api.emailPreferences.updateMine, {enabled: true, newComment: true});
+    expect(await author.query(api.emailPreferences.getMine, {})).toMatchObject({newComment: true, isAdmin: true});
   });
 
   test("unverified email is not cached and send is skipped", async () => {
