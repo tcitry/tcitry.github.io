@@ -164,12 +164,31 @@ export function stripAmbientProductionEnv(env, root) {
     delete stripped.PUBLIC_CONVEX_URL;
   }
   for (const name of Object.keys(stripped)) {
-    if (/^(?:CLERK_|CONVEX_)/.test(name) || /^(?:CLOUDFLARE_|CF_)/.test(name)) delete stripped[name];
+    if (/^(?:CLERK_|CONVEX_)/.test(name)) delete stripped[name];
   }
   return stripped;
+}
+
+/** Remove Cloudflare API credentials from child processes that do not upload Workers. */
+export function stripCloudflareCredentials(env) {
+  return Object.fromEntries(Object.entries(env).filter(([name]) => !/^(?:CLOUDFLARE_|CF_)/.test(name)));
 }
 
 export function createPreviewProcessEnv(env = process.env, root) {
   const { mapped } = assertPreviewReaderSources(env);
   return { mapped, env: { ...stripAmbientProductionEnv(env, root), PUBLIC_SITE_ENV: 'preview', ...mapped } };
+}
+
+export function createPreviewWranglerEnv(env = process.env, root) {
+  const { env: previewEnv } = createPreviewProcessEnv(env, root);
+  const wranglerEnv = { ...previewEnv };
+  delete wranglerEnv.CONVEX_DEPLOY_KEY;
+  return wranglerEnv;
+}
+
+export function createPreviewConvexEnv(env = process.env, root) {
+  const { env: previewEnv } = createPreviewProcessEnv(env, root);
+  const convexEnv = stripCloudflareCredentials(previewEnv);
+  delete convexEnv.CONVEX_DEPLOY_KEY;
+  return convexEnv;
 }

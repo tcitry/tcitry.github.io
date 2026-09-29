@@ -10,6 +10,9 @@ import {
   createPreviewProcessEnv,
   readPreviewReaderConfig,
   stripAmbientProductionEnv,
+  stripCloudflareCredentials,
+  createPreviewConvexEnv,
+  createPreviewWranglerEnv,
 } from '../scripts/reader-config.mjs';
 
 const previewKey = 'pk_test_' + Buffer.from('dev-fixture.clerk.accounts.dev$').toString('base64');
@@ -63,9 +66,22 @@ test('stripAmbientProductionEnv removes shared production reader values and depl
   assert.equal(stripped.PUBLIC_CLERK_PUBLISHABLE_KEY, undefined);
   assert.equal(stripped.PUBLIC_CONVEX_URL, undefined);
   assert.equal(stripped.AI_SEARCH_PUBLIC_URL, undefined);
-  assert.equal(stripped.CLOUDFLARE_API_TOKEN, undefined);
+  assert.equal(stripped.CLOUDFLARE_API_TOKEN, 'cf-token');
   assert.equal(stripped.CLERK_SECRET_KEY, undefined);
   assert.equal(stripped.UNRELATED, 'keep');
+});
+
+test('stripCloudflareCredentials removes Cloudflare API credentials from non-wrangler child env', () => {
+  const stripped = stripCloudflareCredentials({
+    CLOUDFLARE_API_TOKEN: 'cf-token',
+    CLOUDFLARE_ACCOUNT_ID: 'cf-account',
+    CF_API_TOKEN: 'legacy-token',
+    PUBLIC_CONVEX_URL: stagingUrl,
+  });
+  assert.equal(stripped.CLOUDFLARE_API_TOKEN, undefined);
+  assert.equal(stripped.CLOUDFLARE_ACCOUNT_ID, undefined);
+  assert.equal(stripped.CF_API_TOKEN, undefined);
+  assert.equal(stripped.PUBLIC_CONVEX_URL, stagingUrl);
 });
 
 test('createPreviewProcessEnv maps preview sources over stripped ambient production values', async t => {
@@ -86,8 +102,32 @@ test('createPreviewProcessEnv maps preview sources over stripped ambient product
   assert.equal(env.CONVEX_DEPLOY_KEY, previewEnv.PREVIEW_CONVEX_DEPLOY_KEY);
   assert.equal(env.PUBLIC_CONVEX_URL, stagingUrl);
   assert.equal(env.PUBLIC_CLERK_PUBLISHABLE_KEY, previewKey);
-  assert.equal(env.CLOUDFLARE_API_TOKEN, undefined);
+  assert.equal(env.CLOUDFLARE_API_TOKEN, 'cf-token');
   assert.equal(env.PUBLIC_SITE_ENV, 'preview');
+});
+
+test('preview wrangler and convex env helpers scope Cloudflare and deploy credentials', async t => {
+  const root = await mkdtemp(path.join(tmpdir(), 'preview-scope-root-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await writeFile(path.join(root, 'wrangler.jsonc'), JSON.stringify({
+    vars: { PUBLIC_CLERK_PUBLISHABLE_KEY: productionKey, PUBLIC_CONVEX_URL: PRODUCTION_CONVEX_URL },
+  }));
+  const ambient = {
+    ...previewEnv,
+    CONVEX_DEPLOY_KEY: 'prod:hushed-mallard-700|prod-secret',
+    PUBLIC_CLERK_PUBLISHABLE_KEY: productionKey,
+    PUBLIC_CONVEX_URL: PRODUCTION_CONVEX_URL,
+    AI_SEARCH_PUBLIC_URL: 'https://fixture.search.ai.cloudflare.com/search',
+    CLOUDFLARE_API_TOKEN: 'cf-token',
+    CLOUDFLARE_ACCOUNT_ID: 'cf-account',
+  };
+  const wranglerEnv = createPreviewWranglerEnv(ambient, root);
+  const convexEnv = createPreviewConvexEnv(ambient, root);
+  assert.equal(wranglerEnv.CLOUDFLARE_API_TOKEN, 'cf-token');
+  assert.equal(wranglerEnv.CLOUDFLARE_ACCOUNT_ID, 'cf-account');
+  assert.equal(wranglerEnv.CONVEX_DEPLOY_KEY, undefined);
+  assert.equal(convexEnv.CLOUDFLARE_API_TOKEN, undefined);
+  assert.equal(convexEnv.CONVEX_DEPLOY_KEY, undefined);
 });
 
 test('readPreviewReaderConfig accepts development Clerk domains', () => {

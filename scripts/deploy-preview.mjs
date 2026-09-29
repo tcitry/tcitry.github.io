@@ -7,7 +7,7 @@ import { promisify } from 'node:util';
 import { previewAliasFromBranch, assertPreviewWorkersBranch, resolveWorkersBranch } from './ci-branch.mjs';
 import {
   assertClerkIssuer, assertConvexSearchURL, assertPreviewDeployKey,
-  createPreviewProcessEnv, readPreviewReaderConfig, stripAmbientProductionEnv,
+  createPreviewConvexEnv, createPreviewProcessEnv, createPreviewWranglerEnv, readPreviewReaderConfig,
 } from './reader-config.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -19,12 +19,16 @@ try {
   assertPreviewWorkersBranch();
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
   assert.equal(manifest.environment, 'preview', 'Deploy preview requires a sealed preview build from npm run build:preview.');
-  const { mapped, env } = createPreviewProcessEnv(process.env, root);
+  const { mapped } = createPreviewProcessEnv(process.env, root);
   const reader = readPreviewReaderConfig(mapped);
   assert.deepEqual(reader, manifest.reader, 'Preview reader configuration changed after the preview build.');
   assertPreviewDeployKey(mapped, reader);
-  for (const name of ['BLOG_READ_TOKEN', 'BLOG_CONTENT_REPOSITORY', 'BLOG_CONTENT_COMMIT', 'HEROUI_AUTH_TOKEN', 'GITHUB_TOKEN', 'GH_TOKEN']) delete env[name];
-  const convexEnv = stripAmbientProductionEnv({ ...env, CONVEX_DEPLOY_KEY: mapped.CONVEX_DEPLOY_KEY }, root);
+  const wranglerEnv = createPreviewWranglerEnv(process.env, root);
+  const convexEnv = createPreviewConvexEnv(process.env, root);
+  for (const name of ['BLOG_READ_TOKEN', 'BLOG_CONTENT_REPOSITORY', 'BLOG_CONTENT_COMMIT', 'HEROUI_AUTH_TOKEN', 'GITHUB_TOKEN', 'GH_TOKEN']) {
+    delete wranglerEnv[name];
+    delete convexEnv[name];
+  }
   const secretValues = Object.entries(mapped).filter(([name, value]) => value && /(?:TOKEN|SECRET|PASSWORD|DEPLOY_KEY|ADMIN_KEY)/.test(name))
     .flatMap(([, value]) => [value, encodeURIComponent(value)]);
   const redact = value => secretValues.reduce((output, secret) => output.replaceAll(secret, '[redacted]'), String(value ?? ''));
@@ -73,7 +77,7 @@ try {
     '--var', `PUBLIC_CLERK_PUBLISHABLE_KEY:${manifest.reader.clerkPublishableKey}`,
     '--var', `PUBLIC_CONVEX_URL:${manifest.reader.convexUrl}`,
     '--message', `preview ${branch} ${manifest.siteCommit.slice(0, 7)}`];
-  await run('Uploading the preview Worker version', uploadArgs, env);
+  await run('Uploading the preview Worker version', uploadArgs, wranglerEnv);
   console.log(`Preview deployment finished for branch ${branch}. Workers Builds posts the Version URL comment on the pull request.`);
 } catch (error) {
   if (error instanceof assert.AssertionError) {

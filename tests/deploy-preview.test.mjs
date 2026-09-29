@@ -48,6 +48,8 @@ const envFile = args.includes('--env-file') ? args[args.indexOf('--env-file') + 
 const record = {
   command: 'convex', args,
   convexDeployKey: process.env.CONVEX_DEPLOY_KEY ?? null,
+  cloudflareApiToken: process.env.CLOUDFLARE_API_TOKEN ?? null,
+  cloudflareAccountId: process.env.CLOUDFLARE_ACCOUNT_ID ?? null,
   envFileDeployKey: envFile && fs.existsSync(envFile) ? (fs.readFileSync(envFile, 'utf8').match(/^CONVEX_DEPLOY_KEY=(.*)$/m)?.[1] ?? null) : null,
 };
 fs.appendFileSync(process.env.FIXTURE_LOG, JSON.stringify(record) + '\\n');
@@ -65,7 +67,13 @@ process.exit(0);
   await mkdir(path.join(directory, 'node_modules/wrangler/bin'), { recursive: true });
   await writeFile(path.join(directory, 'node_modules/wrangler/bin/wrangler.js'), `#!/usr/bin/env node
 import fs from 'node:fs';
-fs.appendFileSync(process.env.FIXTURE_LOG, JSON.stringify({ command: 'wrangler', args: process.argv.slice(2) }) + '\\n');
+fs.appendFileSync(process.env.FIXTURE_LOG, JSON.stringify({
+  command: 'wrangler',
+  args: process.argv.slice(2),
+  convexDeployKey: process.env.CONVEX_DEPLOY_KEY ?? null,
+  cloudflareApiToken: process.env.CLOUDFLARE_API_TOKEN ?? null,
+  cloudflareAccountId: process.env.CLOUDFLARE_ACCOUNT_ID ?? null,
+}) + '\\n');
 `);
   const env = {
     PATH: process.env.PATH,
@@ -82,6 +90,7 @@ fs.appendFileSync(process.env.FIXTURE_LOG, JSON.stringify({ command: 'wrangler',
     PUBLIC_CONVEX_URL: 'https://hushed-mallard-700.convex.cloud',
     AI_SEARCH_PUBLIC_URL: 'https://fixture.search.ai.cloudflare.com/search',
     CLOUDFLARE_API_TOKEN: 'ambient-cf-token',
+    CLOUDFLARE_ACCOUNT_ID: 'ambient-cf-account',
   };
   return {
     directory, env,
@@ -101,15 +110,21 @@ fs.appendFileSync(process.env.FIXTURE_LOG, JSON.stringify({ command: 'wrangler',
   };
 }
 
-test('deploy preview ignores ambient production deploy credentials and only passes the staging Convex key', async t => {
+test('deploy preview scopes Cloudflare credentials to wrangler and staging Convex key to convex only', async t => {
   const context = await fixture(t);
   const result = await context.run();
   assert.equal(result.code, 0, result.output);
   const convexCommands = result.commands.filter(command => command.command === 'convex');
   assert.ok(convexCommands.length >= 2, result.output);
   assert.ok(convexCommands.every(command => command.convexDeployKey == null));
+  assert.ok(convexCommands.every(command => command.cloudflareApiToken == null));
+  assert.ok(convexCommands.every(command => command.cloudflareAccountId == null));
   assert.ok(convexCommands.filter(command => command.args[0] === 'deploy').every(command => command.envFileDeployKey === stagingDeployKey));
   assert.ok(convexCommands.every(command => command.envFileDeployKey !== prodDeployKey));
+  const wrangler = result.commands.find(command => command.command === 'wrangler');
+  assert.ok(wrangler, result.output);
+  assert.equal(wrangler.cloudflareApiToken, 'ambient-cf-token');
+  assert.equal(wrangler.cloudflareAccountId, 'ambient-cf-account');
+  assert.equal(wrangler.convexDeployKey, null);
   assert.ok(!result.output.includes(prodDeployKey));
-  assert.ok(result.commands.some(command => command.command === 'wrangler'));
 });

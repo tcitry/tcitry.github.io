@@ -3,7 +3,7 @@ import { readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveWorkersBranch } from './ci-branch.mjs';
-import { createPreviewProcessEnv, readPreviewReaderConfig } from './reader-config.mjs';
+import { createPreviewProcessEnv, readPreviewReaderConfig, stripCloudflareCredentials } from './reader-config.mjs';
 import { cleanCommit } from './release-manifest.mjs';
 import { run } from './theme-package.mjs';
 
@@ -13,9 +13,10 @@ const output = path.join(root, '.generated/preview-build.json');
 try {
   await rm(output, { force: true });
   assert.ok(process.env.BLOG_DIR, 'Set BLOG_DIR to the reviewed, isolated content checkout');
-  const { mapped, env } = createPreviewProcessEnv(process.env, root);
+  const { mapped, env: previewEnv } = createPreviewProcessEnv(process.env, root);
   const reader = readPreviewReaderConfig(mapped);
-  for (const name of ['BLOG_READ_TOKEN', 'HEROUI_AUTH_TOKEN', 'GITHUB_TOKEN', 'GH_TOKEN']) delete env[name];
+  const env = stripCloudflareCredentials(previewEnv);
+  for (const name of ['BLOG_READ_TOKEN', 'HEROUI_AUTH_TOKEN', 'GITHUB_TOKEN', 'GH_TOKEN', 'CONVEX_DEPLOY_KEY']) delete env[name];
   await run(process.execPath, ['scripts/verify-build.mjs', '--env', 'preview'], root, false, env);
   const verification = JSON.parse(await readFile(path.join(root, '.generated/verification.json'), 'utf8'));
   assert.equal(verification.environment, 'preview', 'Preview verification did not complete');
