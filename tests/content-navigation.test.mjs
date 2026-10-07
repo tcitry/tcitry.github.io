@@ -71,9 +71,10 @@ test('home lists dated docs, posts and weekly like archives and keeps 10-item pa
   assert.equal(home[1].page.url, '/page/2/');
   assert.deepEqual(home[0].pagination, { current: 1, total: 2, urls: ['/', '/page/2/'] });
   const posts = views.find((view) => view.page.url === '/posts/').entries.map((entry) => entry.id);
-  assert.equal(posts.length, 10);
-  assert.ok(posts.every((id) => id.startsWith('post-')));
-  assert.ok(!posts.includes('doc-1') && !posts.includes('weekly-1') && !posts.includes('link'));
+  assert.equal(posts.length, 11);
+  assert.ok(posts.includes('weekly-1'));
+  assert.ok(posts.every((id) => id.startsWith('post-') || id.startsWith('weekly-')));
+  assert.ok(!posts.includes('doc-1') && !posts.includes('link'));
 });
 
 test('home pagination and posts archive retain articles located outside the posts content section', async () => {
