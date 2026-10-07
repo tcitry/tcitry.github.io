@@ -69,7 +69,7 @@ function entriesFor(page: ContentPage): ContentPage[] {
   }
   if (page.type === 'timeline') return regularPages.filter(p => p.type === 'timeline' && dateValue(p.date) >= Date.parse('2000-01-01')).sort(byDate);
   if (page.kind === 'section') {
-    if (page.url === '/posts/') return regularPages.filter(p => p.type === 'posts' && p.date).sort(byDate);
+    if (page.url === '/posts/') return regularPages.filter(p => ['posts', 'weekly'].includes(p.type) && p.date).sort(byDate);
     if (page.url === '/weekly/') return regularPages.filter(p => p.type === 'weekly' && p.date).sort(byDate);
     if (page.url === '/links/') return regularPages.filter(p => p.type === 'links').sort(byDate);
     if (page.section === 'docs') return content.pages.filter(p => p.parent === page.id || p.parent === page.url || p.parent === page.source).filter(p => !p.hidden).sort(byMenu);
