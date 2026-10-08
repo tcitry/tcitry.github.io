@@ -144,8 +144,8 @@ npm run setup
 主题 tarball 已准备且与 lockfile 一致时，可以单独用 `npm ci` 恢复依赖。若仅 HeroUI Pro 授权产物缺失，在已登录的机器上运行：
 
 ```sh
-npx heroui-pro@1.0.0-beta.12 status
-npx heroui-pro@1.0.0-beta.12 install react --yes
+npx heroui-pro@1.0.0-beta.14 status
+npx heroui-pro@1.0.0-beta.14 install react --yes
 ```
 
 在 CI 构建时，通过 CI 平台的 secret 注入官方仪表盘提供的 **CI/CD token**，变量名为 `HEROUI_AUTH_TOKEN`。`npm ci` 的 postinstall 会读取它并下载授权产物。应使用专门的 CI/CD token，不复制个人登录凭证。该变量没有 `PUBLIC_` 前缀，不进入客户端源码、构建参数或日志。
