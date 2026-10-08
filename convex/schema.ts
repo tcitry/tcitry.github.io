@@ -1,6 +1,8 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
+const importSource = v.union(v.literal("github_discussion"), v.literal("giscus"));
+
 const pageFields = {
   owner: v.string(),
   pathname: v.string(),
@@ -49,7 +51,7 @@ export default defineSchema({
     deletedAt: v.optional(v.number()), likeCount: v.optional(v.number()),
     imageIds: v.optional(v.array(v.id("commentImages"))),
     authorImageUrl: v.optional(v.string()),
-    importSource: v.optional(v.union(v.literal("github_discussion"), v.literal("giscus"))),
+    importSource: v.optional(importSource),
     externalId: v.optional(v.string()),
     sourceDiscussionNumber: v.optional(v.number()),
     githubLogin: v.optional(v.string()),
@@ -61,9 +63,12 @@ export default defineSchema({
     .index("by_importSource", ["importSource"]),
   commentStats: defineTable({pathname: v.string(), commentCount: v.number(), likeCount: v.number()})
     .index("by_pathname", ["pathname"]),
-  articleLikes: defineTable({pathname: v.string(), owner: v.string(), title: v.optional(v.string()), createdAt: v.optional(v.number())})
-    .index("by_pathname_and_owner", ["pathname", "owner"])
-    .index("by_owner_and_createdAt", ["owner", "createdAt"]),
+  articleLikes: defineTable({
+    pathname: v.string(), owner: v.string(), title: v.optional(v.string()), createdAt: v.optional(v.number()),
+    importSource: v.optional(importSource),
+  }).index("by_pathname_and_owner", ["pathname", "owner"])
+    .index("by_owner_and_createdAt", ["owner", "createdAt"])
+    .index("by_importSource", ["importSource"]),
   notifications: defineTable({
     recipient: v.string(),
     kind: v.union(
@@ -77,8 +82,9 @@ export default defineSchema({
     messageId: v.optional(v.id("consultationMessages")),
   }).index("by_recipient_and_createdAt", ["recipient", "createdAt"])
     .index("by_recipient_and_readAt", ["recipient", "readAt"]),
-  commentLikes: defineTable({commentId: v.id("comments"), owner: v.string()})
-    .index("by_commentId_and_owner", ["commentId", "owner"]),
+  commentLikes: defineTable({commentId: v.id("comments"), owner: v.string(), importSource: v.optional(importSource)})
+    .index("by_commentId_and_owner", ["commentId", "owner"])
+    .index("by_importSource", ["importSource"]),
   commentImages: defineTable({
     owner: v.string(), storageId: v.id("_storage"), contentType: v.string(), size: v.number(),
     purpose: v.union(v.literal("comment"), v.literal("consultation")),

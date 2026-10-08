@@ -63,6 +63,9 @@
     "giscus-import:prod": "node scripts/giscus-import-prod.mjs --dry-run",
     "giscus-import:prod:apply": "node scripts/giscus-import-prod.mjs --apply",
     "giscus-import:prod:rollback": "node scripts/giscus-import-prod.mjs --rollback --apply",
+    "giscus-reactions:prod": "node scripts/giscus-reactions-prod.mjs --dry-run",
+    "giscus-reactions:prod:apply": "node scripts/giscus-reactions-prod.mjs --apply",
+    "giscus-reactions:prod:rollback": "node scripts/giscus-reactions-prod.mjs --rollback",
     "dev:worker": "wrangler dev"
   },
   "dependencies": {
