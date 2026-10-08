@@ -25,6 +25,34 @@ const importResult = v.object({
   pathnames: v.record(v.string(), v.number()),
 });
 
+const articleLikeRow = v.object({
+  pathname: v.string(),
+  owner: v.string(),
+  title: v.optional(v.string()),
+  createdAt: v.number(),
+});
+
+const commentLikeRow = v.object({
+  externalId: v.string(),
+  owner: v.string(),
+});
+
+function validateLikeOwner(owner: string) {
+  if (!owner.startsWith("github:user:")) {
+    throw new ConvexError({code: "INVALID_ARGUMENT", message: "Imported likes must use synthetic GitHub owners."});
+  }
+  return owner;
+}
+
+function validateLikeTitle(title: string | undefined) {
+  if (title === undefined) return undefined;
+  const trimmed = title.trim();
+  if (!trimmed || trimmed.length > 160 || /[\u0000-\u001f\u007f]/u.test(trimmed)) {
+    throw new ConvexError({code: "INVALID_ARGUMENT", message: "Imported article title is invalid."});
+  }
+  return trimmed;
+}
+
 function validateImportBody(body: string) {
   const trimmed = body.trim();
   if (!trimmed || trimmed.length > 4_000 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(trimmed)) {
@@ -50,9 +78,9 @@ async function readStats(ctx: MutationCtx, pathname: string) {
   return {id: null, commentCount: comments.filter(row => row.deletedAt === undefined).length, likeCount: likes.length};
 }
 
-async function updateStats(ctx: MutationCtx, pathname: string, stats: Awaited<ReturnType<typeof readStats>>, commentDelta: number) {
-  const value = {commentCount: stats.commentCount + commentDelta, likeCount: stats.likeCount};
-  if (value.commentCount < 0) throw new ConvexError({code: "COUNTS_NOT_READY", message: "Comment totals are not ready for import."});
+async function updateStats(ctx: MutationCtx, pathname: string, stats: Awaited<ReturnType<typeof readStats>>, commentDelta: number, likeDelta = 0) {
+  const value = {commentCount: stats.commentCount + commentDelta, likeCount: stats.likeCount + likeDelta};
+  if (value.commentCount < 0 || value.likeCount < 0) throw new ConvexError({code: "COUNTS_NOT_READY", message: "Comment totals are not ready for import."});
   if (stats.id) await ctx.db.patch("commentStats", stats.id, value);
   else await ctx.db.insert("commentStats", {pathname, ...value});
 }
@@ -158,5 +186,108 @@ export const rollback = internalMutation({
     }
 
     return {deleted, pathnames: Object.fromEntries(pathDelta)};
+  },
+});
+
+export const importReactions = internalMutation({
+  args: {
+    articleLikes: v.array(articleLikeRow),
+    commentLikes: v.array(commentLikeRow),
+    importSource,
+  },
+  returns: v.object({
+    inserted: v.number(),
+    skipped: v.number(),
+    pathnames: v.record(v.string(), v.number()),
+    comments: v.record(v.string(), v.number()),
+  }),
+  handler: async (ctx, args) => {
+    const pathDelta = new Map<string, number>();
+    const commentDelta = new Map<string, number>();
+    const statsByPath = new Map<string, Awaited<ReturnType<typeof readStats>>>();
+    let inserted = 0;
+    let skipped = 0;
+
+    for (const row of args.articleLikes) {
+      const owner = validateLikeOwner(row.owner);
+      const title = validateLikeTitle(row.title);
+      const pathname = canonicalPathname(row.pathname);
+      if (!statsByPath.has(pathname)) statsByPath.set(pathname, await readStats(ctx, pathname));
+      const existing = await ctx.db.query("articleLikes").withIndex("by_pathname_and_owner", q => q.eq("pathname", pathname).eq("owner", owner)).unique();
+      if (existing) {
+        skipped += 1;
+        continue;
+      }
+      await ctx.db.insert("articleLikes", {pathname, owner, ...(title ? {title} : {}), createdAt: row.createdAt, importSource: args.importSource});
+      pathDelta.set(pathname, (pathDelta.get(pathname) ?? 0) + 1);
+      inserted += 1;
+    }
+
+    for (const row of args.commentLikes) {
+      const owner = validateLikeOwner(row.owner);
+      const comment = await existingByExternalId(ctx, row.externalId);
+      if (!comment) throw new ConvexError({code: "INVALID_ARGUMENT", message: `Imported comment ${row.externalId} does not exist.`});
+      if (comment.deletedAt !== undefined) throw new ConvexError({code: "INVALID_ARGUMENT", message: `Imported comment ${row.externalId} is deleted.`});
+      const existing = await ctx.db.query("commentLikes").withIndex("by_commentId_and_owner", q => q.eq("commentId", comment._id).eq("owner", owner)).unique();
+      if (existing) {
+        skipped += 1;
+        continue;
+      }
+      await ctx.db.insert("commentLikes", {commentId: comment._id, owner, importSource: args.importSource});
+      await ctx.db.patch("comments", comment._id, {likeCount: (comment.likeCount ?? 0) + 1});
+      commentDelta.set(row.externalId, (commentDelta.get(row.externalId) ?? 0) + 1);
+      inserted += 1;
+    }
+
+    for (const [pathname, delta] of pathDelta) {
+      const stats = statsByPath.get(pathname) ?? await readStats(ctx, pathname);
+      await updateStats(ctx, pathname, stats, 0, delta);
+    }
+
+    return {
+      inserted,
+      skipped,
+      pathnames: Object.fromEntries(pathDelta),
+      comments: Object.fromEntries(commentDelta),
+    };
+  },
+});
+
+export const rollbackReactions = internalMutation({
+  args: {importSource},
+  returns: v.object({
+    deleted: v.number(),
+    pathnames: v.record(v.string(), v.number()),
+    comments: v.record(v.string(), v.number()),
+  }),
+  handler: async (ctx, args) => {
+    const articleRows = await ctx.db.query("articleLikes").withIndex("by_importSource", q => q.eq("importSource", args.importSource)).collect();
+    const commentRows = await ctx.db.query("commentLikes").withIndex("by_importSource", q => q.eq("importSource", args.importSource)).collect();
+    const pathDelta = new Map<string, number>();
+    const commentDelta = new Map<string, number>();
+
+    for (const row of articleRows) pathDelta.set(row.pathname, (pathDelta.get(row.pathname) ?? 0) + 1);
+    for (const [pathname, delta] of pathDelta) {
+      const stats = await readStats(ctx, pathname);
+      const value = {commentCount: stats.commentCount, likeCount: Math.max(0, stats.likeCount - delta)};
+      if (stats.id) await ctx.db.patch("commentStats", stats.id, value);
+      else await ctx.db.insert("commentStats", {pathname, ...value});
+    }
+    await Promise.all(articleRows.map(row => ctx.db.delete("articleLikes", row._id)));
+
+    for (const row of commentRows) {
+      await ctx.db.delete("commentLikes", row._id);
+      const comment = await ctx.db.get("comments", row.commentId);
+      if (!comment) continue;
+      await ctx.db.patch("comments", comment._id, {likeCount: Math.max(0, (comment.likeCount ?? 0) - 1)});
+      const key = comment.externalId ?? comment._id;
+      commentDelta.set(key, (commentDelta.get(key) ?? 0) + 1);
+    }
+
+    return {
+      deleted: articleRows.length + commentRows.length,
+      pathnames: Object.fromEntries(pathDelta),
+      comments: Object.fromEntries(commentDelta),
+    };
   },
 });

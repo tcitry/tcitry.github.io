@@ -15,6 +15,8 @@ export function syntheticGithubOwner(databaseId) {
   return `github:user:${databaseId}`;
 }
 
+const REACTION_GROUPS_FIELDS = 'reactionGroups { content reactors { totalCount } }';
+
 const DISCUSSIONS_QUERY = `
 query($owner: String!, $name: String!, $categoryId: ID!, $cursor: String) {
   repository(owner: $owner, name: $name) {
@@ -22,30 +24,55 @@ query($owner: String!, $name: String!, $categoryId: ID!, $cursor: String) {
       totalCount
       pageInfo { hasNextPage endCursor }
       nodes {
+        id
+        databaseId
         number
         title
         url
         createdAt
+        ${REACTION_GROUPS_FIELDS}
         comments(first: 20) {
           totalCount
+          pageInfo { hasNextPage }
           nodes {
+            id
             databaseId
             createdAt
             url
             author { login ... on User { databaseId } }
             body
+            ${REACTION_GROUPS_FIELDS}
             replies(first: 20) {
               totalCount
+              pageInfo { hasNextPage }
               nodes {
+                id
                 databaseId
                 createdAt
                 url
                 author { login ... on User { databaseId } }
                 body
+                ${REACTION_GROUPS_FIELDS}
               }
             }
           }
         }
+      }
+    }
+  }
+}`;
+
+const REACTIONS_BATCH_SIZE = 50;
+
+const REACTIONS_QUERY = `
+query($ids: [ID!]!) {
+  nodes(ids: $ids) {
+    id
+    ... on Reactable {
+      reactions(first: 100) {
+        totalCount
+        pageInfo { hasNextPage }
+        nodes { content createdAt user { login databaseId } }
       }
     }
   }
@@ -135,6 +162,20 @@ function flattenComments(comments) {
   return rows;
 }
 
+/** Fail instead of importing a silently truncated comments/replies page. */
+export function assertDiscussionsComplete(discussions) {
+  for (const discussion of discussions) {
+    if (discussion.comments?.pageInfo?.hasNextPage) {
+      throw new Error(`Discussion #${discussion.number} has more than ${discussion.comments.nodes.length} comments; paginate before importing.`);
+    }
+    for (const comment of discussion.comments?.nodes ?? []) {
+      if (comment.replies?.pageInfo?.hasNextPage) {
+        throw new Error(`Comment ${comment.databaseId} in discussion #${discussion.number} has more than ${comment.replies.nodes.length} replies; paginate before importing.`);
+      }
+    }
+  }
+}
+
 export async function fetchAnnouncementsDiscussions() {
   const discussions = [];
   let cursor = null;
@@ -146,6 +187,7 @@ export async function fetchAnnouncementsDiscussions() {
       cursor,
     });
     const connection = data.repository.discussions;
+    assertDiscussionsComplete(connection.nodes);
     discussions.push(...connection.nodes);
     if (!connection.pageInfo.hasNextPage) break;
     cursor = connection.pageInfo.endCursor;
@@ -373,4 +415,193 @@ export function renderDryRunMarkdown(report) {
 
   lines.push('## Import owner convention', '', 'Imported rows will use `owner = github:user:{GitHubUser.databaseId}` and `externalId = {Comment.databaseId}` for idempotent re-import.', '');
   return lines.join('\n');
+}
+
+export const DEFAULT_REACTION_OPTIONS = Object.freeze({
+  excludedContents: Object.freeze(['THUMBS_DOWN', 'CONFUSED']),
+  excludedLogins: Object.freeze(['tcitry']),
+  excludedUserIds: Object.freeze([5220740]),
+});
+
+export const REACTION_EXCLUSION_REASONS = ['excluded_user', 'negative', 'ghost', 'duplicate'];
+
+function reactionTotal(node) {
+  return (node.reactionGroups ?? []).reduce((sum, group) => sum + (group.reactors?.totalCount ?? 0), 0);
+}
+
+function legacyTitlesByPathname(site) {
+  const titles = new Map();
+  for (const page of site.legacyPages ?? []) {
+    const pathname = canonicalPathname(page.url);
+    const title = typeof page.title === 'string' ? page.title.trim() : '';
+    if (pathname && title && title.length <= 160 && !titles.has(pathname)) titles.set(pathname, title);
+  }
+  return titles;
+}
+
+/** Discussion bodies and comments/replies that carry at least one reaction, with their import targets. */
+export function collectReactionTargets(discussions, site) {
+  const titles = legacyTitlesByPathname(site);
+  const importedComments = new Set(buildProductionImportPlan(discussions, site).rows.map(row => row.externalId));
+  const targets = [];
+  for (const discussion of discussions) {
+    const mapping = proposeDiscussionMapping(discussion, site);
+    const pathname = isApprovedForImport(mapping) ? resolveImportPathname(mapping) : null;
+    if (reactionTotal(discussion) > 0) {
+      targets.push({
+        type: 'article',
+        nodeId: discussion.id,
+        discussionNumber: discussion.number,
+        pathname,
+        title: pathname ? titles.get(pathname) ?? null : null,
+        resolved: Boolean(pathname),
+      });
+    }
+    for (const comment of flattenComments(discussion.comments)) {
+      if (reactionTotal(comment) === 0) continue;
+      const externalId = String(comment.databaseId);
+      targets.push({
+        type: 'comment',
+        nodeId: comment.id,
+        discussionNumber: discussion.number,
+        pathname,
+        externalId,
+        resolved: Boolean(pathname) && importedComments.has(externalId),
+      });
+    }
+  }
+  return targets;
+}
+
+/** Second GraphQL pass: fetch reactions only for nodes that have any, via `nodes(ids:)`. */
+export async function fetchReactionsByNodeId(nodeIds) {
+  const reactions = new Map();
+  for (let index = 0; index < nodeIds.length; index += REACTIONS_BATCH_SIZE) {
+    const ids = nodeIds.slice(index, index + REACTIONS_BATCH_SIZE);
+    const data = ghGraphql(REACTIONS_QUERY, { ids });
+    data.nodes.forEach((node, position) => {
+      if (!node?.reactions) throw new Error(`GitHub node ${ids[position]} is missing or not reactable.`);
+      if (node.reactions.pageInfo.hasNextPage) throw new Error(`GitHub node ${node.id} has more than ${node.reactions.nodes.length} reactions; paginate before importing.`);
+      reactions.set(node.id, node.reactions.nodes);
+    });
+  }
+  return reactions;
+}
+
+function emptyCounts(keys) {
+  return Object.fromEntries(keys.map(key => [key, 0]));
+}
+
+function increment(counts, key) {
+  counts[key] = (counts[key] ?? 0) + 1;
+}
+
+/**
+ * Map giscus reactions to site likes: one like per (target, GitHub user) for
+ * counted contents, skipping excluded users (by login and databaseId), ghosts
+ * and negative contents.
+ */
+export function buildReactionsPlan(discussions, reactionsByNodeId, site, options = DEFAULT_REACTION_OPTIONS) {
+  const excludedContents = new Set(options.excludedContents);
+  const excludedLogins = new Set(options.excludedLogins.map(login => login.toLowerCase()));
+  const excludedUserIds = new Set(options.excludedUserIds.map(Number));
+  for (const reactions of reactionsByNodeId.values()) {
+    for (const reaction of reactions) {
+      if (reaction.user?.databaseId != null && excludedLogins.has(String(reaction.user.login).toLowerCase())) {
+        excludedUserIds.add(reaction.user.databaseId);
+      }
+    }
+  }
+
+  const raw = { total: 0, byContent: {}, byTargetType: { article: 0, comment: 0 } };
+  const excluded = emptyCounts(REACTION_EXCLUSION_REASONS);
+  const excludedReactions = [];
+  const articleLikes = [];
+  const commentLikes = [];
+  const targets = [];
+
+  for (const target of collectReactionTargets(discussions, site)) {
+    const reactions = reactionsByNodeId.get(target.nodeId);
+    if (!reactions) throw new Error(`Reactions for GitHub node ${target.nodeId} were not fetched.`);
+    const sorted = [...reactions].sort((left, right) => Date.parse(left.createdAt) - Date.parse(right.createdAt));
+    const seen = new Set();
+    const accepted = [];
+    const targetExcluded = emptyCounts(REACTION_EXCLUSION_REASONS);
+    const ref = target.type === 'article'
+      ? { type: 'article', discussionNumber: target.discussionNumber, pathname: target.pathname }
+      : { type: 'comment', discussionNumber: target.discussionNumber, pathname: target.pathname, externalId: target.externalId };
+
+    for (const reaction of sorted) {
+      raw.total += 1;
+      increment(raw.byContent, reaction.content);
+      increment(raw.byTargetType, target.type);
+      const user = reaction.user;
+      let reason = null;
+      if (!user || user.databaseId == null) reason = 'ghost';
+      else if (excludedUserIds.has(user.databaseId) || excludedLogins.has(String(user.login).toLowerCase())) reason = 'excluded_user';
+      else if (excludedContents.has(reaction.content)) reason = 'negative';
+      else if (seen.has(user.databaseId)) reason = 'duplicate';
+      if (reason) {
+        increment(excluded, reason);
+        increment(targetExcluded, reason);
+        excludedReactions.push({ ...ref, reason, content: reaction.content, githubLogin: user?.login ?? null, createdAt: reaction.createdAt });
+        continue;
+      }
+      seen.add(user.databaseId);
+      accepted.push({ owner: syntheticGithubOwner(user.databaseId), githubLogin: user.login, createdAt: Date.parse(reaction.createdAt) });
+    }
+
+    targets.push({ ...ref, resolved: target.resolved, raw: sorted.length, likes: accepted.length, githubLogins: accepted.map(like => like.githubLogin), excluded: targetExcluded });
+    if (!target.resolved) continue;
+    for (const like of accepted) {
+      if (target.type === 'article') {
+        articleLikes.push({ pathname: target.pathname, owner: like.owner, ...(target.title ? { title: target.title } : {}), createdAt: like.createdAt });
+      } else {
+        commentLikes.push({ externalId: target.externalId, owner: like.owner });
+      }
+    }
+  }
+
+  const unresolved = targets.filter(target => !target.resolved && target.likes > 0);
+  const excludedTotal = Object.values(excluded).reduce((sum, count) => sum + count, 0);
+  return {
+    generatedAt: new Date().toISOString(),
+    importSource: GISCUS_IMPORT_SOURCE,
+    options: {
+      excludedContents: [...excludedContents],
+      excludedLogins: [...excludedLogins],
+      excludedUserIds: [...excludedUserIds],
+    },
+    totals: {
+      raw,
+      excluded: { total: excludedTotal, ...excluded },
+      imported: { total: articleLikes.length + commentLikes.length, articleLikes: articleLikes.length, commentLikes: commentLikes.length },
+      unresolved: unresolved.length,
+    },
+    targets,
+    unresolved,
+    excludedReactions,
+    articleLikes,
+    commentLikes,
+  };
+}
+
+export function renderReactionsSummary(plan) {
+  const { raw, excluded, imported } = plan.totals;
+  const byContent = Object.entries(raw.byContent).map(([content, count]) => `${content} ${count}`).join(', ') || 'none';
+  const lines = [
+    `Raw reactions: ${raw.total} (article ${raw.byTargetType.article}, comment ${raw.byTargetType.comment}; ${byContent})`,
+    `Excluded: ${excluded.total} (${REACTION_EXCLUSION_REASONS.map(reason => `${reason} ${excluded[reason]}`).join(', ')})`,
+    `Importing: ${imported.total} likes (article ${imported.articleLikes}, comment ${imported.commentLikes})`,
+  ];
+  for (const target of plan.targets) {
+    const label = target.type === 'article'
+      ? `article #${target.discussionNumber} ${target.pathname ?? '(unmapped)'}`
+      : `comment ${target.externalId} (#${target.discussionNumber} ${target.pathname ?? '(unmapped)'})`;
+    const excludedLabel = REACTION_EXCLUSION_REASONS.filter(reason => target.excluded[reason]).map(reason => `${reason} ${target.excluded[reason]}`).join(', ');
+    const logins = target.githubLogins.length ? ` [${target.githubLogins.join(', ')}]` : '';
+    lines.push(`  ${label}: +${target.likes}${logins}${excludedLabel ? `; excluded ${excludedLabel}` : ''}${target.resolved ? '' : '; UNRESOLVED'}`);
+  }
+  if (plan.unresolved.length) lines.push(`Unresolved targets: ${plan.unresolved.length} (not in the approved comment import; apply is blocked)`);
+  return lines;
 }
