@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { parseArgs } from 'node:util';
 import { parse, parseFragment } from 'parse5';
-import { assertCanonical, assertComments, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects, removedAuthRoutes } from './verify-deployment.mjs';
+import { publicURL } from '../src/lib/public-url.mjs';
+import { assertCanonical, assertComments, assertSitemapLocations, canonicalLinks, sitemapLocations, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects, removedAuthRoutes } from './verify-deployment.mjs';
 import { auditContentLinks } from './internal-links.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), output = path.join(root, 'dist');
 const { values } = parseArgs({ options: { env: { type: 'string' }, help: { type: 'boolean' } } });
@@ -137,9 +138,13 @@ for (const url of ['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/link
 assertRobotsPolicy(await readFile(path.join(output, 'robots.txt'), 'utf8'), environment);
 const sitemap = await readFile(path.join(output, 'sitemap.xml'), 'utf8');
 assert.match(sitemap, /<urlset\b/); assertXMLSiteURLs(sitemap, 'sitemap.xml');
-for (const url of [...urls].filter(url => !/\/page\/\d+\/$/.test(url))) assert.ok(sitemap.includes(`<loc>https://yindongliang.com${url}</loc>`), `Canonical route missing from sitemap: ${url}`);
+for (const url of [...urls].filter(url => !/\/page\/\d+\/$/.test(url))) assert.ok(sitemap.includes(`<loc>${publicURL(url)}</loc>`), `Canonical route missing from sitemap: ${url}`);
 const notFound = await readFile(path.join(output, '404.html'), 'utf8');
 assert.match(notFound, /页面未找到/); assertComments(notFound, false, '/404.html');
+// The 404 body answers every missing URL, so it must not claim an address or article.
+assert.deepEqual(canonicalLinks(notFound), [], '404 page must not declare a canonical');
+assert.ok(!notFound.includes('BlogPosting') && !notFound.includes('og:url'), '404 page must not carry article metadata');
+assert.match(notFound, /<meta\b[^>]*name="robots"[^>]*content="noindex/, '404 page must be noindex');
 for (const asset of assetReferences(notFound, '/404.html')) assets.add(asset);
 await assert.rejects(access(path.join(output, 'demos/2026/cloudflare-product-map')), { code: 'ENOENT' }, 'Removed demo assets must not be republished');
 {
@@ -158,7 +163,7 @@ const feeds = new Set(['/index.xml', '/posts/index.xml', '/weekly/index.xml', '/
   assert.ok(html.includes('data-demo="threejs-basics"'), 'Three.js scene markup must survive the build');
   assert.ok(html.includes('<noscript>'), 'The 3D demo must explain how to continue without JavaScript');
   assert.ok(!html.includes('cdn.jsdelivr.net'), 'The 3D demo must use bundled local dependencies');
-  assert.ok(sitemap.includes(`<loc>https://yindongliang.com${url}</loc>`), 'Three.js demo is discoverable in sitemap');
+  assert.ok(sitemap.includes(`<loc>${publicURL(url)}</loc>`), 'Three.js demo is discoverable in sitemap');
 }
 for (const term of [...content.tags, ...content.categories]) { assert.ok(urls.has(term.url), `Taxonomy page missing: ${term.url}`); feeds.add(`${term.url}index.xml`); }
 for (const url of feeds) {
@@ -166,6 +171,9 @@ for (const url of feeds) {
   assert.match(xml, /<rss\b[^>]*version="2\.0"/); assertXMLSiteURLs(xml, url);
 }
 const redirects = parseRedirects(await readFile(path.join(output, '_redirects'), 'utf8'));
+const locations = sitemapLocations(sitemap);
+const canonicals = new Map(await Promise.all(locations.map(async loc => [loc, canonicalLinks(await readFile(htmlPath(new URL(loc).pathname), 'utf8'))])));
+assertSitemapLocations(locations, { canonicalOf: loc => canonicals.get(loc), redirects });
 const links = await auditContentLinks({ pages: content.pages, output, redirects, site: 'https://yindongliang.com' });
 assert.deepEqual(links.errors, [], 'Every internal article link and fragment must have a published destination');
 assert.ok(redirects.some(rule => rule.from === '/page/1/' && rule.to === '/'), 'First-page redirect missing');
@@ -186,13 +194,13 @@ for (const directory of ['index', 'fragment']) assert.ok((await readdir(path.joi
 for (const url of ['/chat/', '/me/']) {
   await assert.rejects(access(htmlPath(url)), {code: 'ENOENT'}, `Removed account page must not be generated: ${url}`);
   assert.ok(!redirects.some(rule => rule.from === url), `Unpublished account URL does not need a redirect: ${url}`);
-  assert.ok(!sitemap.includes(`<loc>https://yindongliang.com${url}</loc>`), `Removed account URL is excluded from sitemap: ${url}`);
+  assert.ok(!sitemap.includes(`<loc>${publicURL(url)}</loc>`), `Removed account URL is excluded from sitemap: ${url}`);
 }
 for (const url of removedAuthRoutes) {
   await assert.rejects(access(path.join(output, url)), {code: 'ENOENT'}, `Removed auth path must not be generated: ${url}`);
   await assert.rejects(access(path.join(output, `${url.slice(0, -1)}.html`)), {code: 'ENOENT'}, `Removed auth page must not be generated: ${url}`);
   assert.ok(!redirects.some(rule => rule.from === url || rule.from === url.slice(0, -1)), `Removed auth path must return 404 without redirects: ${url}`);
-  assert.ok(!sitemap.includes(`<loc>https://yindongliang.com${url}</loc>`), `Removed auth path must stay out of the sitemap: ${url}`);
+  assert.ok(!sitemap.includes(`<loc>${publicURL(url)}</loc>`), `Removed auth path must stay out of the sitemap: ${url}`);
 }
 const lab = await readFile(path.join(output, 'labs/index.html'), 'utf8');
 checkPage(lab, '/labs/');
