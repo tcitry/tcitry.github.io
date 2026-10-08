@@ -133,6 +133,7 @@
     "wrangler": "4.145.0"
   },
   "overrides": {
+    "katex": "0.18.10",
     "heroui-pro": {
       "tar": "7.5.22"
     }
