@@ -75,9 +75,9 @@
     "@convex-dev/agent": "0.7.2",
     "@convex-dev/rate-limiter": "0.3.2",
     "@gravity-ui/icons": "2.22.0",
-    "@heroui-pro/react": "1.0.0-beta.8",
-    "@heroui/react": "3.2.4",
-    "@heroui/styles": "3.2.4",
+    "@heroui-pro/react": "1.0.0-beta.10",
+    "@heroui/react": "3.2.6",
+    "@heroui/styles": "3.2.6",
     "@mdx-js/mdx": "3.1.1",
     "@react-aria/utils": "^3.34.1",
     "@sentry/astro": "10.73.0",
@@ -135,6 +135,7 @@
   "overrides": {
     "katex": "0.18.10",
     "heroui-pro": {
+      "figlet": "1.11.3",
       "tar": "7.5.22"
     }
   }
