@@ -1,6 +1,7 @@
 ---
 import SEO from '@tcitry/astro-book/components/SEO';
 import '../styles/tailwind.css';
+import { publicURL } from '../lib/public-url.mjs';
 
 interface Props {
   title: string;
@@ -19,7 +20,7 @@ const production = import.meta.env.PUBLIC_SITE_ENV === 'production';
     <meta name="color-scheme" content="light" />
     <link rel="icon" href="data:," />
     <SEO title={title} description={description} siteName="LYon's Blog"
-      canonical={new URL(path, 'https://yindongliang.com').href}
+      canonical={publicURL(path)}
       robots={production ? undefined : 'noindex, nofollow'} />
     <slot name="head" />
   </head>

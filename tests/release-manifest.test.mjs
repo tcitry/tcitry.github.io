@@ -25,6 +25,7 @@ async function fixture(t) {
   }
   await mkdir(path.join(site, 'src/lib'), {recursive: true});
   await copyFile(new URL('../src/lib/public-ai-search-url.mjs', import.meta.url), path.join(site, 'src/lib/public-ai-search-url.mjs'));
+  await copyFile(new URL('../src/lib/public-url.mjs', import.meta.url), path.join(site, 'src/lib/public-url.mjs'));
   await writeFile(path.join(site, '.gitignore'), 'dist/\n.generated/\nnode_modules/\n.env*\n');
   await writeFile(path.join(site, 'package.json'), '{"type":"module"}');
   await writeFile(path.join(site, 'wrangler.jsonc'), '{"name":"test-worker","assets":{"directory":"./dist"}}');

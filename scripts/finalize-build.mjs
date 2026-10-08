@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertBuiltReaderConfig } from './reader-build.mjs';
 import { previewBuildOutput } from './build-site.mjs';
+import { publicURL } from '../src/lib/public-url.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = await previewBuildOutput(root, process.env.BLOG_PREVIEW_OUTPUT_DIR, process.env.PUBLIC_SITE_ENV);
 // Preserve Astro's snapshot of the configuration actually compiled into JS.
@@ -13,9 +14,8 @@ if (process.env.PUBLIC_SITE_ENV === 'production') await assertBuiltReaderConfig(
 else await rm(path.join(root, '.generated/reader-build.json'), { force: true });
 const content = JSON.parse(await readFile(path.join(root, '.generated/content.json'), 'utf8'));
 const routes = JSON.parse(await readFile(path.join(root, '.generated/routes.json'), 'utf8'));
-const origin = 'https://yindongliang.com';
 const escape = value => String(value).replace(/[<>&"']/g, char => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[char]);
-const absolute = url => new URL(url, origin).href;
+const absolute = publicURL;
 const destination = url => {
   const relative = decodeURIComponent(url).replace(/^\//, '');
   const target = path.resolve(output, relative);

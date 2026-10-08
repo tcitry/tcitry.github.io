@@ -14,10 +14,12 @@ import BlogSearch from '../components/search/BlogSearch.astro';
 import BlogChatWidget from '../components/chat/BlogChatWidget.astro';
 import GoogleOneTapPrompt from '../components/auth/GoogleOneTapPrompt';
 import ObsidianNoteButton from '../components/book/ObsidianNoteButton';
-interface Props { page: ContentPage; navigation: NavigationNode[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[] }
-const { page, navigation, tags } = Astro.props;
+import { publicURL } from '../lib/public-url.mjs';
+interface Props { page: ContentPage; navigation: NavigationNode[]; tags: TaxonomyTerm[]; categories: TaxonomyTerm[]; notFound?: boolean }
+const { page, navigation, tags, notFound = false } = Astro.props;
 const title = headTitle(page);
-const canonical = new URL(page.url, 'https://yindongliang.com').href;
+// The 404 body is served for every missing URL, so it has no canonical address.
+const canonical = notFound ? undefined : publicURL(page.url);
 const production = import.meta.env.PUBLIC_SITE_ENV === 'production';
 const description = page.description || page.summary.slice(0, 180) || "LYon's Blog offers insights on algorithms, coding, technology, and personal reflections. Explore tutorials, resources, and more.";
 const tocHTML = Astro.slots.has('toc') ? await Astro.slots.render('toc') : '';
@@ -29,7 +31,8 @@ const next = index >= 0 ? pageLink(docs[index + 1]) : undefined;
 // Only independent public articles get a Convex discussion, after footer navigation.
 const comments = page.kind === 'page' && ['docs', 'posts', 'about', 'weekly', 'links'].includes(page.type);
 const readerArticle = page.kind === 'page' && ['docs', 'posts', 'weekly', 'links'].includes(page.type) && Boolean(page.html);
-const articleSchema = page.kind === 'page' && page.type !== 'reader' ? {
+const article = page.kind === 'page' && page.type !== 'reader' && !notFound;
+const articleSchema = article ? {
   '@context': 'https://schema.org', '@type': 'BlogPosting', headline: page.title,
   description, url: canonical, mainEntityOfPage: canonical,
   author: { '@type': 'Person', name: 'YINDONGLIANG', url: 'https://yindongliang.com/about/' },
@@ -62,7 +65,7 @@ const site = {
   code={false}
   page={{ title, url: page.url, headings: page.headings, toc: page.toc, bodyClass: `${blogStyles.site} ${codeStyles.scope} blog-chat-layout book-kind-${page.kind} book-type-${page.type}${page.layout ? ` book-layout-${page.layout}` : ''}` }}
   navigation={toNavigation(navigation)} previous={previous} next={next}
-  seo={{ title, openGraphTitle: bookTitle(page), description, canonical, robots: production && page.type !== 'reader' ? undefined : 'noindex, nofollow', siteName: site.title, locale: 'zh_CN', type: page.kind === 'page' && page.type !== 'reader' ? 'article' : 'website', image: page.image ? new URL(page.image, 'https://yindongliang.com').href : undefined, twitterSite: '@tcitry', feeds: [{ title: site.title, href: '/index.xml' }], structuredData: articleSchema }}
+  seo={{ title, openGraphTitle: bookTitle(page), description, canonical, robots: notFound ? 'noindex' : production && page.type !== 'reader' ? undefined : 'noindex, nofollow', siteName: site.title, locale: 'zh_CN', type: article ? 'article' : 'website', image: page.image ? new URL(page.image, 'https://yindongliang.com').href : undefined, twitterSite: '@tcitry', feeds: [{ title: site.title, href: '/index.xml' }], structuredData: articleSchema }}
   mermaid={{ errorMessage: '图表未能渲染，已保留 Mermaid 源码。' }}
   labels={{ skipToContent: '跳至正文', navigation: '主导航', openNavigation: '打开导航', closeNavigation: '关闭导航', tableOfContents: '目录', openTableOfContents: '打开目录', expandSection: '展开', previousPage: '上一篇', nextPage: '下一篇', search: '搜索博客', closeSearch: '关闭 Esc' }}>
   <Fragment slot="head">

@@ -4,9 +4,10 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
+import { assetPathname, publicURL, siteOrigin } from '../src/lib/public-url.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-export const canonicalOrigin = 'https://yindongliang.com';
+export const canonicalOrigin = siteOrigin;
 export function assertRecentUpdates(entries, routes) {
   assert.ok(Array.isArray(entries) && entries.length > 0 && entries.length <= 6, 'Recent updates must contain 1–6 public entries');
   const routeMap = new Map(routes.map(route => [route.url, route]));
@@ -33,10 +34,48 @@ const decodeHTML = value => value.replace(/&(?:amp|quot|apos|lt|gt|#\d+|#x[\da-f
 const attributes = tag => Object.fromEntries([...tag.matchAll(/([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/g)].map(([, name, double, single, bare]) => [name.toLowerCase(), decodeHTML(double ?? single ?? bare)]));
 const directives = value => String(value || '').toLowerCase().split(/[\s,;:]+/).filter(Boolean);
 
+export function canonicalLinks(html) {
+  return [...html.matchAll(/<link\b[^>]*>/gi)].map(([tag]) => attributes(tag)).filter(tag => tag.rel?.split(/\s+/).includes('canonical')).map(tag => tag.href);
+}
+
 export function assertCanonical(html, route) {
-  const links = [...html.matchAll(/<link\b[^>]*>/gi)].map(([tag]) => attributes(tag)).filter(tag => tag.rel?.split(/\s+/).includes('canonical'));
+  const links = canonicalLinks(html);
   assert.equal(links.length, 1, `Expected one canonical: ${route}`);
-  assert.equal(links[0].href, new URL(route, canonicalOrigin).href, `Canonical mismatch: ${route}`);
+  assert.equal(links[0], publicURL(route), `Canonical mismatch: ${route}`);
+}
+
+export function sitemapLocations(xml) {
+  return [...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map(([, value]) => decodeHTML(value.trim()));
+}
+
+// Every <loc> must be the exact URL Workers static assets answer with 200:
+// no 307 respelling (raw `+`, lowercase escapes), no trailing-slash 307 and
+// no `_redirects` source. `canonicalOf(loc)` returns the page's canonical hrefs.
+export function assertSitemapLocations(locations, { canonicalOf, redirects = [] }) {
+  assert.ok(locations.length > 0, 'Sitemap has no URLs');
+  const seen = new Set();
+  const redirected = new Set(redirects.map(rule => publicURL(rule.from)));
+  for (const loc of locations) {
+    const url = new URL(loc);
+    assert.equal(url.origin, canonicalOrigin, `Sitemap URL is off-site: ${loc}`);
+    assert.ok(!url.search && !url.hash, `Sitemap URL has a query or fragment: ${loc}`);
+    assert.equal(loc, publicURL(url.pathname), `Sitemap URL would be rewritten by asset routing: ${loc}`);
+    assert.ok(url.pathname.endsWith('/'), `Sitemap URL would hit the trailing-slash redirect: ${loc}`);
+    assert.ok(!seen.has(loc), `Duplicate sitemap URL: ${loc}`); seen.add(loc);
+    assert.ok(!redirected.has(loc), `Sitemap lists a _redirects source: ${loc}`);
+    assert.deepEqual(canonicalOf(loc), [loc], `Sitemap URL differs from its page canonical: ${loc}`);
+  }
+}
+
+// Paths whose segments need escapes beyond encodeURI are the ones asset routing respells.
+export const routingSensitive = loc => new URL(loc).pathname.split('/').some(segment => decodeURIComponent(segment) !== decodeURI(segment));
+
+export function sitemapSample(locations, { all = false, size = 40 } = {}) {
+  if (all || locations.length <= size) return [...locations];
+  const step = locations.length / size;
+  const sample = new Set(Array.from({ length: size }, (_, index) => locations[Math.floor(index * step)]));
+  for (const loc of locations) if (routingSensitive(loc)) sample.add(loc);
+  return [...sample];
 }
 
 export const removedAuthRoutes = ['/sign-in/', '/sign-up/', '/auth-test/', '/sso-callback/'];
@@ -348,7 +387,7 @@ async function main() {
   });
   await batches([...selected], async route => {
     localPages.set(route, await readFile(path.join(dist, decodeURIComponent(route), 'index.html'), 'utf8'));
-    const response = await ready(route, response => {
+    const response = await ready(assetPathname(route), response => {
       assert.equal(response.status, 200, `Page status: ${route}`);
       assert.match(response.headers.get('content-type') || '', /text\/html/i, `HTML content type: ${route}`);
       return response;
@@ -377,6 +416,12 @@ async function main() {
     assert.match(response.body, route === '/sitemap.xml' ? /<urlset\b/ : /<rss\b/, `XML document missing: ${route}`);
     assertXMLSiteURLs(response.body, route);
   }, 'Feeds and sitemap');
+  const locations = sitemapLocations(results.get('/sitemap.xml').body);
+  assert.deepEqual(locations, sitemapLocations(await readFile(path.join(dist, 'sitemap.xml'), 'utf8')), 'Published sitemap must match this release');
+  await batches(sitemapSample(locations, { all: values['all-routes'] }), async loc => {
+    const response = await ready(new URL(loc).pathname, response => { assert.equal(response.status, 200, `Sitemap URL must answer 200 without redirects: ${loc}`); return response; });
+    assert.deepEqual(canonicalLinks(response.body), [loc], `Sitemap URL differs from its live canonical: ${loc}`);
+  }, 'Sitemap URLs');
   const robots = await ready('/robots.txt', response => { assert.equal(response.status, 200, 'robots.txt status'); return response; }); assertRobotsPolicy(robots.body, environment);
   for (const route of ['/chat/', '/me/', ...removedAuthRoutes, '/sso-callback', '/demos/2026/cloudflare-product-map/', '/__astro-deployment-verification-missing__/']) {
     const response = await ready(route, response => { assertNotFound(response, route); return response; });
@@ -391,7 +436,7 @@ async function main() {
     const response = await request(from); assert.equal(response.status, status, `Redirect status: ${from}`);
     assert.ok(response.headers.get('location'), `Redirect Location missing: ${from}`);
     assert.equal(new URL(response.headers.get('location'), origin).href, new URL(to, origin).href, `Redirect target: ${from}`);
-    const destination = await request(to); assert.equal(destination.status, 200, `Redirect destination missing: ${to}`);
+    const destination = await request(assetPathname(to)); assert.equal(destination.status, 200, `Redirect destination missing: ${to}`);
     assertCanonical(destination.body, to); assertHtmlIndexing(destination.body, environment, to); assertHeaderIndexing(destination.headers.get('x-robots-tag'), environment, to);
   }, 'Legacy redirects');
   for (const route of localPreview ? [] : ['/labs', '/archives', '/demos/2026/rounded-timeline']) {
@@ -401,7 +446,7 @@ async function main() {
   }
   const assets = new Set(['/pagefind/pagefind.js', '/pagefind/pagefind-worker.js', '/pagefind/pagefind-entry.json', '/logo.gif', '/book-icons/menu.svg', '/favicon.ico', '/apple-touch-icon.png', '/icons/menu.svg', '/katex/katex.min.css']);
   for (const route of selected) {
-    for (const asset of publishedAssetPaths({ publishedHtml: results.get(route).body, localHtml: localPages.get(route), route })) assets.add(asset);
+    for (const asset of publishedAssetPaths({ publishedHtml: results.get(assetPathname(route)).body, localHtml: localPages.get(route), route })) assets.add(asset);
   }
   const expectedPagefindEntry = JSON.parse(await readFile(path.join(dist, 'pagefind/pagefind-entry.json'), 'utf8'));
   assert.ok(Object.keys(expectedPagefindEntry.languages || {}).length > 0, 'Pagefind languages missing');
