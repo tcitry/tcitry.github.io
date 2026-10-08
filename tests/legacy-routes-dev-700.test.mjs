@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { matchLegacySources, resolveLegacyRoute } from '../scripts/legacy-content.mjs';
 
 const legacy = JSON.parse(await readFile(new URL('../scripts/legacy-routes.json', import.meta.url), 'utf8'));
@@ -22,6 +23,22 @@ test('DEV-700 remaps machine-learning docs under Algorithms and Agents', () => {
     '/docs/Agents/coai-open-source-llm-gateway/',
   );
   assert.ok(!bySource.has('docs/Frontend/前端面试八股集合网站.md'));
+});
+
+test('DEV-700 moved machine-learning section is parented under Algorithms, not LLM', () => {
+  assert.equal(bySource.get('docs/Algorithms/机器学习/_index.md').parent, '/docs/Algorithms/');
+});
+
+test('source-backed legacy routes keep the parent of their source directory', () => {
+  // A stale parent makes the sidebar render a moved section under its old tree.
+  const mismatches = [];
+  for (const page of legacy.pages) {
+    if (!page.source || !page.parent) continue;
+    const dir = page.source.endsWith('/_index.md') ? path.posix.dirname(path.posix.dirname(page.source)) : path.posix.dirname(page.source);
+    const parent = bySource.get(dir === '.' ? '_index.md' : `${dir}/_index.md`);
+    if (parent && parent.url !== page.parent) mismatches.push(`${page.source}: ${page.parent} != ${parent.url}`);
+  }
+  assert.deepEqual(mismatches, []);
 });
 
 test('post-migration Blog sources resolve to updated legacy canonical URLs', () => {
