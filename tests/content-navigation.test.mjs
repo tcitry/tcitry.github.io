@@ -120,11 +120,36 @@ test('Weekly pagination preserves every issue in date order at and beyond the 40
   }
 });
 
-test('equal-date navigation follows Hugo Chinese collation and preserves empty legacy sort titles', async () => {
+test('equal-date nested navigation follows Hugo Chinese collation and preserves empty legacy sort titles', async () => {
   const site = await loadSite({ pages: [
-    page({ id: 'chinese', source: 'docs/分治.md', url: '/docs/分治/', title: '分治策略' }),
-    page({ id: 'ascii', source: 'docs/BFS.md', url: '/docs/BFS/', title: 'BFS 和 DFS' }),
-    page({ id: 'untitled', source: 'docs/Untitled/_index.md', url: '/docs/Untitled/', title: 'Untitled', kind: 'section', params: { legacySortTitle: '' } }),
-  ], tags: [], categories: [], diagnostics: { warnings: [], sourceCount: 3 } });
-  assert.deepEqual(site.navigation.map((node) => node.page.id), ['untitled', 'ascii', 'chinese']);
+    page({ id: 'group', source: 'docs/Group/_index.md', url: '/docs/Group/', title: 'Group', kind: 'section' }),
+    page({ id: 'chinese', source: 'docs/Group/分治.md', url: '/docs/Group/分治/', title: '分治策略', parent: '/docs/Group/' }),
+    page({ id: 'ascii', source: 'docs/Group/BFS.md', url: '/docs/Group/BFS/', title: 'BFS 和 DFS', parent: '/docs/Group/' }),
+    page({ id: 'untitled', source: 'docs/Group/Untitled/_index.md', url: '/docs/Group/Untitled/', title: 'Untitled', kind: 'section', parent: '/docs/Group/', params: { legacySortTitle: '' } }),
+  ], tags: [], categories: [], diagnostics: { warnings: [], sourceCount: 4 } });
+  assert.deepEqual(site.navigation[0].children.map((node) => node.page.id), ['untitled', 'ascii', 'chinese']);
+});
+
+test('docs root sections sort A-Z by title while nested levels keep weight, date and title order', async () => {
+  const roots = ['软件工程', 'Rust', 'LLM', 'Agents', '历史', 'Linux', 'Algorithms', 'C/C++', 'Golang', 'Apple'];
+  const site = await loadSite({ pages: [
+    page({ id: 'docs', source: 'docs/_index.md', url: '/docs/', kind: 'section', parent: '/' }),
+    ...roots.map((title, index) => page({
+      id: `root-${index}`, source: `docs/${title}/_index.md`, url: `/docs/${encodeURIComponent(title)}/`, kind: 'section', title,
+      weight: (index % 3) * 10, date: new Date(Date.UTC(2026, 0, 1 + index)).toISOString(),
+    })),
+    page({ id: 'nested-title-b', source: 'docs/Agents/b.md', url: '/docs/Agents/b/', title: 'B', parent: '/docs/Agents/', date: '2026-02-01T00:00:00.000Z' }),
+    page({ id: 'nested-title-a', source: 'docs/Agents/a.md', url: '/docs/Agents/a/', title: 'A', parent: '/docs/Agents/', date: '2026-02-01T00:00:00.000Z' }),
+    page({ id: 'nested-newer', source: 'docs/Agents/newer.md', url: '/docs/Agents/newer/', title: 'Z', parent: '/docs/Agents/', date: '2026-03-01T00:00:00.000Z' }),
+    page({ id: 'nested-weight-20', source: 'docs/Agents/w20.md', url: '/docs/Agents/w20/', title: 'Y', parent: '/docs/Agents/', weight: 20 }),
+    page({ id: 'nested-weight-10', source: 'docs/Agents/w10.md', url: '/docs/Agents/w10/', title: 'X', parent: '/docs/Agents/', weight: 10 }),
+  ], tags: [], categories: [], diagnostics: { warnings: [], sourceCount: roots.length + 6 } });
+  const expected = ['Agents', 'Algorithms', 'Apple', 'C/C++', 'Golang', 'Linux', 'LLM', 'Rust', '历史', '软件工程'];
+  assert.deepEqual(site.navigation.map((node) => node.page.title), expected);
+  const docs = site.buildViews().find((view) => view.page.url === '/docs/');
+  assert.deepEqual(docs.entries.map((entry) => entry.title), expected);
+  const nestedOrder = ['nested-weight-10', 'nested-weight-20', 'nested-newer', 'nested-title-a', 'nested-title-b'];
+  assert.deepEqual(site.navigation.find((node) => node.page.title === 'Agents').children.map((node) => node.page.id), nestedOrder);
+  const agents = site.buildViews().find((view) => view.page.url === '/docs/Agents/');
+  assert.deepEqual(agents.entries.map((entry) => entry.id), nestedOrder);
 });

@@ -20,7 +20,9 @@ export const compareLegacyTitles = (a: string, b: string) =>
 const sortTitle = (page: ContentPage) => String(page.params.legacySortTitle ?? page.params.linktitle ?? page.title);
 export const byDate = (a: ContentPage, b: ContentPage) =>
   dateValue(b.date) - dateValue(a.date) || compareLegacyTitles(sortTitle(a), sortTitle(b));
+const isDocsRoot = (page: ContentPage) => page.parent === '/docs/';
 const byMenu = (a: ContentPage, b: ContentPage) => {
+  if (isDocsRoot(a) && isDocsRoot(b)) return compareLegacyTitles(a.title, b.title);
   const aWeight = a.weight || Number.MAX_SAFE_INTEGER;
   const bWeight = b.weight || Number.MAX_SAFE_INTEGER;
   return aWeight - bWeight || byDate(a, b);
