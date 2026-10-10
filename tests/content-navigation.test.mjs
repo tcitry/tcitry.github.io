@@ -130,8 +130,8 @@ test('equal-date nested navigation follows Hugo Chinese collation and preserves 
   assert.deepEqual(site.navigation[0].children.map((node) => node.page.id), ['untitled', 'ascii', 'chinese']);
 });
 
-test('docs root sections sort A-Z by title while nested levels keep weight, date and title order', async () => {
-  const roots = ['软件工程', 'Rust', 'LLM', 'Agents', '历史', 'Linux', 'Algorithms', 'C/C++', 'Golang', 'Apple'];
+test('docs root sections sort A-Z by title, ignoring leading punctuation, while nested levels keep weight, date and title order', async () => {
+  const roots = ['软件工程', 'Rust', 'LLM', 'Agents', '历史', '"Linux"', 'Algorithms', 'C/C++', 'Golang', 'Apple', 'Kubernetes', ' 「Docker」'];
   const site = await loadSite({ pages: [
     page({ id: 'docs', source: 'docs/_index.md', url: '/docs/', kind: 'section', parent: '/' }),
     ...roots.map((title, index) => page({
@@ -144,7 +144,7 @@ test('docs root sections sort A-Z by title while nested levels keep weight, date
     page({ id: 'nested-weight-20', source: 'docs/Agents/w20.md', url: '/docs/Agents/w20/', title: 'Y', parent: '/docs/Agents/', weight: 20 }),
     page({ id: 'nested-weight-10', source: 'docs/Agents/w10.md', url: '/docs/Agents/w10/', title: 'X', parent: '/docs/Agents/', weight: 10 }),
   ], tags: [], categories: [], diagnostics: { warnings: [], sourceCount: roots.length + 6 } });
-  const expected = ['Agents', 'Algorithms', 'Apple', 'C/C++', 'Golang', 'Linux', 'LLM', 'Rust', '历史', '软件工程'];
+  const expected = ['Agents', 'Algorithms', 'Apple', 'C/C++', ' 「Docker」', 'Golang', 'Kubernetes', '"Linux"', 'LLM', 'Rust', '历史', '软件工程'];
   assert.deepEqual(site.navigation.map((node) => node.page.title), expected);
   const docs = site.buildViews().find((view) => view.page.url === '/docs/');
   assert.deepEqual(docs.entries.map((entry) => entry.title), expected);
