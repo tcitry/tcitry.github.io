@@ -2,7 +2,7 @@
   "version": 1,
   "generatedAt": "2026-10-07T14:25:00.364Z",
   "hugoVersion": "hugo v0.146.2+extended+withdeploy darwin/arm64 BuildDate=2025-04-11T17:25:13Z VendorInfo=brew",
-  "description": "Public frontmatter only; no Blog content or credentials included. Hugo is not required for normal builds. DEV-700: remap LLM/机器学习 and related docs to Algorithms/Agents; drop merged 前端面试八股 page.",
+  "description": "Public frontmatter only; no Blog content or credentials included. Hugo is not required for normal builds. DEV-700: remap LLM/机器学习 and related docs to Algorithms/Agents; drop merged 前端面试八股 page; 系统集成 merged into Linux (WebHook URL -> Linux/网络; section removed).",
   "pages": [
     {
       "aliases": null,
@@ -467,28 +467,14 @@
     {
       "aliases": null,
       "date": "2025-09-06T00:00:00Z",
-      "kind": "section",
-      "layout": "",
-      "parent": "/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/",
-      "section": "docs",
-      "source": "docs/软件工程/系统集成/_index.md",
-      "title": "系统集成",
-      "type": "docs",
-      "url": "/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%B3%BB%E7%BB%9F%E9%9B%86%E6%88%90/",
-      "weight": 0,
-      "routeSignature": "{\"url\":null,\"slug\":null}"
-    },
-    {
-      "aliases": null,
-      "date": "2025-09-06T00:00:00Z",
       "kind": "page",
       "layout": "",
-      "parent": "/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%B3%BB%E7%BB%9F%E9%9B%86%E6%88%90/",
+      "parent": "/docs/Linux/%E7%BD%91%E7%BB%9C/",
       "section": "docs",
-      "source": "docs/软件工程/系统集成/WebHook URL.md",
+      "source": "docs/Linux/网络/WebHook URL.md",
       "title": "WebHook URL 概念",
       "type": "docs",
-      "url": "/docs/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/%E7%B3%BB%E7%BB%9F%E9%9B%86%E6%88%90/WebHook-URL/",
+      "url": "/docs/Linux/%E7%BD%91%E7%BB%9C/WebHook-URL/",
       "weight": 0,
       "routeSignature": "{\"url\":null,\"slug\":null}"
     },
