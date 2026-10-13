@@ -1,6 +1,7 @@
 import {ConvexError} from "convex/values";
-import type {UserIdentity} from "convex/server";
+import type {PaginationOptions, UserIdentity} from "convex/server";
 import type {ActionCtx, MutationCtx, QueryCtx} from "./_generated/server";
+import {isConsultationAuthor} from "./membership";
 
 export function invalid(message: string): never {
   throw new ConvexError({code: "INVALID_ARGUMENT", message});
@@ -23,6 +24,22 @@ export async function requireCommentIdentity(ctx: Pick<QueryCtx | MutationCtx | 
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) throw new ConvexError({code: "UNAUTHENTICATED", message: "请先登录。"});
   return identity;
+}
+
+export function isCommentModerator(identity: UserIdentity) {
+  return isConsultationAuthor(identity);
+}
+
+export async function requireCommentModerator(ctx: Pick<QueryCtx | MutationCtx, "auth">) {
+  const identity = await requireCommentIdentity(ctx);
+  if (!isCommentModerator(identity)) throw new ConvexError({code: "FORBIDDEN", message: "此操作仅供博主使用。"});
+  return identity;
+}
+
+export function accountPagination(options: PaginationOptions) {
+  if (!Number.isInteger(options.numItems) || options.numItems < 1 || options.numItems > 50 ||
+    (options.maximumRowsRead !== undefined && (!Number.isInteger(options.maximumRowsRead) || options.maximumRowsRead < 1 || options.maximumRowsRead > 100)) ||
+    (options.maximumBytesRead !== undefined && (!Number.isInteger(options.maximumBytesRead) || options.maximumBytesRead < 1 || options.maximumBytesRead > 1_000_000))) invalid("每次最多加载 50 条记录。");
 }
 
 // These are signed OIDC claims from the Clerk Convex session token, never form

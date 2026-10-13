@@ -58,6 +58,7 @@ export default defineSchema({
     githubUserId: v.optional(v.number()),
     sourceUrl: v.optional(v.string()),
   }).index("by_pathname_and_createdAt", ["pathname", "createdAt"])
+    .index("by_deletedAt_and_createdAt", ["deletedAt", "createdAt"])
     .index("by_owner_and_deletedAt_and_createdAt", ["owner", "deletedAt", "createdAt"])
     .index("by_externalId", ["externalId"])
     .index("by_importSource", ["importSource"]),
@@ -68,6 +69,7 @@ export default defineSchema({
     importSource: v.optional(importSource),
   }).index("by_pathname_and_owner", ["pathname", "owner"])
     .index("by_owner_and_createdAt", ["owner", "createdAt"])
+    .index("by_createdAt", ["createdAt"])
     .index("by_importSource", ["importSource"]),
   notifications: defineTable({
     recipient: v.string(),

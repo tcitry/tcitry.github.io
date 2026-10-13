@@ -37,7 +37,7 @@ const server = await createServer({
 let browser;
 const errors = [];
 const scope = process.env.SERVICES_TEST_SCOPE ?? 'all';
-assert.ok(['all', 'workspace', 'comments', 'images', 'navigation'].includes(scope), 'SERVICES_TEST_SCOPE must be all, workspace, comments, images or navigation');
+assert.ok(['all', 'workspace', 'comments', 'images', 'navigation', 'admin'].includes(scope), 'SERVICES_TEST_SCOPE must be all, workspace, comments, images, navigation or admin');
 const state = (page) => page.evaluate(() => window.__services.getState());
 const backgroundWrite = write => ['membership:getMyMembership', 'comments:syncMyAuthorImage'].includes(write.name);
 const switchSession = (page, userId, sessionId) => page.evaluate(({userId, sessionId}) => window.__readerAuth.switchSession(userId, sessionId), {userId, sessionId});
@@ -125,7 +125,45 @@ try {
   const base = new URL(server.resolvedUrls.local[0]);
   browser = await chromium.launch({headless: true});
   await createImageFixtures(browser);
-  if (!['comments', 'navigation'].includes(scope)) {
+  if (scope === 'admin') {
+    const context = await browser.newContext({viewport: {width: 375, height: 900}, reducedMotion: 'reduce', serviceWorkers: 'block'});
+    await context.route('**/*', route => new URL(route.request().url()).origin === base.origin ? route.continue() : route.abort());
+    const page = await context.newPage();
+    page.setDefaultTimeout(15_000);
+    page.on('pageerror', error => errors.push(error.message));
+    try {
+      await page.goto(new URL('/tests/fixtures/services-ui.html?view=widget', base).href);
+      await page.locator('[data-chat-launcher]').click();
+      await switchSession(page, 'fixture-author', 'session-admin-list');
+      await tab(page, '管理').waitFor();
+      await tab(page, '管理').click();
+      await page.locator('[data-admin-panel][data-sentry-mask][data-pagefind-ignore]').waitFor();
+      const adminTabs = page.getByRole('radiogroup', {name: '管理内容分类', exact: true});
+      assert.equal((await state(page)).requests.filter(request => ['comments:listAdmin', 'articleLikes:listAdmin'].includes(request.name)).length, 0,
+        'The default consultation tab does not fetch comment or like data');
+      await adminTabs.getByRole('radio', {name: '评论', exact: true}).click();
+      const adminComments = page.locator('[data-admin-comments]');
+      await adminComments.getByText('giscus 导入的历史评论内容', {exact: true}).waitFor();
+      assert.ok((await state(page)).requests.some(request => request.name === 'comments:listAdmin' && request.userId === 'fixture-author'));
+      const importedComment = adminComments.locator('li').filter({hasText: '历史读者'});
+      assert.equal(await importedComment.getByText('评论', {exact: true}).count(), 1);
+      assert.equal(await importedComment.getByRole('link').getAttribute('href'), '/docs/services-fixture/#comment-admin_imported');
+      const replyComment = adminComments.locator('li').filter({hasText: '这是对历史讨论的回复。'});
+      assert.equal(await replyComment.getByText('回复', {exact: true}).count(), 1);
+      await importedComment.getByRole('button', {name: '删除 历史读者 的评论', exact: true}).click();
+      await adminComments.getByText('giscus 导入的历史评论内容', {exact: true}).waitFor({state: 'hidden'});
+      const deletion = (await state(page)).writes.at(-1);
+      assert.deepEqual([deletion.name, deletion.userId, deletion.args.id], ['comments:remove', 'fixture-author', 'admin_imported']);
+      await adminTabs.getByRole('radio', {name: '喜欢', exact: true}).click();
+      const adminLikes = page.locator('[data-admin-likes]');
+      const articleLike = adminLikes.getByRole('link', {name: /受到喜欢的文章/});
+      await articleLike.waitFor();
+      assert.equal(await articleLike.getAttribute('href'), '/docs/article-like-fixture/');
+      assert.equal(await articleLike.getByText('读者', {exact: true}).count(), 1);
+      assert.equal(await adminLikes.getByText('fixture-reader', {exact: true}).count(), 0);
+      console.log('Admin lists: author-only tabs, imported comments, reply labels, moderator deletion, article links and masked reader identity.');
+    } finally {await context.close();}
+  } else if (!['comments', 'navigation'].includes(scope)) {
   if (scope !== 'images') {
   for (const width of [1016, 916, 757, 640, 375, 320]) {
     const context = await browser.newContext({viewport: {width, height: 998}, reducedMotion: 'reduce', serviceWorkers: 'block'});
@@ -403,6 +441,26 @@ try {
       const inbox = page.locator('[data-consultations-inbox]');
       await inbox.getByRole('heading', {name: '管理', exact: true}).waitFor();
       assert.equal(await inbox.getByRole('button', {name: '发起咨询', exact: true}).count(), 0);
+      const adminTabs = page.getByRole('radiogroup', {name: '管理内容分类', exact: true});
+      await adminTabs.getByRole('radio', {name: '评论', exact: true}).click();
+      const adminComments = page.locator('[data-admin-comments]');
+      await adminComments.getByText('giscus 导入的历史评论内容', {exact: true}).waitFor();
+      const importedComment = adminComments.locator('li').filter({hasText: '历史读者'});
+      assert.equal(await importedComment.getByText('评论', {exact: true}).count(), 1, 'Imported root comments appear in the site-wide list');
+      assert.equal(await importedComment.getByRole('link').getAttribute('href'), '/docs/services-fixture/#comment-admin_imported');
+      assert.equal(await adminComments.getByText('这是对历史讨论的回复。', {exact: true}).count(), 1, 'Reply rows are identified in the site-wide list');
+      await importedComment.getByRole('button', {name: '删除 历史读者 的评论', exact: true}).click();
+      await adminComments.getByText('giscus 导入的历史评论内容', {exact: true}).waitFor({state: 'hidden'});
+      const deletion = (await state(page)).writes.at(-1);
+      assert.deepEqual([deletion.name, deletion.userId, deletion.args.id], ['comments:remove', 'fixture-author', 'admin_imported']);
+      await adminTabs.getByRole('radio', {name: '喜欢', exact: true}).click();
+      const adminLikes = page.locator('[data-admin-likes]');
+      const articleLike = adminLikes.getByRole('link', {name: /受到喜欢的文章/});
+      await articleLike.waitFor();
+      assert.equal(await articleLike.getAttribute('href'), '/docs/article-like-fixture/');
+      assert.equal(await articleLike.getByText('读者', {exact: true}).count(), 1, 'Likes do not expose reader identifiers');
+      await adminTabs.getByRole('radio', {name: '咨询', exact: true}).click();
+      await inbox.getByRole('heading', {name: '管理', exact: true}).waitFor();
       await page.getByRole('button', {name: /第一条私人咨询/}).click();
       await page.getByRole('textbox', {name: '回复会员'}).fill('这是博主本人给出的回复。');
       await inbox.getByLabel('选择咨询图片', {exact: true}).setInputFiles(imageFile('author.png', 'portrait'));
@@ -1222,7 +1280,7 @@ try {
     } finally {await context.close();}
   }
   }
-  if (!['workspace', 'navigation'].includes(scope)) {
+  if (!['workspace', 'navigation', 'admin'].includes(scope)) {
   for (const waiting of ['summary', 'list']) {
     const pendingContext = await browser.newContext({viewport: {width: 375, height: 900}, reducedMotion: 'reduce', serviceWorkers: 'block'});
     await pendingContext.route('**/*', route => new URL(route.request().url()).origin === base.origin ? route.continue() : route.abort());

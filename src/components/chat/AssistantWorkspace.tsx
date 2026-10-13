@@ -19,7 +19,7 @@ import '../../styles/chat.css';
 const MyPanel = lazy(() => import('../reader/MyPanel'));
 const AgentChat = lazy(() => import('./AgentChat'));
 const ConsultationsPanel = lazy(() => import('../consultations/ConsultationsPanel'));
-const ConsultationInbox = lazy(() => import('../consultations/ConsultationsPanel').then(module => ({default: module.ConsultationInbox})));
+const AdminPanel = lazy(() => import('./AdminPanel'));
 const NotificationsPanel = lazy(() => import('./NotificationsPanel'));
 const views = [
   {id: 'my', label: '我的'},
@@ -100,7 +100,7 @@ function WorkspaceContent({onClose, onReady, view, myOpened, selectView, request
       <ConvexAuthGate>
           <div className="assistant-workspace__service" hidden={activeView !== 'chat'}><ServiceView {...dismiss}><AgentChat requestedPrompt={activeView === 'chat' ? requestedPrompt : undefined} onPromptConsumed={onPromptConsumed} /></ServiceView></div>
           {activeView === 'consult' && <ServiceView {...dismiss}><ConsultationsPanel key={notificationThread ?? 'consultations'} initialThreadId={notificationThread ?? undefined} /></ServiceView>}
-          {activeView === 'admin' && isAuthor && <ServiceView {...dismiss}><ConsultationInbox key={notificationThread ?? 'inbox'} initialThreadId={notificationThread ?? undefined} /></ServiceView>}
+          {activeView === 'admin' && isAuthor && <ServiceView {...dismiss}><AdminPanel key={notificationThread ?? 'admin'} initialThreadId={notificationThread ?? undefined} /></ServiceView>}
           {activeView === 'messages' && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><NotificationsPanel onOpenConsultation={(threadId, inbox) => {
             setNotificationThread(threadId);
             selectView(inbox ? 'admin' : 'consult');
