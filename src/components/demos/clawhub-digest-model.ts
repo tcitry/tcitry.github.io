@@ -1,108 +1,155 @@
-/** A deliberately small teaching model, not a replacement for ClawHub's schema. */
-export interface DigestFields {
-  displayName: 'Alpha' | 'Beta';
-  downloads: number;
-  updatedAt: number;
+/** Source-derived fixture for ClawHub fb0ef1d; it never calls a deployment. */
+export const CLAWHUB_REVISION = 'fb0ef1d21eab78ad2b9da69f48045d7747cc73c1';
+export const SOURCE_ROOT = `https://github.com/openclaw/clawhub/blob/${CLAWHUB_REVISION}/`;
+export type VersionId = 'skillVersions:v1' | 'skillVersions:v2';
+export interface CatalogConditions {
+  v2Review: 'pending' | 'public';
+  v1Withdrawn: boolean;
+  hidden: boolean;
 }
-
-export type DigestOperation = 'ready' | 'patch' | 'noop' | 'query-miss' | 'query-hit' | 'delete' | 'rebuild';
-export interface DigestMachineState {
-  source: DigestFields;
-  digest: DigestFields | null;
-  revision: number;
-  cache: {key: string; revision: number; result: DigestFields | null} | null;
-  receipt: {revision: number; result: DigestFields | null} | null;
-  writes: number;
-  skippedWrites: number;
-  queryRuns: number;
-  cacheHits: number;
-  operation: DigestOperation;
-  sequence: number;
+export interface SkillRecord {
+  _id: string; slug: string; displayName: string; summary: string;
+  ownerPublisherId: string; ownerUserId: string;
+  latestVersionId: VersionId; latestVersionSummary: {version: string; createdAt: number; changelog: string};
+  moderationSourceVersionId: VersionId;
+  moderationStatus: 'active' | 'hidden'; moderationReason: string;
+  softDeletedAt?: number; moderationVerdict?: string; moderationFlags: string[];
+  installKind?: 'github'; stats: {versions: number};
 }
+export interface VersionRecord {
+  _id: VersionId; skillId: string; version: string; createdAt: number; changelog: string;
+  publicationStatus: 'published'; softDeletedAt?: number;
+  vtAnalysis: {status: string}; staticScan: {status: string}; llmAnalysis: {status: string; verdict?: string};
+}
+export type PublicVersionState = {status: 'available'; versionId: VersionId} | {status: 'unavailable'};
+type BrowseVisibility = Pick<SkillRecord, 'softDeletedAt' | 'moderationStatus' | 'moderationVerdict' | 'moderationFlags' | 'moderationReason' | 'installKind' | 'stats'>;
+export interface SkillDigest extends Pick<SkillRecord, 'slug' | 'displayName' | 'summary' | 'ownerPublisherId' | 'ownerUserId' | 'latestVersionId' | 'latestVersionSummary' | 'softDeletedAt' | 'moderationStatus' | 'moderationVerdict' | 'moderationFlags' | 'moderationReason' | 'installKind' | 'stats'> {
+  skillId: string; latestVersionSkillId: string; ownerHandle: string; ownerDisplayName: string;
+  publicVersion: PublicVersionState;
+}
+export interface PublicEntry {
+  skill: {displayName: string; summary: string; slug: string; latestVersionId: VersionId};
+  latestVersion: {id: VersionId; version: string; changelog: string};
+  ownerDisplayName: string;
+  hydration: 'digest-summary' | 'public-version-read';
+}
+export interface CatalogState {
+  conditions: CatalogConditions; skill: SkillRecord; versions: VersionRecord[];
+  digest: SkillDigest; entry: PublicEntry | null;
+  outcome: 'v1' | 'v2' | 'no-public-version' | 'hidden';
+  explanation: string; selectorPosition: number;
+}
+export const INITIAL_CONDITIONS: CatalogConditions = {v2Review: 'pending', v1Withdrawn: false, hidden: false};
 
-export const INITIAL_UPDATED_AT = 1_700_000_000_000;
-export const PUBLIC_QUERY_KEY = 'listPublicPageV4:{sort:"downloads",numItems:1}:anonymous';
-const copy = (fields: DigestFields | null): DigestFields | null => fields ? {...fields} : null;
-
-export function createDigestMachine(): DigestMachineState {
-  const source: DigestFields = {displayName: 'Alpha', downloads: 10, updatedAt: INITIAL_UPDATED_AT};
-  return {
-    source, digest: {...source}, revision: 0, cache: null, receipt: null,
-    writes: 0, skippedWrites: 0, queryRuns: 0, cacheHits: 0,
-    operation: 'ready', sequence: 0,
+export function createCatalogFixture(conditions: CatalogConditions = INITIAL_CONDITIONS) {
+  const skill: SkillRecord = {
+    _id: 'skills:field-notes', slug: 'field-notes', displayName: 'Field Notes · 新版卡片',
+    summary: '新增模板的说明；这是父 Skill 当前摘要。',
+    ownerPublisherId: 'publishers:field-guide', ownerUserId: 'users:editor',
+    latestVersionId: 'skillVersions:v2',
+    latestVersionSummary: {version: '2.0.0', createdAt: 200, changelog: 'v2：新增模板'},
+    moderationSourceVersionId: 'skillVersions:v2',
+    moderationStatus: conditions.hidden ? 'hidden' : 'active',
+    moderationReason: conditions.v2Review === 'pending' ? 'pending.scan' : 'scanner.llm.clean',
+    softDeletedAt: conditions.hidden ? 300 : undefined,
+    moderationVerdict: conditions.v2Review === 'public' ? 'clean' : undefined,
+    moderationFlags: [], stats: {versions: 2},
   };
+  const versions: VersionRecord[] = [
+    {_id: 'skillVersions:v1', skillId: skill._id, version: '1.0.0', createdAt: 100,
+      changelog: 'v1：基础模板', publicationStatus: 'published',
+      softDeletedAt: conditions.v1Withdrawn ? 250 : undefined,
+      vtAnalysis: {status: 'clean'}, staticScan: {status: 'clean'}, llmAnalysis: {status: 'clean', verdict: 'benign'}},
+    {_id: 'skillVersions:v2', skillId: skill._id, version: '2.0.0', createdAt: 200,
+      changelog: 'v2：新增模板', publicationStatus: 'published',
+      vtAnalysis: {status: 'clean'}, staticScan: {status: 'clean'},
+      llmAnalysis: conditions.v2Review === 'pending' ? {status: 'pending'} : {status: 'clean', verdict: 'benign'}},
+  ];
+  return {skill, versions};
 }
 
-/** Mirrors the source guard over only the three fields retained in this model. */
-export function hasProjectedChange(existing: DigestFields | null, fields: DigestFields): boolean {
-  if (!existing) return true;
-  for (const key of Object.keys(fields) as Array<keyof DigestFields>) {
-    if (existing[key] === fields[key]) continue;
-    if (JSON.stringify(existing[key]) !== JSON.stringify(fields[key])) return true;
+/** securityScanPolicy.ts:13–34, including benign and absent/unknown statuses. */
+export function normalizeScanStatus(status: string | undefined): string | undefined {
+  const normalized = status?.trim().toLowerCase();
+  if (normalized === 'benign') return 'clean';
+  return ['clean', 'suspicious', 'malicious', 'pending', 'failed', 'not-run'].includes(normalized ?? '') ? normalized : undefined;
+}
+/** publicBrowse.ts:90–101; this predicate alone does not establish Skill visibility. */
+export function isListableVersion(version: VersionRecord | null | undefined): boolean {
+  if (!version || version.softDeletedAt) return false;
+  const statuses = [version.vtAnalysis?.status, version.llmAnalysis?.verdict ?? version.llmAnalysis?.status, version.staticScan?.status].map(normalizeScanStatus);
+  return !statuses.some(status => status === 'pending' || status === 'not-run' || status === 'failed' || status === 'malicious');
+}
+export function isPendingReview(skill: Pick<SkillRecord, 'moderationReason'>): boolean {
+  return ['pending.scan', 'pending.scan.stale', 'scanner.vt.pending', 'scanner.llm.pending'].includes(skill.moderationReason.trim().toLowerCase());
+}
+export function excludedFromBrowse(skill: BrowseVisibility): boolean {
+  const suspicious = skill.moderationFlags.includes('flagged.suspicious')
+    || (skill.moderationReason.startsWith('scanner.') && skill.moderationReason.endsWith('.suspicious'));
+  return Boolean(skill.softDeletedAt) || skill.moderationStatus !== 'active'
+    || skill.moderationVerdict === 'malicious' || skill.moderationFlags.includes('blocked.malware') || suspicious
+    || (skill.installKind !== 'github' && isPendingReview(skill) && skill.stats.versions <= 1);
+}
+
+/** Mirrors publicBrowse.ts:123–166 over explicit in-memory source rows. */
+export function selectPublicVersion(skill: SkillRecord, versions: VersionRecord[]): PublicVersionState {
+  if (excludedFromBrowse(skill)) return {status: 'unavailable'};
+  if (!isPendingReview(skill)) {
+    const latest = versions.find(version => version._id === skill.latestVersionId);
+    return latest?.skillId === skill._id && isListableVersion(latest)
+      ? {status: 'available', versionId: latest._id} : {status: 'unavailable'};
   }
-  return false;
+  if (skill.installKind === 'github' || skill.stats.versions <= 1) return {status: 'unavailable'};
+  const candidates = versions.filter(version => version.skillId === skill._id && version.softDeletedAt === undefined)
+    .sort((a, b) => b.createdAt - a.createdAt).slice(0, 2);
+  const available = candidates.find(version => version._id !== skill.moderationSourceVersionId && isListableVersion(version));
+  return available ? {status: 'available', versionId: available._id} : {status: 'unavailable'};
 }
 
-export function projectDigest(state: DigestMachineState, fields: DigestFields = state.source): DigestMachineState {
-  if (!Number.isSafeInteger(fields.downloads) || fields.downloads < 0 || !Number.isSafeInteger(fields.updatedAt)) {
-    throw new RangeError('Teaching fields must use nonnegative integer downloads and an integer updatedAt.');
-  }
-  const changed = hasProjectedChange(state.digest, fields);
+export function projectSkillDigest(skill: SkillRecord, versions: VersionRecord[]): SkillDigest {
   return {
-    ...state, source: {...fields}, digest: changed ? {...fields} : state.digest,
-    revision: state.revision + Number(changed), writes: state.writes + Number(changed),
-    skippedWrites: state.skippedWrites + Number(!changed), operation: changed ? 'patch' : 'noop',
-    sequence: state.sequence + 1,
+    skillId: skill._id, slug: skill.slug, displayName: skill.displayName, summary: skill.summary,
+    ownerPublisherId: skill.ownerPublisherId, ownerUserId: skill.ownerUserId,
+    latestVersionId: skill.latestVersionId, latestVersionSkillId: skill._id,
+    latestVersionSummary: {...skill.latestVersionSummary},
+    softDeletedAt: skill.softDeletedAt, moderationStatus: skill.moderationStatus,
+    moderationVerdict: skill.moderationVerdict, moderationFlags: [...skill.moderationFlags],
+    moderationReason: skill.moderationReason, installKind: skill.installKind, stats: {...skill.stats},
+    ownerHandle: 'field-guide', ownerDisplayName: 'Field Guide',
+    publicVersion: selectPublicVersion(skill, versions),
+  };
+}
+/** skills.ts:6147–6259. Card metadata stays on the parent; version metadata can fall back. */
+export function hydratePublicEntry(digest: SkillDigest, versions: VersionRecord[]): PublicEntry | null {
+  if (excludedFromBrowse(digest) || digest.publicVersion.status === 'unavailable') return null;
+  const id = digest.publicVersion.versionId;
+  const summary = id === digest.latestVersionId && digest.latestVersionSkillId === digest.skillId
+    ? digest.latestVersionSummary : null;
+  if (summary) return {
+    skill: {displayName: digest.displayName, summary: digest.summary, slug: digest.slug, latestVersionId: digest.latestVersionId},
+    latestVersion: {id, version: summary.version, changelog: summary.changelog},
+    ownerDisplayName: digest.ownerDisplayName, hydration: 'digest-summary',
+  };
+  const version = versions.find(row => row._id === id);
+  if (!version || version.softDeletedAt || version.publicationStatus !== 'published' || version.skillId !== digest.skillId) return null;
+  return {
+    skill: {displayName: digest.displayName, summary: digest.summary, slug: digest.slug, latestVersionId: digest.latestVersionId},
+    latestVersion: {id, version: version.version, changelog: version.changelog},
+    ownerDisplayName: digest.ownerDisplayName, hydration: 'public-version-read',
   };
 }
 
-/** A wrapped Mutation is represented as one atomic state transition. */
-export function commitDigestFields(state: DigestMachineState, displayName: DigestFields['displayName'], downloads: number): DigestMachineState {
-  const changed = state.source.displayName !== displayName || state.source.downloads !== downloads;
-  return projectDigest(state, {
-    displayName, downloads,
-    // This deterministic timestamp is teaching data, not production time or a cache TTL.
-    updatedAt: state.source.updatedAt + (changed ? 60_000 : 0),
-  });
-}
-
-/** Models an anonymous Query that reads only this digest, excluding real hydration fallbacks. */
-export function readDigest(state: DigestMachineState, key = PUBLIC_QUERY_KEY): DigestMachineState {
-  const hit = state.cache?.key === key && state.cache.revision === state.revision;
-  const result = copy(hit ? state.cache!.result : state.digest);
-  return {
-    ...state, cache: {key, revision: state.revision, result: copy(result)},
-    receipt: {revision: state.revision, result}, queryRuns: state.queryRuns + Number(!hit),
-    cacheHits: state.cacheHits + Number(hit), operation: hit ? 'query-hit' : 'query-miss',
-    sequence: state.sequence + 1,
-  };
-}
-
-/** Removing a materialized projection is a maintenance error, not ordinary cache eviction. */
-export function removeDigest(state: DigestMachineState): DigestMachineState {
-  return {
-    ...state, digest: null, revision: state.revision + Number(state.digest !== null),
-    operation: 'delete', sequence: state.sequence + 1,
-  };
-}
-
-export function rebuildDigest(state: DigestMachineState): DigestMachineState {
-  const next = projectDigest(state);
-  return {...next, operation: next.operation === 'patch' ? 'rebuild' : 'noop'};
-}
-
-export function receiptIsStale(state: DigestMachineState): boolean {
-  return state.receipt !== null && state.receipt.revision !== state.revision;
-}
-
-export function digestStatus(state: DigestMachineState): string {
-  switch (state.operation) {
-    case 'patch': return '字段改变：已更新 digest';
-    case 'noop': return '字段相同：跳过 digest 写入';
-    case 'query-miss': return state.digest ? 'Query 重新求值：已发出 one-shot 收据' : 'Query 重新求值：列表缺少这一项';
-    case 'query-hit': return '教学缓存命中：复用同一依赖版本';
-    case 'delete': return 'digest 已误删；源记录仍在';
-    case 'rebuild': return '已从源记录重建 digest';
-    default: return '源记录与 digest 一致；等待第一次读取';
-  }
+export function catalogState(conditions: CatalogConditions = INITIAL_CONDITIONS): CatalogState {
+  const {skill, versions} = createCatalogFixture(conditions);
+  const digest = projectSkillDigest(skill, versions);
+  const entry = hydratePublicEntry(digest, versions);
+  const outcome = conditions.hidden ? 'hidden' : entry?.latestVersion.id === 'skillVersions:v1' ? 'v1'
+    : entry?.latestVersion.id === 'skillVersions:v2' ? 'v2' : 'no-public-version';
+  const explanation = outcome === 'v1'
+    ? 'v2 已发布但扫描待审。公开版本选择跳过 moderationSourceVersionId=v2，目录展示 v1；标题与摘要仍来自父 Skill 的 digest。'
+    : outcome === 'v2' ? 'v2 满足公开条件，父 Skill 的待审状态也已同步。publicVersion 指向 latest v2，列表可直接使用 digest 内的版本摘要。'
+      : outcome === 'hidden' ? 'Skill 已隐藏。digest 仍保存最新指针与 unavailable 状态，公开列表不会返回这一项；没有删除源档案或 digest。'
+        : 'v2 待审且 v1 已撤下，没有合格候选。digest.publicVersion 为 unavailable，公开列表不返回这一项。';
+  return {conditions: {...conditions}, skill, versions, digest, entry, outcome, explanation,
+    selectorPosition: outcome === 'v1' ? 0 : outcome === 'v2' ? 20 : 40};
 }
