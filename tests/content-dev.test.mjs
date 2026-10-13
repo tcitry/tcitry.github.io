@@ -9,13 +9,13 @@ function deferred() {
 }
 
 test('dev watches importable Markdown and public assets, excluding private and unrelated files', () => {
-  for (const source of ['about.md', '_index.md', 'docs/Frontend/_index.md', 'docs/Frontend/article.MD', 'weekly/2026/new.md', 'timeline/2026.md', 'posts/new.mdx']) {
+  for (const source of ['about.md', '_index.md', 'docs/Frontend/_index.md', 'docs/Frontend/article.MD', 'weekly/2026/new.md', 'timeline/2026.md', 'posts/new.mdx', 'docs/AI/Skills/_index.md', 'docs/AI/Skills/article.md']) {
     assert.equal(classifyBlogChange(source), 'content', source);
   }
   for (const source of ['static/cover.svg', 'static/demos/2026/example/index.html', 'scripts/upload-r2-image.py']) {
     assert.equal(classifyBlogChange(source), 'assets', source);
   }
-  for (const source of ['private/note.md', 'docs/Private/note.md', 'docs/.hidden/note.md', 'docs/drafts/note.md', 'docs/templates/_index.md', 'docs/node_modules/readme.md', 'demos/source.md', 'Agents.md', 'README.md', '.git/index', 'static/private/secret.svg', 'static/.env', 'static/unlisted.txt', 'static/other/image.svg', 'scripts/tool.py']) {
+  for (const source of ['private/note.md', 'docs/Private/note.md', 'docs/.hidden/note.md', 'docs/drafts/note.md', 'docs/templates/_index.md', 'docs/node_modules/readme.md', 'demos/source.md', 'skills/_index.md', 'skills/r2/SKILL.md', '.agents/skills/x/SKILL.md', '.claude/skills/x/SKILL.md', '.cursor/rules.md', 'docs/.agents/skills/x.md', 'docs/AI/.claude/note.md', 'Agents.md', 'README.md', '.git/index', 'static/private/secret.svg', 'static/.env', 'static/unlisted.txt', 'static/other/image.svg', 'scripts/tool.py']) {
     assert.equal(classifyBlogChange(source), undefined, source);
   }
 });
@@ -125,4 +125,16 @@ test('closing aborts the active import and discards queued work without logging 
   await queue.close();
   await queue.whenIdle();
   assert.equal(runs, 1);
+});
+
+test('collectSources publishes docs/**/Skills but never root skills/ or hidden agent dirs', async () => {
+  const { mkdtemp, mkdir, writeFile } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const path = await import('node:path');
+  const { collectSources } = await import('../scripts/legacy-content.mjs');
+  const root = await mkdtemp(path.join(tmpdir(), 'skills-'));
+  const files = ['docs/AI/Skills/_index.md', 'docs/AI/Skills/a.md', 'skills/_index.md', '.agents/skills/x/SKILL.md', '.claude/skills/x/SKILL.md', 'docs/.agents/skills/y.md', 'docs/AI/.cursor/z.md'];
+  for (const file of files) { await mkdir(path.dirname(path.join(root, file)), { recursive: true }); await writeFile(path.join(root, file), '---\ntitle: t\n---\n'); }
+  const sources = (await collectSources(root)).map(record => record.source);
+  assert.deepEqual(sources.sort(), ['docs/AI/Skills/_index.md', 'docs/AI/Skills/a.md']);
 });
