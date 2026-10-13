@@ -9,7 +9,8 @@ const items = [
   { label: 'Links', href: '/links/', badge: { label: 'L', class: 'links-title' } },
   { label: 'Weekly', href: termURL('Weekly'), badge: { label: 'W', class: 'weekly-title' } },
   { label: 'Recommended', href: termURL('Recommended'), badge: { label: 'R', class: 'recommended-title' } },
-  { label: 'Reading', href: termURL('读书笔记') }, { label: 'LastModified', href: '/modified/' },
+  { label: 'Reading', href: termURL('读书笔记') }, { label: '源码分析', href: termURL('源码分析') },
+  { label: 'LastModified', href: '/modified/' },
 ];
 ---
 <Tabs items={items} current={url} />
