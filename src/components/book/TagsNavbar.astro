@@ -7,7 +7,7 @@ const termURL = (name: string) => tags.find((tag) => tag.name === name)?.url || 
 const items = [
   { label: 'All', href: '/archives/' }, { label: 'Posts', href: '/posts/' },
   { label: 'Recommended', href: termURL('Recommended'), badge: { label: 'R', class: 'recommended-title' } },
-  { label: 'Reading', href: termURL('读书笔记') }, { label: '源码分析', href: termURL('源码分析') },
+  { label: 'Reading', href: termURL('读书笔记') }, { label: '项目分析', href: termURL('项目分析') },
   { label: 'LastModified', href: '/modified/' },
 ];
 ---
