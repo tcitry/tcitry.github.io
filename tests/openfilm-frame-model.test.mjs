@@ -2,55 +2,37 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {stripTypeScriptTypes} from 'node:module';
 import test from 'node:test';
-
 const source = await readFile(new URL('../src/components/demos/openfilm-frame-model.ts', import.meta.url), 'utf8');
-const model = await import(`data:text/javascript;base64,${Buffer.from(stripTypeScriptTypes(source)).toString('base64')}`);
-const {FRAME_SEQUENCES, LAST_TIME, followTime, frameAt, initialFrameState, requestFrame, timeInRange} = model;
+const {frameAt, PAGE_CLIPS} = await import(`data:text/javascript;base64,${Buffer.from(stripTypeScriptTypes(source)).toString('base64')}`);
 
-test('ordered and shuffled requests finish with the same complete reference frame', () => {
-  const run = times => times.reduce(requestFrame, initialFrameState());
-  assert.deepEqual(run(FRAME_SEQUENCES.ordered).frame, run(FRAME_SEQUENCES.shuffled).frame);
-  assert.equal(run(FRAME_SEQUENCES.shuffled).frame.x, 290);
+test('the same film time addresses different times in the two HTML pages', () => {
+  const frame = frameAt(3);
+  assert.equal(frame.title.sourceTime, 2);
+  assert.equal(frame.background.sourceTime, 3);
+  assert.equal(frame.title.end, 5);
+  assert.equal(PAGE_CLIPS[0].track, 0); // first Track overlays the second
 });
-
-test('repeating a timestamp never accumulates position', () => {
-  const result = FRAME_SEQUENCES.repeated.reduce(requestFrame, initialFrameState());
-  assert.equal(result.requests, 4);
-  assert.equal(result.referenceChecks, 4);
-  assert.deepEqual(result.frame, frameAt(1.5));
-  assert.equal(new Set(result.history.map(request => request.signature)).size, 1);
+test('a trimmed HTML clip enters at its source in-point and ends exclusively', () => {
+  assert.equal(frameAt(1.999).title.sourceTime, null);
+  assert.equal(frameAt(2).title.sourceTime, 1);
+  assert.equal(frameAt(4.999).title.active, true);
+  assert.equal(frameAt(5).title.sourceTime, null);
+  assert.equal(frameAt(5).background.sourceTime, 5);
+  assert.equal(frameAt(6).background.active, false);
 });
-
-test('fractional times map to their own positions independently of a nominal frame rate', () => {
-  assert.equal(frameAt(0.75).x, 165);
-  assert.equal(frameAt(0.751).x, 40 + 500 * 0.751 / 3);
-  assert.equal(frameAt(0).carriageTravel, 0);
-  assert.equal(frameAt(1.5).carriageTravel, 103);
+test('jumping backward and repeating a request reproduce the complete frame', () => {
+  const expected = frameAt(3);
+  for (const time of [5, 0, 2, 3, 3, 5.99, 1, 3]) frameAt(time);
+  assert.deepEqual(frameAt(3), expected);
+  assert.equal(expected.sunX, 156);
+  assert.equal(expected.titleOpacity, 1);
+  assert.equal(frameAt(2).titleOpacity, 1);
+  assert.equal(frameAt(2).titleY, 124);
 });
-
-test('invalid or out-of-range UI input remains before the exclusive duration boundary', () => {
-  assert.equal(timeInRange(-1), 0);
-  assert.equal(timeInRange(300), LAST_TIME);
-  assert.equal(timeInRange(Infinity), 0);
-  assert.equal(timeInRange(NaN), 0);
-  assert.ok(frameAt(LAST_TIME).t < 3);
-});
-
-test('bounded request history does not change the picture or mutate the prior state', () => {
-  const start = initialFrameState();
-  let result = start;
-  for (let i = 0; i < 14; i++) result = requestFrame(result, i / 10);
-  result = requestFrame(result, 1.5);
-  assert.equal(result.history.length, 8);
-  assert.equal(result.requests, 15);
-  assert.deepEqual(result.frame, frameAt(1.5));
-  assert.deepEqual(start.history, []);
-});
-
-test('view easing is time based, caps background gaps and becomes still for reduced motion', () => {
-  assert.equal(followTime(0, 1.5, 0), 0);
-  assert.equal(followTime(0, 1.5, 30), followTime(0, 1.5, 1 / 30));
-  assert.equal(followTime(0, 1.5, 0.01, true), 1.5);
-  const next = followTime(0, 1.5, 0.01);
-  assert.ok(next > 0 && next < 1.5);
+test('invalid UI time is bounded and never produces NaN geometry', () => {
+  for (const t of [NaN, Infinity, -1, 99]) {
+    const frame = frameAt(t);
+    assert.ok(frame.t >= 0 && frame.t <= 6);
+    assert.ok(Number.isFinite(frame.sunX));
+  }
 });

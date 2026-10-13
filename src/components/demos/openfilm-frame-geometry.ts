@@ -1,190 +1,226 @@
 import {
-  boxCorners, corners, cylinder, fitProjection, haloOf, iso, knurl,
-  lineOnTop, pathOf, planOutline, sideSeam, slabOf, topTicks,
-  translateAlong, type Plan, type Point3, type SolidPaths, type Tone,
+  boxCorners, corners, cylinder, depthOf, fitProjection, haloOf, knurl,
+  sideSeam, slabOf, topMatrix,
+  type Plan, type Point3, type SolidPaths, type Tone,
 } from './anatomy-iso-kit';
 
-export const FILM_WIDTH = 620;
-export const FILM_HEIGHT = 380;
-const BASE: Plan = {x: -130, y: -53, w: 260, d: 132, r: 7};
-export const FILM_PROJECTION = fitProjection([
-  ...boxCorners(BASE, -18, 0), ...boxCorners({x: -90, y: -39, w: 180, d: 9, r: 0}, 0, 140),
-], FILM_WIDTH, FILM_HEIGHT, {pad: 32, azimuth: 42, elevation: 32});
-export const FILM_SHADOW = haloOf(BASE, -18, 2, FILM_PROJECTION);
+/** A fixed multiplane animation stand; only the drawings on its glass change. */
+export const WIDTH = 520;
+export const HEIGHT = 390;
+const BASE: Plan = {x: -128, y: -87, w: 256, d: 184, r: 7};
+export const PROJECTION = fitProjection([
+  ...boxCorners(BASE, -16, 0),
+  ...boxCorners({x: -117, y: -70, w: 234, d: 8, r: 0}, 0, 209),
+  ...boxCorners({x: -20, y: 6, w: 40, d: 28, r: 0}, 143, 199),
+], WIDTH, HEIGHT, {pad: 26, azimuth: 42, elevation: 43});
+export const SHADOW = haloOf(BASE, -16, 2, PROJECTION);
 
-interface SlabShape {kind: 'slab'; plan: Plan; z: number; height: number; steps: number}
-interface CylinderShape {kind: 'cylinder'; x: number; y: number; radius: number; z: number; height: number}
-export interface FilmPart {
-  name: string; paths: SolidPaths; shape: SlabShape | CylinderShape;
-  center: Point3; tone: Tone; lit?: boolean; line?: string; move?: Point3;
+export interface SlabShape {kind: 'slab'; plan: Plan; z: number; height: number; steps: number}
+export interface CylinderShape {kind: 'cylinder'; x: number; y: number; radius: number; z: number; height: number}
+export interface FramePart {
+  name: string;
+  paths: SolidPaths;
+  shape: SlabShape | CylinderShape;
+  center: Point3;
+  tone: Tone;
+  depthKey: number;
+  line?: string;
+  /** Apply to the solid only: the picture painted on top keeps its own alpha. */
+  opacity?: number;
 }
-const parts: FilmPart[] = [];
-function slab(name: string, plan: Plan, z: number, height: number, tone: Tone = 'mid', lit = false, moving = false) {
-  const part: FilmPart = {name, paths: slabOf(plan, z, height, FILM_PROJECTION, 5, height > 3 ? 0.45 : 0),
-    shape: {kind: 'slab', plan, z, height, steps: 5}, center: [plan.x + plan.w / 2, plan.y + plan.d / 2, z + height / 2], tone, lit};
-  if (moving) part.move = [206, 0, 0];
+
+const parts: FramePart[] = [];
+function slab(name: string, plan: Plan, z: number, height: number, tone: Tone = 'mid') {
+  const steps = 6;
+  const center: Point3 = [plan.x + plan.w / 2, plan.y + plan.d / 2, z + height / 2];
+  const part: FramePart = {
+    name, paths: slabOf(plan, z, height, PROJECTION, steps, height >= 3 ? 0.55 : 0),
+    shape: {kind: 'slab', plan, z, height, steps}, center, tone,
+    depthKey: depthOf(center, PROJECTION),
+  };
   parts.push(part);
   return part;
 }
-function round(name: string, x: number, y: number, radius: number, z: number, height: number, tone: Tone = 'mid', moving = false) {
-  const part: FilmPart = {name, paths: cylinder(x, y, radius, z, height, FILM_PROJECTION, 40),
-    shape: {kind: 'cylinder', x, y, radius, z, height}, center: [x, y, z + height / 2], tone};
-  if (moving) part.move = [206, 0, 0];
+function round(name: string, x: number, y: number, radius: number, z: number, height: number, tone: Tone = 'mid') {
+  const center: Point3 = [x, y, z + height / 2];
+  const part: FramePart = {
+    name, paths: cylinder(x, y, radius, z, height, PROJECTION, 64, height >= 3 ? 0.4 : 0),
+    shape: {kind: 'cylinder', x, y, radius, z, height}, center, tone,
+    depthKey: depthOf(center, PROJECTION),
+  };
   parts.push(part);
   return part;
 }
 
-// Parts list: 4 rubber feet + 4 metal pads; a milled base and 4 bolts;
-// 2 screen plinths, 2 posts, backing, display, 4 rim bars and 4 screws;
-// film bed, 2 rails, 2 end stops and 4 bolts; film strip with 7 windows;
-// two bearing shoes, crosspiece, optical head, lens seat, dial and cap, 2 screws;
-// an indicator tongue and drop leg land its pointer beside the time ruler;
-// ruler with 2 screws; switch panel, dial, button, lamp collar and lens;
-// engraved plate with 2 screws. Every solid is precomputed once.
-for (const [i, [x, y]] of corners(BASE, 15).entries()) {
-  round(`stand.rubber-foot-${i}`, x, y, 7, -18, 2, 'lo');
-  round(`stand.foot-pad-${i}`, x, y, 5, -16, 4);
+// Figure parts list (75 solids): rubber feet and risers (8); milled base and
+// fasteners (5); two rear plinths, bolts, columns and caps (12); two glass-stage
+// assemblies, each with arms, edge supports, four frame bars and retainers (38);
+// camera crossbar, forward arm, body, lid, lens stages and fasteners (12).
+// Every attachment meets a real face; no plate floats or cuts through its frame.
+for (const [i, [x, y]] of corners(BASE, 16).entries()) {
+  round(`stand.rubber-foot-${i}`, x, y, 7.2, -16, 2, 'lo');
+  round(`foot-riser-${i}`, x, y, 5.3, -14, 4, 'mid');
 }
-const base = slab('stand.base', BASE, -12, 12);
-base.line = sideSeam(BASE, -6, FILM_PROJECTION, 5);
-for (const [i, [x, y]] of corners(BASE, 9).entries()) round(`base-bolt-${i}`, x, y, 1.8, 0, 0.8, 'hi');
+const base = slab('base.plate', BASE, -10, 10, 'lo');
+base.line = sideSeam(BASE, -5, PROJECTION, 6);
+for (const [i, [x, y]] of corners(BASE, 9).entries()) round(`base.fastener-${i}`, x, y, 1.8, 0, 0.8, 'hi');
 
-for (const [i, x] of [-78, 78].entries()) {
-  slab(`screen-plinth-${i}`, {x: x - 10, y: -45, w: 20, d: 15, r: 2}, 0, 3);
-  slab(`screen-post-${i}`, {x: x - 4, y: -39, w: 8, d: 4, r: 0.5}, 3, 32);
+for (const [i, x] of [-113, 113].entries()) {
+  slab(`column.plinth-${i}`, {x: x - 11, y: -76, w: 22, d: 20, r: 2}, 0, 5);
+  for (const [j, dx] of [-7, 7].entries()) round(`column.plinth-bolt-${i}-${j}`, x + dx, -73, 1.3, 5, 0.8, 'hi');
+  slab(`column.upright-${i}`, {x: x - 4, y: -70, w: 8, d: 8, r: 0}, 5, 193);
+  slab(`column.cap-${i}`, {x: x - 4, y: -70, w: 8, d: 8, r: 0}, 206, 2, 'hi');
+  round(`column.cap-bolt-${i}`, x, -66, 1.4, 208, 0.8, 'hi');
 }
-slab('screen-backing', {x: -90, y: -39, w: 180, d: 4, r: 0}, 35, 105, 'lo');
-slab('screen-display', {x: -85, y: -35, w: 170, d: 4, r: 0}, 40, 95, 'hi');
-slab('screen-rim-left', {x: -90, y: -35, w: 5, d: 5, r: 0}, 40, 95);
-slab('screen-rim-right', {x: 85, y: -35, w: 5, d: 5, r: 0}, 40, 95);
-slab('screen-rim-top', {x: -90, y: -35, w: 180, d: 5, r: 0}, 135, 5);
-slab('screen-rim-bottom', {x: -90, y: -35, w: 180, d: 5, r: 0}, 35, 5);
-for (const [i, x] of [-87.5, 87.5].entries()) {
-  for (const [j, z] of [37, 137].entries()) {
-    slab(`screen-fastener-${i}-${j}`, {x: x - 1, y: -30, w: 2, d: 0.65, r: 0}, z, 2, 'hi');
+
+const PICTURE_PLAN: Plan = {x: -96, y: -38, w: 192, d: 108, r: 0};
+export interface PictureLayer {
+  partName: string;
+  pictureTransform: string;
+  worldPlan: Plan;
+  z: number;
+  sourceWidth: 320;
+  sourceHeight: 180;
+}
+function stage(name: 'background' | 'title', frameZ: number): PictureLayer {
+  // Side arms join the front faces of the rear columns. Small shelf tabs bridge
+  // the gap to the glass frame, keeping columns and arms outside the picture.
+  for (const [i, x] of [-113, 113].entries()) {
+    slab(`${name}.support-arm-${i}`, {x: x - 4, y: -62, w: 8, d: 140, r: 0}, frameZ - 3, 3);
+    const tabX = i === 0 ? -109 : 102;
+    for (const [j, y] of [-38, 64].entries()) {
+      slab(`${name}.shelf-tab-${i}-${j}`, {x: tabX, y, w: 7, d: 10, r: 0}, frameZ - 3, 3);
+    }
   }
+  slab(`${name}.frame-rear`, {x: -106, y: -46, w: 212, d: 4, r: 0}, frameZ, 4, 'hi');
+  slab(`${name}.frame-front`, {x: -106, y: 74, w: 212, d: 4, r: 0}, frameZ, 4, 'hi');
+  slab(`${name}.frame-left`, {x: -106, y: -42, w: 4, d: 116, r: 0}, frameZ, 4, 'hi');
+  slab(`${name}.frame-right`, {x: 102, y: -42, w: 4, d: 116, r: 0}, frameZ, 4, 'hi');
+  const glass = slab(`${name}.glass`, {x: -102, y: -42, w: 204, d: 116, r: 0}, frameZ + 1.2, 1.6, 'hi');
+  glass.opacity = 0.12;
+  for (const [i, x] of [-103, 103].entries()) {
+    for (const [j, y] of [-43, 75].entries()) {
+      slab(`${name}.retainer-${i}-${j}`, {x: x - 3, y: y - 3, w: 6, d: 6, r: 0.5}, frameZ + 4, 0.8);
+      round(`${name}.retainer-bolt-${i}-${j}`, x, y, 1.15, frameZ + 4.8, 0.8, 'hi');
+    }
+  }
+  const z = frameZ + 2.84;
+  return {
+    partName: glass.name,
+    // Both maps share exactly the same world x/y rectangle. Their different z
+    // reveals the two stages; this separation never offsets source HTML pixels.
+    pictureTransform: `${topMatrix([PICTURE_PLAN.x, PICTURE_PLAN.y], z, PROJECTION)} scale(0.6)`,
+    worldPlan: {...PICTURE_PLAN}, z, sourceWidth: 320, sourceHeight: 180,
+  };
 }
+export const PICTURE_LAYERS = {
+  background: stage('background', 24),
+  title: stage('title', 86),
+} as const;
 
-slab('film-bed', {x: -119, y: 3, w: 238, d: 42, r: 2}, 0, 3);
-for (const [i, y] of [7, 38].entries()) {
-  const rail = slab(`guide-rail-${i}`, {x: -112, y, w: 224, d: 4, r: 0.5}, 3, 4, 'hi');
-  rail.line = lineOnTop([-112, y + 2], [112, y + 2], 7, FILM_PROJECTION);
-}
-for (const [i, x] of [-119, 113].entries()) {
-  slab(`end-stop-${i}`, {x, y: 3, w: 6, d: 42, r: 0.7}, 3, 7);
-  for (const [j, y] of [10, 38].entries()) round(`stop-bolt-${i}-${j}`, x + 3, y, 1.4, 10, 0.8);
-}
-const strip = slab('film-strip', {x: -111, y: 15, w: 222, d: 20, r: 1}, 3, 0.5, 'lo');
-strip.line = Array.from({length: 20}, (_, i) => {
-  const x = -106 + i * 11;
-  return [16.5, 32].map(y => planOutline({x, y, w: 3.5, d: 1.5, r: 0.4}, 3.5, FILM_PROJECTION)).join('');
-}).join('');
-for (let i = 0; i < 7; i++) slab(`film-window-${i}`, {x: -104 + i * 30, y: 20, w: 24, d: 10, r: 0}, 3.5, 0.12, 'hi');
+slab('camera.crossbar', {x: -117, y: -70, w: 234, d: 8, r: 0}, 198, 8);
+slab('camera.forward-arm', {x: -8, y: -62, w: 16, d: 82, r: 0}, 198, 8);
+const camera = slab('camera.body', {x: -20, y: 6, w: 40, d: 28, r: 1.4}, 178, 20);
+camera.line = sideSeam({x: -20, y: 6, w: 40, d: 28, r: 1.4}, 188, PROJECTION, 6);
+slab('camera.lid', {x: -20, y: 20, w: 40, d: 14, r: 0}, 198, 0.8, 'hi');
+round('camera.lens-barrel', 0, 20, 13, 158, 20, 'mid');
+round('camera.lens-seat', 0, 20, 15, 154, 4, 'hi');
+const focus = round('camera.focus-ring', 0, 20, 11.5, 144, 10, 'mid');
+focus.line = knurl(0, 20, 11.5, 144, 154, 36, PROJECTION, 0);
+round('camera.optical-glass', 0, 20, 10, 143, 1, 'hi');
+for (const [i, x] of [-14, 14].entries()) round(`camera.lid-screw-${i}`, x, 26, 1.1, 198.8, 0.8, 'hi');
+for (const [i, x] of [-103, 103].entries()) round(`camera.crossbar-bolt-${i}`, x, -66, 1.5, 206, 0.9, 'hi');
 
-for (const [i, y] of [7, 38].entries()) slab(`carriage-bearing-${i}`, {x: -110, y, w: 14, d: 4, r: 0.5}, 7, 4, 'mid', false, true);
-slab('carriage-crosspiece', {x: -111, y: 7, w: 16, d: 35, r: 1}, 11, 3, 'hi', false, true);
-slab('optical-head', {x: -109, y: 19, w: 12, d: 12, r: 1}, 14, 6, 'mid', true, true);
-round('lens-seat', -103, 25, 4.2, 20, 1.2, 'hi', true);
-const dial = round('index-dial', -103, 25, 3.6, 21.2, 4.8, 'hi', true);
-dial.line = knurl(-103, 25, 3.6, 21.2, 26, 18, FILM_PROJECTION, 0);
-round('dial-cap', -103, 25, 2.8, 26, 0.7, 'hi', true);
-for (const [i, y] of [10, 39].entries()) round(`carriage-screw-${i}`, -103, y, 1.1, 14, 0.6, 'hi', true);
-slab('pointer-tongue', {x: -104, y: 42, w: 2, d: 7.8, r: 0}, 11, 0.8, 'hi', false, true);
-slab('pointer-drop-leg', {x: -103.8, y: 48.2, w: 1.6, d: 1.6, r: 0}, 0.9, 10.1, 'hi', false, true);
-
-const rulerPlan = {x: -114, y: 50, w: 228, d: 8, r: 1};
-const ruler = slab('time-ruler', rulerPlan, 0, 0.8, 'hi');
-const ticks = topTicks(-103, 103, 206 / 30, 5, 50, 0.8, [3, 5.5], FILM_PROJECTION);
-ruler.line = ticks.minor + ticks.major;
-for (const [i, x] of [-110, 110].entries()) round(`ruler-screw-${i}`, x, 55, 1, 0.8, 0.5);
-slab('switch-panel', {x: 72, y: 62, w: 43, d: 12, r: 2}, 0, 3);
-round('power-dial', 80, 68, 3, 3, 2.5);
-round('seek-button', 92, 68, 2.4, 3, 2);
-round('ready-lamp-seat', 105, 68, 3, 3, 1);
-const lamp = round('ready-lamp', 105, 68, 2, 4, 0.9, 'hi');
-lamp.lit = true;
-slab('engraved-plate', {x: -111, y: 63, w: 57, d: 11, r: 1}, 0, 0.7, 'lo');
-for (const [i, x] of [-107, -58].entries()) round(`plate-screw-${i}`, x, 68.5, 0.8, 0.7, 0.4);
-
-// Painter keys measured by Anatomy audit against the exact slab/cylinder shapes,
-// at eleven times across the full seek travel. Re-run that audit after geometry changes.
-const FILM_DEPTH_KEYS: Record<string, number> = {
-  'pointer-tongue': 65,
-  'pointer-drop-leg': 64,
-  "stand.rubber-foot-0": 0,
-  "stand.foot-pad-0": 1,
-  "base-bolt-0": 50.04,
-  "screen-plinth-0": 50.04,
-  "stop-bolt-0-0": 50.08,
-  "screen-post-0": 50.06,
-  "end-stop-0": 50.06,
-  "screen-fastener-0-0": 50.12,
-  "stop-bolt-0-1": 50.08,
-  "stand.rubber-foot-2": 9,
-  "stand.foot-pad-2": 10,
-  "film-window-0": 50.06,
-  "ruler-screw-0": 50.06,
-  "base-bolt-2": 50.04,
-  "plate-screw-0": 50.06,
-  "screen-rim-left": 50.12,
-  "film-window-1": 50.06,
-  "engraved-plate": 50.04,
-  "film-window-2": 50.06,
-  "screen-fastener-0-1": 50.2,
-  "screen-rim-bottom": 50.1,
-  "plate-screw-1": 50.06,
-  "stand.base": 50.02,
-  "guide-rail-0": 50.08,
-  "film-bed": 50.04,
-  "film-window-3": 50.06,
-  "film-strip": 50.06,
-  "guide-rail-1": 50.08,
-  "screen-backing": 50.08,
-  "screen-display": 50.14,
-  "screen-plinth-1": 50.04,
-  "time-ruler": 50.04,
-  "film-window-4": 50.06,
-  "screen-post-1": 50.06,
-  "stand.rubber-foot-1": 34,
-  "stand.foot-pad-1": 35,
-  "base-bolt-1": 50.04,
-  "film-window-5": 50.06,
-  "screen-rim-top": 50.18,
-  "screen-fastener-1-0": 50.12,
-  "film-window-6": 50.06,
-  "screen-rim-right": 50.16,
-  "stop-bolt-1-0": 50.12,
-  "end-stop-1": 50.1,
-  "power-dial": 50.06,
-  "switch-panel": 50.04,
-  "seek-button": 50.06,
-  "stand.rubber-foot-3": 47,
-  "stop-bolt-1-1": 50.12,
-  "ruler-screw-1": 50.06,
-  "stand.foot-pad-3": 50,
-  "ready-lamp-seat": 51,
-  "ready-lamp": 52,
-  "screen-fastener-1-1": 53,
-  "base-bolt-3": 54,
-  "carriage-bearing-0": 55,
-  "carriage-screw-0": 56,
-  "carriage-crosspiece": 61.02,
-  "optical-head": 61.04,
-  "lens-seat": 61.06,
-  "index-dial": 61.08,
-  "carriage-bearing-1": 61,
-  "dial-cap": 62,
-  "carriage-screw-1": 63,
+// Generated by Anatomy settle against the exact slab/cylinder records above.
+// Re-run the geometry audit after changing any dimensions.
+const DEPTH_KEYS: Record<string, number> = {
+  "stand.rubber-foot-0": -105.84751927729765,
+  "foot-riser-0": -103.80152419711015,
+  "stand.rubber-foot-1": 15.896865767955887,
+  "foot-riser-1": 17.942860848143383,
+  "stand.rubber-foot-2": -31.463105111558534,
+  "foot-riser-2": -29.41711003137104,
+  "stand.rubber-foot-3": 90.281279933695,
+  "foot-riser-3": 92.3272750138825,
+  "base.plate": 92.3472750138825,
+  "base.fastener-0": 92.36727501388249,
+  "base.fastener-1": 92.36727501388249,
+  "base.fastener-2": 92.36727501388249,
+  "base.fastener-3": 108.01416473211226,
+  "column.plinth-0": 92.38727501388249,
+  "column.plinth-bolt-0-0": 92.40727501388248,
+  "column.plinth-bolt-0-1": 92.40727501388248,
+  "column.upright-0": 92.42727501388248,
+  "column.cap-0": 105.48517310802744,
+  "column.cap-bolt-0": 105.50517310802744,
+  "column.plinth-1": 92.38727501388249,
+  "column.plinth-bolt-1-0": 92.40727501388248,
+  "column.plinth-bolt-1-1": 92.40727501388248,
+  "column.upright-1": 98.34003216332513,
+  "column.cap-1": 170.29085914991873,
+  "column.cap-bolt-1": 171.24565685400623,
+  "background.support-arm-0": 92.44727501388248,
+  "background.shelf-tab-0-0": 92.46727501388247,
+  "background.shelf-tab-0-1": 92.46727501388247,
+  "background.support-arm-1": 106.47100351292376,
+  "background.shelf-tab-1-0": 92.36727501388249,
+  "background.shelf-tab-1-1": 106.45100351292376,
+  "background.frame-rear": 92.46727501388247,
+  "background.frame-front": 106.49100351292375,
+  "background.frame-left": 92.48727501388247,
+  "background.frame-right": 106.47100351292376,
+  "background.glass": 92.50727501388246,
+  "background.retainer-0-0": 92.50727501388246,
+  "background.retainer-bolt-0-0": 92.52727501388246,
+  "background.retainer-0-1": 106.51100351292375,
+  "background.retainer-bolt-0-1": 106.53100351292375,
+  "background.retainer-1-0": 106.49100351292375,
+  "background.retainer-bolt-1-0": 106.51100351292375,
+  "background.retainer-1-1": 112.05226641487582,
+  "background.retainer-bolt-1-1": 112.59786510292582,
+  "title.support-arm-0": 92.44727501388248,
+  "title.shelf-tab-0-0": 92.46727501388247,
+  "title.shelf-tab-0-1": 92.46727501388247,
+  "title.support-arm-1": 148.75490183679867,
+  "title.shelf-tab-1-0": 98.8190449624211,
+  "title.shelf-tab-1-1": 148.73490183679866,
+  "title.frame-rear": 92.46727501388247,
+  "title.frame-front": 148.77490183679868,
+  "title.frame-left": 92.48727501388247,
+  "title.frame-right": 148.75490183679867,
+  "title.glass": 92.54727501388246,
+  "title.retainer-0-0": 92.50727501388246,
+  "title.retainer-bolt-0-0": 92.52727501388246,
+  "title.retainer-0-1": 148.7949018367987,
+  "title.retainer-bolt-0-1": 148.8149018367987,
+  "title.retainer-1-0": 148.77490183679868,
+  "title.retainer-bolt-1-0": 148.7949018367987,
+  "title.retainer-1-1": 154.3361647387507,
+  "title.retainer-bolt-1-1": 154.88176342680072,
+  "camera.crossbar": 105.46517310802744,
+  "camera.forward-arm": 138.02311460829435,
+  "camera.body": 138.00311460829434,
+  "camera.lid": 148.52149557373494,
+  "camera.lens-barrel": 124.36314740704435,
+  "camera.lens-seat": 116.17916708629437,
+  "camera.focus-ring": 111.40517856585689,
+  "camera.optical-glass": 107.65418758551314,
+  "camera.lid-screw-0": 148.54149557373495,
+  "camera.lid-screw-1": 156.18674718128605,
+  "camera.crossbar-bolt-0": 105.48517310802744,
+  "camera.crossbar-bolt-1": 164.4807428623641
 };
+for (const part of parts) part.depthKey = DEPTH_KEYS[part.name] ?? part.depthKey;
+export const PARTS = parts.slice().sort((a, b) => a.depthKey - b.depthKey);
+export const PART_COUNT = PARTS.length;
+export const UNSORTED_PARTS = parts;
 
-export const FILM_PARTS = parts;
-export const FILM_STATIC_PARTS = parts.filter(part => !part.move).sort((a, b) => FILM_DEPTH_KEYS[a.name]! - FILM_DEPTH_KEYS[b.name]!);
-export const FILM_MOVING_PARTS = parts.filter(part => part.move).sort((a, b) => FILM_DEPTH_KEYS[a.name]! - FILM_DEPTH_KEYS[b.name]!);
-export const FILM_PART_COUNT = parts.length;
-// Screen coordinates are deliberately one fixed plane; the marker is a complete new frame.
-export const FILM_SCREEN = pathOf([[-83, -30.9, 42], [83, -30.9, 42], [83, -30.9, 133], [-83, -30.9, 133]].map(point => iso(point as Point3, FILM_PROJECTION)), true);
-export const FILM_SCREEN_BASELINE = pathOf([[-83, -30.85, 61], [83, -30.85, 61]].map(point => iso(point as Point3, FILM_PROJECTION)));
-export const FILM_MARKER = pathOf([[-75, -30.8, 63], [-64, -30.8, 63], [-64, -30.8, 74], [-75, -30.8, 74]].map(point => iso(point as Point3, FILM_PROJECTION)), true);
-export const filmTranslate = (travel: number) => translateAlong(FILM_PROJECTION, [travel, 0, 0]);
-export const FILM_POINTER = pathOf([[-103, 49, 0.9], [-106, 46, 0.9], [-100, 46, 0.9]].map(point => iso(point as Point3, FILM_PROJECTION)), true);
-export const FILM_PLATE_TEXT = pathOf([[-101, 68, 0.8], [-75, 68, 0.8], [-72, 68, 0.8], [-63, 68, 0.8]].map(point => iso(point as Point3, FILM_PROJECTION)));
+// Compatibility aliases for the existing Figure import during its replacement.
+export const FILM_WIDTH = WIDTH;
+export const FILM_HEIGHT = HEIGHT;
+export const FILM_PROJECTION = PROJECTION;
+export const FILM_SHADOW = SHADOW;
+export const FILM_PARTS = PARTS;
+export const FILM_STATIC_PARTS = PARTS;
+export const FILM_MOVING_PARTS: FramePart[] = [];
+export const FILM_PART_COUNT = PART_COUNT;

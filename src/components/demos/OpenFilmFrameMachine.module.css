@@ -1,14 +1,65 @@
-.stage { position: relative; }
-.shadow { fill: var(--machine-faint); opacity: 0.18; filter: blur(4px); }
-.screen { fill: var(--machine-paper); stroke: var(--machine-faint); stroke-width: 0.4; }
-.marker { fill: var(--machine-accent); stroke: var(--machine-accent); stroke-width: 0.7; }
-.pointer { fill: var(--machine-accent); }
-.baseline { stroke: var(--machine-faint); stroke-dasharray: 2 3; fill: none; stroke-width: 0.6; }
-.fields { margin-top: 1rem; }
-.history { display: flex; flex-wrap: wrap; gap: 0.35rem; list-style: none; padding: 0 !important; margin: 0.65rem 0 !important; font: 0.75rem/1.5 var(--font-mono, monospace); }
-.history li { border: 1px solid var(--gray-200); border-radius: 0.3rem; padding: 0.2rem 0.45rem; margin: 0 !important; }
-.history li[data-reference] { color: var(--machine-accent); border-color: var(--machine-accent); }
-.status { font-size: 0.85rem; line-height: 1.6; }
-.status strong { color: var(--machine-accent); }
-.signature { font: 0.8rem/1.6 var(--font-mono, monospace); overflow-wrap: anywhere; }
-.controls button { max-width: 100%; white-space: normal; }
+.root { container-type: inline-size; padding: 0; --film-teal: #4b9191; --film-amber: #b27830; }
+.root .header { padding: 1.25rem 1.4rem 1rem; border-bottom: 1px solid var(--gray-200); }
+.root .header h3 { font-size: 1.2rem; line-height: 1.5; }
+.root .header p { font-size: .9rem; margin-bottom: 0; }
+.figureNumber { display: block; margin-bottom: .45rem; font: .65rem/1.4 monospace; letter-spacing: .15em; color: var(--muted); }
+.schedule { padding: 1rem 1.4rem; background: color-mix(in srgb, var(--machine-top) 55%, var(--machine-paper)); border-bottom: 1px solid var(--gray-200); }
+.sectionLabel { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .3rem; font-size: .8rem; }
+.sectionLabel > span { font-size: .7rem; color: var(--muted); }
+.tracks { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); column-gap: .85rem; row-gap: .4rem; margin-top: .9rem; }
+.trackName { position: relative; padding-left: .85rem; font: .75rem/1.5 monospace; align-self: center; }
+.trackName i { position: absolute; left: 0; top: .4rem; }
+.trackName small { display: block; font-family: var(--body-font, sans-serif); font-size: .67rem; color: var(--muted); }
+.titleKey, .backgroundKey { display: inline-block; width: .4rem; height: .65rem; border-radius: 1px; flex-shrink: 0; }
+.titleKey { background: var(--film-amber); }
+.backgroundKey { background: var(--film-teal); }
+.track { position: relative; height: 2.45rem; border-radius: 3px; background: color-mix(in srgb, var(--gray-200) 55%, transparent); }
+.track > span { position: absolute; inset-block: .25rem; display: grid; place-items: center; overflow: hidden; white-space: nowrap; border-radius: 2px; font: .7rem/1.2 monospace; }
+.titleClip { background: #e9c893; color: #443323; border: 1px solid #ad7437; }
+.backgroundClip { inset-inline: 0; background: #87b8b2; color: #142f32; border: 1px solid #3f8184; }
+.playhead { position: absolute; inset-block: -.18rem; width: 2px; background: var(--machine-ink); box-shadow: 0 0 0 1px var(--machine-paper); transform: translateX(-1px); }
+.ruler { display: flex; justify-content: space-between; font: .65rem/1.3 monospace; color: var(--muted); }
+.control { margin-top: .7rem; }
+.control label { font-size: .8rem; }
+.presets { display: flex; gap: .45rem; flex-wrap: wrap; margin-top: .85rem; }
+.presets button { font-size: .72rem; }
+.drawing { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); padding: 1.1rem 1.2rem; gap: .7rem; }
+.root .pageContract { margin: .55rem 0 0; font-size: .72rem; line-height: 1.65; color: var(--muted); }
+.machine { display: block; width: 100%; height: auto; overflow: visible; }
+.shadow { fill: var(--machine-ink); opacity: .08; }
+.layerCalls { margin-top: -.1rem; }
+.root .layerCalls p { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: .35rem 0; font-size: .7rem; }
+.layerCalls strong { font-family: monospace; font-weight: 500; }
+.root .layerCalls code { margin-left: auto; font-size: .68rem; padding: .1rem .25rem; }
+.output { display: flex; flex-direction: column; }
+.monitor { margin-top: 2.1rem; border: 1px solid var(--machine-line); border-radius: .4rem; padding: .45rem; background: var(--machine-top); box-shadow: 0 5px 0 var(--gray-200); }
+.monitorTop { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .4rem; margin: .12rem 0 .45rem; font: .65rem/1.5 monospace; }
+.picture { width: 100%; height: auto; display: block; border-radius: 2px; }
+.root .outputCaption { font-size: .8rem; line-height: 1.65; margin-top: 1.15rem; }
+.root .mapping { font-size: .7rem; line-height: 1.65; color: var(--muted); }
+.explain { margin: 0 1.4rem 1rem; padding: .9rem 1rem; border-left: 2px solid var(--film-amber); background: color-mix(in srgb, var(--film-amber) 7%, var(--machine-paper)); }
+.root .formulaTitle { margin-top: 0; font-size: .85rem; }
+.root .formula { font-size: .82rem; }
+.formula span { color: var(--film-amber); font-weight: 600; }
+.root .example, .root .status { font-size: .8rem; line-height: 1.7; }
+.root .status { margin-bottom: 0; }
+.root .source { margin: 0 1.4rem 1rem; border: 0; background: transparent; font-size: .78rem; }
+.root .source > summary { cursor: pointer; padding: .4rem 0; color: var(--muted); }
+.root .boundary { border-top: 1px solid var(--gray-200); padding: .85rem 1.4rem; margin: 0; color: var(--muted); font-size: .7rem; line-height: 1.7; }
+@container (max-width: 550px) {
+  .root .header, .schedule { padding-inline: 1rem; }
+  .tracks { grid-template-columns: 7.5rem minmax(0, 1fr); gap: .45rem; }
+  .trackName { font-size: .65rem; }
+  .trackName small { font-size: .6rem; }
+  .track > span { font-size: .6rem; }
+  .drawing { grid-template-columns: 1fr; padding: 1rem; gap: 1.25rem; }
+  .machine { max-width: 440px; margin-inline: auto; }
+  .monitor { margin-top: .65rem; }
+  .root .outputCaption { margin-top: .8rem; }
+  .root .mapping { margin-top: 0; }
+  .explain { margin-inline: 1rem; }
+  .root .source { margin-inline: 1rem; }
+  .root .boundary { padding-inline: 1rem; }
+  .presets { gap: .25rem; }
+  .presets button { font-size: .63rem; padding-inline: .6rem; }
+}

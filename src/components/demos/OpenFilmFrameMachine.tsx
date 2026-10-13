@@ -1,185 +1,149 @@
-import demoSurface from './DemoSurface.module.css';
-import {useEffect, useId, useRef, useState} from 'react';
+import {Fragment, useEffect, useId, useRef, useState} from 'react';
 import {Button, Label, Slider} from '@heroui/react';
 import {AnatomySolid, AnatomyLine} from './AnatomyArt';
-import {
-  FILM_HEIGHT, FILM_MARKER, FILM_MOVING_PARTS, FILM_PART_COUNT, FILM_PLATE_TEXT,
-  FILM_POINTER, FILM_SCREEN, FILM_SCREEN_BASELINE, FILM_SHADOW, FILM_STATIC_PARTS, FILM_WIDTH, filmTranslate,
-} from './openfilm-frame-geometry';
-import {FILM_DURATION, FRAME_SEQUENCES, LAST_TIME, REFERENCE_TIME, followTime, frameAt, initialFrameState, requestFrame, type FrameSequence} from './openfilm-frame-model';
+import {WIDTH, HEIGHT, PARTS, PICTURE_LAYERS, SHADOW} from './openfilm-frame-geometry';
+import {FILM_DURATION, OPENFILM_REVISION, REFERENCE_TIME, TOUR_TIMES, frameAt, type FilmFrame} from './openfilm-frame-model';
+import demoSurface from './DemoSurface.module.css';
 import frameStyles from './AnatomyFrame.module.css';
 import styles from './OpenFilmFrameMachine.module.css';
 
-const REST = frameAt(REFERENCE_TIME);
-const source = 'https://github.com/openfilm/openfilm/blob/e0a80d515fa13457ece08925575d5453c0b0fc6d/packages/openfilm/SPEC.md#3-the-one-rule-a-frame-is-a-function-of-t';
-const labels: Record<FrameSequence, string> = {ordered: '顺序绘制', shuffled: '乱序定位', repeated: '重复 1.50 s'};
+const SOURCE = `https://github.com/openfilm/openfilm/blob/${OPENFILM_REVISION}/packages/openfilm/`;
+const fmt = (t: number) => t.toFixed(1);
 
-/** Anatomy Figure: a film inspection bench for a time-addressed picture. */
-export default function OpenFilmFrameMachine({id: rootId}: {id?: string}) {
-  const id = useId();
+/** These are teaching HTML-page pictures, sampled from one shared time model. */
+function BackgroundPicture({frame}: {frame: FilmFrame}) {
+  return <g data-page-picture="background" visibility={frame.background.active ? 'visible' : 'hidden'}>
+    <rect width="320" height="180" fill="#162d36" />
+    <circle data-sun cx={frame.sunX} cy="52" r="22" fill="#eab966" />
+    <path d="M0 106L58 64L126 123L199 76L271 121L320 90V180H0Z" fill="#3c7477" />
+    <path d="M0 135L88 107L168 145L239 115L320 142V180H0Z" fill="#255056" />
+    <path d="M0 164Q100 137 320 159V180H0Z" fill="#1b3d46" />
+    <rect x="22" y="22" width="28" height="3" rx="1.5" fill="#a8d5cd" />
+  </g>;
+}
+function TitlePicture({frame}: {frame: FilmFrame}) {
+  return <g data-page-picture="title" visibility={frame.title.active ? 'visible' : 'hidden'}>
+    <g data-title-content transform={`translate(0 ${frame.titleY})`}>
+      <rect x="19" y="-23" width="205" height="58" rx="3" fill="#0b1e28" fillOpacity="0.82" />
+      <text x="30" y="-6" fontSize="10" letterSpacing="2" fill="#eab966">A FRAME IN TIME</text>
+      <text x="29" y="18" fontSize="20" fontWeight="600" fill="#fff4de">此刻，由代码绘制</text>
+    </g>
+  </g>;
+}
+const physicalParts = PARTS.map(part => <g key={part.name} opacity={part.opacity ?? 1}>
+  <AnatomySolid name={part.name} paths={part.paths} tone={part.tone} />
+  {part.line && <AnatomyLine d={part.line} />}
+</g>);
+
+export default function OpenFilmFrameMachine({id = 'frame-time-machine'}: {id?: string}) {
+  const uid = useId();
   const root = useRef<HTMLElement>(null);
-  const moving = useRef<SVGGElement>(null);
-  const marker = useRef<SVGGElement>(null);
-  const pointer = useRef<SVGGElement>(null);
-  const readout = useRef<HTMLSpanElement>(null);
-  const timeMetric = useRef<HTMLElement>(null);
-  const xMetric = useRef<HTMLElement>(null);
-  const signature = useRef<HTMLSpanElement>(null);
-  const motion = useRef({time: REFERENCE_TIME, target: REFERENCE_TIME, visible: false, hover: false, focused: false, clock: 0, lastInput: 0, queue: [] as number[], deadline: 0, tour: 0});
-  const kick = useRef<() => void>(() => {});
-  const model = useRef(initialFrameState());
-  const [state, setState] = useState(initialFrameState);
-  const [hydrated, setHydrated] = useState(false);
-  const [running, setRunning] = useState(false);
-  const [mode, setMode] = useState('拖动时间刻度，或选择一种绘制顺序。');
-
+  const [time, setTime] = useState(REFERENCE_TIME);
+  const [ready, setReady] = useState(false);
+  const [tour, setTour] = useState(false);
+  const [touched, setTouched] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [reduced, setReduced] = useState(true);
+  const [foreground, setForeground] = useState(true);
+  const frame = frameAt(time);
   useEffect(() => {
-    setHydrated(true);
-    const element = root.current;
-    if (!element) return;
-    const still = matchMedia('(prefers-reduced-motion: reduce)');
-    let raf = 0, last = 0;
-    let idleTimer: ReturnType<typeof setTimeout> | undefined;
-    let destroyed = false;
-    const paint = () => {
-      const frame = frameAt(motion.current.time);
-      moving.current?.setAttribute('transform', filmTranslate(frame.carriageTravel));
-      pointer.current?.setAttribute('transform', filmTranslate(frame.carriageTravel));
-      marker.current?.setAttribute('transform', filmTranslate(frame.previewTravel));
-      if (readout.current) readout.current.textContent = `${frame.t.toFixed(2)} s · x=${frame.x.toFixed(2)} px`;
-      if (timeMetric.current) timeMetric.current.textContent = `${frame.t.toFixed(2)} s`;
-      if (xMetric.current) xMetric.current.textContent = `${frame.x.toFixed(2)} px`;
-      if (signature.current) signature.current.textContent = frame.signature;
-      element.dataset.currentTime = frame.t.toFixed(4);
-      element.dataset.frameX = frame.x.toFixed(4);
-      element.dataset.frameSignature = frame.signature;
-    };
-    const apply = (time: number, record = true) => {
-      motion.current.target = time;
-      if (record) {model.current = requestFrame(model.current, time); setState(model.current);}
-    };
-    const tick = (now: number) => {
-      raf = 0;
-      if (!motion.current.visible || destroyed || document.hidden) {last = 0; return;}
-      const dt = last ? Math.max(0, Math.min((now - last) / 1000, 1 / 30)) : 1 / 60;
-      last = now;
-      const s = motion.current;
-      s.clock += dt;
-      if (s.queue.length && s.clock >= s.deadline) {
-        apply(s.queue.shift()!);
-        s.deadline = s.clock + 0.85;
-        if (!s.queue.length) {setRunning(false); s.lastInput = s.clock;}
-      }
-      if (!still.matches && !s.hover && !s.focused && !s.queue.length && s.clock - s.lastInput > 7) {
-        // A quiet idle tour only previews time; it does not add fabricated user requests.
-        s.target = [0.5, 2.5, 1.5][s.tour % 3]!;
-        s.tour += 1;
-        s.lastInput = s.clock - 4;
-      }
-      s.time = followTime(s.time, s.target, dt, still.matches);
-      paint();
-      if (s.queue.length || s.time !== s.target) raf = requestAnimationFrame(tick);
-      else if (!still.matches && !s.hover && !s.focused) {
-        // A settled device sleeps until the next tour step; it does not run a 60 fps idle clock.
-        idleTimer = setTimeout(() => {
-          s.lastInput = s.clock - 7.01;
-          start();
-        }, Math.max(50, (7 - (s.clock - s.lastInput)) * 1000));
-      }
-    };
-    const start = () => {
-      clearTimeout(idleTimer);
-      if (!destroyed && !raf && motion.current.visible && !document.hidden) {last = 0; raf = requestAnimationFrame(tick);}
-    };
-    kick.current = start;
-    const observer = new IntersectionObserver(entries => {
-      motion.current.visible = entries[entries.length - 1]?.isIntersecting ?? false;
-      if (motion.current.visible) start();
-      else {clearTimeout(idleTimer); cancelAnimationFrame(raf); raf = 0; last = 0;}
-    }, {rootMargin: '0px'});
-    observer.observe(element);
-    const visibility = () => {if (document.hidden) {clearTimeout(idleTimer); cancelAnimationFrame(raf); raf = 0; last = 0;} else start();};
-    const preference = () => {
-      if (still.matches) {
-        // Finish queued requests without motion when the preference changes mid-sequence.
-        for (const time of motion.current.queue) apply(time);
-        motion.current.queue = []; motion.current.time = motion.current.target; setRunning(false); paint();
-      }
-      start();
-    };
-    document.addEventListener('visibilitychange', visibility);
-    still.addEventListener('change', preference);
-    paint();
-    return () => {destroyed = true; clearTimeout(idleTimer); cancelAnimationFrame(raf); observer.disconnect(); document.removeEventListener('visibilitychange', visibility); still.removeEventListener('change', preference); kick.current = () => {};};
+    setReady(true);
+    const media = matchMedia('(prefers-reduced-motion: reduce)');
+    const preference = () => {setReduced(media.matches); if (media.matches) setTour(false);};
+    preference(); media.addEventListener('change', preference);
+    const visibility = () => {setForeground(!document.hidden);};
+    visibility(); document.addEventListener('visibilitychange', visibility);
+    const observer = new IntersectionObserver(entries => setVisible(entries.some(e => e.isIntersecting)));
+    if (root.current) observer.observe(root.current);
+    return () => {observer.disconnect(); media.removeEventListener('change', preference); document.removeEventListener('visibilitychange', visibility);};
   }, []);
+  // An idle tour requests distinct frames, like seeking. No invented interpolation or per-frame React render.
+  useEffect(() => {
+    if (!ready || !visible || !foreground || reduced || touched || tour) return;
+    const timer = setTimeout(() => setTour(true), 9000);
+    return () => clearTimeout(timer);
+  }, [ready, visible, foreground, reduced, touched, tour]);
+  useEffect(() => {
+    if (!tour || !visible || !foreground || reduced) return;
+    let index = 0;
+    const timer = setInterval(() => {setTime(TOUR_TIMES[index % TOUR_TIMES.length]!); index++;}, 2200);
+    return () => clearInterval(timer);
+  }, [tour, visible, foreground, reduced]);
+  const stop = () => {setTouched(true); setTour(false);};
+  const seek = (t: number) => {stop(); setTime(t);};
+  const call = (active: boolean, t: number | null) => active ? `frame(${fmt(t!)})` : '不在时段内 · 隐藏';
 
-  const interact = () => {motion.current.lastInput = motion.current.clock;};
-  const seek = (time: number) => {
-    interact(); motion.current.queue = []; motion.current.target = frameAt(time).t;
-    model.current = requestFrame(model.current, time); setState(model.current); setRunning(false);
-    setMode(`已请求 ${model.current.frame.t.toFixed(2)} s；画面只按这个 t 计算。`);
-    kick.current();
-  };
-  const sequence = (kind: FrameSequence) => {
-    interact();
-    const times = FRAME_SEQUENCES[kind];
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      for (const time of times) model.current = requestFrame(model.current, time);
-      motion.current.target = model.current.frame.t;
-      motion.current.queue = []; setState(model.current); setRunning(false);
-    } else {
-      motion.current.queue = [...times]; motion.current.deadline = motion.current.clock; setRunning(true);
-    }
-    setMode(`${labels[kind]}：${times.map(t => t.toFixed(2)).join(' → ')} s。最终都回到 1.50 s。`);
-    kick.current();
-  };
-  return <section ref={root} id={rootId ?? 'openfilm-frame-machine'} className={`${demoSurface.surface} ${frameStyles.surface}`} data-book-island data-demo="openfilm-frame-machine" data-hydrated={hydrated} data-part-count={FILM_PART_COUNT} aria-labelledby={`${id}-title`}
-    onPointerEnter={() => {motion.current.hover = true; interact(); kick.current();}} onPointerLeave={() => {motion.current.hover = false; interact(); kick.current();}}
-    onFocusCapture={() => {motion.current.focused = true; interact(); kick.current();}} onBlurCapture={event => {if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {motion.current.focused = false; interact(); kick.current();}}}>
-    <p className={frameStyles.eyebrow}>ANATOMY · FIGURE · FRAME(T)</p>
-    <h3 id={`${id}-title`} className={frameStyles.heading}>同一时刻，同一画面</h3>
-    <p>把片段当成一条可定位的刻度尺。滑架选择 <code>t</code>，屏幕重新计算这一帧；跳过哪些时刻、上一次停在哪里，都不参与画面计算。</p>
-    <div className={`${frameStyles.card} iso-plate`}>
-      <div className={frameStyles.corners}><span>Fig. 1 · 电影逐帧检验台</span><span>frame(t) = picture</span></div>
-      <div className={styles.stage}>
-        <svg className={frameStyles.figure} viewBox={`0 0 ${FILM_WIDTH} ${FILM_HEIGHT}`} role="img" aria-labelledby={`${id}-svg-title ${id}-svg-desc`}>
-          <title id={`${id}-svg-title`}>时间定位检验台</title>
-          <desc id={`${id}-svg-desc`}>带屏幕、胶片孔、双导轨和时间标尺的检验台。滑架按 t 定位，屏幕方块按 x=40+500t/3 定位。两者共享当前显示时间。</desc>
-          <path d={FILM_SHADOW} className={styles.shadow} />
-          {FILM_STATIC_PARTS.map(part => <g key={part.name}><AnatomySolid paths={part.paths} tone={part.tone} lit={part.lit} name={part.name} />{part.line && <AnatomyLine d={part.line} />}</g>)}
-          <path className={styles.screen} d={FILM_SCREEN} />
-          <path className={styles.baseline} d={FILM_SCREEN_BASELINE} />
-          <g ref={marker} transform={filmTranslate(REST.previewTravel)} data-frame-marker><path className={styles.marker} d={FILM_MARKER} /></g>
-          <g ref={moving} transform={filmTranslate(REST.carriageTravel)} data-frame-carriage>
-            {FILM_MOVING_PARTS.map(part => <g key={part.name}><AnatomySolid paths={part.paths} tone={part.tone} lit={part.lit} name={part.name} />{part.line && <AnatomyLine d={part.line} />}</g>)}
-          </g>
-          <g ref={pointer} transform={filmTranslate(REST.carriageTravel)}><path d={FILM_POINTER} className={styles.pointer} /></g>
-          <AnatomyLine d={FILM_PLATE_TEXT} free />
-        </svg>
+  return <section ref={root} id={id} className={`${demoSurface.surface} ${frameStyles.surface} ${styles.root}`} data-book-island data-demo="openfilm-frame-machine" data-hydrated={ready} data-current-time={time} aria-labelledby={`${uid}-title`}>
+    <header className={styles.header}>
+      <span className={styles.figureNumber}>ANATOMY · FIG. 01</span>
+      <h3 id={`${uid}-title`}>一份时间轴，两个网页，一帧画面</h3>
+      <p><code>film.html</code> 安排何时出现、谁在上层；各 HTML 页面决定此刻画什么。</p>
+    </header>
+
+    <div className={styles.schedule} onPointerDown={event => {if (!(event.target as Element).closest('[data-action="tour"]')) stop();}} onFocusCapture={event => {if (!(event.target as Element).closest('[data-action="tour"]')) stop();}}>
+      <div className={styles.sectionLabel}><strong>① film.html · 安排图层和时段</strong><span>前面的 Track 在上层</span></div>
+      <div className={styles.tracks}>
+        <div className={styles.trackName}><i className={styles.titleKey} />title.html<small>上层 · 源时间 1–4 s</small></div>
+        <div className={styles.track}><span className={styles.titleClip} style={{left: '33.3333%', width: '50%'}}>影片 2–5 s</span><b className={styles.playhead} style={{left: `${time / FILM_DURATION * 100}%`}} /></div>
+        <div className={styles.trackName}><i className={styles.backgroundKey} />background.html<small>下层 · 源时间 0–6 s</small></div>
+        <div className={styles.track}><span className={styles.backgroundClip}>影片 0–6 s</span><b className={styles.playhead} style={{left: `${time / FILM_DURATION * 100}%`}} /></div>
+        <span /><div className={styles.ruler}><span>0 s</span><span>2 s</span><span>4 s</span><span>6 s</span></div>
       </div>
-      <div className={frameStyles.corners}><span>拖动刻度，比较三种请求顺序</span><span ref={readout} data-readout>1.50 s · x=290.00 px</span></div>
+      <div className={styles.control}>
+        <Slider minValue={0} maxValue={6} step={0.1} value={time} onChange={value => seek(Array.isArray(value) ? value[0]! : value)} isDisabled={!ready} formatOptions={{minimumFractionDigits: 1, maximumFractionDigits: 1}}>
+          <Label>影片时间 T（秒）</Label><Slider.Output /><Slider.Track><Slider.Fill /><Slider.Thumb /></Slider.Track>
+        </Slider>
+      </div>
+      <div className={styles.presets}>
+        {[{t: 1, label: '1 s · 标题未出场'}, {t: 3, label: '3 s · 两层合成'}, {t: 5, label: '5 s · 标题已结束'}].map(item => <Button key={item.t} size="sm" variant={time === item.t ? 'secondary' : 'outline'} onPress={() => seek(item.t)} isDisabled={!ready}>{item.label}</Button>)}
+        {!reduced && <Button data-action="tour" size="sm" variant="ghost" onPress={() => {setTouched(true); setTour(value => !value);}} isDisabled={!ready}>{tour ? '暂停演示' : '自动演示'}</Button>}
+      </div>
     </div>
-    <div className={styles.fields}>
-      <Slider value={state.frame.t} minValue={0} maxValue={LAST_TIME} step={0.01} isDisabled={!hydrated}
-        formatOptions={{minimumFractionDigits: 2, maximumFractionDigits: 2}} onChange={value => seek(Array.isArray(value) ? value[0] : value)}>
-        <Label>请求时间 t（秒）</Label><Slider.Output />
-        <Slider.Track><Slider.Fill /><Slider.Thumb /></Slider.Track>
-      </Slider>
-      <span className={frameStyles.note}>0–{LAST_TIME} s · 每次 0.01 s</span>
+
+    <div className={styles.drawing}>
+      <div className={styles.layers}>
+        <div className={styles.sectionLabel}><strong>② 各页面绘制自己的当前画面</strong></div>
+        <p className={styles.pageContract}>场景页保存画面和 <code>frame(t)</code>。加载后按 t 重绘，无需先播放此前各帧。</p>
+        <svg className={styles.machine} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-labelledby={`${uid}-machine-title ${uid}-machine-desc`}>
+          <title id={`${uid}-machine-title`}>分层动画摄影台，展示两个 HTML 页面的画面</title>
+          <desc id={`${uid}-machine-desc`}>上层标题页{call(frame.title.active, frame.title.sourceTime)}，下层背景页{call(frame.background.active, frame.background.sourceTime)}。实体框架仅表示页面图层；实际由浏览器合成，没有摄影透视。</desc>
+          <defs><pattern id={`${uid}-grid`} width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="#d6ddd9" /><path d="M0 0H10V10H0ZM10 10H20V20H10Z" fill="#eef1ec" /></pattern></defs>
+          <path className={styles.shadow} d={SHADOW} />
+          {PARTS.map((part, index) => <Fragment key={part.name}>
+            {physicalParts[index]}
+            {part.name === PICTURE_LAYERS.background.partName && <g transform={PICTURE_LAYERS.background.pictureTransform}><rect width="320" height="180" fill="#162d36" fillOpacity="0.1" /><BackgroundPicture frame={frame} /><rect width="320" height="180" fill="none" stroke="#4b9191" strokeWidth="3" /></g>}
+            {part.name === PICTURE_LAYERS.title.partName && <g transform={PICTURE_LAYERS.title.pictureTransform}><rect width="320" height="180" fill={`url(#${uid}-grid)`} fillOpacity="0.35" /><TitlePicture frame={frame} /><rect width="320" height="180" fill="none" stroke="#b27830" strokeWidth="3" /></g>}
+          </Fragment>)}
+        </svg>
+        <div className={styles.layerCalls}>
+          <p data-layer="title"><i className={styles.titleKey} /><strong>title.html</strong><code>{call(frame.title.active, frame.title.sourceTime)}</code></p>
+          <p data-layer="background"><i className={styles.backgroundKey} /><strong>background.html</strong><code>{call(frame.background.active, frame.background.sourceTime)}</code></p>
+        </div>
+      </div>
+      <div className={styles.output}>
+        <div className={styles.sectionLabel}><strong>③ 浏览器按层级叠合</strong></div>
+        <div className={styles.monitor}>
+          <div className={styles.monitorTop}><span>影片当前帧</span><strong>T = {fmt(time)} s</strong></div>
+          <svg viewBox="0 0 320 180" className={styles.picture} role="img" aria-label={`第 ${fmt(time)} 秒合成画面：${frame.background.active ? '山峦背景' : '影片结束'}${frame.title.active ? '，上方叠有标题' : '，无标题'}`} data-composite-frame>
+            <rect width="320" height="180" fill="#162d36" />
+            <BackgroundPicture frame={frame} /><TitlePicture frame={frame} />
+          </svg>
+        </div>
+        <p className={styles.outputCaption}>{frame.title.active ? '标题页的空白部分透明，所以能看见下面的背景。' : frame.background.active ? '标题层被隐藏，背景仍然在当前帧中。' : '已到影片结束边界。'}</p>
+        <p className={styles.mapping}>装置中的上下间距用来展开图层；合成帧保留原来的位置和尺寸。</p>
+      </div>
     </div>
-    <div className={`${frameStyles.controls} ${styles.controls}`}>
-      {(Object.keys(FRAME_SEQUENCES) as FrameSequence[]).map(kind => <Button key={kind} size="sm" variant="outline" onPress={() => sequence(kind)} isDisabled={!hydrated}>{labels[kind]}</Button>)}
-      <Button size="sm" variant="outline" onPress={() => seek(REFERENCE_TIME)} isDisabled={!hydrated}>定位 1.50 s</Button>
+
+    <div className={styles.explain}>
+      <p className={styles.formulaTitle}><strong>为什么两个网页收到不同的时间？</strong></p>
+      <p className={styles.formula}><span>页面时间 t</span> = 源起点 in +（影片时间 T − 影片开始时间 at）</p>
+      <p className={styles.example} data-time-equation>{frame.title.active ? <>标题页：<code>1 + ({fmt(time)} − 2) = {fmt(frame.title.sourceTime!)}</code> 秒。背景页从影片开头开始，因此直接收到 <code>{fmt(frame.background.sourceTime!)}</code> 秒。</> : <>标题只在影片的 <code>[2, 5)</code> 秒内绘制；{time < 2 ? '目前还没到标题的开始时间。' : '目前已离开这段时长。'}</>}</p>
+      <p className={styles.status} role="status" aria-live={tour ? 'off' : 'polite'}>{frame.explanation}</p>
     </div>
-    <p className={styles.status} role="status" aria-live="polite" aria-atomic="true">{running ? '检验中。' : ''}{mode} {state.referenceChecks > 0 && <strong>已核对 1.50 s {state.referenceChecks} 次，几何结果一致。</strong>}</p>
-    <ol className={styles.history} aria-label="最近八次请求">{state.history.map((request, i) => <li key={`${state.requests - state.history.length + i}`} data-reference={request.t === REFERENCE_TIME || undefined}>{request.t.toFixed(2)} s</li>)}</ol>
-    <div className={frameStyles.readout}>
-      <div className={frameStyles.metric}><strong ref={timeMetric}>1.50 s</strong><span>当前显示时间</span></div>
-      <div className={frameStyles.metric}><strong ref={xMetric}>290.00 px</strong><span>示例方块的 x 坐标</span></div>
-      <div className={frameStyles.metric}><strong>{state.requests}</strong><span>实际请求次数</span></div>
-    </div>
-    <p className={styles.signature}>几何签名：<span ref={signature} data-frame-signature>{REST.signature}</span></p>
-    <p className={frameStyles.note}>教学模型：<code>x = 40 + 500 × t / {FILM_DURATION}</code>。刻度范围为 0–{LAST_TIME} s，保持在三秒片段的结束时刻之前。签名记录方块几何；真实 <code>look</code> 比较浏览器截图并允许像素差异。此处没有运行 OpenFilm、Chromium 导出或 FFmpeg。</p>
-    <p className={frameStyles.note}><a href={source}>固定版本 SPEC：a frame is a function of t</a> · <a href="https://github.com/openfilm/openfilm/blob/e0a80d515fa13457ece08925575d5453c0b0fc6d/packages/openfilm/src/look.mjs#L88-L101">look 的乱序检查</a>。装置外形是 Anatomy 教学比喻。</p>
+    <details className={styles.source}>
+      <summary>源码中的模块职责（核对用）</summary>
+      <p><a href={`${SOURCE}src/film-doc.mjs#L334-L393`}>film-doc.mjs</a> 解析 Clip 和时间区间；<a href={`${SOURCE}src/timeline.mjs#L584-L640`}>timeline.mjs</a> 判断可见性、换算时间并调用各页 <code>frame(t)</code>；<a href={`${SOURCE}src/timeline.mjs#L95-L105`}>Track 层级</a> 控制浏览器中的覆盖顺序。</p>
+    </details>
+    <p className={styles.boundary}>教学示例：按固定源码的两层 HTML 时间规则计算，画面是示例页面的绘制结果示意；没有执行 OpenFilm 或导出视频。摄影台表示浏览器图层，棋盘格表示透明区域。各页面必须按传入的时间绘制完整画面，倒回同一时刻才会得到同一帧。</p>
   </section>;
 }
