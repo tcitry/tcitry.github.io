@@ -26,6 +26,7 @@ const writes: {name: string; userId: string | null; args: Record<string, unknown
 const clients: {id: number; userId: string | null; sessionId: string | null; closed: boolean; closeCalls: number}[] = [];
 const clientLifecycle: {clientId: number; event: 'setAuth' | 'clearAuth' | 'close'; closed: boolean}[] = [];
 type Comment = {id: string; owner: string; pathname: string; authorName: string; body: string; createdAt: number; deleted: boolean; parentId?: string; imageIds: string[]};
+type AdminComment = Comment & {articleTitle: string};
 type CommentImage = {id: string; owner: string; url: string; contentType: string; size: number; attached: boolean; purpose: 'comment' | 'consultation'; threadId?: string};
 const commentPath = '/docs/services-fixture/';
 const waitingCommentQueries = new Set<string>();
@@ -33,6 +34,11 @@ const initiallyWaiting = new URLSearchParams(location.search).get('waitingCommen
 if (initiallyWaiting === 'summary') waitingCommentQueries.add('comments:getSummary');
 if (initiallyWaiting === 'list') waitingCommentQueries.add('comments:list');
 const comments: Comment[] = [{id: 'comment_initial', owner: 'fixture-reader', pathname: commentPath, authorName: '测试读者', body: '登录后可见的初始评论正文', createdAt: now, deleted: false, imageIds: []}];
+const adminComments: AdminComment[] = [
+  {id: 'admin_imported', owner: 'github:user:123', pathname: commentPath, articleTitle: '导入文章', authorName: '历史读者', body: 'giscus 导入的历史评论内容', createdAt: now - 3, deleted: false, imageIds: []},
+  {id: 'admin_reply', owner: 'fixture-reader', pathname: commentPath, articleTitle: '服务架构专题', authorName: '测试读者', body: '这是对历史讨论的回复。', createdAt: now - 2, deleted: false, parentId: 'comment_initial', imageIds: []},
+];
+const adminArticleLikes = [{pathname: '/docs/article-like-fixture/', title: '受到喜欢的文章', createdAt: now - 1}];
 const commentImages: CommentImage[] = [];
 const articleLikes = new Map<string, Set<string>>();
 const articleTitleOverrides = new Map<string, string | undefined>();
@@ -263,6 +269,17 @@ export function usePaginatedQuery(reference: Parameters<typeof getFunctionName>[
       if (!isAuthor(userId)) throw new ConvexError({code: 'FORBIDDEN', message: '仅博主可以查看咨询收件箱。'});
       rows = [...threads].sort((a, b) => b.updatedAt - a.updatedAt).map(publicThread);
     }
+    else if (name === 'comments:listAdmin') {
+      if (!isAuthor(userId)) throw new ConvexError({code: 'FORBIDDEN', message: '此操作仅供博主使用。'});
+      rows = adminComments.filter(comment => !comment.deleted).map(comment => ({
+        id: comment.id, pathname: comment.pathname, articleTitle: comment.articleTitle, authorName: comment.authorName,
+        summary: comment.body.slice(0, 280), createdAt: comment.createdAt, isReply: Boolean(comment.parentId), imageCount: comment.imageIds.length,
+      }));
+    }
+    else if (name === 'articleLikes:listAdmin') {
+      if (!isAuthor(userId)) throw new ConvexError({code: 'FORBIDDEN', message: '此操作仅供博主使用。'});
+      rows = adminArticleLikes;
+    }
     else if (name === 'consultations:listMessages') {
       getThread(String(args.threadId), userId);
       rows = messages.filter(message => message.threadId === args.threadId).sort((a, b) => b.createdAt - a.createdAt).map(({imageIds, ...message}) => ({...message, images: publicImages(imageIds ?? [])}));
@@ -464,7 +481,7 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
       publish(); return null;
     }
     if (name === 'comments:remove') {
-      const comment = comments.find(item => item.id === args.id);
+      const comment = comments.find(item => item.id === args.id) ?? adminComments.find(item => item.id === args.id);
       if (comment && comment.owner !== userId && !isAuthor(userId)) throw new Error('Services fixture: unauthorized comment removal');
       if (comment) {comment.deleted = true; comment.body = ''; comment.imageIds = [];}
       publish(); return null;

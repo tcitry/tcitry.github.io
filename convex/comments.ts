@@ -1,9 +1,9 @@
 import {RateLimiter} from "@convex-dev/rate-limiter";
-import {paginationOptsValidator, paginationResultValidator, type PaginationOptions} from "convex/server";
+import {paginationOptsValidator, paginationResultValidator} from "convex/server";
 import {ConvexError, v} from "convex/values";
 import {components} from "./_generated/api";
-import {env, mutation, query, type MutationCtx, type QueryCtx} from "./_generated/server";
-import {canonicalPathname, commentAuthorImageUrl, commentAuthorName, invalid, requireCommentIdentity} from "./commentShared";
+import {mutation, query, type MutationCtx, type QueryCtx} from "./_generated/server";
+import {accountPagination, canonicalPathname, commentAuthorImageUrl, commentAuthorName, invalid, isCommentModerator, requireCommentIdentity, requireCommentModerator} from "./commentShared";
 import {bindImages, deleteImages, imageResult, readCommentImages} from "./commentImages";
 import {ensureEmailPreferences} from "./emailPreferences";
 import {notifyCommentCreated} from "./notifications";
@@ -14,10 +14,6 @@ const rateLimiter = new RateLimiter(components.rateLimiter, {
   commentAvatarSync: {kind: "token bucket", rate: 2, period: 60_000, capacity: 1},
 });
 const AUTHOR_IMAGE_SYNC_BATCH = 100;
-
-function isModerator(owner: string) {
-  return Boolean(owner && owner === env.CONSULTATION_ADMIN_TOKEN_IDENTIFIER?.trim());
-}
 
 async function readStats(ctx: QueryCtx | MutationCtx, pathname: string) {
   const stats = await ctx.db.query("commentStats").withIndex("by_pathname", q => q.eq("pathname", pathname)).unique();
@@ -72,12 +68,6 @@ export const setLike = mutation({
   },
 });
 
-function accountPagination(options: PaginationOptions) {
-  if (!Number.isInteger(options.numItems) || options.numItems < 1 || options.numItems > 50 ||
-    (options.maximumRowsRead !== undefined && (!Number.isInteger(options.maximumRowsRead) || options.maximumRowsRead < 1 || options.maximumRowsRead > 100)) ||
-    (options.maximumBytesRead !== undefined && (!Number.isInteger(options.maximumBytesRead) || options.maximumBytesRead < 1 || options.maximumBytesRead > 1_000_000))) invalid("每次最多加载 50 条记录。");
-}
-
 export const listLikedArticles = query({
   args: {paginationOpts: paginationOptsValidator},
   returns: paginationResultValidator(v.object({pathname: v.string(), title: v.string(), createdAt: v.number()})),
@@ -108,6 +98,29 @@ export const listMine = query({
   },
 });
 
+const adminComment = v.object({
+  id: v.id("comments"), pathname: v.string(), articleTitle: v.string(), authorName: v.string(),
+  summary: v.string(), createdAt: v.number(), isReply: v.boolean(), imageCount: v.number(),
+});
+
+export const listAdmin = query({
+  args: {paginationOpts: paginationOptsValidator},
+  returns: paginationResultValidator(adminComment),
+  handler: async (ctx, args) => {
+    await requireCommentModerator(ctx);
+    accountPagination(args.paginationOpts);
+    const result = await ctx.db.query("comments")
+      .withIndex("by_deletedAt_and_createdAt", q => q.eq("deletedAt", undefined))
+      .order("desc").paginate(args.paginationOpts);
+    return {...result, page: result.page.map(row => ({
+      id: row._id, pathname: row.pathname, articleTitle: row.articleTitle?.trim() || row.pathname,
+      authorName: row.authorName.trim() || "读者",
+      summary: Array.from(row.body).slice(0, 280).join(""), createdAt: row.createdAt,
+      isReply: row.parentId !== undefined, imageCount: Math.min(row.imageIds?.length ?? 0, 4),
+    }))};
+  },
+});
+
 export const setCommentLike = mutation({
   args: {pathname: v.string(), commentId: v.id("comments"), liked: v.boolean()}, returns: v.boolean(),
   handler: async (ctx, args) => {
@@ -134,7 +147,8 @@ const publicComment = v.object({
 export const list = query({
   args: {pathname: v.string(), paginationOpts: paginationOptsValidator}, returns: paginationResultValidator(publicComment),
   handler: async (ctx, args) => {
-    const {tokenIdentifier: viewer} = await requireCommentIdentity(ctx);
+    const identity = await requireCommentIdentity(ctx);
+    const viewer = identity.tokenIdentifier;
     const pathname = canonicalPathname(args.pathname);
     const options = args.paginationOpts;
     if (!Number.isInteger(options.numItems) || options.numItems < 1 || options.numItems > 30 ||
@@ -147,7 +161,7 @@ export const list = query({
       const liked = deleted ? null : await ctx.db.query("commentLikes").withIndex("by_commentId_and_owner", q => q.eq("commentId", row._id).eq("owner", viewer)).unique();
       return {
         id: row._id, authorName: deleted ? "已删除的评论" : row.authorName, body: deleted ? "" : row.body, createdAt: row.createdAt,
-        canDelete: !deleted && (isModerator(viewer) || row.owner === viewer), deleted,
+        canDelete: !deleted && (isCommentModerator(identity) || row.owner === viewer), deleted,
         likeCount: deleted ? 0 : row.likeCount ?? 0, likedByMe: Boolean(liked),
         images: deleted ? [] : await readCommentImages(ctx, row),
         ...(!deleted && row.authorImageUrl ? {authorImageUrl: row.authorImageUrl} : {}),
@@ -214,10 +228,11 @@ export const add = mutation({
 export const remove = mutation({
   args: {id: v.id("comments")}, returns: v.null(),
   handler: async (ctx, args) => {
-    const {tokenIdentifier: owner} = await requireCommentIdentity(ctx);
+    const identity = await requireCommentIdentity(ctx);
+    const owner = identity.tokenIdentifier;
     const row = await ctx.db.get("comments", args.id);
     if (!row) return null;
-    if (!isModerator(owner) && row.owner !== owner) throw new ConvexError({code: "FORBIDDEN", message: "只能删除自己的评论。"});
+    if (!isCommentModerator(identity) && row.owner !== owner) throw new ConvexError({code: "FORBIDDEN", message: "只能删除自己的评论。"});
     if (row.deletedAt !== undefined) return null;
     await rateLimiter.limit(ctx, "commentWrites", {key: owner, throws: true});
     const stats = await readStats(ctx, row.pathname);

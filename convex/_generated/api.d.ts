@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as articleLikes from "../articleLikes.js";
 import type * as assistant from "../assistant.js";
 import type * as assistantModel from "../assistantModel.js";
 import type * as assistantPublicSearch from "../assistantPublicSearch.js";
@@ -34,6 +35,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  articleLikes: typeof articleLikes;
   assistant: typeof assistant;
   assistantModel: typeof assistantModel;
   assistantPublicSearch: typeof assistantPublicSearch;

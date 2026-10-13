@@ -1,0 +1,26 @@
+.panel { height: 100%; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.navigation { flex: 0 0 auto; padding: 14px 20px 0; }
+.content { flex: 1 1 auto; min-width: 0; min-height: 0; overflow: hidden; }
+.view { height: 100%; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 22px 20px; overflow-y: auto; }
+.header { display: grid; gap: 6px; }
+.header h2 { margin: 0; font-size: 21px; font-weight: 650; }
+.header p, .empty { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.list { display: grid; margin: 0; padding: 0; list-style: none; }
+.item { min-width: 0; border-top: 1px solid var(--border); }
+.comment { display: grid; gap: 9px; min-width: 0; padding: 14px 4px; }
+.meta { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.meta strong { color: var(--foreground); font-weight: 600; }
+.articleLink { min-width: 0; color: var(--foreground); font-size: 14px; font-weight: 550; line-height: 1.55; text-decoration: none; overflow-wrap: anywhere; }
+.articleLink:hover, .like:hover .articleLink { color: var(--accent); text-decoration: underline; }
+.summary { display: -webkit-box; margin: 0; overflow: hidden; color: var(--muted); font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.actions { display: flex; justify-content: flex-end; }
+.like { display: grid; gap: 7px; padding: 14px 4px; color: inherit; text-decoration: none; }
+.like .articleLink { display: block; }
+.loadMore { align-self: center; flex: 0 0 auto; }
+.empty { padding: 30px 8px; text-align: center; }
+.error { margin: 0; color: var(--danger); font-size: 12px; line-height: 1.7; }
+
+@media (max-width: 640px) {
+  .navigation { padding-inline: 14px; }
+  .view { padding: 18px 14px; }
+}

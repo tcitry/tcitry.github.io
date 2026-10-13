@@ -10,6 +10,7 @@ const pathname = "/posts/example/";
 const paginationOpts = {numItems: 20, cursor: null};
 const comment = {pathname, body: "A thoughtful comment."};
 const aliceIdentity = {issuer: "https://auth.example.test", subject: "alice", preferredUsername: "Alice", name: "Private legal name", email: "private@example.test"};
+const authorId = `${aliceIdentity.issuer}|author`;
 function setup() {
   const t = convexTest(schema, modules);
   rateLimiterTest.register(t);
@@ -237,6 +238,36 @@ describe("comment identity and deletion", () => {
     const deleted = (await alice.query(api.comments.list, {pathname, paginationOpts})).page[0];
     expect(deleted).toMatchObject({id, deleted: true, body: "", authorName: "已删除的评论", images: [], canDelete: false});
     expect(await t.run(ctx => ctx.db.get("comments", id))).toMatchObject({body: "", authorName: ""});
+  });
+});
+
+describe("site-wide comment administration", () => {
+  test("only the moderator sees active imported and live comments, and can delete them", async () => {
+    vi.stubEnv("CONSULTATION_ADMIN_TOKEN_IDENTIFIER", authorId);
+    const {t, alice} = setup();
+    const author = t.withIdentity({issuer: aliceIdentity.issuer, subject: "author", tokenIdentifier: authorId});
+    const forgedAdmin = t.withIdentity({...aliceIdentity, role: "admin", publicMetadata: {role: "admin"}});
+
+    await expect(t.query(api.comments.listAdmin, {paginationOpts})).rejects.toThrow("UNAUTHENTICATED");
+    await expect(forgedAdmin.query(api.comments.listAdmin, {paginationOpts})).rejects.toThrow("FORBIDDEN");
+
+    const historicalId = await t.run(ctx => ctx.db.insert("comments", {
+      pathname, articleTitle: "Imported article", authorName: "Historical reader", body: "old ".repeat(100),
+      owner: "github:user:123", createdAt: 100, importSource: "giscus", externalId: "discussion-123",
+    }));
+    const liveId = await alice.mutation(api.comments.add, {...comment, articleTitle: "Live article"});
+    const replyId = await alice.mutation(api.comments.add, {...comment, body: "A reply", parentId: liveId});
+    const page = await author.query(api.comments.listAdmin, {paginationOpts});
+    expect(page.page.map(row => row.id)).toEqual([replyId, liveId, historicalId]);
+    expect(page.page[0]).toMatchObject({pathname, articleTitle: pathname, authorName: "Alice", summary: "A reply", isReply: true});
+    expect(page.page[1]).toMatchObject({articleTitle: "Live article", isReply: false});
+    expect(page.page[2]).toMatchObject({articleTitle: "Imported article", authorName: "Historical reader", isReply: false});
+    expect(page.page[2].summary).toHaveLength(280);
+    expect(JSON.stringify(page.page)).not.toMatch(/owner|tokenIdentifier|externalId|github:user|private@example/);
+
+    await author.mutation(api.comments.remove, {id: historicalId});
+    expect((await author.query(api.comments.listAdmin, {paginationOpts})).page.map(row => row.id)).toEqual([replyId, liveId]);
+    for (const numItems of [0, 51, 1.5]) await expect(author.query(api.comments.listAdmin, {paginationOpts: {numItems, cursor: null}})).rejects.toThrow("INVALID_ARGUMENT");
   });
 });
 
