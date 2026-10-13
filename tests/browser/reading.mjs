@@ -20,7 +20,7 @@ try {
       errors.push(`${response.status()} ${response.url()}`);
     }
   });
-  const routes = ['/posts/this-blog/', '/docs/Agents/CLI/deepseek-harness-dsh-plugin-agent-architecture/'];
+  const routes = ['/posts/this-blog/', '/docs/AI/CLI/deepseek-harness-dsh-plugin-agent-architecture/'];
   for (const route of routes) {
     await page.goto(new URL(route, base).href);
     assert.equal(await page.locator('#main-content [data-reader-root]').count(), 0, 'Reader tools live in the assistant panel');
