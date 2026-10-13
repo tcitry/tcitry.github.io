@@ -4,7 +4,12 @@ import { execFileSync } from 'node:child_process';
 import YAML from 'yaml';
 
 export const PUBLIC_SECTIONS = ['docs', 'posts', 'weekly', 'links', 'timeline'];
-export const CONTENT_DENIED = /^(?:private|draft|drafts|template|templates|skills|demo|demos|test|tests|node_modules)$/i;
+// Publishing is an allowlist: only PUBLIC_SECTIONS and ROOT_PAGES are read, so
+// root-level private dirs (skills/, private/, draft/, template/) never enter the build.
+// Inside sections, dot-directories (.agents, .claude, .cursor, .codex, .github, .obsidian)
+// are skipped and these names are denied. `skills` is intentionally allowed so
+// public docs such as docs/AI/Skills/ can be published.
+export const CONTENT_DENIED = /^(?:private|draft|drafts|template|templates|demo|demos|test|tests|node_modules)$/i;
 export const ROOT_PAGES = new Set(['_index', 'about', 'archives', 'modified', 'portfolio', 'timeline', 'ghstar'].flatMap(name => [name + '.md', name + '.mdx']));
 export const lowerKeys = (value) => Object.fromEntries(Object.entries(value ?? {}).map(([key, item]) => [key.toLowerCase(), item]));
 export const asList = (value) => [...new Set((value == null ? [] : Array.isArray(value) ? value : [value]).map(String).map((v) => v.trim()).filter(Boolean))];

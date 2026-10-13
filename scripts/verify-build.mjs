@@ -230,7 +230,7 @@ for (const url of assets) {
 const errors = [];
 async function inspect(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
-    if (entry.isSymbolicLink() || /^(private|node_modules|\.git|\.obsidian)$/i.test(entry.name)) errors.push(path.relative(output, path.join(directory, entry.name)));
+    if (entry.isSymbolicLink() || /^(private|node_modules|\.git|\.obsidian|\.agents|\.claude|\.cursor|\.codex|\.github)$/i.test(entry.name)) errors.push(path.relative(output, path.join(directory, entry.name)));
     if (entry.isDirectory()) await inspect(path.join(directory, entry.name));
     else if (entry.isFile()) assert.ok((await stat(path.join(directory, entry.name))).size <= 25 * 1024 * 1024, `Asset exceeds static hosting limit: ${entry.name}`);
   }
