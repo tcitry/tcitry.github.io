@@ -127,14 +127,71 @@ test('closing aborts the active import and discards queued work without logging 
   assert.equal(runs, 1);
 });
 
-test('collectSources publishes docs/**/Skills but never root skills/ or hidden agent dirs', async () => {
-  const { mkdtemp, mkdir, writeFile } = await import('node:fs/promises');
+test('the public Skills exception preserves authoring, draft and symlink boundaries', async () => {
+  const { mkdtemp, mkdir, writeFile, symlink, rm } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const path = await import('node:path');
+  const { collectSources, publicSources } = await import('../scripts/legacy-content.mjs');
+  const root = await mkdtemp(path.join(tmpdir(), 'skills-'));
+  const draft = 'docs/AI/Skills/draft.md';
+  const allowed = ['docs/AI/Skills/_index.md', 'docs/AI/Skills/article.md', 'docs/AI/Skills/example.mdx', draft];
+  const denied = [
+    'docs/Other/skills/SKILL.md',
+    'docs/MixedCase/SkIlLs/SKILL.md',
+    'docs/AI/Skills/skills/nested.md',
+    'docs/AI/Skills/case/SkIlLs/nested.md',
+    'posts/2026/skills/SKILL.md',
+    'skills/_index.md',
+    'skills/r2/SKILL.md',
+    '.agents/skills/x/SKILL.md',
+    '.claude/skills/x/SKILL.md',
+    'docs/.agents/skills/y.md',
+    'docs/AI/.cursor/z.md',
+    'docs/AI/Skills/.agents/skills/x/SKILL.md',
+    'docs/AI/Skills/Private/secret.md',
+    'docs/AI/Skills/node_modules/dependency.md',
+    'docs/AI/Skills/drafts/note.md',
+  ];
+  try {
+    for (const file of [...allowed, ...denied]) {
+      await mkdir(path.dirname(path.join(root, file)), { recursive: true });
+      await writeFile(path.join(root, file), `---\ntitle: Fixture\ndraft: ${file === draft}\n---\n`);
+    }
+    for (const source of allowed) assert.equal(classifyBlogChange(source), 'content', source);
+    for (const source of denied) assert.equal(classifyBlogChange(source), undefined, source);
+
+    // Classification has no filesystem information. Only the scanner is
+    // responsible for rejecting symlinked files and directories.
+    await symlink(path.join(root, 'docs/AI/Skills/article.md'), path.join(root, 'docs/AI/Skills/linked-article.md'));
+    await symlink(path.join(root, 'skills/r2'), path.join(root, 'docs/AI/Skills/linked-skills'));
+    const records = await collectSources(root);
+    const sources = new Set(records.map(record => record.source));
+    assert.deepEqual([...sources].sort(), [...allowed].sort());
+    for (const source of denied) assert.ok(!sources.has(source), source);
+    assert.ok(!sources.has('docs/AI/Skills/linked-article.md'));
+    assert.ok(![...sources].some(source => source.startsWith('docs/AI/Skills/linked-skills/')));
+    assert.deepEqual(publicSources(records).map(record => record.source).sort(), allowed.filter(source => source !== draft).sort());
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('the public Skills directory exception requires its exact path and case', async () => {
+  const { mkdtemp, mkdir, writeFile, rm } = await import('node:fs/promises');
   const { tmpdir } = await import('node:os');
   const path = await import('node:path');
   const { collectSources } = await import('../scripts/legacy-content.mjs');
-  const root = await mkdtemp(path.join(tmpdir(), 'skills-'));
-  const files = ['docs/AI/Skills/_index.md', 'docs/AI/Skills/a.md', 'skills/_index.md', '.agents/skills/x/SKILL.md', '.claude/skills/x/SKILL.md', 'docs/.agents/skills/y.md', 'docs/AI/.cursor/z.md'];
-  for (const file of files) { await mkdir(path.dirname(path.join(root, file)), { recursive: true }); await writeFile(path.join(root, file), '---\ntitle: t\n---\n'); }
-  const sources = (await collectSources(root)).map(record => record.source);
-  assert.deepEqual(sources.sort(), ['docs/AI/Skills/_index.md', 'docs/AI/Skills/a.md']);
+  const root = await mkdtemp(path.join(tmpdir(), 'skills-case-'));
+  const denied = ['docs/AI/skills/SKILL.md', 'docs/Other/SKILLS/SKILL.md', 'posts/2026/SkIlLs/SKILL.md'];
+  try {
+    // Keep this fixture separate from docs/AI/Skills on filesystems that fold case.
+    for (const file of denied) {
+      await mkdir(path.dirname(path.join(root, file)), { recursive: true });
+      await writeFile(path.join(root, file), '---\ntitle: Authoring fixture\ndraft: false\n---\n');
+      assert.equal(classifyBlogChange(file), undefined, file);
+    }
+    assert.deepEqual((await collectSources(root)).map(record => record.source), []);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });

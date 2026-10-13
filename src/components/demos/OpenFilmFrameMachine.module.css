@@ -1,0 +1,14 @@
+.stage { position: relative; }
+.shadow { fill: var(--machine-faint); opacity: 0.18; filter: blur(4px); }
+.screen { fill: var(--machine-paper); stroke: var(--machine-faint); stroke-width: 0.4; }
+.marker { fill: var(--machine-accent); stroke: var(--machine-accent); stroke-width: 0.7; }
+.pointer { fill: var(--machine-accent); }
+.baseline { stroke: var(--machine-faint); stroke-dasharray: 2 3; fill: none; stroke-width: 0.6; }
+.fields { margin-top: 1rem; }
+.history { display: flex; flex-wrap: wrap; gap: 0.35rem; list-style: none; padding: 0 !important; margin: 0.65rem 0 !important; font: 0.75rem/1.5 var(--font-mono, monospace); }
+.history li { border: 1px solid var(--gray-200); border-radius: 0.3rem; padding: 0.2rem 0.45rem; margin: 0 !important; }
+.history li[data-reference] { color: var(--machine-accent); border-color: var(--machine-accent); }
+.status { font-size: 0.85rem; line-height: 1.6; }
+.status strong { color: var(--machine-accent); }
+.signature { font: 0.8rem/1.6 var(--font-mono, monospace); overflow-wrap: anywhere; }
+.controls button { max-width: 100%; white-space: normal; }

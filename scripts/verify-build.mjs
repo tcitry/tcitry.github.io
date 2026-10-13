@@ -93,7 +93,9 @@ function assertMdxPage(html, page) {
 }
 const urls = new Set(routes.map(route => route.url));
 const legacyURLs = new Set(legacy.pages.map(page => page.url));
-const missing = [...legacyURLs].filter(url => !urls.has(url));
+// Migrated URLs still need a rendered canonical destination; actual redirects are checked below.
+const aliasTargets = new Map(content.pages.flatMap(page => page.aliases.map(alias => [alias, page.url])));
+const missing = [...legacyURLs].filter(url => !urls.has(url) && !urls.has(aliasTargets.get(url)));
 assert.deepEqual(missing, [], 'Every original public route must remain available');
 const counts = { routes: routes.length, originalRoutes: legacyURLs.size, comments: 0, math: 0, mermaid: 0, code: 0, blogMdx: 0 };
 const pages = new Map(content.pages.map(page => [page.id, page]));

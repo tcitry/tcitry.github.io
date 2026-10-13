@@ -2,7 +2,7 @@ import { spawn } from 'node:child_process';
 import { homedir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CONTENT_DENIED, PUBLIC_SECTIONS, ROOT_PAGES } from '../legacy-content.mjs';
+import { isDeniedContentPath, PUBLIC_SECTIONS, ROOT_PAGES } from '../legacy-content.mjs';
 import { PUBLIC_DOWNLOADS } from '../public-downloads.mjs';
 
 const siteRoot = fileURLToPath(new URL('../../', import.meta.url));
@@ -12,7 +12,7 @@ export function classifyBlogChange(relative) {
   const parts = relative.split(path.sep);
   if (parts.some(part => part.startsWith('.') || /^(?:private|node_modules)$/i.test(part))) return;
   if (ROOT_PAGES.has(relative)) return 'content';
-  if (PUBLIC_SECTIONS.includes(parts[0]) && !parts.some(part => CONTENT_DENIED.test(part)) && /\.mdx?$/i.test(relative)) return 'content';
+  if (PUBLIC_SECTIONS.includes(parts[0]) && !isDeniedContentPath(parts.join('/')) && /\.mdx?$/i.test(relative)) return 'content';
   if (PUBLIC_DOWNLOADS.includes(relative.split(path.sep).join('/'))) return 'assets';
   if (parts[0] === 'static' && (parts[1] === 'demos' || parts.length === 2 && /\.(?:avif|gif|ico|jpe?g|png|svg|webp|mp4|webm|mp3|ogg|pdf)$/i.test(relative))) return 'assets';
 }

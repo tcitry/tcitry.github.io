@@ -6,6 +6,13 @@ import path from 'node:path';
 import { collectSources, publicSources, defaultRoute, asList } from '../scripts/legacy-content.mjs';
 import { createReferenceResolver, transformLegacyMarkdown, createLegacyMarkdownRenderer } from '../src/lib/markdown.mjs';
 
+function assertLegacyRoutesAvailable(legacyURLs, canonicalURLs, aliasTargets) {
+  for (const url of legacyURLs) {
+    const target = aliasTargets.get(url);
+    assert.ok(canonicalURLs.has(url) || canonicalURLs.has(target), `Missing legacy route ${url}`);
+  }
+}
+
 test('public scanner cannot publish authoring folders, nested dependencies, symlinks or drafts', async () => {
   const directory = await mkdtemp(path.join(tmpdir(), 'blog-content-test-'));
   try {
@@ -67,13 +74,27 @@ test('article renderer keeps math, Mermaid source, raw embeds, heading IDs and s
   assert.equal(result.headings[0].slug, '中文-heading');
 });
 
+test('legacy route aliases must point directly to an available canonical route', () => {
+  const urls = new Set(['/docs/current/']);
+  const aliases = new Map([
+    ['/docs/old/', '/docs/current/'],
+    ['/docs/broken/', '/docs/missing/'],
+    ['/docs/chain/', '/docs/old/'],
+  ]);
+  assert.doesNotThrow(() => assertLegacyRoutesAvailable(['/docs/current/', '/docs/old/'], urls, aliases));
+  for (const url of ['/docs/broken/', '/docs/chain/', '/docs/unknown/']) {
+    assert.throws(() => assertLegacyRoutesAvailable([url], urls, aliases), {message: `Missing legacy route ${url}`});
+  }
+});
+
 test('generated content preserves every exported public legacy route and unique taxonomies', async () => {
   let content;
   try { content = JSON.parse(await readFile(new URL('../.generated/content.json', import.meta.url), 'utf8')); }
   catch (error) { if (error.code === 'ENOENT') return; throw error; }
   const baseline = JSON.parse(await readFile(new URL('../scripts/legacy-routes.json', import.meta.url), 'utf8'));
   const urls = new Set(content.pages.map((page) => page.url));
-  for (const page of baseline.pages.filter((page) => ['home', 'page', 'section'].includes(page.kind))) assert.ok(urls.has(page.url), `Missing legacy route ${page.url}`);
+  const aliasTargets = new Map(content.pages.flatMap((page) => page.aliases.map((alias) => [alias, page.url])));
+  assertLegacyRoutesAvailable(baseline.pages.filter((page) => ['home', 'page', 'section'].includes(page.kind)).map((page) => page.url), urls, aliasTargets);
   assert.equal(urls.size, content.pages.length);
   for (const terms of [content.tags, content.categories]) {
     assert.equal(new Set(terms.map((term) => term.url)).size, terms.length);

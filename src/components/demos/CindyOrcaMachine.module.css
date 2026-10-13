@@ -1,0 +1,20 @@
+@reference "../../styles/tailwind.css";
+.header { @apply mb-4 flex flex-wrap items-start justify-between gap-3; }
+.status { @apply text-xs font-mono; color: var(--muted); }
+.workers { @apply mt-4 grid gap-3; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.worker { border: 1px solid var(--gray-200); border-radius: 0.5rem; padding: 0.9rem; min-width: 0; }
+.worker[data-selected] { border-color: var(--machine-accent); }
+.worker h3 { @apply text-sm font-semibold; }
+.worker p { @apply text-xs leading-relaxed; overflow-wrap: anywhere; }
+.actions { @apply mt-3 flex flex-wrap gap-2; }
+.history { @apply mt-3 text-xs leading-relaxed; border-top: 1px solid var(--gray-200); padding-top: 0.6rem; }
+.history summary { cursor: pointer; }
+.history ol { margin: 0.5rem 0 0; padding-left: 1.3rem; }
+.history li { margin-block: 0.3rem; }
+.lead { @apply mt-4 text-sm; border-left: 2px solid var(--machine-accent); padding-left: 0.75rem; }
+.lead span { @apply text-xs; color: var(--muted); }
+.caption { @apply mt-3 text-xs leading-relaxed; color: var(--muted); }
+.engraving { fill: var(--machine-line); font-family: ui-monospace, monospace; font-size: 3px; }
+.halo { fill: var(--machine-ink); opacity: 0.045; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+@media(max-width: 520px) { .workers { grid-template-columns: 1fr; } }
