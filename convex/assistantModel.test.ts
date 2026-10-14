@@ -1,6 +1,6 @@
 import {afterEach, describe, expect, test, vi} from 'vitest';
 import type {LanguageModelV4, LanguageModelV4StreamPart} from '@ai-sdk/provider';
-import {SAFE_ERROR, toolInstructions, visibleTextFilter} from './assistantModel';
+import {routeToolChoice, SAFE_ERROR, toolInstructions, visibleTextFilter} from './assistantModel';
 import {safeModelMiddleware} from './assistantModel';
 
 const model = {} as LanguageModelV4;
@@ -25,6 +25,25 @@ describe('assistant model boundary', () => {
     expect(instructions).not.toMatch(/@cf\/zai-org\/glm-5\.3/);
     expect(instructions).not.toMatch(/我运行在 Cloudflare Workers AI/);
     expect(instructions).not.toMatch(/文章检索走 Cloudflare AI Search/);
+  });
+
+  test('tool instructions route by intent instead of searching first', () => {
+    const instructions = toolInstructions();
+    expect(instructions).toMatch(/不要默认先检索/);
+    expect(instructions).toMatch(/直接回答，不要调用 search_blog/);
+    expect(instructions).toMatch(/只追问一句，不要调用 search_blog/);
+    expect(instructions).toMatch(/只问一个简短问题/);
+    expect(instructions).toMatch(/no_matches/);
+    expect(instructions).toMatch(/博客中暂未找到足够依据/);
+    expect(instructions).toMatch(/以下不是来自本站文章/);
+    expect(instructions).not.toMatch(/先调用 search_blog/);
+  });
+
+  test('routeToolChoice stays auto until the search budget is spent', () => {
+    expect(routeToolChoice(0)).toEqual({toolChoice: 'auto'});
+    expect(routeToolChoice(1)).toEqual({toolChoice: 'auto'});
+    expect(routeToolChoice(2)).toEqual({toolChoice: 'none'});
+    expect(routeToolChoice(3)).toEqual({toolChoice: 'none'});
   });
 
   test('strips split and unclosed think blocks before storage', () => {

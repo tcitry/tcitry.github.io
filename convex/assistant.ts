@@ -1,12 +1,12 @@
 import {Agent, abortStream, createThread, createTool, listStreams, listUIMessages, saveMessage, syncStreams, vStreamArgs} from '@convex-dev/agent';
 import {RateLimiter} from '@convex-dev/rate-limiter';
-import {jsonSchema, stepCountIs} from 'ai';
+import {isStepCount, jsonSchema} from 'ai';
 import {paginationOptsValidator, type PaginationOptions} from 'convex/server';
 import {ConvexError, type GenericId, v} from 'convex/values';
 import {components, internal} from './_generated/api';
 import type {Doc, Id} from './_generated/dataModel';
 import {env, internalAction, internalMutation, internalQuery, mutation, query, type ActionCtx, type MutationCtx, type QueryCtx} from './_generated/server';
-import {toolInstructions, workersAiChatModel, NO_SOURCES, SAFE_ERROR, TOOL_BUDGET, type GenerationEvent, type Snippet, type Source} from './assistantModel';
+import {routeToolChoice, toolInstructions, workersAiChatModel, NO_SOURCES, SAFE_ERROR, TOOL_BUDGET, type GenerationEvent, type Snippet, type Source} from './assistantModel';
 import {searchRetrievalOptions} from './assistantRetrievalConfig';
 import {retrievePublicSources} from './assistantPublicSearch';
 
@@ -444,7 +444,7 @@ async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms
         || event.stage === 'chat_finish' || event.stage === 'agent_persisted') bumpStall();
   };
   const searchBlog = createTool({
-    description: '检索本站已发布的博客文章与文档。输入检索词（不超过 200 字符），返回编号后的相关片段；回答时用「来源 N」引用编号。',
+    description: '检索本站已发布的博客文章与文档。仅当用户在问本站文章、作者观点或站点内容时调用。寒暄、关于助手自身的问题、与本站无关的通用知识，以及主题含糊的请求，都不要调用。输入检索词（不超过 200 字符），返回编号后的相关片段；回答时用「来源 N」引用编号。',
     inputSchema: jsonSchema<{query: string}>({type: 'object', properties: {query: {type: 'string', description: '检索词，不超过 200 字符'}},
       required: ['query'], additionalProperties: false}),
     execute: async (_toolCtx, input) => {
@@ -499,9 +499,12 @@ async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms
   }
   const model = workersAiChatModel({accountId, apiToken, gateway: env.ASSISTANT_CHAT_GATEWAY?.trim() || DEFAULT_CHAT_GATEWAY,
     model: env.ASSISTANT_CHAT_MODEL?.trim() || DEFAULT_CHAT_MODEL}, assertActive, {observe: progressTrace, onFailure: fail, tools: TOOL_BUDGET});
+  // One search, one narrower retry, then a text step. Direct answers and clarifying
+  // questions finish on step 1 because stopWhen only continues after tool results.
+  const stopWhen = isStepCount(TOOL_BUDGET.maxToolCalls + 1);
   const agent = new Agent(components.agent, {name: '博客助手', languageModel: model, tools: {search_blog: searchBlog},
     instructions: toolInstructions(), contextOptions: {recentMessages: 1, excludeToolMessages: true, searchOtherThreads: false},
-    stopWhen: stepCountIs(TOOL_BUDGET.maxToolCalls + 1)});
+    stopWhen});
   progressTrace({stage: 'agent_start'});
   bumpStall();
   try {
@@ -509,6 +512,9 @@ async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms
       promptMessageId: run.promptMessageId, maxOutputTokens: 2048, temperature: 0.3,
       providerOptions: {'workers-ai': {reasoningEffort: TOOL_REASONING_EFFORT}},
       maxRetries: 0, abortSignal: controller.signal,
+      toolChoice: 'auto',
+      stopWhen,
+      prepareStep: ({steps}) => routeToolChoice(steps.reduce((count, step) => count + step.toolCalls.length, 0)),
     }, {saveStreamDeltas: {throttleMs: 250}, contextHandler: async (_ctx, {threadId, inputPrompt}) => {
       if (threadId !== run.threadId || inputPrompt.length !== 1 || inputPrompt[0].role !== 'user') throw new Error(SAFE_ERROR);
       return [...history, ...inputPrompt];
