@@ -8,7 +8,7 @@ import process from 'node:process';
 import {api, components, internal} from './_generated/api';
 import schema from './schema';
 import {SAFE_ERROR} from './assistantModel';
-import {mergeToolSources, validateToolQuery} from './assistant';
+import {citedSources, mergeToolSources, sourcesToPersist, validateToolQuery} from './assistant';
 
 const modules = import.meta.glob(['./**/*.ts', './**/*.js', '!./**/*.test.ts']);
 const paginationOpts = {numItems: 20, cursor: null};
@@ -22,10 +22,14 @@ function setup() {
 }
 const reference = vi.hoisted(() => ({id: 'a'.repeat(64), key: `tcitry-blog/articles/${'a'.repeat(64)}.md`,
   hash: 'b'.repeat(64), title: '契约测试', url: 'https://yindongliang.com/docs/contract-testing/', sourceKind: 'author' as const}));
-vi.mock('../.generated/ai-search/references.json', () => ({default: {documents: [reference]}}));
+const orbit = vi.hoisted(() => ({id: 'c'.repeat(64), key: `tcitry-blog/articles/${'c'.repeat(64)}.md`,
+  hash: 'd'.repeat(64), title: '轨道重力', url: 'https://yindongliang.com/posts/orbit-gravity/', sourceKind: 'author' as const}));
+vi.mock('../.generated/ai-search/references.json', () => ({default: {documents: [reference, orbit]}}));
 const source = {id: '1', title: reference.title, url: reference.url, sourceKind: reference.sourceKind};
+const orbitSource = (id: string) => ({id, title: orbit.title, url: orbit.url, sourceKind: orbit.sourceKind});
 const publicEndpoint = 'https://example.search.ai.cloudflare.com/search';
 const publicItem = () => ({key: reference.key, metadata: {content_hash: reference.hash, canonical_url: reference.url, source_kind: reference.sourceKind}});
+const orbitItem = () => ({key: orbit.key, metadata: {content_hash: orbit.hash, canonical_url: orbit.url, source_kind: orbit.sourceKind}});
 const searchResponse = () => Response.json({success: true, result: {chunks: [{item: publicItem(), score: 0.8, text: '契约测试校验服务接口约定。'}]}});
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
@@ -99,6 +103,16 @@ describe('assistant authorization and persisted submissions', () => {
     await t.mutation(internal.assistant.expire, {runId});
     expect((await t.run(ctx => ctx.db.get('assistantRuns', runId)))?.status).toBe('failed');
     expect((await alice.query(api.assistant.getConversation, {conversationId})).activeRun).toBeNull();
+  });
+
+  test('soft-complete clears sources already stored on a running run', async () => {
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '问题', requestId});
+    await t.mutation(internal.assistant.start, {runId});
+    expect(await t.mutation(internal.assistant.setSources, {runId, sources: [source]})).toBe(true);
+    await t.mutation(internal.assistant.finish, {runId, failed: false, noSources: true});
+    expect(await t.run(ctx => ctx.db.get('assistantRuns', runId))).toMatchObject({status: 'completed', sources: []});
   });
 
   test('deleteConversation removes the conversation, runs and agent thread for the owner only', async () => {
@@ -260,6 +274,20 @@ describe('search-as-tool helpers', () => {
     expect(state.budgetLeft).toBe(0);
     expect(JSON.stringify(second)).not.toContain('http');
   });
+
+  test('citedSources keeps [N] and 来源 N, and insufficient evidence persists nothing', () => {
+    const sources = [source, orbitSource('2')];
+    expect(citedSources('契约测试用于校验接口约定。[1]', sources).map(item => item.id)).toEqual(['1']);
+    expect(citedSources('见来源 2。', sources).map(item => item.id)).toEqual(['2']);
+    expect(citedSources('[来源 1] 和来源2', sources).map(item => item.id)).toEqual(['1', '2']);
+    expect(citedSources('先看 [2]，再看来源 1。', sources).map(item => item.id)).toEqual(['1', '2']);
+    expect(citedSources('博客中暂未找到足够依据。', sources)).toEqual([]);
+    expect(citedSources('来源 2024 年没有编号引用', sources)).toEqual([]);
+    expect(citedSources('提到 [9] 但没有对应来源', sources)).toEqual([]);
+    expect(sourcesToPersist('博客中暂未找到足够依据。[1]', sources)).toEqual([]);
+    expect(sourcesToPersist('契约测试用于校验接口约定。[来源 1]', sources)).toEqual([source]);
+    expect(sourcesToPersist('轨道重力决定加速度，但没有引用编号。', sources)).toEqual([]);
+  });
 });
 
 describe('search-as-tool generation lifecycle', () => {
@@ -399,6 +427,78 @@ describe('search-as-tool generation lifecycle', () => {
     const run = await t.run(ctx => ctx.db.get('assistantRuns', runId));
     expect(run).toMatchObject({status: 'completed', sources: []});
     expect(JSON.stringify(toolMessages)).toContain('no_matches');
+    const conversation = await alice.query(api.assistant.getConversation, {conversationId});
+    const messages = await alice.query(api.assistant.listThreadMessages, {threadId: conversation.threadId, paginationOpts});
+    expect(messages.page.some(message => message.role === 'assistant' && message.text.includes('暂未找到足够依据'))).toBe(true);
+  });
+
+  test('an unrelated hit stays in the tool loop but is not persisted when the answer does not cite it', async () => {
+    toolConfigured();
+    let modelCalls = 0; let toolMessages: unknown[] = [];
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.endsWith('/search')) return Response.json({success: true, result: {chunks: [
+        {item: orbitItem(), score: 0.62, text: '轨道重力决定航天器加速度。'},
+        {item: publicItem(), score: 0.5, text: '契约测试校验服务接口约定。'},
+      ]}});
+      modelCalls += 1;
+      const body = JSON.parse(String(init?.body));
+      toolMessages = body.messages.filter((message: {role: string}) => message.role === 'tool');
+      if (modelCalls === 1) return sse(toolCallFrames('火星农业'));
+      return sse([chunk({role: 'assistant', content: '博客中暂未找到足够依据。'}, 'stop')]);
+    });
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '博客里有没有火星农业的文章？', requestId});
+    const generation = t.action(internal.assistant.generate, {runId});
+    await vi.advanceTimersByTimeAsync(1000); await generation;
+    const run = await t.run(ctx => ctx.db.get('assistantRuns', runId));
+    expect(run).toMatchObject({status: 'completed', toolCalls: 1, sources: []});
+    const toolText = JSON.stringify(toolMessages);
+    expect(toolText).toContain('轨道重力决定航天器加速度');
+    expect(toolText).not.toMatch(/https?:/);
+  });
+
+  test('only the cited source is persisted when retrieval also returns an unused hit', async () => {
+    toolConfigured();
+    let modelCalls = 0;
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.endsWith('/search')) return Response.json({success: true, result: {chunks: [
+        {item: publicItem(), score: 0.8, text: '契约测试校验服务接口约定。'},
+        {item: orbitItem(), score: 0.55, text: '轨道重力决定航天器加速度。'},
+      ]}});
+      modelCalls += 1;
+      if (modelCalls === 1) return sse(toolCallFrames('契约测试'));
+      return sse([chunk({role: 'assistant', content: '契约测试用于校验接口约定。'}), chunk({content: '[1]'}, 'stop')]);
+    });
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '契约测试有什么作用？', requestId});
+    const generation = t.action(internal.assistant.generate, {runId});
+    await vi.advanceTimersByTimeAsync(1000); await generation;
+    expect(await t.run(ctx => ctx.db.get('assistantRuns', runId))).toMatchObject({status: 'completed', sources: [source]});
+  });
+
+  test('a non-empty hit followed by an empty model turn soft-completes with no source cards', async () => {
+    toolConfigured();
+    let modelCalls = 0;
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.endsWith('/search')) return Response.json({success: true, result: {chunks: [
+        {item: orbitItem(), score: 0.7, text: '轨道重力决定航天器加速度。'},
+      ]}});
+      modelCalls += 1;
+      if (modelCalls === 1) return sse(toolCallFrames('火星农业'));
+      return sse([chunk({role: 'assistant'}, 'stop')]);
+    });
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '博客里有没有火星农业的文章？', requestId});
+    const generation = t.action(internal.assistant.generate, {runId});
+    await vi.advanceTimersByTimeAsync(1000); await generation;
+    const run = await t.run(ctx => ctx.db.get('assistantRuns', runId));
+    expect(run).toMatchObject({status: 'completed', toolCalls: 1, sources: []});
     const conversation = await alice.query(api.assistant.getConversation, {conversationId});
     const messages = await alice.query(api.assistant.listThreadMessages, {threadId: conversation.threadId, paginationOpts});
     expect(messages.page.some(message => message.role === 'assistant' && message.text.includes('暂未找到足够依据'))).toBe(true);

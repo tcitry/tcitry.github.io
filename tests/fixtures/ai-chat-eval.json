@@ -399,6 +399,15 @@
       "forbiddenClaims": ["本站详细介绍了月球水稻"],
       "expectedSourcePatterns": [],
       "expectRetrieval": true
+    },
+    {
+      "id": "q47",
+      "category": "empty",
+      "turns": ["博客里有没有火星农业或在火星上种地的文章？"],
+      "requiredFacts": ["博客中暂未找到足够依据"],
+      "forbiddenClaims": ["本站详细介绍了火星农业"],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": true
     }
   ]
 }
