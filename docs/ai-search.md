@@ -19,7 +19,7 @@ Convex Agent 通过对应 deployment 的 `AI_SEARCH_PUBLIC_URL` 与 Workers AI �
 
 1. 模型直接开始生成；博客事实类问题由模型自行调用 `search_blog`，寒暄、元问题、通用技术问题零次检索；
 2. `search_blog` 内部调用 `/search` 并经过 `validatePublicChunk` 与 `references.json` 校验；query 去空后非空、≤200 字符、无控制字符，短指代 query 用上文主题词补全一次；
-3. 每 run 最多 2 次工具调用，单次 6 秒、累计 12 秒超时，snippets 共用 14,000 字符预算，来源跨调用去重、编号稳定、最多 5 个；工具结果只含编号、标题、sourceKind、updatedAt、正文，不含 URL；检索失败返回 `{ok:false, reason:'unavailable'}`，不中断整轮；
+3. 每 run 最多 2 次工具调用，单次 10 秒、累计 18 秒超时，snippets 共用 14,000 字符预算，来源跨调用去重、编号稳定、最多 5 个；工具结果只含编号、标题、sourceKind、updatedAt、正文，不含 URL；检索失败返回 `{ok:false, reason:'unavailable'}`，校验后无命中返回 `{ok:false, reason:'no_matches'}`，不中断整轮；工具已调用但模型未产出正文时软完成并写入「暂未找到足够依据」，避免空跑到 120 秒 deadline；
 4. 生成走 Workers AI OpenAI-compatible endpoint，经 Gateway `ASSISTANT_CHAT_GATEWAY`（默认 `tcitry-blog-chat`），模型 `ASSISTANT_CHAT_MODEL`（默认 `@cf/zai-org/glm-5.3`），需要 Convex deployment 配置 `CLOUDFLARE_ACCOUNT_ID` 与仅限 Workers AI 的 `CLOUDFLARE_API_TOKEN`；请求带 `reasoning_effort: low`；AI Search 只承担 `/search`，不再用于生产生成；
 5. run 记录 `phase`（thinking / searching / writing）与 `toolCalls`，UI 据此显示「正在思考 / 正在检索文章 / 正在整理回答」；
 6. 将消息、来源、流式增量和运行终态保存到 Convex。
