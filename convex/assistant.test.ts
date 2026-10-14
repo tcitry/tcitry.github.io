@@ -369,6 +369,34 @@ describe('search-as-tool generation lifecycle', () => {
     expect(modelCalls).toBeLessThanOrEqual(3);
   });
 
+  test('validated empty retrieval returns no_matches and soft-completes when the model never writes text', async () => {
+    toolConfigured();
+    let modelCalls = 0; let toolMessages: unknown[] = [];
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.endsWith('/search')) return Response.json({success: true, result: {chunks: [
+        {item: {key: reference.key, metadata: {content_hash: 'c'.repeat(64), canonical_url: reference.url, source_kind: 'author'}}, score: 0.9, text: '哈希不匹配应被丢弃'},
+      ]}});
+      modelCalls += 1;
+      const body = JSON.parse(String(init?.body));
+      toolMessages = body.messages.filter((message: {role: string}) => message.role === 'tool');
+      if (modelCalls === 1) return sse(toolCallFrames('不存在的主题'));
+      // After no_matches the model ends the turn without text; soft-complete should persist NO_SOURCES.
+      return sse([chunk({role: 'assistant'}, 'stop')]);
+    });
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '博客里有没有火星移民指南？', requestId});
+    const generation = t.action(internal.assistant.generate, {runId});
+    await vi.advanceTimersByTimeAsync(1000); await generation;
+    const run = await t.run(ctx => ctx.db.get('assistantRuns', runId));
+    expect(run).toMatchObject({status: 'completed', sources: []});
+    expect(JSON.stringify(toolMessages)).toContain('no_matches');
+    const conversation = await alice.query(api.assistant.getConversation, {conversationId});
+    const messages = await alice.query(api.assistant.listThreadMessages, {threadId: conversation.threadId, paginationOpts});
+    expect(messages.page.some(message => message.role === 'assistant' && message.text.includes('暂未找到足够依据'))).toBe(true);
+  });
+
   test('without Cloudflare credentials fails safely before any network call', async () => {
     toolConfigured(); vi.stubEnv('CLOUDFLARE_API_TOKEN', undefined);
     const fetchSpy = vi.fn(); vi.stubGlobal('fetch', fetchSpy);

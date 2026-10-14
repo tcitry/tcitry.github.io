@@ -9,7 +9,7 @@ export const SAFE_ERROR = '回答暂时无法完成，请稍后重新提问。';
 export type GenerationEvent = {stage: 'chat_request' | 'chat_headers' | 'chat_sources_verified' | 'chat_done' | 'chat_model' | 'chat_finish'
   | 'chat_http_error' | 'chat_transport_error' | 'chat_sources_rejected' | 'chat_protocol_error' | 'chat_model_error' | 'chat_request_shape'
   | 'retrieval_start' | 'retrieval_complete' | 'agent_start' | 'agent_persisted' | 'completed' | 'no_sources' | 'failed' | 'settle_failed'
-  | 'first_text_delta' | 'tool_call_start' | 'tool_call' | 'tool_query_invalid' | 'tool_query_augmented' | 'tool_result' | 'tool_unavailable' | 'tool_budget_exceeded';
+  | 'first_text_delta' | 'tool_call_start' | 'tool_call' | 'tool_query_invalid' | 'tool_query_augmented' | 'tool_result' | 'tool_no_matches' | 'tool_unavailable' | 'tool_budget_exceeded' | 'deadline_guard' | 'progress_stall' | 'completed_no_sources';
   httpStatus?: number; upstreamCode?: number; mentionedFields?: string[];
   messageRoles?: string[]; contentKinds?: string[]; contentLengths?: number[];
   model?: string; finishReason?: string; tokenCount?: number; sourceCount?: number; chunkCount?: number;
@@ -128,7 +128,10 @@ export function safeModelMiddleware(assertActive: () => Promise<void>, options: 
           } else if (part.type === 'text-start') controller.enqueue({type: 'text-start', id: part.id});
           else if (part.type === 'finish') {
             const toolStep = part.finishReason.unified === 'tool-calls' && stepToolCalls > 0;
-            if (part.finishReason.unified === 'length' || (!tokenCount && !toolStep)) throw new Error(SAFE_ERROR);
+            // Empty stop is allowed after earlier tool steps so the action can soft-complete
+            // with NO_SOURCES instead of failing into the 120s run deadline.
+            if (part.finishReason.unified === 'length'
+                || (!tokenCount && !toolStep && totalToolCalls === 0 && stepToolCalls === 0)) throw new Error(SAFE_ERROR);
             totalToolCalls += stepToolCalls;
             finished = true;
             options.observe?.({stage: 'chat_finish', finishReason: part.finishReason.unified, tokenCount, toolCalls: totalToolCalls});
@@ -213,6 +216,7 @@ export function toolInstructions() {
 - 用户询问博客中的具体事实、作者观点、配置值、文章列表、本站实现或作者写过的技术细节时，先调用 search_blog，再根据结果回答。
 - 追问、指代（例如“它”“这个”“再详细说说”）时，把上文主题写进检索词。
 - 结果不足时最多再换一个更具体的检索词调用一次；总共不超过两次。
+- 若工具返回 reason 为 no_matches 或 unavailable，不要用相同检索词重试；可换更具体的词再试一次，否则直接说明“博客中暂未找到足够依据”。
 
 何时不要调用：
 - 寒暄、感谢、闲聊。
