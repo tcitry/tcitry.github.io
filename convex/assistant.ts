@@ -318,8 +318,12 @@ export const finish = internalMutation({
     if (!run || run.status !== 'running') return null;
     const conversation = await ctx.db.get('assistantConversations', run.conversationId);
     if (!conversation) return null;
-    if (noSources && !failed) await saveMessage(ctx, components.agent, {threadId: conversation.threadId,
-      promptMessageId: run.promptMessageId, message: {role: 'assistant', content: NO_SOURCES}, agentName: '博客助手'});
+    if (noSources && !failed) {
+      await saveMessage(ctx, components.agent, {threadId: conversation.threadId,
+        promptMessageId: run.promptMessageId, message: {role: 'assistant', content: NO_SOURCES}, agentName: '博客助手'});
+      // A weak hit may already be on the run from an earlier step. Soft-complete must not leave it as a source card.
+      await ctx.db.patch('assistantRuns', runId, {sources: []});
+    }
     await settle(ctx, run, failed ? 'failed' : 'completed', failed ? SAFE_ERROR : undefined);
     return null;
   },
@@ -414,6 +418,24 @@ export function mergeToolSources(state: {sources: Source[]; snippets: Snippet[];
   return added;
 }
 
+const INSUFFICIENT_EVIDENCE = '博客中暂未找到足够依据';
+
+// Source cards follow the final answer, not the raw retrieval hit list. [N] and 「来源 N」
+// are the citation forms the instructions ask the model to write.
+export function citedSources(answer: string, sources: readonly Source[]): Source[] {
+  const ids = new Set<string>();
+  for (const match of answer.matchAll(/\[(\d{1,2})\]|来源\s*(\d{1,2})(?!\d)/g)) {
+    const id = match[1] ?? match[2];
+    if (id) ids.add(id);
+  }
+  return sources.filter(source => ids.has(source.id));
+}
+
+export function sourcesToPersist(answer: string, sources: readonly Source[]): Source[] {
+  if (answer.includes(INSUFFICIENT_EVIDENCE)) return [];
+  return citedSources(answer, sources);
+}
+
 async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms, controller, assertActive, trace, fail}: ToolRunArgs) {
   const searchUrl = env.AI_SEARCH_PUBLIC_URL;
   const accountId = env.CLOUDFLARE_ACCOUNT_ID;
@@ -476,7 +498,8 @@ async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms
           return {ok: false as const, reason: 'no_matches' as const};
         }
         const added = mergeToolSources(state, retrieved);
-        if (!await ctx.runMutation(internal.assistant.setSources, {runId, sources: state.sources})) throw new Error(SAFE_ERROR);
+        // Keep numbered snippets in the tool result. Do not attach hit cards until the
+        // final answer cites them; an unrelated hit must not render as 「N 篇来源」.
         progressTrace({stage: 'tool_result', sourceCount: state.sources.length, toolCalls: state.toolCalls});
         return {ok: true as const, results: added.map(snippet => ({source: Number(snippet.source), title: snippet.title, sourceKind: snippet.sourceKind,
           updatedAt: snippet.updatedAt, text: snippet.text}))};
@@ -523,22 +546,29 @@ async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms
     progressTrace({stage: 'agent_persisted'});
     const answer = (await result.text).trim();
     const finishReason = await result.finishReason;
+    const persistAnswerSources = async () => {
+      const sources = sourcesToPersist(answer, state.sources);
+      if (!await ctx.runMutation(internal.assistant.setSources, {runId, sources})) throw new Error(SAFE_ERROR);
+      return sources;
+    };
     if (answer && finishReason === 'stop') {
+      const sources = await persistAnswerSources();
       await ctx.runMutation(internal.assistant.finish, {runId, failed: false});
-      progressTrace({stage: 'completed', sourceCount: state.sources.length, toolCalls: state.toolCalls});
+      progressTrace({stage: 'completed', sourceCount: sources.length, toolCalls: state.toolCalls});
       return;
     }
     // Tool loop used but no durable answer: soft-complete instead of failing into a 120s expire.
     if (state.toolCalls > 0) {
+      const sources = answer ? await persistAnswerSources() : [];
       await ctx.runMutation(internal.assistant.finish, {runId, failed: false, noSources: !answer});
-      progressTrace({stage: 'completed_no_sources', sourceCount: state.sources.length, toolCalls: state.toolCalls});
+      progressTrace({stage: 'completed_no_sources', sourceCount: answer ? sources.length : 0, toolCalls: state.toolCalls});
       return;
     }
     throw new Error(SAFE_ERROR);
   } catch (error) {
     if (state.toolCalls > 0 && await ctx.runQuery(internal.assistant.isActive, {runId})) {
       await ctx.runMutation(internal.assistant.finish, {runId, failed: false, noSources: true});
-      progressTrace({stage: 'completed_no_sources', sourceCount: state.sources.length, toolCalls: state.toolCalls});
+      progressTrace({stage: 'completed_no_sources', sourceCount: 0, toolCalls: state.toolCalls});
       return;
     }
     throw error;

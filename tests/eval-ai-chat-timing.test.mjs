@@ -101,10 +101,14 @@ test('AI chat evaluation fixture has valid ids, turns, categories, and models', 
       assert.equal(question.expectRetrieval, true, `${question.id} must expect retrieval`);
     }
     if (question.category === 'clarify') assert.equal(question.expectQuestion, true, `${question.id} must expect one question`);
-    if (question.category === 'empty') assert.ok(question.requiredFacts.includes('博客中暂未找到足够依据'), `${question.id} must require the empty-blog statement`);
+    if (question.category === 'empty') {
+      assert.ok(question.requiredFacts.includes('博客中暂未找到足够依据'), `${question.id} must require the empty-blog statement`);
+      assert.deepEqual(question.expectedSourcePatterns, [], `${question.id} must not expect source cards for an empty or unrelated retrieval`);
+    }
   }
   for (const category of ['direct', 'search', 'clarify', 'empty']) {
     assert.ok(fixture.questions.some(question => question.category === category), `missing ${category} cases`);
   }
+  assert.ok(fixture.questions.some(question => question.category === 'empty' && question.turns.some(turn => turn.includes('火星'))), 'empty eval must include an unrelated-topic case');
   assert.ok(fixture.models.includes('@cf/zai-org/glm-5.3'));
 });
