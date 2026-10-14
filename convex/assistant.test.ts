@@ -319,8 +319,10 @@ describe('search-as-tool generation lifecycle', () => {
   test('chitchat: model answers directly with zero searches and no sources', async () => {
     toolConfigured();
     const urls: string[] = [];
-    vi.stubGlobal('fetch', async (input: RequestInfo | URL) => {
+    const choices: unknown[] = [];
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
       urls.push(String(input));
+      if (String(input) === workersUrl) choices.push(JSON.parse(String(init?.body)).tool_choice);
       return sse([chunk({role: 'assistant', content: '你好！'}), chunk({content: '有什么可以帮你？'}, 'stop')]);
     });
     const {t, alice} = setup();
@@ -332,6 +334,7 @@ describe('search-as-tool generation lifecycle', () => {
     const run = await t.run(ctx => ctx.db.get('assistantRuns', runId));
     expect(run).toMatchObject({status: 'completed', toolCalls: 0, sources: []});
     expect(urls).toEqual([workersUrl]);
+    expect(choices).toEqual(['auto']);
   });
 
   test('search failure returns an unavailable tool result and the model still finishes; a third tool call fails the run safely', async () => {
@@ -356,9 +359,11 @@ describe('search-as-tool generation lifecycle', () => {
     expect(JSON.stringify(toolMessages)).not.toContain('upstream private failure');
 
     modelCalls = 0;
-    vi.stubGlobal('fetch', async (input: RequestInfo | URL) => {
+    const choices: unknown[] = [];
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
       if (String(input).endsWith('/search')) return searchResponse();
       modelCalls += 1;
+      choices.push(JSON.parse(String(init?.body)).tool_choice);
       return sse(toolCallFrames(`第 ${modelCalls} 次`));
     });
     const second = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '再查一次', requestId: 'question-request-0002'});
@@ -367,6 +372,8 @@ describe('search-as-tool generation lifecycle', () => {
     const run = await t.run(ctx => ctx.db.get('assistantRuns', second));
     expect(run?.status).toBe('failed'); expect(run?.error).toBe(SAFE_ERROR);
     expect(modelCalls).toBeLessThanOrEqual(3);
+    expect(choices[0]).toBe('auto');
+    expect(choices.at(-1)).toBe('none');
   });
 
   test('validated empty retrieval returns no_matches and soft-completes when the model never writes text', async () => {
