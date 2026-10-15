@@ -1,8 +1,27 @@
 ---
-import ArticleMeta from '@tcitry/astro-book/components/ArticleMeta';
 import type { ContentPage, TaxonomyTerm } from '../../lib/types';
-import { articleMetadata } from './presentation';
+import { displayDate, readingMinutes } from './helpers';
 interface Props { page: ContentPage; tags: TaxonomyTerm[] }
 const { page, tags } = Astro.props;
+const stats: string[] = [];
+if (page.wordCount > 0) stats.push(`${page.wordCount} 字`);
+const created = displayDate(page, 'short');
+if (created) stats.push(created);
+const minutes = readingMinutes(page.wordCount);
+if (minutes) stats.push(`~${minutes} min read`);
+const tagLinks = page.tags.map((tag) => ({
+  label: tag,
+  href: tags.find((term) => term.name === tag)?.url || `/tags/${encodeURIComponent(tag)}/`,
+}));
 ---
-<ArticleMeta {...articleMetadata(page, tags)} />
+<div class="post-meta post-after" data-article-meta>
+  {stats.length > 0 && <p class="post-meta__stats">{stats.join(' · ')}</p>}
+  {tagLinks.length > 0 && (
+    <p class="post-meta__tags">
+      相关标签：
+      {tagLinks.map((tag, index) => (
+        <>{index > 0 && ', '}<a href={tag.href}>{tag.label}</a></>
+      ))}
+    </p>
+  )}
+</div>

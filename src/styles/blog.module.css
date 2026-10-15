@@ -37,6 +37,11 @@
 .site :global(.weekly-title) { @apply border border-solid border-[#20b2aa] bg-[#20b2aa] [font-size:small] font-bold text-[#ffffe0]; }
 :global(html.dark) .site :global(.weekly-title) { @apply border-[#008080] bg-[#008080]; }
 .site :global(.post-after) { @apply [font-size:small] leading-[1.4em] text-[dimgray]; }
+.site :global(.post-meta) { @apply mb-4 flex flex-col gap-1; }
+.site :global(.post-meta__stats),
+.site :global(.post-meta__tags) { @apply m-0 [overflow-wrap:anywhere]; }
+.site :global(.post-meta__tags a) { @apply text-inherit underline-offset-2 hover:underline; }
+:global(html.dark) .site :global(.post-meta) { @apply text-[#a0a0a0]; }
 .site :global(.links-source) { @apply mb-8; }
 .site :global(.links-source) blockquote { @apply mx-0; }
 
