@@ -94,3 +94,5 @@ export function headingTree(headings: Heading[]): HeadingNode[] {
   }
   return root.children;
 }
+
+export { readingMinutes } from '../../lib/reading-time.mjs';
