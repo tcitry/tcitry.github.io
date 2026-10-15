@@ -40,6 +40,11 @@
 .site :global(.links-source) { @apply mb-8; }
 .site :global(.links-source) blockquote { @apply mx-0; }
 
+/* CommonMark loose lists wrap item text in <p>; drop only the first paragraph's top margin so the marker shares its line. */
+.site :global(.book-page .markdown :is(ul, ol) > li > p:first-child:where(:not([data-book-island], [data-book-island] *, [data-demo], [data-demo] *))) {
+  margin-top: 0;
+}
+
 /* Opt-in wrapping for compact comparison tables in articles. */
 .site :global(.book-page .markdown .reader-table table:where(:not([data-book-island], [data-book-island] *, [data-demo], [data-demo] *))) {
   display: table;
