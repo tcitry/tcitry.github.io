@@ -1,12 +1,12 @@
 import {Agent, abortStream, createThread, createTool, listStreams, listUIMessages, saveMessage, syncStreams, vStreamArgs} from '@convex-dev/agent';
 import {RateLimiter} from '@convex-dev/rate-limiter';
-import {jsonSchema, stepCountIs} from 'ai';
+import {isStepCount, jsonSchema} from 'ai';
 import {paginationOptsValidator, type PaginationOptions} from 'convex/server';
 import {ConvexError, type GenericId, v} from 'convex/values';
 import {components, internal} from './_generated/api';
 import type {Doc, Id} from './_generated/dataModel';
 import {env, internalAction, internalMutation, internalQuery, mutation, query, type ActionCtx, type MutationCtx, type QueryCtx} from './_generated/server';
-import {toolInstructions, workersAiChatModel, NO_SOURCES, SAFE_ERROR, TOOL_BUDGET, type GenerationEvent, type Snippet, type Source} from './assistantModel';
+import {routeToolChoice, toolInstructions, workersAiChatModel, NO_SOURCES, SAFE_ERROR, TOOL_BUDGET, type GenerationEvent, type Snippet, type Source} from './assistantModel';
 import {searchRetrievalOptions} from './assistantRetrievalConfig';
 import {retrievePublicSources} from './assistantPublicSearch';
 
@@ -20,6 +20,10 @@ const TOOL_SNIPPET_BUDGET = 14_000;
 const TOOL_TIMEOUT_MS = 10_000;
 // Two search_blog calls share 18s total (was 6s/12s and aborted before rerank-heavy responses finished).
 const TOOL_TOTAL_TIMEOUT_MS = 18_000;
+// Leave headroom for one model step after tools; prefer soft-complete over burning the 120s run deadline.
+const MIN_STEP_REMAINING_MS = 20_000;
+// Abort if the model/tool loop stays silent this long between progress events.
+const PROGRESS_STALL_MS = 45_000;
 const TOOL_REASONING_EFFORT = 'low';
 
 function extractTopicTerms(messages: {role: string; content: string}[]) {
@@ -314,8 +318,12 @@ export const finish = internalMutation({
     if (!run || run.status !== 'running') return null;
     const conversation = await ctx.db.get('assistantConversations', run.conversationId);
     if (!conversation) return null;
-    if (noSources && !failed) await saveMessage(ctx, components.agent, {threadId: conversation.threadId,
-      promptMessageId: run.promptMessageId, message: {role: 'assistant', content: NO_SOURCES}, agentName: '博客助手'});
+    if (noSources && !failed) {
+      await saveMessage(ctx, components.agent, {threadId: conversation.threadId,
+        promptMessageId: run.promptMessageId, message: {role: 'assistant', content: NO_SOURCES}, agentName: '博客助手'});
+      // A weak hit may already be on the run from an earlier step. Soft-complete must not leave it as a source card.
+      await ctx.db.patch('assistantRuns', runId, {sources: []});
+    }
     await settle(ctx, run, failed ? 'failed' : 'completed', failed ? SAFE_ERROR : undefined);
     return null;
   },
@@ -363,7 +371,7 @@ export const generate = internalAction({
 
 type ToolRunArgs = {
   runId: Id<'assistantRuns'>;
-  run: {threadId: string; promptMessageId: string};
+  run: {threadId: string; promptMessageId: string; deadlineAt: number};
   history: {role: 'user' | 'assistant'; content: string}[];
   topicTerms: string;
   controller: AbortController;
@@ -410,6 +418,24 @@ export function mergeToolSources(state: {sources: Source[]; snippets: Snippet[];
   return added;
 }
 
+const INSUFFICIENT_EVIDENCE = '博客中暂未找到足够依据';
+
+// Source cards follow the final answer, not the raw retrieval hit list. [N] and 「来源 N」
+// are the citation forms the instructions ask the model to write.
+export function citedSources(answer: string, sources: readonly Source[]): Source[] {
+  const ids = new Set<string>();
+  for (const match of answer.matchAll(/\[(\d{1,2})\]|来源\s*(\d{1,2})(?!\d)/g)) {
+    const id = match[1] ?? match[2];
+    if (id) ids.add(id);
+  }
+  return sources.filter(source => ids.has(source.id));
+}
+
+export function sourcesToPersist(answer: string, sources: readonly Source[]): Source[] {
+  if (answer.includes(INSUFFICIENT_EVIDENCE)) return [];
+  return citedSources(answer, sources);
+}
+
 async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms, controller, assertActive, trace, fail}: ToolRunArgs) {
   const searchUrl = env.AI_SEARCH_PUBLIC_URL;
   const accountId = env.CLOUDFLARE_ACCOUNT_ID;
@@ -417,24 +443,47 @@ async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms
   if (!searchUrl || !accountId || !apiToken) { trace({stage: 'tool_mode_unconfigured'}); throw new Error(SAFE_ERROR); }
   const state = {sources: [] as Source[], snippets: [] as Snippet[], budgetLeft: TOOL_SNIPPET_BUDGET, toolCalls: 0, toolMs: 0};
   const shortQuery = (query: string) => query.length < 6 || /^(它|这个|那个|这|那|上面|前面|刚才|this|that|it)/i.test(query);
+  const remainingDeadline = () => run.deadlineAt - Date.now();
+  const ensureStepBudget = () => {
+    if (remainingDeadline() >= MIN_STEP_REMAINING_MS) return true;
+    trace({stage: 'deadline_guard'});
+    return false;
+  };
+  let stallTimer: ReturnType<typeof setTimeout> | undefined;
+  const clearStall = () => { if (stallTimer !== undefined) { clearTimeout(stallTimer); stallTimer = undefined; } };
+  const bumpStall = () => {
+    clearStall();
+    if (controller.signal.aborted) return;
+    stallTimer = setTimeout(() => {
+      trace({stage: 'progress_stall'});
+      controller.abort(new Error(SAFE_ERROR));
+    }, PROGRESS_STALL_MS);
+  };
+  const progressTrace: typeof trace = (event) => {
+    trace(event);
+    if (event.stage === 'tool_call_start' || event.stage === 'tool_call' || event.stage === 'tool_result'
+        || event.stage === 'tool_no_matches' || event.stage === 'tool_unavailable' || event.stage === 'first_text_delta'
+        || event.stage === 'chat_finish' || event.stage === 'agent_persisted') bumpStall();
+  };
   const searchBlog = createTool({
-    description: '检索本站已发布的博客文章与文档。输入检索词（不超过 200 字符），返回编号后的相关片段；回答时用「来源 N」引用编号。',
+    description: '检索本站已发布的博客文章与文档。仅当用户在问本站文章、作者观点或站点内容时调用。寒暄、关于助手自身的问题、与本站无关的通用知识，以及主题含糊的请求，都不要调用。输入检索词（不超过 200 字符），返回编号后的相关片段；回答时用「来源 N」引用编号。',
     inputSchema: jsonSchema<{query: string}>({type: 'object', properties: {query: {type: 'string', description: '检索词，不超过 200 字符'}},
       required: ['query'], additionalProperties: false}),
     execute: async (_toolCtx, input) => {
       state.toolCalls += 1;
-      trace({stage: 'tool_call', toolCalls: state.toolCalls});
-      if (state.toolCalls > TOOL_BUDGET.maxToolCalls) { trace({stage: 'tool_budget_exceeded'}); throw new Error(SAFE_ERROR); }
+      progressTrace({stage: 'tool_call', toolCalls: state.toolCalls});
+      if (state.toolCalls > TOOL_BUDGET.maxToolCalls) { progressTrace({stage: 'tool_budget_exceeded'}); throw new Error(SAFE_ERROR); }
+      if (!ensureStepBudget()) return {ok: false as const, reason: 'unavailable' as const};
       await assertActive();
       await ctx.runMutation(internal.assistant.setPhase, {runId, phase: 'searching', toolCalls: state.toolCalls});
       let query = validateToolQuery(input.query);
-      if (!query) { trace({stage: 'tool_query_invalid'}); return {ok: false as const, reason: 'invalid_query' as const}; }
+      if (!query) { progressTrace({stage: 'tool_query_invalid'}); return {ok: false as const, reason: 'invalid_query' as const}; }
       if (shortQuery(query) && topicTerms) {
         query = `${topicTerms} ${query}`.slice(0, TOOL_QUERY_MAX);
-        trace({stage: 'tool_query_augmented', queryLength: query.length});
+        progressTrace({stage: 'tool_query_augmented', queryLength: query.length});
       }
-      const remaining = Math.min(TOOL_TIMEOUT_MS, TOOL_TOTAL_TIMEOUT_MS - state.toolMs);
-      if (remaining <= 0) { trace({stage: 'tool_unavailable'}); return {ok: false as const, reason: 'unavailable' as const}; }
+      const remaining = Math.min(TOOL_TIMEOUT_MS, TOOL_TOTAL_TIMEOUT_MS - state.toolMs, Math.max(0, remainingDeadline() - MIN_STEP_REMAINING_MS));
+      if (remaining <= 0) { progressTrace({stage: 'tool_unavailable'}); return {ok: false as const, reason: 'unavailable' as const}; }
       const toolController = new AbortController();
       const onAbort = () => toolController.abort(controller.signal.reason);
       controller.signal.addEventListener('abort', onAbort, {once: true});
@@ -442,16 +491,21 @@ async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms
       const startedAt = Date.now();
       try {
         const retrieved = await retrievePublicSources(searchUrl, query, toolController.signal,
-          {observe: trace, fallback: false, retrievalOptions: searchRetrievalOptions({queryRewrite: false})});
-        const added = mergeToolSources(state, retrieved);
+          {observe: progressTrace, fallback: false, retrievalOptions: searchRetrievalOptions({queryRewrite: false})});
         await assertActive();
-        if (!await ctx.runMutation(internal.assistant.setSources, {runId, sources: state.sources})) throw new Error(SAFE_ERROR);
-        trace({stage: 'tool_result', sourceCount: state.sources.length, toolCalls: state.toolCalls});
+        if (!retrieved.snippets.length) {
+          progressTrace({stage: 'tool_no_matches', sourceCount: state.sources.length, toolCalls: state.toolCalls});
+          return {ok: false as const, reason: 'no_matches' as const};
+        }
+        const added = mergeToolSources(state, retrieved);
+        // Keep numbered snippets in the tool result. Do not attach hit cards until the
+        // final answer cites them; an unrelated hit must not render as 「N 篇来源」.
+        progressTrace({stage: 'tool_result', sourceCount: state.sources.length, toolCalls: state.toolCalls});
         return {ok: true as const, results: added.map(snippet => ({source: Number(snippet.source), title: snippet.title, sourceKind: snippet.sourceKind,
           updatedAt: snippet.updatedAt, text: snippet.text}))};
       } catch (error) {
         if (controller.signal.aborted) throw error;
-        trace({stage: 'tool_unavailable'});
+        progressTrace({stage: 'tool_unavailable'});
         return {ok: false as const, reason: 'unavailable' as const};
       } finally {
         clearTimeout(timer);
@@ -461,23 +515,64 @@ async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms
       }
     },
   });
+  if (!ensureStepBudget()) {
+    await ctx.runMutation(internal.assistant.finish, {runId, failed: false, noSources: true});
+    progressTrace({stage: 'completed_no_sources', toolCalls: state.toolCalls});
+    return;
+  }
   const model = workersAiChatModel({accountId, apiToken, gateway: env.ASSISTANT_CHAT_GATEWAY?.trim() || DEFAULT_CHAT_GATEWAY,
-    model: env.ASSISTANT_CHAT_MODEL?.trim() || DEFAULT_CHAT_MODEL}, assertActive, {observe: trace, onFailure: fail, tools: TOOL_BUDGET});
+    model: env.ASSISTANT_CHAT_MODEL?.trim() || DEFAULT_CHAT_MODEL}, assertActive, {observe: progressTrace, onFailure: fail, tools: TOOL_BUDGET});
+  // One search, one narrower retry, then a text step. Direct answers and clarifying
+  // questions finish on step 1 because stopWhen only continues after tool results.
+  const stopWhen = isStepCount(TOOL_BUDGET.maxToolCalls + 1);
   const agent = new Agent(components.agent, {name: '博客助手', languageModel: model, tools: {search_blog: searchBlog},
     instructions: toolInstructions(), contextOptions: {recentMessages: 1, excludeToolMessages: true, searchOtherThreads: false},
-    stopWhen: stepCountIs(TOOL_BUDGET.maxToolCalls + 1)});
-  trace({stage: 'agent_start'});
-  const result = await agent.streamText(ctx, {threadId: run.threadId}, {
-    promptMessageId: run.promptMessageId, maxOutputTokens: 2048, temperature: 0.3,
-    providerOptions: {'workers-ai': {reasoningEffort: TOOL_REASONING_EFFORT}},
-    maxRetries: 0, abortSignal: controller.signal,
-  }, {saveStreamDeltas: {throttleMs: 250}, contextHandler: async (_ctx, {threadId, inputPrompt}) => {
-    if (threadId !== run.threadId || inputPrompt.length !== 1 || inputPrompt[0].role !== 'user') throw new Error(SAFE_ERROR);
-    return [...history, ...inputPrompt];
-  }});
-  await result.consumeStream();
-  trace({stage: 'agent_persisted'});
-  if (!(await result.text).trim() || (await result.finishReason) !== 'stop') throw new Error(SAFE_ERROR);
-  await ctx.runMutation(internal.assistant.finish, {runId, failed: false});
-  trace({stage: 'completed', sourceCount: state.sources.length, toolCalls: state.toolCalls});
+    stopWhen});
+  progressTrace({stage: 'agent_start'});
+  bumpStall();
+  try {
+    const result = await agent.streamText(ctx, {threadId: run.threadId}, {
+      promptMessageId: run.promptMessageId, maxOutputTokens: 2048, temperature: 0.3,
+      providerOptions: {'workers-ai': {reasoningEffort: TOOL_REASONING_EFFORT}},
+      maxRetries: 0, abortSignal: controller.signal,
+      toolChoice: 'auto',
+      stopWhen,
+      prepareStep: ({steps}) => routeToolChoice(steps.reduce((count, step) => count + step.toolCalls.length, 0)),
+    }, {saveStreamDeltas: {throttleMs: 250}, contextHandler: async (_ctx, {threadId, inputPrompt}) => {
+      if (threadId !== run.threadId || inputPrompt.length !== 1 || inputPrompt[0].role !== 'user') throw new Error(SAFE_ERROR);
+      return [...history, ...inputPrompt];
+    }});
+    await result.consumeStream();
+    progressTrace({stage: 'agent_persisted'});
+    const answer = (await result.text).trim();
+    const finishReason = await result.finishReason;
+    const persistAnswerSources = async () => {
+      const sources = sourcesToPersist(answer, state.sources);
+      if (!await ctx.runMutation(internal.assistant.setSources, {runId, sources})) throw new Error(SAFE_ERROR);
+      return sources;
+    };
+    if (answer && finishReason === 'stop') {
+      const sources = await persistAnswerSources();
+      await ctx.runMutation(internal.assistant.finish, {runId, failed: false});
+      progressTrace({stage: 'completed', sourceCount: sources.length, toolCalls: state.toolCalls});
+      return;
+    }
+    // Tool loop used but no durable answer: soft-complete instead of failing into a 120s expire.
+    if (state.toolCalls > 0) {
+      const sources = answer ? await persistAnswerSources() : [];
+      await ctx.runMutation(internal.assistant.finish, {runId, failed: false, noSources: !answer});
+      progressTrace({stage: 'completed_no_sources', sourceCount: answer ? sources.length : 0, toolCalls: state.toolCalls});
+      return;
+    }
+    throw new Error(SAFE_ERROR);
+  } catch (error) {
+    if (state.toolCalls > 0 && await ctx.runQuery(internal.assistant.isActive, {runId})) {
+      await ctx.runMutation(internal.assistant.finish, {runId, failed: false, noSources: true});
+      progressTrace({stage: 'completed_no_sources', sourceCount: 0, toolCalls: state.toolCalls});
+      return;
+    }
+    throw error;
+  } finally {
+    clearStall();
+  }
 }

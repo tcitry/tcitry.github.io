@@ -146,7 +146,7 @@ async function chatCompletions(base, {messages}) {
   return report;
 }
 
-async function evaluateCase(base, {turns, id, category, expectRetrieval}, {delayMs}) {
+async function evaluateCase(base, {turns, id, category, expectRetrieval, expectQuestion}, {delayMs}) {
   const messages = [];
   const results = [];
   for (let i = 0; i < turns.length; i++) {
@@ -158,7 +158,7 @@ async function evaluateCase(base, {turns, id, category, expectRetrieval}, {delay
     if (i < turns.length - 1) await sleep(delayMs);
   }
   const first = results[0];
-  return {id, category, expectRetrieval: expectRetrieval ?? null, question: turns[0], turns: results,
+  return {id, category, expectRetrieval: expectRetrieval ?? null, expectQuestion: expectQuestion ?? null, question: turns[0], turns: results,
     error: results.find(r => r.error)?.error ?? null,
     // Flattened first-turn fields keep older report consumers working.
     headersMs: first.headersMs, ttfbMs: first.ttfbMs, totalMs: first.totalMs, answer: first.answer, sources: first.sources,
@@ -186,12 +186,13 @@ export function summarize(results) {
   }]));
   const unexpectedRetrieval = ok.filter(t => t.expectRetrieval === false && (t.toolCalled || t.augmented)).length;
   const missingRetrieval = ok.filter(t => t.expectRetrieval === true && !(t.toolCalled || t.augmented)).length;
+  const missingClarification = results.filter(result => result.expectQuestion && result.turns.some(turn => !turn.error && !/[?？]/.test(turn.answer ?? ''))).length;
   return {
     cases: results.length, turns: turns.length, okTurns: ok.length, errorTurns: turns.length - ok.length,
     ttfbMs: stats(ok.map(t => t.ttfbMs)), totalMs: stats(ok.map(t => t.totalMs)), headersMs: stats(ok.map(t => t.headersMs)),
     toolCallRate: ok.length ? ok.filter(t => t.toolCalled).length / ok.length : null,
     augmentedRate: ok.length ? ok.filter(t => t.augmented).length / ok.length : null,
-    unexpectedRetrieval, missingRetrieval, categories,
+    unexpectedRetrieval, missingRetrieval, missingClarification, categories,
   };
 }
 
@@ -208,14 +209,15 @@ function formatReport(results) {
   lines.push(`- TTFB (first visible text) p50/p90: ${summary.ttfbMs.p50 ?? 'n/a'}ms / ${summary.ttfbMs.p90 ?? 'n/a'}ms`);
   lines.push(`- total p50/p90: ${summary.totalMs.p50 ?? 'n/a'}ms / ${summary.totalMs.p90 ?? 'n/a'}ms (headers p50: ${summary.headersMs.p50 ?? 'n/a'}ms)`);
   lines.push(`- tool-call rate: ${pct(summary.toolCallRate)}, augmented rate: ${pct(summary.augmentedRate)}`);
-  lines.push(`- unexpected retrieval (expectRetrieval=false): ${summary.unexpectedRetrieval}, missing retrieval (expectRetrieval=true): ${summary.missingRetrieval}`);
+  lines.push(`- unexpected retrieval (expectRetrieval=false): ${summary.unexpectedRetrieval}, missing retrieval (expectRetrieval=true): ${summary.missingRetrieval}, missing clarification: ${summary.missingClarification ?? 0}`);
   lines.push('\n| category | turns | tool-call | augmented | TTFB p50 | TTFB p90 | total p50 |');
   lines.push('| --- | --- | --- | --- | --- | --- | --- |');
   for (const [name, c] of Object.entries(summary.categories)) {
     lines.push(`| ${name} | ${c.turns} | ${pct(c.toolCallRate)} | ${pct(c.augmentedRate)} | ${c.ttfbMs.p50 ?? 'n/a'}ms | ${c.ttfbMs.p90 ?? 'n/a'}ms | ${c.totalMs.p50 ?? 'n/a'}ms |`);
   }
   for (const r of results) {
-    lines.push(`\n### ${r.id} [${r.category}]${r.expectRetrieval === false ? ' (no-retrieval expected)' : ''}`);
+    const retrievalNote = r.expectRetrieval === false ? ' (no-retrieval expected)' : r.expectRetrieval === true ? ' (retrieval expected)' : '';
+    lines.push(`\n### ${r.id} [${r.category}]${retrievalNote}${r.expectQuestion ? ' (clarifying question expected)' : ''}`);
     for (const t of r.turns) {
       lines.push(`\n#### turn ${t.turn}`);
       lines.push(`question: ${t.question}`);

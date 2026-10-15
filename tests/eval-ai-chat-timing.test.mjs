@@ -68,12 +68,19 @@ test('summarize counts turns, retrieval mismatches, and category rates', async (
         {toolCalled: false, augmented: false, ttfbMs: 130, totalMs: 230, headersMs: 70, error: 'x'},
       ],
     },
+    {
+      id: 'q-clarify',
+      category: 'clarify',
+      expectQuestion: true,
+      turns: [{toolCalled: false, augmented: false, answer: '好的。', ttfbMs: 80, totalMs: 120, headersMs: 40}],
+    },
   ]);
 
-  assert.equal(summary.turns, 3);
-  assert.equal(summary.okTurns, 2);
+  assert.equal(summary.turns, 4);
+  assert.equal(summary.okTurns, 3);
   assert.equal(summary.unexpectedRetrieval, 1);
   assert.equal(summary.missingRetrieval, 1);
+  assert.equal(summary.missingClarification, 1);
   assert.equal(summary.categories['no-retrieval'].toolCallRate, 1);
 });
 
@@ -86,10 +93,22 @@ test('AI chat evaluation fixture has valid ids, turns, categories, and models', 
     assert.equal(ids.has(question.id), false, `duplicate question id: ${question.id}`);
     ids.add(question.id);
     assert.ok(Array.isArray(question.turns) && question.turns.length > 0, `${question.id} must have turns`);
-    if (question.category === 'no-retrieval') {
+    if (question.category === 'no-retrieval' || question.category === 'direct' || question.category === 'clarify') {
       assert.equal(question.expectRetrieval, false, `${question.id} must not expect retrieval`);
       assert.deepEqual(question.expectedSourcePatterns, [], `${question.id} must have no source patterns`);
     }
+    if (question.category === 'search' || question.category === 'empty') {
+      assert.equal(question.expectRetrieval, true, `${question.id} must expect retrieval`);
+    }
+    if (question.category === 'clarify') assert.equal(question.expectQuestion, true, `${question.id} must expect one question`);
+    if (question.category === 'empty') {
+      assert.ok(question.requiredFacts.includes('博客中暂未找到足够依据'), `${question.id} must require the empty-blog statement`);
+      assert.deepEqual(question.expectedSourcePatterns, [], `${question.id} must not expect source cards for an empty or unrelated retrieval`);
+    }
   }
+  for (const category of ['direct', 'search', 'clarify', 'empty']) {
+    assert.ok(fixture.questions.some(question => question.category === category), `missing ${category} cases`);
+  }
+  assert.ok(fixture.questions.some(question => question.category === 'empty' && question.turns.some(turn => turn.includes('火星'))), 'empty eval must include an unrelated-topic case');
   assert.ok(fixture.models.includes('@cf/zai-org/glm-5.3'));
 });

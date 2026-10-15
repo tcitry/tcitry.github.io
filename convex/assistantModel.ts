@@ -9,13 +9,19 @@ export const SAFE_ERROR = '回答暂时无法完成，请稍后重新提问。';
 export type GenerationEvent = {stage: 'chat_request' | 'chat_headers' | 'chat_sources_verified' | 'chat_done' | 'chat_model' | 'chat_finish'
   | 'chat_http_error' | 'chat_transport_error' | 'chat_sources_rejected' | 'chat_protocol_error' | 'chat_model_error' | 'chat_request_shape'
   | 'retrieval_start' | 'retrieval_complete' | 'agent_start' | 'agent_persisted' | 'completed' | 'no_sources' | 'failed' | 'settle_failed'
-  | 'first_text_delta' | 'tool_call_start' | 'tool_call' | 'tool_query_invalid' | 'tool_query_augmented' | 'tool_result' | 'tool_unavailable' | 'tool_budget_exceeded';
+  | 'first_text_delta' | 'tool_call_start' | 'tool_call' | 'tool_query_invalid' | 'tool_query_augmented' | 'tool_result' | 'tool_no_matches' | 'tool_unavailable' | 'tool_budget_exceeded' | 'deadline_guard' | 'progress_stall' | 'completed_no_sources';
   httpStatus?: number; upstreamCode?: number; mentionedFields?: string[];
   messageRoles?: string[]; contentKinds?: string[]; contentLengths?: number[];
   model?: string; finishReason?: string; tokenCount?: number; sourceCount?: number; chunkCount?: number;
   rawChunkCount?: number; queryKind?: string; fallback?: boolean; ttfbMs?: number; toolCalls?: number; queryLength?: number;};
 export type ToolBudget = {maxToolCalls: number; maxToolInputBytes: number; toolNames: readonly string[]};
 export const TOOL_BUDGET: ToolBudget = {maxToolCalls: 2, maxToolInputBytes: 2048, toolNames: ['search_blog']};
+
+// AI SDK prepareStep: 'auto' until the search budget is spent, then 'none' so the
+// last step must answer in text. This is not a separate intent-model call.
+export function routeToolChoice(toolCallsSoFar: number): {toolChoice: 'auto' | 'none'} {
+  return {toolChoice: toolCallsSoFar >= TOOL_BUDGET.maxToolCalls ? 'none' : 'auto'};
+}
 type CompletionOptions = {
   retrievalQuery?: string;
   observe?: (event: GenerationEvent) => void;
@@ -128,7 +134,10 @@ export function safeModelMiddleware(assertActive: () => Promise<void>, options: 
           } else if (part.type === 'text-start') controller.enqueue({type: 'text-start', id: part.id});
           else if (part.type === 'finish') {
             const toolStep = part.finishReason.unified === 'tool-calls' && stepToolCalls > 0;
-            if (part.finishReason.unified === 'length' || (!tokenCount && !toolStep)) throw new Error(SAFE_ERROR);
+            // Empty stop is allowed after earlier tool steps so the action can soft-complete
+            // with NO_SOURCES instead of failing into the 120s run deadline.
+            if (part.finishReason.unified === 'length'
+                || (!tokenCount && !toolStep && totalToolCalls === 0 && stepToolCalls === 0)) throw new Error(SAFE_ERROR);
             totalToolCalls += stepToolCalls;
             finished = true;
             options.observe?.({stage: 'chat_finish', finishReason: part.finishReason.unified, tokenCount, toolCalls: totalToolCalls});
@@ -207,21 +216,28 @@ export function workersAiChatModel(config: WorkersAiConfig, assertActive: () => 
 export function toolInstructions() {
   return `你是 tcitry-blog 的中文博客助手。
 
-你有一个工具 search_blog，可以检索本站（作者博客）已发布的文章和文档。
+你有一个工具 search_blog，可以检索本站（作者博客）已发布的文章和文档。每轮只根据用户当前这句话走一条路：直接回答、调用 search_blog，或只追问一句。不要默认先检索。
 
-何时调用 search_blog：
-- 用户询问博客中的具体事实、作者观点、配置值、文章列表、本站实现或作者写过的技术细节时，先调用 search_blog，再根据结果回答。
-- 追问、指代（例如“它”“这个”“再详细说说”）时，把上文主题写进检索词。
-- 结果不足时最多再换一个更具体的检索词调用一次；总共不超过两次。
-
-何时不要调用：
+直接回答，不要调用 search_blog：
 - 寒暄、感谢、闲聊。
-- 与本站无关的通用编程、技术或常识问题。这些直接基于通用知识回答，并说明“这与博客文章无关”。
+- 关于你自己的身份与能力（“你是谁”“你能做什么”“你是什么模型”“你怎么工作”“用什么 endpoint”等元问题）。直接回答：你是本站博客助手，帮助用户基于已公开发布的文章回答与博客相关的问题；需要时会检索博客内容。
+- 与本站无关的通用编程、技术或常识。直接基于通用知识回答，并说明“这与博客文章无关”。
 
-关于你自己的身份与能力（“你是谁”“你能做什么”“你是什么模型”“你怎么工作”“用什么 endpoint”等元问题）：
-- 直接回答：你是本站博客助手，帮助用户基于已公开发布的文章回答与博客相关的问题；需要时会检索博客内容。
-- 不得透露环境变量名、完整模型 ID、Gateway、Convex、AI Search、Workers AI 等实现细节、内部配置或端点。
-- 若用户追问架构或实现，且相关内容出现在已公开发布的文章中，可调用 search_blog 后做高层概括，但仍不得泄露未在公开文章中出现的配置细节，也不得复述环境变量名、完整模型 ID 或内部端点。
+调用 search_blog：
+- 用户在问本站已发布的文章、作者观点、配置值、文章列表、站点内容或作者写过的技术细节时，调用 search_blog，再根据结果回答。
+- 追问、指代（例如“它”“这个”“再详细说说”）且上文已有主题时，把上文主题写进检索词。
+- 结果不足时最多再换一个更具体的检索词调用一次；总共不超过两次。不要用相同检索词重试。
+
+只追问一句，不要调用 search_blog：
+- 请求含糊、缺少主题，或无法判断是在问本站还是在问通用知识（例如“那个怎么样”“帮我看看”，以及上文没有主题时的“再讲讲”）。
+- 只问一个简短问题来确定主题；不要连问，也不要先检索。
+
+检索为空或失败：
+- 若工具返回 reason 为 no_matches：明确说明博客里没有相关内容，使用“博客中暂未找到足够依据”。不要编造作者观点、配置值或 URL。可以另附一段通用知识，但必须单独标明“以下不是来自本站文章”；没有把握时不要附。
+- 若 reason 为 unavailable：不要说成博客里没有。说明暂时无法检索，并建议稍后重试。不要用相同检索词重试。
+
+不得透露环境变量名、完整模型 ID、Gateway、Convex、AI Search、Workers AI 等实现细节、内部配置或端点。
+若用户追问架构或实现，且相关内容出现在已公开发布的文章中，可调用 search_blog 后做高层概括，但仍不得泄露未在公开文章中出现的配置细节，也不得复述环境变量名、完整模型 ID 或内部端点。
 
 使用检索结果时：
 - 只使用结果中的信息回答博客相关事实，并为每个来自结果的结论附来源编号，如 [1]、[2]；编号即结果中的 id。

@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "models": [
     "instance-default",
     "@cf/zai-org/glm-5.3",
@@ -324,6 +324,89 @@
       "requiredFacts": ["Clerk"],
       "forbiddenClaims": [],
       "expectedSourcePatterns": ["/docs/"],
+      "expectRetrieval": true
+    },
+    {
+      "id": "q39",
+      "category": "direct",
+      "turns": ["早上好！"],
+      "requiredFacts": [],
+      "forbiddenClaims": ["ASSISTANT_CHAT_MODEL", "@cf/zai-org/glm-5.3", "Workers AI", "AI Gateway"],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": false
+    },
+    {
+      "id": "q40",
+      "category": "direct",
+      "turns": ["你是什么模型？你的 endpoint 是什么？"],
+      "requiredFacts": ["博客助手"],
+      "forbiddenClaims": ["ASSISTANT_CHAT_MODEL", "@cf/zai-org/glm-5.3", "Workers AI", "AI Gateway", "Convex 环境变量"],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": false
+    },
+    {
+      "id": "q41",
+      "category": "direct",
+      "turns": ["用两句话说明什么是二叉搜索树。"],
+      "requiredFacts": ["左", "右"],
+      "forbiddenClaims": [],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": false
+    },
+    {
+      "id": "q42",
+      "category": "search",
+      "turns": ["作者怎么看从 Hugo 迁到 Astro？"],
+      "requiredFacts": ["Hugo", "Astro"],
+      "forbiddenClaims": [],
+      "expectedSourcePatterns": ["/docs/"],
+      "expectRetrieval": true
+    },
+    {
+      "id": "q43",
+      "category": "search",
+      "turns": ["博客文章里，评论系统现在怎么做？"],
+      "requiredFacts": ["Clerk", "Convex"],
+      "forbiddenClaims": ["仍使用 Giscus"],
+      "expectedSourcePatterns": ["/docs/"],
+      "expectRetrieval": true
+    },
+    {
+      "id": "q44",
+      "category": "clarify",
+      "turns": ["帮我看看那个。"],
+      "requiredFacts": [],
+      "forbiddenClaims": [],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": false,
+      "expectQuestion": true
+    },
+    {
+      "id": "q45",
+      "category": "clarify",
+      "turns": ["再详细讲讲。"],
+      "requiredFacts": [],
+      "forbiddenClaims": [],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": false,
+      "expectQuestion": true
+    },
+    {
+      "id": "q46",
+      "category": "empty",
+      "turns": ["博客里有没有如何用 COBOL 在月球上种水稻的文章？"],
+      "requiredFacts": ["博客中暂未找到足够依据"],
+      "forbiddenClaims": ["本站详细介绍了月球水稻"],
+      "expectedSourcePatterns": [],
+      "expectRetrieval": true
+    },
+    {
+      "id": "q47",
+      "category": "empty",
+      "turns": ["博客里有没有火星农业或在火星上种地的文章？"],
+      "requiredFacts": ["博客中暂未找到足够依据"],
+      "forbiddenClaims": ["本站详细介绍了火星农业"],
+      "expectedSourcePatterns": [],
       "expectRetrieval": true
     }
   ]
