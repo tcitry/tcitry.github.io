@@ -1,0 +1,3 @@
+/* Keep vendor BEM selectors global; a CSS Module would rename them. */
+@reference "../../styles/tailwind.css";
+@import "@heroui/styles/components/checkbox.css" layer(components);

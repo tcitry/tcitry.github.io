@@ -1,0 +1,43 @@
+@reference "../../styles/tailwind.css";
+
+.root { padding: clamp(1rem, 3vw, 1.5rem); }
+.header { margin-bottom: 1rem; }
+.header h3 { font-size: clamp(1.1rem, 3vw, 1.45rem); line-height: 1.4; }
+.header p, .caption, .source { font-size: 0.8rem; line-height: 1.75; color: var(--muted); }
+.eyebrow { display: block; margin-bottom: 0.55rem; font: 0.65rem/1.5 var(--font-mono, monospace); letter-spacing: 0.12em; color: var(--muted); }
+.figure { margin: 0; }
+.drawing { display: block; width: 100%; height: auto; }
+.shadow { fill: var(--machine-ink); opacity: 0.055; }
+.root[data-animated="true"] .moving { transition: transform 260ms ease-out; }
+.caption { margin: 0.7rem 0 0; }
+.controls { display: grid; gap: 1rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--gray-200); }
+.controls fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.controls legend { margin-bottom: 0.45rem; font-size: 0.75rem; color: var(--muted); }
+.buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.buttons button { max-width: 100%; font-size: 0.76rem; }
+.contract { display: grid; gap: 0.7rem; margin: 1.2rem 0 !important; }
+.contract > div { min-width: 0; }
+.contract dt, .outputLabel { display: block; margin-bottom: 0.3rem; color: var(--muted); font-size: 0.72rem; }
+.contract dd { margin: 0 !important; font: 0.74rem/1.7 var(--font-mono, monospace); overflow-wrap: anywhere; }
+.output { display: grid; gap: 1rem; padding-block: 1rem; border-block: 1px solid var(--gray-200); }
+.preview { min-height: 3.5rem; display: flex; align-items: center; padding: 0.8rem; border-radius: 0.4rem; background: var(--surface); }
+.preview :global(.checkbox__control) { pointer-events: none; }
+.rules { display: grid; gap: 0.5rem; }
+.rules code { display: block; min-width: 0; padding-left: 0.7rem; border-left: 2px solid var(--gray-200); font-size: 0.67rem; line-height: 1.75; overflow-wrap: anywhere; color: var(--muted); }
+.rules code[data-hit="true"] { border-color: var(--machine-accent); color: var(--machine-accent); }
+.status { min-height: 3em; font-size: 0.82rem; line-height: 1.75; }
+.source { margin-top: 1rem; }
+.source summary { cursor: pointer; color: var(--body-font-color); }
+@media (min-width: 700px) {
+  .controls { grid-template-columns: 1fr 1fr; }
+  .controls fieldset:first-child { grid-column: 1 / -1; }
+  .contract { grid-template-columns: 1fr 1fr; }
+  .output { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); align-items: center; }
+}
+@media (max-width: 480px) {
+  .root { padding: 0.8rem; }
+  .drawing { width: 112%; max-width: none; margin-inline: -6%; }
+  .buttons { gap: 0.4rem; }
+  .buttons button { font-size: 0.69rem; padding-inline: 0.7rem; }
+}
+@media (prefers-reduced-motion: reduce) { .moving { transition: none !important; } }
