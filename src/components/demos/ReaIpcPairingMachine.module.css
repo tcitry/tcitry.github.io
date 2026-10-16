@@ -1,0 +1,76 @@
+@reference "../../styles/tailwind.css";
+
+.root { min-width: 0; --machine-accent: #378772; --machine-line: color-mix(in srgb, var(--machine-ink) 64%, var(--machine-paper)); --machine-faint: color-mix(in srgb, var(--machine-ink) 40%, var(--machine-paper)); --rea-muted: var(--muted, #6c736e); --rea-faint: color-mix(in srgb, var(--machine-ink) 7%, var(--machine-paper)); }
+.header { margin-bottom: 1rem; }
+.figureNumber { font-size: 0.67rem; font-family: var(--font-mono, monospace); letter-spacing: 0.14em; color: var(--rea-muted); }
+.header h3 { font-size: 1.2rem; line-height: 1.5; margin-top: 0.5rem; }
+.header p { font-size: 0.9rem; line-height: 1.7; color: var(--rea-muted); }
+.presets, .buttonGroup { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.presets { padding-bottom: 1rem; border-bottom: 1px solid var(--gray-200); }
+.inputControls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 1rem; align-items: start; margin-top: 1rem; }
+.channelField { min-width: 0; }
+.controlLabel { display: block; font-size: 0.8rem; margin-bottom: 0.4rem; }
+.operationControl { min-width: 0; }
+.dynamicButton { margin-block: 0.5rem; max-width: 100%; white-space: normal; height: auto; min-height: 2rem; }
+.inputSources { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); border: 1px solid var(--gray-200); border-radius: 0.5rem; overflow: hidden; }
+.sourceCell { min-width: 0; padding: 0.75rem; background: var(--rea-faint); }
+.sourceCell + .sourceCell { border-left: 1px solid var(--gray-200); }
+.sourceCell strong { font-size: 0.72rem; font-weight: 550; color: var(--rea-muted); }
+.sourceCell pre { margin: 0.5rem 0 0; padding: 0; background: transparent; border: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.7rem; line-height: 1.8; }
+.sourceCell code { padding: 0; background: transparent; font-size: inherit; }
+.facts { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; font-size: 0.74rem; color: var(--rea-muted); line-height: 1.8; }
+.facts code { overflow-wrap: anywhere; }
+.plate { margin-top: 1rem; border: 1px solid var(--gray-200); border-radius: 0.5rem; overflow: hidden; }
+.plateTop { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; padding: 0.8rem 1rem 0; font-size: 0.72rem; color: var(--rea-muted); }
+.plateTop strong { color: var(--machine-ink); font-weight: 550; }
+.machine { display: block; width: 100%; height: auto; overflow: visible; }
+.shadow { fill: var(--machine-ink); opacity: 0.04; filter: blur(7px); }
+.moving { transition: transform 650ms cubic-bezier(0.22, 0.68, 0.2, 1), opacity 400ms; }
+.rejected { opacity: 0.6; }
+.tokenLabel { fill: var(--machine-ink); font-family: var(--font-mono, monospace); font-weight: 650; }
+.tally path { fill: none; stroke: var(--machine-faint); stroke-width: 2; stroke-linecap: round; }
+.tally path[data-filled="true"] { stroke: var(--machine-accent); }
+.marker circle { fill: var(--machine-paper); stroke: var(--machine-faint); stroke-width: 0.7; }
+.marker text { fill: var(--machine-ink); font-family: var(--font-mono, monospace); font-size: 9px; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; padding: 0 1rem 0.8rem; color: var(--rea-muted); font-size: 0.72rem; }
+.legend b { font-weight: 550; color: var(--machine-accent); }
+.stepButtons { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-block: 1px solid var(--gray-200); padding: 0.5rem; gap: 0.25rem; }
+.stepButtons button { font-size: 0.7rem; white-space: normal; height: auto; min-height: 2.2rem; padding: 0.4rem; line-height: 1.45; }
+.playback { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; padding: 0.6rem 0.8rem; }
+.liveCount { margin-left: auto; font-family: var(--font-mono, monospace); color: var(--rea-muted); font-size: 0.72rem; }
+.filterTable { margin-top: 1rem; border: 1px solid var(--gray-200); border-radius: 0.5rem; overflow: hidden; }
+.filterHeader, .filterRow { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) 2rem 3rem; gap: 0.35rem; align-items: center; padding: 0.6rem 0.75rem; font-size: 0.72rem; }
+.filterHeader { background: var(--rea-faint); color: var(--rea-muted); }
+.filterRow { border-top: 1px solid var(--gray-200); }
+.filterRow > span { overflow-wrap: anywhere; }
+.filterRow[data-enabled="false"] > span { opacity: 0.5; }
+.handlerIdentity { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 0.4rem; }
+.handlerIdentity small { display: block; flex-basis: 100%; font-size: 0.68rem; color: var(--rea-muted); font-family: var(--font-mono, monospace); }
+.handlerIdentity b { color: var(--machine-accent); }
+.handlerIdentity code { font-size: 0.68rem; }
+.handlerToggle { padding-inline: 0.25rem; min-width: 0; font-size: 0.69rem; }
+.status { min-height: 3.5rem; padding: 0.65rem 0.8rem; background: var(--rea-faint); border-left: 2px solid var(--machine-accent); font-size: 0.8rem; line-height: 1.8; }
+.graph { padding: 0.8rem; border: 1px solid var(--gray-200); border-radius: 0.5rem; }
+.graphTitle { display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; align-items: center; font-size: 0.8rem; }
+.graphTitle code { font-size: 0.67rem; overflow-wrap: anywhere; }
+.graphConnection { display: grid; grid-template-columns: minmax(0, 1fr) minmax(4rem, 0.8fr) minmax(0, 1fr); align-items: center; gap: 0.4rem; padding-block: 0.9rem 0.3rem; }
+.graphConnection > span:first-child, .graphConnection > span:last-child { text-align: center; padding: 0.6rem 0.4rem; background: var(--rea-faint); border: 1px solid var(--gray-200); border-radius: 0.3rem; font-size: 0.72rem; overflow-wrap: anywhere; }
+.graphLink { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 2.5rem; color: var(--rea-muted); }
+.graphLink small { font-size: 0.65rem; text-align: center; }
+.graphLink i { font-family: var(--font-mono, monospace); font-size: 2.7rem; line-height: 0.6; font-style: normal; }
+.graphConnection[data-direct-edge="true"] .graphLink { color: var(--machine-accent); }
+.graph p, .boundary, .sourceDetails p { font-size: 0.75rem; line-height: 1.8; color: var(--rea-muted); }
+.sourceDetails { margin-top: 1rem; }
+.sourceDetails summary { font-size: 0.78rem; cursor: pointer; }
+.boundary { margin-bottom: 0 !important; }
+@media (max-width: 560px) {
+  .inputControls, .inputSources { grid-template-columns: minmax(0, 1fr); }
+  .sourceCell + .sourceCell { border-left: 0; border-top: 1px solid var(--gray-200); }
+  .inputControls { gap: 0.65rem; }
+  .stepButtons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filterHeader, .filterRow { grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.9fr) minmax(0, 0.85fr) 1.4rem; padding: 0.55rem; gap: 0.3rem; font-size: 0.66rem; }
+  .handlerToggle { grid-column: 1 / -1; justify-self: start; height: 1.6rem; }
+  .liveCount { width: 100%; margin-left: 0; padding-top: 0.3rem; }
+  .legend { padding-inline: 0.65rem; }
+}
+@media (prefers-reduced-motion: reduce) { .moving { transition: none; } }
