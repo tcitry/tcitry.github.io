@@ -1,0 +1,46 @@
+@reference "../../styles/tailwind.css";
+
+.root { container-type: inline-size; }
+.header { @apply grid gap-2; }
+.eyebrow { @apply font-mono text-xs tracking-widest; color: var(--muted); }
+.header h3 { @apply text-xl font-semibold leading-snug; }
+.header p, .boundary { @apply text-sm leading-relaxed; color: var(--muted); }
+.controls { @apply mt-5 grid gap-3; }
+.actions { @apply flex flex-wrap items-center gap-2; }
+.controlHint { @apply text-xs leading-relaxed; color: var(--muted); }
+.machineCard { @apply mt-4 overflow-hidden rounded-lg border; border-color: var(--border); background: color-mix(in srgb, var(--machine-top) 30%, var(--machine-paper)); }
+.figureCorners { @apply flex flex-wrap justify-between gap-x-4 gap-y-2 px-4 py-3 font-mono text-xs; color: var(--muted); }
+.figureCorners strong { @apply font-medium; color: var(--machine-ink); }
+.machine { @apply block h-auto w-full; }
+.shadow { fill: var(--machine-ink); opacity: 0.06; filter: blur(5px); }
+.ticketInk { fill: var(--machine-ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; transition: opacity 280ms ease; }
+.paperLabel { font-size: 4.4px; letter-spacing: 0.5px; }
+.paperNumber { font-size: 14px; font-weight: 600; }
+.paperDecision { font-size: 6px; font-weight: 500; }
+.paperTrack { fill: var(--machine-faint); opacity: 0.35; }
+.amountInk { fill: var(--machine-accent); }
+.drawerNumber { font-size: 7px; font-weight: 600; }
+.cartridgeNumber { font-size: 9px; font-weight: 600; }
+.resumeControls { @apply mt-4 flex flex-wrap items-center justify-between gap-3; }
+.resumeControls strong { @apply text-sm font-semibold; }
+.resumeControls p { @apply text-xs; color: var(--muted); margin-block: 0.25rem; }
+.status { @apply mt-4 text-sm leading-relaxed; min-height: 3rem; }
+.frozenNote { @apply rounded-md border p-3 text-sm leading-relaxed; border-color: var(--machine-accent); background: color-mix(in srgb, var(--machine-accent) 7%, var(--machine-paper)); }
+.dataGrid { @apply mt-4 grid gap-3; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.dataCell { @apply min-w-0 rounded-md border p-3; border-color: var(--border); }
+.fieldOrigin { @apply mb-2 block text-xs leading-relaxed; color: var(--muted); }
+.dataCell > strong { @apply font-mono text-sm font-semibold; }
+.dataCell pre, .snapshot pre { @apply my-3 overflow-x-auto rounded p-3 font-mono text-xs; background: color-mix(in srgb, var(--machine-ink) 4%, var(--machine-paper)); line-height: 1.65; white-space: pre; }
+.dataCell small { @apply block text-xs leading-relaxed; color: var(--muted); }
+.completed { border-color: var(--machine-accent); }
+.snapshot { @apply mt-4 text-sm; }
+.snapshot summary { @apply cursor-pointer py-1; }
+.snapshot p { @apply text-xs; color: var(--muted); }
+.boundary { @apply mt-4; }
+@container (max-width: 36rem) {
+  .dataGrid { grid-template-columns: 1fr; }
+  .dataCell pre { margin-block: 0.6rem; }
+  .figureCorners { padding-inline: 0.75rem; font-size: 0.65rem; }
+  .status { min-height: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .ticketInk { transition: none; } }
