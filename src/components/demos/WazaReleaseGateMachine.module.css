@@ -1,0 +1,35 @@
+@reference "../../styles/tailwind.css";
+.demo { min-width: 0; }
+.shadow { fill: var(--machine-ink); opacity: .06; filter: blur(7px); }
+.print { fill: var(--machine-ink); font-family: ui-monospace, SFMono-Regular, monospace; }
+.steps { @apply my-4 grid list-none gap-2 p-0; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.steps li { border-top: 2px solid var(--gray-200); padding-top: .65rem; min-width: 0; font-size: .73rem; }
+.steps code { white-space: normal; overflow-wrap: anywhere; }
+.steps span { display: block; margin-top: .3rem; color: var(--muted); }
+.controls { @apply mt-5 grid gap-4 border-0 p-0; min-width: 0; }
+.controls legend { margin-bottom: .8rem; font-size: .9rem; font-weight: 600; }
+.controls label { @apply grid gap-1.5 text-xs; color: var(--muted); min-width: 0; }
+.controls select { width: 100%; min-width: 0; border: 1px solid var(--gray-300); border-radius: .4rem; padding: .55rem .6rem; background: var(--body-background); color: var(--body-font-color); font: inherit; font-size: .8rem; }
+.scenario { max-width: 26rem; }
+.inputGrid { @apply grid gap-3; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.playback { @apply my-4 flex flex-wrap items-center gap-3 text-xs; color: var(--muted); }
+.playback button { border: 1px solid var(--gray-300); border-radius: .4rem; padding: .45rem .7rem; background: var(--body-background); color: var(--body-font-color); font: inherit; cursor: pointer; }
+.playback button:disabled { opacity: .5; cursor: default; }
+.playback button[aria-pressed="true"] { border-color: var(--machine-accent); }
+.tableWrap { max-width: 100%; overflow-x: auto; }
+.fields { width: 100%; margin: 0; font-size: .72rem; line-height: 1.5; border-collapse: collapse; }
+.fields caption { text-align: left; font-weight: 600; padding-bottom: .5rem; }
+.fields th, .fields td { padding: .5rem .4rem; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.fields th:first-child { padding-left: 0; }
+.fields tbody th { font-weight: 500; }
+.fields small { display: block; color: var(--muted); font-size: .68rem; font-weight: normal; }
+.result { @apply mt-4 flex items-start gap-4; border-top: 1px solid var(--gray-200); padding-top: 1rem; }
+.result > strong { font-size: 1.25rem; min-width: 3.6rem; color: var(--machine-ink); }
+.result p { margin: 0 0 .3rem; font-size: .83rem; line-height: 1.6; }
+@media (max-width: 520px) {
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .inputGrid { grid-template-columns: minmax(0, 1fr); }
+  .fields { font-size: .65rem; }
+  .fields th, .fields td { padding: .4rem .25rem; }
+  .fields small { font-size: .6rem; }
+}
