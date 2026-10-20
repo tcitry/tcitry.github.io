@@ -4,12 +4,21 @@
 
 - 与用户使用中文交流，站点统一称为 `tcitry-blog`。
 - 站点功能只在本仓库处理；仅在用户明确要求时向独立 Blog 内容仓库写入文档。
-- 日常在 `main` 工作。迁移前主分支是 `master`，Hugo 备份位于 `hugo-book` / `master`；除历史核对外不修改旧实现。
+- 日常在自己的任务分支工作，完成检查后创建以 `main` 为目标的 PR；不得直接推送 `main`，未获明确要求不自行合并 PR。迁移前主分支是 `master`，Hugo 备份位于 `hugo-book` / `master`；除历史核对外不修改旧实现。
 - 本站使用 Astro + `@tcitry/astro-book`。业务覆写维护在 `src/`，通用主题维护在独立 astro-book 仓库；主题改动先发布准确 npm 版本，再更新本站依赖和 lockfile。
 - `package.json` 是安装、开发、检查、构建和发布命令的唯一事实来源。首次检出运行 `npm run setup`。
 - `BLOG_DIR` 是只读内容源。私有内容、生成文件、凭据、本机路径和安装后的商业组件源码不得进入 Git。
 - 修改 Convex 代码前先读 `convex/_generated/ai/guidelines.md`。
 - 改写 Blog 技术文档时读取 `skills/blog-technical-docs/SKILL.md`，并以 Blog 内容仓库当前规则为准。
+
+## 云端依赖安装与网络排查
+
+- 云环境配置出口代理时，先检查环境状态中的网络策略与凭据 readiness，以及 `HTTP_PROXY`、`HTTPS_PROXY` 和 CA 配置是否已注入；保留这些设置。Token 已配置时，不因一次安装失败先要求用户重新登录或重新提供凭据。
+- npm 能访问 registry 不代表 postinstall 的原生 Node `fetch()` 已使用代理。先用 `node --help` 确认支持环境代理，再为安装或修复命令设置 `NODE_USE_ENV_PROXY=1`，例如 `NODE_USE_ENV_PROXY=1 npm run setup`；以实际请求和安装结果验证。
+- HeroUI Pro 的安装器会把不同异常统一显示为 `Access denied`。若底层错误是 `fetch failed`，先检查代理、DNS、连接与证书错误，并区分代理响应和服务端响应；不能仅凭这一通用提示断定 Token 无效或缺少许可证。
+- 2026-10-20 已验证的修复命令是 `NODE_USE_ENV_PROXY=1 npm rebuild @heroui-pro/react`：使用已注入的 `HEROUI_AUTH_TOKEN` 完成下载后，CSS 导出恢复，完整 `build` 与 `verify` 通过。后续同类问题先复用这一排查路径，不把此次成功当作未来认证永远有效的保证。
+- 排查只输出必要的域名、HTTP 状态和脱敏后的底层错误代码。不得打印 Token、请求体、认证头、完整环境或带下载凭据的 URL；HeroUI Pro 的旧回退路径可能直接包含 Token。
+- 不取消代理、不绕过网络策略、不关闭 TLS 校验。安装后检查实际包导出与所需 CSS 能否解析，再执行与任务相关的构建验证；不能只凭安装命令退出成功就宣称站点已修复。
 
 ## 产品与内容约束
 
@@ -28,7 +37,7 @@
 - Clerk development/production 和 Convex development/production 必须隔离；AI Search 与 Gateway 共用现有资源。前端和对应 Convex 使用同一个 AI Search public endpoint hostname。
 - 真实配置只放 Git 忽略的本地 env 或平台设置；Git 只保留无真实值的 `.env.example`。提交前运行 `npm run check:public` 并人工检查 diff。
 - 普通 `build` 生成 noindex 本地预览，不得发布到生产域名。生产发布流程、变量位置和内容更新触发以 `docs/continuous-deployment.md` 为准。
-- 推送站点 `main` 会触发生产发布。仅在真实登录与权限链路、检查、测试、生产构建、产物验证和脱敏均完成后提交并推送；配置或验收缺失时保留本地改动。
+- 合并站点 PR 到 `main` 会触发生产发布。按变更范围完成登录与权限链路、检查、测试、生产构建、产物验证和脱敏后，通过 PR 提交；配置或验收缺失时在任务分支明确记录，不直接推送 `main`。
 - 生产发布使用独立检出、独立依赖和独立 `dist/`，固定已审查的内容提交。不得上传可能被并行任务改写的共享产物。
 - 修改主题或渲染后运行项目定义的 check、test、build 和 verify；生产变更使用对应 production 验证。公开主题 CI 成功不代表博客已部署。
 
