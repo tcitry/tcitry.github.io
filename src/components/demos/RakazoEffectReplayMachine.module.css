@@ -2,29 +2,49 @@
 .root { container-type: inline-size; }
 .header { @apply grid gap-2; }
 .header h3 { @apply text-xl font-semibold leading-snug; }
-.header p, .boundary { @apply text-sm leading-relaxed; color: var(--muted); }
-.controls { @apply mt-5 grid gap-4; }
-.controls fieldset { @apply m-0 min-w-0 border-0 p-0; }
+.eyebrow { @apply text-xs font-semibold uppercase tracking-wide; color: var(--muted); }
+.header > p:last-child, .note, .boundary { @apply text-sm leading-relaxed; color: var(--muted); }
+.controls { @apply mt-5 grid min-w-0 gap-4 rounded-lg border p-4; border-color: var(--border); }
 .controls legend, .selectLabel { @apply text-sm font-medium; }
-.radios { @apply mt-2 flex flex-wrap gap-2; }
+.radios { @apply flex flex-wrap gap-2; }
 .radios label { @apply flex cursor-pointer items-center gap-2 rounded border px-3 py-2 text-xs; border-color: var(--border); }
-.radios label:has(input:checked) { border-color: var(--machine-ink); background: color-mix(in srgb, var(--machine-ink) 5%, var(--machine-paper)); }
-.radios input { @apply size-4 shrink-0 appearance-auto; accent-color: var(--machine-ink); }
-.radios label:focus-within { outline: 2px solid var(--machine-ink); outline-offset: 2px; }
+.radios label:has(input:checked) { border-color: var(--color-link); background: color-mix(in srgb, var(--color-link) 7%, transparent); }
+.radios input { @apply size-4 shrink-0 appearance-auto; accent-color: var(--color-link); }
+.radios label:focus-within { outline: 2px solid var(--color-link); outline-offset: 2px; }
 .selectLabel { @apply grid gap-2; }
-.selectLabel select { @apply w-full max-w-xs appearance-auto rounded border px-3 py-2 font-mono text-sm; color: var(--machine-ink); background: var(--machine-paper); border-color: var(--border); }
-.card { @apply mt-4 overflow-hidden rounded-lg border; border-color: var(--border); background: color-mix(in srgb, var(--machine-top) 24%, var(--machine-paper)); }
-.card strong { color: var(--machine-ink); }
-.machine { @apply block h-auto w-full; }
-.shadow { fill: var(--machine-ink); opacity: 0.06; filter: blur(5px); }
-.gate { transition: transform 380ms cubic-bezier(0.22, 0.7, 0.3, 1); }
-.ink { fill: var(--machine-ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 6px; }
-.field { font-size: 5px; letter-spacing: 0.25px; font-weight: 600; }
-.explanation { @apply mt-4 text-sm leading-relaxed; min-height: 3rem; }
-.dataGrid { @apply mt-4 grid gap-3; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.dataGrid > div { @apply min-w-0 rounded-md border p-3; border-color: var(--border); }
-.dataGrid span { @apply text-xs leading-relaxed; color: var(--muted); }
-.dataGrid pre { @apply mt-3 overflow-x-auto rounded p-2 font-mono text-xs; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; background: color-mix(in srgb, var(--machine-ink) 4%, var(--machine-paper)); }
+.selectLabel select { @apply w-full max-w-sm appearance-auto rounded border px-3 py-2 font-mono text-sm; background: var(--body-background); color: var(--body-font-color); border-color: var(--border); }
+.presets { @apply flex flex-wrap items-center gap-2; }
+.presets > span { @apply text-sm; color: var(--muted); }
+.trace { @apply my-5 grid list-none gap-5 p-0; counter-reset: replay-step; }
+.trace > li { @apply min-w-0 rounded-lg border p-4; border-color: var(--border); counter-increment: replay-step; }
+.trace h4 { @apply mb-4 text-base font-semibold; }
+.trace h4::before { content: counter(replay-step) ". "; color: var(--muted); }
+.branches { @apply grid gap-2; }
+.branches > div { @apply grid grid-cols-[7rem_minmax(0,1fr)] gap-3 rounded border p-2 text-sm; border-color: transparent; }
+.branches > div[data-active=true] { border-color: var(--color-link); background: color-mix(in srgb, var(--color-link) 6%, transparent); }
+.branches dt { @apply flex flex-wrap items-center gap-2; }
+.branches dt > span { @apply text-xs; color: var(--color-link); }
+.branches dd { @apply m-0 leading-relaxed; }
+.tableWrap { @apply overflow-x-auto; }
+.fields { @apply w-full text-left text-sm; border-collapse: collapse; }
+.fields th, .fields td { @apply border-b p-3 align-top; border-color: var(--border); }
+.fields thead th { @apply text-xs leading-relaxed; color: var(--muted); }
+.fields code { white-space: normal; overflow-wrap: anywhere; }
+.fields td[data-different=true] { background: color-mix(in srgb, var(--color-link) 7%, transparent); }
+.fields small { @apply mt-2 block text-xs; color: var(--muted); }
+.note { @apply mt-3; }
+.result { @apply grid gap-3; }
+.result > strong { @apply text-base; }
+.result > p { @apply text-sm; }
+.root pre { @apply m-0 rounded-md border p-3 font-mono text-xs; border-color: var(--border); line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; background: color-mix(in srgb, var(--gray-500) 5%, transparent); }
+.raw { @apply mt-4 rounded-lg border p-4; border-color: var(--border); }
+.raw summary { @apply cursor-pointer text-sm; }
+.dataGrid { @apply mt-4 grid gap-3; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.dataGrid > div { @apply min-w-0; }
+.dataGrid p { @apply mb-2 text-xs; color: var(--muted); }
 .boundary { @apply mt-4; }
-@container (max-width: 36rem) { .dataGrid { grid-template-columns: 1fr; } .explanation { min-height: 0; } }
-@media (prefers-reduced-motion: reduce) { .gate { transition: none; } }
+@container (max-width: 36rem) {
+  .dataGrid { grid-template-columns: 1fr; }
+  .branches > div { grid-template-columns: 1fr; gap: .25rem; }
+  .fields th, .fields td { padding: .5rem; font-size: .75rem; }
+}
