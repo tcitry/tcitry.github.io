@@ -1,0 +1,30 @@
+@reference "../../styles/tailwind.css";
+
+.demo { min-width: 0; scroll-margin-top: 6rem; }
+.controls { display: grid; gap: 0.85rem; min-width: 0; margin: 1.15rem 0; padding: 0; border: 0; }
+.controls legend { margin-bottom: 0.65rem; font-size: 0.85rem; font-weight: 600; }
+.controls:disabled { opacity: 0.65; }
+.phases { display: flex; flex-wrap: wrap; gap: 0.6rem 1.15rem; }
+.phases label { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; cursor: pointer; }
+.phases input { appearance: auto; margin: 0; flex-shrink: 0; accent-color: var(--machine-accent); width: 1rem; height: 1rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.viewport { overflow-x: auto; overscroll-behavior-inline: contain; }
+.figure { min-width: 620px; max-height: none; }
+.halo { fill: var(--machine-ink); opacity: 0.06; }
+.ink, .engraving { fill: var(--machine-ink); font-family: var(--code-font-family, monospace); }
+.ink { font-weight: 600; }
+.engraving, .paperHeading { font-weight: 500; }
+.status { min-height: 4.5em; color: var(--machine-ink); }
+.readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: 1rem; margin: 1rem 0; }
+.readouts > div { min-width: 0; }
+.readouts dt { font-size: 0.75rem; color: var(--muted); }
+.readouts dd { margin: 0.35rem 0 0; font-size: 0.9rem; font-weight: 600; }
+.acceptance { border-inline-start: 2px solid var(--machine-faint); padding: 0.4rem 0.7rem; font-size: 0.85rem; }
+.records { border: 1px solid var(--gray-200); border-radius: 0.4rem; padding: 0.7rem; }
+.records summary { cursor: pointer; font-size: 0.85rem; }
+.records > div { margin-top: 0.85rem; min-width: 0; }
+.records span { display: block; font-size: 0.75rem; color: var(--muted); }
+.records pre { margin: 0.4rem 0 0; padding: 0; border: 0; background: transparent; font: 0.8rem/1.5 var(--code-font-family, monospace); white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) {
+  .demo *, .demo *::before, .demo *::after { animation: none !important; transition: none !important; }
+}
