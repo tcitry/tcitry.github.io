@@ -1,46 +1,57 @@
 @reference "../../styles/tailwind.css";
 
-.root { container-type: inline-size; }
+.root { container-type: inline-size; min-width: 0; margin: 1.5rem 0; padding: clamp(1rem, 3vw, 1.75rem); border: 1px solid var(--border); border-radius: .75rem; background: var(--background); }
+.root h3, .root h4 { margin: 0; padding: 0; border: 0; line-height: 1.5; }
+.root h3::before, .root h4::before { content: none !important; }
+.root h3 { font-size: 1.15rem; font-weight: 600; }
+.root h4 { font-size: .9rem; font-weight: 600; }
+.root p { margin: .65rem 0 0; }
+.root code { overflow-wrap: anywhere; }
+.root :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
 .header { @apply grid gap-2; }
-.eyebrow { @apply font-mono text-xs tracking-widest; color: var(--muted); }
-.header h3 { @apply text-xl font-semibold leading-snug; }
-.header p, .boundary { @apply text-sm leading-relaxed; color: var(--muted); }
+.header p, .note { font-size: .8rem; line-height: 1.75; color: var(--muted); }
+.eyebrow { font: .72rem ui-monospace, SFMono-Regular, monospace; color: var(--muted); }
 .controls { @apply mt-5 grid gap-3; }
 .actions { @apply flex flex-wrap items-center gap-2; }
-.controlHint { @apply text-xs leading-relaxed; color: var(--muted); }
-.machineCard { @apply mt-4 overflow-hidden rounded-lg border; border-color: var(--border); background: color-mix(in srgb, var(--machine-top) 30%, var(--machine-paper)); }
-.figureCorners { @apply flex flex-wrap justify-between gap-x-4 gap-y-2 px-4 py-3 font-mono text-xs; color: var(--muted); }
-.figureCorners strong { @apply font-medium; color: var(--machine-ink); }
-.machine { @apply block h-auto w-full; }
-.shadow { fill: var(--machine-ink); opacity: 0.06; filter: blur(5px); }
-.ticketInk { fill: var(--machine-ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; transition: opacity 280ms ease; }
-.paperLabel { font-size: 4.4px; letter-spacing: 0.5px; }
-.paperNumber { font-size: 14px; font-weight: 600; }
-.paperDecision { font-size: 6px; font-weight: 500; }
-.paperTrack { fill: var(--machine-faint); opacity: 0.35; }
-.amountInk { fill: var(--machine-accent); }
-.drawerNumber { font-size: 7px; font-weight: 600; }
-.cartridgeNumber { font-size: 9px; font-weight: 600; }
-.resumeControls { @apply mt-4 flex flex-wrap items-center justify-between gap-3; }
-.resumeControls strong { @apply text-sm font-semibold; }
-.resumeControls p { @apply text-xs; color: var(--muted); margin-block: 0.25rem; }
-.status { @apply mt-4 text-sm leading-relaxed; min-height: 3rem; }
-.frozenNote { @apply rounded-md border p-3 text-sm leading-relaxed; border-color: var(--machine-accent); background: color-mix(in srgb, var(--machine-accent) 7%, var(--machine-paper)); }
-.dataGrid { @apply mt-4 grid gap-3; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.dataCell { @apply min-w-0 rounded-md border p-3; border-color: var(--border); }
-.fieldOrigin { @apply mb-2 block text-xs leading-relaxed; color: var(--muted); }
-.dataCell > strong { @apply font-mono text-sm font-semibold; }
-.dataCell pre, .snapshot pre { @apply my-3 overflow-x-auto rounded p-3 font-mono text-xs; background: color-mix(in srgb, var(--machine-ink) 4%, var(--machine-paper)); line-height: 1.65; white-space: pre; }
-.dataCell small { @apply block text-xs leading-relaxed; color: var(--muted); }
-.completed { border-color: var(--machine-accent); }
-.snapshot { @apply mt-4 text-sm; }
-.snapshot summary { @apply cursor-pointer py-1; }
-.snapshot p { @apply text-xs; color: var(--muted); }
-.boundary { @apply mt-4; }
+.execution { @apply my-5 grid gap-2 p-0; list-style: none; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.execution li { @apply m-0 grid gap-1 rounded-md border p-3; border-color: var(--border); }
+.execution code { font-size: .78rem; }
+.execution strong { font-size: .95rem; }
+.execution span { color: var(--muted); font-size: .7rem; }
+.sources { @apply grid gap-3; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.source { @apply min-w-0 rounded-md border p-4; border-color: var(--border); }
+.savedSource { border-top: 3px solid var(--accent); }
+.resumeSource { border-top: 3px solid color-mix(in srgb, var(--foreground) 65%, var(--background)); }
+.path { display: block; margin-top: .6rem; color: var(--muted); font-size: .7rem; }
+.root pre { margin: .8rem 0; padding: .8rem; overflow-x: auto; border-radius: .4rem; background: var(--surface-secondary); font: .78rem/1.7 ui-monospace, SFMono-Regular, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.frozenNote { padding-top: .65rem; border-top: 1px solid var(--border); font-size: .78rem; line-height: 1.7; }
+.condition, .output { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
+.expression { @apply mt-3 flex flex-wrap items-center gap-3; }
+.expression > span { display: grid; gap: .3rem; }
+.expression code { font-size: .75rem; }
+.expression strong { font: 600 .9rem ui-monospace, SFMono-Regular, monospace; }
+.expression .operator { color: var(--muted); }
+.mapping { margin: .8rem 0; font-size: .78rem; }
+.mapping > div { @apply grid gap-2 py-2; grid-template-columns: 9rem minmax(0, 1fr); }
+.mapping dt, .mapping dd { margin: 0; min-width: 0; }
+.mapping dd span { display: block; margin-top: .25rem; font-size: .72rem; color: var(--muted); }
+.savedValue { color: var(--accent); font-weight: 600; }
+.resumeValue { text-decoration-line: underline; text-decoration-style: dotted; text-underline-offset: .25em; font-weight: 600; }
+.receipt { @apply grid gap-2 text-xs; line-height: 1.8; }
+.receipt > span { color: var(--muted); }
+.receipt output { font: 600 1rem ui-monospace, SFMono-Regular, monospace; overflow-wrap: anywhere; }
+.status { margin-top: 1.25rem; padding: .8rem 1rem; border-left: 3px solid var(--accent); background: var(--accent-soft); font-size: .8rem; line-height: 1.75; }
+.status strong { font-size: .85rem; }
+.snapshot { margin-top: 1rem; font-size: .8rem; }
+.snapshot summary { cursor: pointer; padding-block: .3rem; }
 @container (max-width: 36rem) {
-  .dataGrid { grid-template-columns: 1fr; }
-  .dataCell pre { margin-block: 0.6rem; }
-  .figureCorners { padding-inline: 0.75rem; font-size: 0.65rem; }
-  .status { min-height: 0; }
+  .sources { grid-template-columns: minmax(0, 1fr); }
+  .source { padding: .85rem; }
+  .execution { gap: .4rem; }
+  .execution li { padding: .6rem; }
+  .execution code { font-size: .7rem; }
+  .execution span { font-size: .65rem; }
+  .mapping > div { grid-template-columns: minmax(0, 1fr); gap: .4rem; }
+  .expression { gap: .6rem; }
+  .expression code { font-size: .68rem; }
 }
-@media (prefers-reduced-motion: reduce) { .ticketInk { transition: none; } }
