@@ -14,15 +14,15 @@ import packageJson from '../../../package.json';
 import {content} from '../../lib/site';
 
 export const demoDirectory = [
-  ...(content.pages.some(page => page.url === '/docs/AI/Agents/ruflo-agent-orchestration-source-analysis/') ? [{name: 'Anatomy · Ruflo 记忆窗口', description: '改变旧记忆的更新顺位、相关性和阈值，观察为什么高相关记录可能在评分前就被截断。', links: [{label: '正文体验', href: '/docs/AI/Agents/ruflo-agent-orchestration-source-analysis/#memory-window'}]}] : []),
-  {name: 'Anatomy · Rakazo 审批恢复分拣台', description: '切换 ExternalEffect 状态与模型新提议，观察恢复时使用保存的请求、返回已有结果，还是停止重放并核验目标。', links: [{label: '正文体验', href: '/docs/AI/Agents/rakazo-source-analysis/#rakazo-effect-replay-machine'}]},
+  ...(content.pages.some(page => page.url === '/docs/AI/Agents/ruflo-agent-orchestration-source-analysis/') ? [{name: 'Ruflo 候选窗口与评分实验', description: '移动 C 到 1000 条边界内外，核对评分资格、语义与词法分量、阈值及最终排序。', links: [{label: '正文体验', href: '/docs/AI/Agents/ruflo-agent-orchestration-source-analysis/#memory-window'}]}] : []),
+  {name: 'Rakazo 审批恢复实验', description: '逐字段比较存档请求、新提议与执行参数，并切换状态核对返回回执、暂停和不确定结果。', links: [{label: '正文体验', href: '/docs/AI/Agents/rakazo-source-analysis/#rakazo-effect-replay-machine'}]},
   ...(content.pages.some(page => page.source === 'docs/AI/Skills/anatomy-interactive-technical-illustrations.mdx') ? [{name: 'Anatomy 官方作品对照', description: '操作 LRU、Turbofan、Seasons 和 Separable blur，比较 SVG、WebGL、3D 与早期软件机制示例。', links: [{label: '正文体验', href: '/docs/AI/Skills/anatomy-interactive-technical-illustrations/#anatomy-collection-study'}]}] : []),
   {name: 'Waza 版本校验实验', description: '逐步核对前缀归一化、字段一致性和 SemVer 比较，对照 build 不一致与统一后比较 Tag 的结果。', links: [{label: '正文体验', href: '/docs/AI/Skills/waza-project-analysis/#waza-release-gate-machine'}]},
-  {name: 'Anatomy · Mastra 暂停恢复冲印台', description: '改变待提交金额和批准决定，观察 Snapshot 中的旧输入如何与 resumeData 合成结果，以及哪一步会重新执行。', links: [{label: '正文体验', href: '/docs/AI/Agents/mastra-agent-workflow-source-analysis/#mastra-workflow-machine'}]},
+  {name: 'Mastra 恢复字段来源实验', description: '核对保存的金额与新恢复决定怎样组成 output 和 receipt，区分拒绝、缺少决定与自动通过。', links: [{label: '正文体验', href: '/docs/AI/Agents/mastra-agent-workflow-source-analysis/#mastra-workflow-machine'}]},
   {name: 'Anatomy · REA IPC 候选筛选', description: '改变 Channel、调用模式和 Handler，观察静态候选怎样决定配对结果与图边。', links: [{label: '正文体验', href: '/docs/AI/Agents/rea-source-architecture/#rea-ipc-pairing'}]},
   {name: 'Anatomy · Headless 样式转接台', description: '切换属性转换与 DOM 层级，观察 Base UI 状态为什么能或不能命中 HeroUI 的真实 Checkbox CSS。', links: [{label: '正文体验', href: '/docs/Frontend/React/base-ui-react-aria-comparison/#style-bridge-anatomy'}]},
   {name: 'Anatomy · Cloudflare OS 文本拼接台', description: '改变插入数字和原文空格，观察 TextChange 如何保留、删除、插入字符，以及长度不匹配为何被拒绝。', links: [{label: '正文体验', href: '/docs/Cloudflare/cloudflare-os-product-and-workers-architecture/#cloudflare-code-change-machine'}]},
-  {name: 'Anatomy · HeroUI Agents 数据制版工作台', description: '改变销量数据与呈现组件，核对工具结果如何通过 JSONL 和校验成为图表、指标卡或表格。', links: [{label: '正文体验', href: '/docs/AI/Agents/heroui-agents-product-research/#agent-ui-mechanism'}]},
+  {name: 'HeroUI Agents 数据到界面实验', description: '改变销量与呈现方式，逐行接收 JSONL，核对引用何时完整、props 怎样通过校验并成为界面。', links: [{label: '正文体验', href: '/docs/AI/Agents/heroui-agents-product-research/#agent-ui-mechanism'}]},
   {name: 'Anatomy · OpenFilm 分层摄影台', description: '理解 film.html 怎样安排两个 HTML 页面、换算各自时间并合成当前帧。', links: [{label: '正文体验', href: '/docs/AI/Agents/openfilm-project-analysis/#frame-time-machine'}]},
   {name: 'Lieflat Charts · 四种数据表达', description: '用 CellSlider 调整数量、时间趋势、100% 构成与前后对比，并查阅完整图型目录。', links: [{label: '数量比较', href: '/docs/Agents/lieflat-charts-best-practices/#tick-rows-example'}, {label: '三种新增示例', href: '/docs/Agents/lieflat-charts-best-practices/#more-chart-examples'}]},
   {name: 'Orbit · 轨道重力实验室', description: '放置或抛出天体，观察星系、三体编舞与碰撞。', links: [{label: '打开页面', href: '/demos/2026/orbit/'}, {label: '玩法说明', href: '/docs/Frontend/Tooling/orbit-gravity-lab/'}]},
