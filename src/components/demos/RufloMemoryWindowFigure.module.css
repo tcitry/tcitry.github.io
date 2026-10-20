@@ -1,0 +1,31 @@
+@reference "../../styles/tailwind.css";
+
+.demo { --machine-accent: var(--color-link, #176952); }
+.stageOrder { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; margin: 1rem 0; padding: 0; list-style: none; font-size: 0.8rem; }
+.stageOrder li { display: inline-flex; gap: 0.35rem; align-items: baseline; }
+.stageOrder code { font-size: 0.75rem; }
+.shadow { fill: var(--machine-ink); opacity: 0.055; }
+.engraving { fill: var(--machine-ink); font-family: var(--font-mono, monospace); }
+.scoreFill { fill: none; stroke: var(--machine-accent); stroke-width: 2.5; opacity: 0.6; }
+.datum { fill: var(--machine-accent); opacity: 0.6; }
+.controls { border: 0; margin: 1.2rem 0 0; padding: 0; min-width: 0; display: grid; gap: 1rem; }
+.controls legend { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.8rem; }
+.control { display: grid; gap: 0.4rem; font-size: 0.85rem; }
+.label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.4rem; }
+.control input[type="range"] { width: 100%; accent-color: var(--machine-accent); margin: 0.3rem 0; }
+.rangeEnds { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted); }
+.presets { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+.presets button { padding: 0.35rem 0.65rem; border: 1px solid var(--gray-300); border-radius: 0.3rem; background: var(--body-background); font-size: 0.8rem; color: inherit; cursor: pointer; }
+.presets button:hover { background: var(--gray-100); }
+.presets button:disabled { cursor: default; opacity: 0.5; }
+.legend { list-style: none; margin: 0.75rem 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; font-size: 0.75rem; }
+.legend strong { font-family: var(--font-mono, monospace); margin-right: 0.3rem; }
+.scoreboard { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: 0.35rem 0.75rem; margin: 1.25rem 0; font-size: 0.85rem; }
+.scoreboard dt { color: var(--muted); }
+.scoreboard dd { margin: 0; min-width: 0; overflow-wrap: anywhere; font-family: var(--font-mono, monospace); }
+.result { padding-block: 0.9rem; border-block: 1px solid var(--gray-200); font-size: 0.9rem; }
+.result strong { color: var(--machine-accent); }
+.namespace { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; }
+.namespace input { accent-color: var(--machine-accent); }
+.source { overflow-wrap: anywhere; }
+@media (min-width: 40rem) { .controls { grid-template-columns: 1fr 1fr; column-gap: 1.75rem; } .namespace { grid-column: 1 / -1; } }

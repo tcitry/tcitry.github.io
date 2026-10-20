@@ -11,8 +11,10 @@ import ScrollCapsuleNavbar from '../../components/demos/ScrollCapsuleNavbar';
 import SvelteCounter from '../../components/demos/SvelteCounter.svelte';
 import Notice from '@tcitry/astro-book/components/Notice';
 import packageJson from '../../../package.json';
+import {content} from '../../lib/site';
 
 export const demoDirectory = [
+  ...(content.pages.some(page => page.url === '/docs/AI/Agents/ruflo-agent-orchestration-source-analysis/') ? [{name: 'Anatomy · Ruflo 记忆窗口', description: '改变旧记忆的更新顺位、相关性和阈值，观察为什么高相关记录可能在评分前就被截断。', links: [{label: '正文体验', href: '/docs/AI/Agents/ruflo-agent-orchestration-source-analysis/#memory-window'}]}] : []),
   {name: 'Anatomy · Rakazo 审批恢复分拣台', description: '切换 ExternalEffect 状态与模型新提议，观察恢复时使用保存的请求、返回已有结果，还是停止重放并核验目标。', links: [{label: '正文体验', href: '/docs/AI/Agents/rakazo-source-analysis/#rakazo-effect-replay-machine'}]},
   {name: 'Anatomy · Waza 版本比较仪', description: '改变版本字段与稳定 Tag，观察前缀归一化、字段一致性和 SemVer 比较怎样产生 PASS、WARN 或 FAIL。', links: [{label: '正文体验', href: '/docs/AI/Skills/waza-project-analysis/#waza-release-gate-machine'}]},
   {name: 'Anatomy · Mastra 暂停恢复冲印台', description: '改变待提交金额和批准决定，观察 Snapshot 中的旧输入如何与 resumeData 合成结果，以及哪一步会重新执行。', links: [{label: '正文体验', href: '/docs/AI/Agents/mastra-agent-workflow-source-analysis/#mastra-workflow-machine'}]},
