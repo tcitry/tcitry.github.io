@@ -1,0 +1,42 @@
+@reference "../../styles/tailwind.css";
+
+.study {
+  margin-block: 1.5rem;
+  border: 1px solid var(--gray-200);
+  border-radius: 0.75rem;
+  padding: clamp(0.75rem, 2.5vw, 1.5rem);
+  color: var(--body-font-color);
+  background: var(--body-background);
+}
+
+.study h3,
+.study h4 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  line-height: 1.5;
+}
+
+.study h3::before,
+.study h4::before { content: none !important; }
+.study h3 { font-size: 1.15rem; }
+.study h4 { font-size: 1rem; }
+.study p { margin-block: 0.65rem; }
+
+.eyebrow {
+  @apply text-xs font-mono tracking-wider;
+  color: var(--muted);
+}
+
+.choices { @apply my-4 flex flex-wrap gap-2; }
+.choices button { min-height: 2.75rem; }
+.choices button[aria-pressed="true"] { box-shadow: inset 0 0 0 1px var(--color-link); }
+.explanation { font-size: 0.9rem; line-height: 1.7; }
+.figure { margin-block: 1rem; min-width: 0; }
+.figure > div { width: 100%; }
+.placeholder { padding: 3rem 1rem; color: var(--muted); font-size: 0.875rem; }
+.mechanism { font-size: 0.9rem; line-height: 1.7; }
+.footer { @apply mt-4 flex flex-wrap items-center justify-between gap-3; font-size: 0.875rem; }
+.credit { color: var(--muted); font-size: 0.75rem; line-height: 1.6; }
+.study a { color: var(--color-link); text-decoration: underline; text-underline-offset: 0.15em; }
+.study :focus-visible { outline: 2px solid var(--color-link); outline-offset: 3px; }
