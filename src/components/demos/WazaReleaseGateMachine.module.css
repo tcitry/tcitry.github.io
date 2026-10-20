@@ -1,35 +1,46 @@
 @reference "../../styles/tailwind.css";
-.demo { min-width: 0; }
-.shadow { fill: var(--machine-ink); opacity: .06; filter: blur(7px); }
-.print { fill: var(--machine-ink); font-family: ui-monospace, SFMono-Regular, monospace; }
-.steps { @apply my-4 grid list-none gap-2 p-0; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.steps li { border-top: 2px solid var(--gray-200); padding-top: .65rem; min-width: 0; font-size: .73rem; }
-.steps code { white-space: normal; overflow-wrap: anywhere; }
-.steps span { display: block; margin-top: .3rem; color: var(--muted); }
-.controls { @apply mt-5 grid gap-4 border-0 p-0; min-width: 0; }
-.controls legend { margin-bottom: .8rem; font-size: .9rem; font-weight: 600; }
+
+.demo { min-width: 0; margin: 1.5rem 0; padding: clamp(1rem, 3vw, 1.75rem); border: 1px solid var(--gray-200); border-radius: .75rem; background: var(--body-background); color: var(--body-font-color); }
+.demo h3 { margin: 0; padding: 0; border: 0; font-size: 1.15rem; line-height: 1.5; }
+.demo h3::before { content: none !important; }
+.demo p { margin: .65rem 0; }
+.demo code { overflow-wrap: anywhere; }
+.demo :focus-visible { outline: 2px solid var(--color-link); outline-offset: 3px; }
+.eyebrow { font: .72rem ui-monospace, SFMono-Regular, monospace; color: var(--muted); }
+.note { color: var(--muted); font-size: .83rem; line-height: 1.7; }
+.controls { @apply mt-5 grid gap-3 border-0 p-0; min-width: 0; }
+.controls legend { margin-bottom: .7rem; font-size: .9rem; font-weight: 600; }
 .controls label { @apply grid gap-1.5 text-xs; color: var(--muted); min-width: 0; }
-.controls select { width: 100%; min-width: 0; border: 1px solid var(--gray-300); border-radius: .4rem; padding: .55rem .6rem; background: var(--body-background); color: var(--body-font-color); font: inherit; font-size: .8rem; }
-.scenario { max-width: 26rem; }
+.controls select { width: 100%; min-width: 0; border: 1px solid var(--border); border-radius: .4rem; padding: .6rem; background: var(--body-background); color: var(--body-font-color); font: inherit; font-size: .8rem; appearance: auto; }
+.scenario { max-width: 27rem; }
 .inputGrid { @apply grid gap-3; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.playback { @apply my-4 flex flex-wrap items-center gap-3 text-xs; color: var(--muted); }
-.playback button { border: 1px solid var(--gray-300); border-radius: .4rem; padding: .45rem .7rem; background: var(--body-background); color: var(--body-font-color); font: inherit; cursor: pointer; }
-.playback button:disabled { opacity: .5; cursor: default; }
-.playback button[aria-pressed="true"] { border-color: var(--machine-accent); }
+.compareButtons { @apply flex flex-wrap items-center gap-2; font-size: .8rem; }
+.trace { margin: 1.5rem 0 0; padding: 0 0 0 1.5rem; list-style: decimal; }
+.trace > li { padding: 0 0 1rem .3rem; margin: 0; border-bottom: 1px solid var(--gray-200); }
+.trace > li + li { padding-top: 1rem; }
+.trace h4 { margin: 0 0 .6rem; font-size: .92rem; font-weight: 600; }
+.trace p { font-size: .83rem; line-height: 1.7; }
 .tableWrap { max-width: 100%; overflow-x: auto; }
-.fields { width: 100%; margin: 0; font-size: .72rem; line-height: 1.5; border-collapse: collapse; }
-.fields caption { text-align: left; font-weight: 600; padding-bottom: .5rem; }
+.fields { width: 100%; margin: 0; font-size: .75rem; line-height: 1.6; border-collapse: collapse; }
 .fields th, .fields td { padding: .5rem .4rem; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
 .fields th:first-child { padding-left: 0; }
 .fields tbody th { font-weight: 500; }
-.fields small { display: block; color: var(--muted); font-size: .68rem; font-weight: normal; }
-.result { @apply mt-4 flex items-start gap-4; border-top: 1px solid var(--gray-200); padding-top: 1rem; }
-.result > strong { font-size: 1.25rem; min-width: 3.6rem; color: var(--machine-ink); }
+.fields td code { background: none; padding: 0; }
+.parsed { display: flex; flex-wrap: wrap; gap: .7rem 2rem; margin: .5rem 0; font-size: .8rem; }
+.parsed dt { color: var(--muted); }
+.parsed dd { margin: .25rem 0 0; }
+.parsed small { display: block; margin-top: .25rem; color: var(--muted); }
+.comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.comparison p { margin: 0; }
+.comparison span { display: block; font-size: .75rem; color: var(--muted); }
+.result { @apply mt-4 flex items-start gap-4; }
+.result > strong { font-size: 1.25rem; min-width: 3.6rem; }
 .result p { margin: 0 0 .3rem; font-size: .83rem; line-height: 1.6; }
 @media (max-width: 520px) {
-  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .inputGrid { grid-template-columns: minmax(0, 1fr); }
-  .fields { font-size: .65rem; }
+  .inputGrid, .comparison { grid-template-columns: minmax(0, 1fr); }
+  .fields { font-size: .7rem; }
   .fields th, .fields td { padding: .4rem .25rem; }
-  .fields small { font-size: .6rem; }
+  .fields th:first-child { width: 28%; }
+  .trace { padding-left: 1.15rem; }
+  .result { gap: .6rem; }
 }
