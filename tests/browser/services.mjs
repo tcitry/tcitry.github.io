@@ -189,7 +189,7 @@ try {
       assert.ok(bellBox && bellBox.x + bellBox.width <= accountBox.x);
       assert.equal(accountBox.width, 32); assert.equal(accountBox.height, 32);
       assert.equal(bellBox.width, 32); assert.equal(bellBox.height, 32);
-      for (const name of ['AI 对话', '咨询', '我的', '管理']) {
+      for (const name of ['阅读', 'AI 对话', '咨询', '我的', '管理']) {
         await tab(page, name).click();
         const itemBox = await tab(page, name).boundingBox();
         assert.ok(itemBox && itemBox.x >= navigationBox.x && itemBox.x + itemBox.width <= bellBox.x + 1,
@@ -198,7 +198,7 @@ try {
         const nextAccountBox = await navigation.locator('.cl-userButtonTrigger').boundingBox();
         assert.ok(nextAccountBox && Math.abs(nextAccountBox.x - accountBox.x) <= 1, 'Scrolling between tabs keeps the account avatar fixed');
       }
-      assert.equal(await navigation.getByRole('radio').count(), 4);
+      assert.equal(await navigation.getByRole('radio').count(), 5);
       assert.equal(await tab(page, '消息').count(), 0, 'Notifications are a separate bell, not a top-level tab');
       assert.equal(await navigation.locator('.assistant-workspace__tabs').evaluate(element => getComputedStyle(element).overflowX), 'auto');
       await notificationBell(page).focus();
@@ -217,7 +217,7 @@ try {
       assert.equal(await notificationBell(page).getAttribute('aria-pressed'), 'false');
       assert.ok(Math.abs((await notificationBell(page).boundingBox()).x - bellBox.x) <= 1, 'Bell position remains fixed when changing tabs');
       assert.ok(accountBox.x + accountBox.width <= navigationBox.x + navigationBox.width + 1);
-      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Four author tabs, notification bell and avatar fit ${width}px`);
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Author tabs, notification bell and avatar fit ${width}px`);
       const close = page.getByRole('button', {name: '关闭博客助手', exact: true});
       // Establish pointer modality before entering the trigger (React Aria
       // ignores hover caused by keyboard focus or layout movement).
@@ -271,7 +271,7 @@ try {
       await page.evaluate(() => window.__services.markAllNotificationsRead('fixture-a'));
       await page.locator('[data-notification-unread]').waitFor({state: 'hidden'});
       assert.equal(await notificationBell(page).getAttribute('aria-label'), '消息');
-      console.log(`Author header ${width}px: four 14px tabs, keyboard-accessible bell and fixed 32px avatar; both tooltips are visible.`);
+      console.log(`Author header ${width}px: five 14px tabs, keyboard-accessible bell and fixed 32px avatar; both tooltips are visible.`);
     } finally {await context.close();}
   }
   }
@@ -293,7 +293,7 @@ try {
       assert.equal(await tab(page, '我的').getAttribute('aria-checked'), 'true');
       await tab(page, 'AI 对话').click();
       await page.getByRole('region', {name: '与 AI 博客助手对话', exact: true}).waitFor();
-      for (const name of ['AI 对话', '咨询', '我的']) assert.equal(await tab(page, name).count(), 1);
+      for (const name of ['阅读', 'AI 对话', '咨询', '我的']) assert.equal(await tab(page, name).count(), 1);
       assert.equal(await tab(page, '消息').count(), 0);
       assert.equal(await notificationBell(page).count(), 1);
       assert.equal(await tab(page, '管理').count(), 0, 'The message inbox is hidden for ordinary members');
@@ -527,7 +527,7 @@ try {
       await tab(page, '我的').click();
       await page.locator('[data-reader-library]').waitFor();
       assert.equal(await myTab(page, '收藏').getAttribute('aria-checked'), 'true');
-      assert.equal(await page.getByRole('radiogroup', {name: '我的内容分类', exact: true}).getByRole('radio').count(), 3);
+      assert.equal(await page.getByRole('radiogroup', {name: '我的内容分类', exact: true}).getByRole('radio').count(), 4);
       await myTab(page, '喜欢').click();
       const likes = page.getByRole('region', {name: '喜欢的文章', exact: true});
       await likes.getByRole('link', {name: /账号 A 喜欢的文章/}).waitFor();
@@ -902,7 +902,7 @@ try {
     await launcher.click();
     await tab(widgetPage, '我的').click();
     await widgetPage.getByRole('heading', {name: '登录后继续'}).waitFor();
-    assert.equal(await widgetPage.locator('.assistant-workspace__switcher').getByRole('radio').count(), 3, 'Anonymous navigation has three tabs plus the notification bell');
+    assert.equal(await widgetPage.locator('.assistant-workspace__switcher').getByRole('radio').count(), 4, 'Anonymous navigation has four tabs plus the notification bell');
     assert.equal(await notificationBell(widgetPage).count(), 1);
     assert.equal(await widgetPage.locator('[data-notification-unread]').count(), 0);
     assert.equal(await tab(widgetPage, '管理').count(), 0);
@@ -1141,7 +1141,7 @@ try {
       await tab(page, '管理').waitFor();
       const navigation = page.locator('.assistant-workspace__switcher');
       const rail = navigation.locator('.assistant-workspace__tabs');
-      for (const name of ['AI 对话', '咨询', '我的', '管理']) {
+      for (const name of ['阅读', 'AI 对话', '咨询', '我的', '管理']) {
         await tab(page, name).click();
         await page.waitForFunction(label => {
           const button = [...document.querySelectorAll('.assistant-workspace__switcher [role="radio"]')].find(item => item.textContent === label);

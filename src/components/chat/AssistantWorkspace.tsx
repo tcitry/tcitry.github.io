@@ -17,12 +17,14 @@ import surface from '../demos/DemoSurface.module.css';
 import '../../styles/chat.css';
 
 const MyPanel = lazy(() => import('../reader/MyPanel'));
+const ReadingMarksPanel = lazy(() => import('../reader/ReadingMarksPanel'));
 const AgentChat = lazy(() => import('./AgentChat'));
 const ConsultationsPanel = lazy(() => import('../consultations/ConsultationsPanel'));
 const AdminPanel = lazy(() => import('./AdminPanel'));
 const NotificationsPanel = lazy(() => import('./NotificationsPanel'));
 const views = [
   {id: 'my', label: '我的'},
+  {id: 'reading', label: '阅读'},
   {id: 'chat', label: 'AI 对话'},
   {id: 'consult', label: '咨询'},
 ] as const;
@@ -39,8 +41,8 @@ function ServiceView({children, shouldDismissFailure, onDismissFailure}: {
     <Suspense fallback={<AuthLoading label="正在加载…" />}>{children}</Suspense>
   </ServiceBoundary>;
 }
-function WorkspaceContent({onClose, onReady, view, myOpened, selectView, requestedPrompt, onPromptConsumed, shouldDismissFailure, onDismissFailure}: WorkspaceProps & {
-  view: AssistantView; myOpened: boolean; selectView: (view: AssistantView) => void;
+function WorkspaceContent({onClose, onReady, view, myOpened, readingOpened, selectView, requestedPrompt, onPromptConsumed, shouldDismissFailure, onDismissFailure}: WorkspaceProps & {
+  view: AssistantView; myOpened: boolean; readingOpened: boolean; selectView: (view: AssistantView) => void;
 }) {
   const {isLoaded} = useAuth();
   const {isAuthenticated, isLoading} = useConvexAuth();
@@ -108,6 +110,9 @@ function WorkspaceContent({onClose, onReady, view, myOpened, selectView, request
           <div className="assistant-workspace__personal" hidden={activeView !== 'my'}>
             {myOpened && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><MyPanel /></ServiceView></div>}
           </div>
+          <div className="assistant-workspace__personal" hidden={activeView !== 'reading'}>
+            {readingOpened && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><ReadingMarksPanel /></ServiceView></div>}
+          </div>
       </ConvexAuthGate>
     </div>
   </div>;
@@ -130,8 +135,10 @@ function Workspace(props: WorkspaceProps) {
   const requestedPrompt = isLoaded && !promptOwner.current?.cancelled ? props.requestedPrompt : undefined;
   const [view, setView] = useState<AssistantView>(props.initialView ?? 'my');
   const [myOpened, setMyOpened] = useState(!props.initialView || props.initialView === 'my');
+  const [readingOpened, setReadingOpened] = useState(props.initialView === 'reading');
   const selectView = useCallback((next: AssistantView) => {
     if (next === 'my') setMyOpened(true);
+    if (next === 'reading') setReadingOpened(true);
     setView(next);
     props.onViewChange?.(next);
   }, [props.onViewChange]);
@@ -140,7 +147,7 @@ function Workspace(props: WorkspaceProps) {
     else if (props.requestedPrompt && promptOwner.current?.cancelled) props.onPromptConsumed?.(props.requestedPrompt.id);
   }, [requestedPrompt?.id, props.requestedPrompt?.id, props.onPromptConsumed, selectView]);
   return <ConvexSession onErrorClose={props.onClose} shouldDismissFailure={props.shouldDismissFailure} onDismissFailure={props.onDismissFailure}>
-    <WorkspaceContent {...props} requestedPrompt={requestedPrompt} view={view} myOpened={myOpened} selectView={selectView} />
+    <WorkspaceContent {...props} requestedPrompt={requestedPrompt} view={view} myOpened={myOpened} readingOpened={readingOpened} selectView={selectView} />
   </ConvexSession>;
 }
 

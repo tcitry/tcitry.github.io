@@ -27,7 +27,7 @@ try {
   await launcher.click();
   assert.equal(await expand.isVisible(), false, 'Opening the panel hides the edge handle');
   await panel.locator('.assistant-workspace').waitFor();
-  for (const name of ['AI 对话', '咨询', '我的', '消息']) {
+  for (const name of ['AI 对话', '咨询', '我的', '阅读', '消息']) {
     const tab = panel.getByRole('radio', {name, exact: true});
     await tab.click();
     assert.equal(await tab.getAttribute('aria-checked'), 'true');
@@ -37,10 +37,10 @@ try {
     assert.equal(await panel.locator('.assistant-workspace__view').getByRole('button', {name: '登录 / 注册', exact: true}).count(), 1,
       `${name} offers sign-in in the authentication gate`);
     assert.equal(await panel.getByRole('textbox').count(), 0, `${name} has no anonymous composer`);
-    assert.equal(await panel.locator('[data-reader-root], [data-reader-library], [data-consultations-panel], [data-personal-panel], [data-notifications], [data-my-comments], [data-liked-articles]').count(), 0,
+    assert.equal(await panel.locator('[data-reader-root], [data-reader-library], [data-consultations-panel], [data-personal-panel], [data-notifications], [data-my-comments], [data-liked-articles], [data-reading-marks]').count(), 0,
       `${name} keeps private service UI unmounted until login`);
   }
-  assert.equal(await panel.getByRole('radio', {name: '阅读', exact: true}).count(), 0, 'Personal services are grouped under 我的');
+  assert.equal(await panel.getByRole('radio', {name: '阅读', exact: true}).count(), 1, 'Reading is a top-level assistant tab');
   assert.equal(await panel.getByRole('radio', {name: '会员', exact: true}).count(), 0, 'Membership is managed through the account menu');
   assert.equal(await panel.getByRole('radio', {name: '管理', exact: true}).count(), 0, 'Anonymous navigation has no author management entry');
   assert.equal(await panel.getByRole('tab', {name: /阅读进度|私有笔记/}).count(), 0);

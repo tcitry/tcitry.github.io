@@ -20,6 +20,8 @@ const listeners = new Set<() => void>();
 const threads: Thread[] = [];
 const threadReadStates = new Map<string, 'pending' | 'error' | 'ready'>();
 const bookmarks: {owner: string; pathname: string; title: string; updatedAt: number}[] = [];
+type ReadingMarkStatus = 'later' | 'skimmed' | 'read' | 'studied';
+const readingMarks: {owner: string; pathname: string; title: string; status: ReadingMarkStatus; updatedAt: number}[] = [];
 const messages: Message[] = [];
 const requests: {name: string; userId: string | null; args: Record<string, unknown>}[] = [];
 const writes: {name: string; userId: string | null; args: Record<string, unknown>}[] = [];
@@ -241,6 +243,10 @@ function queryValue(client: ConvexReactClient, name: string, args: Record<string
     if (!userId) throw new Error('Services fixture: anonymous bookmark query');
     return {bookmarked: bookmarks.some(item => item.owner === userId && item.pathname === args.pathname)};
   }
+  if (name === 'reader:getReadingMark') {
+    if (!userId) throw new Error('Services fixture: anonymous reading mark query');
+    return {status: readingMarks.find(item => item.owner === userId && item.pathname === args.pathname)?.status ?? null};
+  }
   if (name === 'assistant:getRunStates') {
     getAiConversation(String(args.conversationId), userId);
     return aiRuns.filter(run => run.conversationId === args.conversationId && (args.orders as number[]).includes(run.order));
@@ -317,6 +323,12 @@ export function usePaginatedQuery(reference: Parameters<typeof getFunctionName>[
       if (!userId) throw new Error('Services fixture: anonymous bookmark list');
       rows = bookmarks.filter(item => item.owner === userId).sort((a, b) => b.updatedAt - a.updatedAt).map(({owner: _owner, ...item}) => item);
     }
+    else if (name === 'reader:listReadingMarks') {
+      if (!userId) throw new Error('Services fixture: anonymous reading list');
+      rows = readingMarks.filter(item => item.owner === userId && (args.status === undefined || item.status === args.status))
+        .sort((a, b) => b.updatedAt - a.updatedAt)
+        .map(({owner: _owner, ...item}) => item);
+    }
     else throw new Error(`Unsupported service fixture pagination ${name}`);
   }
   return {results: rows.slice(0, limit), status: rows.length > limit ? 'CanLoadMore' : 'Exhausted', loadMore: (count: number) => setLimit(current => current + count)};
@@ -335,6 +347,19 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
       if (args.bookmarked && index === -1) bookmarks.push({owner: userId, pathname: String(args.pathname), title: String(args.title), updatedAt: ++now});
       else if (!args.bookmarked && index !== -1) bookmarks.splice(index, 1);
       publish(); return Boolean(args.bookmarked);
+    }
+    if (name === 'reader:setReadingMark') {
+      const status = args.status;
+      if (status !== 'later' && status !== 'skimmed' && status !== 'read' && status !== 'studied') throw new Error('Services fixture: invalid reading status');
+      const index = readingMarks.findIndex(item => item.owner === userId && item.pathname === args.pathname);
+      const next = {owner: userId, pathname: String(args.pathname), title: String(args.title), status: status as ReadingMarkStatus, updatedAt: ++now};
+      if (index === -1) readingMarks.push(next); else readingMarks[index] = next;
+      publish(); return status;
+    }
+    if (name === 'reader:clearReadingMark') {
+      const index = readingMarks.findIndex(item => item.owner === userId && item.pathname === args.pathname);
+      if (index !== -1) readingMarks.splice(index, 1);
+      publish(); return null;
     }
     if (name === 'membership:getMyMembership') {
       if (rejectNextMembership) {rejectNextMembership = false; throw new Error('Fixture membership request failed');}

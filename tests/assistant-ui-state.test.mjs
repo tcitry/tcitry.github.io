@@ -49,7 +49,7 @@ test('unknown tabs, malformed storage and blocked sessionStorage never reopen or
 test('the personal area, messages and author management store only a top-level tab name', () => {
   const session = storage();
   const state = assistantUIState(() => session, '/about/');
-  for (const view of ['my', 'messages', 'admin']) {
+  for (const view of ['my', 'reading', 'messages', 'admin']) {
     state.save(view);
     assert.equal(state.restore(), view);
     assert.deepEqual(JSON.parse([...session.values.values()][0]), {pathname: '/about/', view});
