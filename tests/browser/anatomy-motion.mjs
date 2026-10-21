@@ -15,7 +15,7 @@ const allEntries = [
   {name: 'ruflo', path: '/docs/AI/Agents/ruflo-agent-orchestration-source-analysis/', demo: 'ruflo-memory-window', duration: 18,
     actor: '[data-memory-card="A"]', activity: '[data-memory-head]', frames: [.18, .38, .62, .88]},
   {name: 'heroui', path: '/docs/AI/Agents/heroui-agents-product-research/', demo: 'heroui-agent-composer', duration: 16,
-    actor: '[data-value-token="0"]', activity: '[data-source-scan]', frames: [.18, .38, .62, .88]},
+    actor: '[data-value-token="0"]', activity: '[data-source-scan]', storyboard: '[data-spec-container]', frames: [.18, .38, .62, .88]},
   {name: 'rakazo', path: '/docs/AI/Agents/rakazo-source-analysis/', demo: 'rakazo-effect-replay', duration: 14,
     actor: '[data-moving-request]', activity: '[data-moving-proposal]', frames: [.18, .38, .62, .88]},
 ];
@@ -40,7 +40,7 @@ async function open(context, entry) {
   await page.goto(new URL(entry.path, base).href, {waitUntil: 'domcontentloaded', timeout: 60000});
   const root = page.locator(`[data-demo="${entry.demo}"]`);
   const player = root.locator('[data-mechanism-player]').first();
-  await player.scrollIntoViewIfNeeded();
+  await player.evaluate(node => node.scrollIntoView({block: 'center', behavior: 'instant'}));
   await root.locator('[data-mechanism-player][data-hydrated="true"]').first().waitFor();
   const stage = player.locator('[data-mechanism-stage]');
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -178,7 +178,7 @@ async function controls(scene) {
   await page.waitForTimeout(200);
   assert.equal(await stage.getAttribute('data-playing'), 'false', `${entry.name}: offscreen observer stops autoplay`);
   await stationary(scene, 'offscreen');
-  await stage.scrollIntoViewIfNeeded();
+  await stage.evaluate(node => node.scrollIntoView({block: 'center', behavior: 'instant'}));
   await page.waitForTimeout(250);
   assert.equal(await stage.getAttribute('data-playing'), 'true', `${entry.name}: returns to playing after re-entry`);
 
@@ -357,11 +357,14 @@ try {
       assert.match(await scene.stage.locator('[data-motion-output]').textContent(), /metric-grid.*150/);
       spec = JSON.parse(await scene.stage.locator('[data-motion-spec]').textContent());
       assert.equal(spec.elements['sales-view'].type, 'metric-grid');
-      await scene.stage.scrollIntoViewIfNeeded();
+      await scene.stage.evaluate(node => node.scrollIntoView({block: 'center', behavior: 'instant'}));
     }
-    const final = await sampleActor(scene, entry.activity);
+    const storyboardActor = entry.storyboard ?? entry.actor;
+    const final = await sampleActor(scene, storyboardActor);
     await seek(scene, .35);
-    assert.notEqual((await sampleActor(scene, entry.activity)).transform, final.transform, `${entry.name}: reduced-motion user can inspect another frame`);
+    const inspected = await sampleActor(scene, storyboardActor);
+    assert.ok(inspected.opacity > .05, `${entry.name}: inspected storyboard object is visible`);
+    assert.notEqual(inspected.transform, final.transform, `${entry.name}: reduced-motion user can inspect another frame`);
     await stationary(scene, 'reduced motion scrubbed frame');
     await capture(scene, 'reduced-storyboard');
     await scene.page.close();
