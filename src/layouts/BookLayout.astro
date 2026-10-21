@@ -12,6 +12,7 @@ import blogStyles from '../styles/blog.module.css';
 import codeStyles from '../components/code/BlogCode.module.css';
 import BlogSearch from '../components/search/BlogSearch.astro';
 import BlogChatWidget from '../components/chat/BlogChatWidget.astro';
+import ReadingProgressIsland from '../components/reader/ReadingProgressIsland';
 import GoogleOneTapPrompt from '../components/auth/GoogleOneTapPrompt';
 import ObsidianNoteButton from '../components/book/ObsidianNoteButton';
 import { publicURL } from '../lib/public-url.mjs';
@@ -88,6 +89,7 @@ const site = {
   <Fragment slot="overlays">
     {production && <GoogleOneTapPrompt client:only="react" />}
     {import.meta.env.DEV && page.source && <ObsidianNoteButton source={page.source} client:load />}
+    {readerArticle && <ReadingProgressIsland pathname={page.url} title={bookTitle(page)} client:only="react" />}
     <BlogChatWidget pathname={readerArticle ? page.url : undefined} title={readerArticle ? bookTitle(page) : undefined} />
     <script>import '../scripts/site'; import '../scripts/blog-code'; import '../scripts/floating-scrollbars';</script>
   </Fragment>

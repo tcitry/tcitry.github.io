@@ -22,6 +22,7 @@ const threadReadStates = new Map<string, 'pending' | 'error' | 'ready'>();
 const bookmarks: {owner: string; pathname: string; title: string; updatedAt: number}[] = [];
 type ReadingMarkStatus = 'later' | 'skimmed' | 'read' | 'studied';
 const readingMarks: {owner: string; pathname: string; title: string; status: ReadingMarkStatus; updatedAt: number}[] = [];
+const readingProgress: {owner: string; pathname: string; title: string; progress: number; updatedAt: number}[] = [];
 const messages: Message[] = [];
 const requests: {name: string; userId: string | null; args: Record<string, unknown>}[] = [];
 const writes: {name: string; userId: string | null; args: Record<string, unknown>}[] = [];
@@ -328,6 +329,10 @@ export function usePaginatedQuery(reference: Parameters<typeof getFunctionName>[
       rows = readingMarks.filter(item => item.owner === userId && (args.status === undefined || item.status === args.status))
         .sort((a, b) => b.updatedAt - a.updatedAt)
         .map(({owner: _owner, ...item}) => item);
+    }
+    else if (name === 'reader:listReadingProgress') {
+      if (!userId) throw new Error('Services fixture: anonymous reading progress list');
+      rows = readingProgress.filter(item => item.owner === userId).sort((a, b) => b.updatedAt - a.updatedAt).map(({owner: _owner, ...item}) => item);
     }
     else throw new Error(`Unsupported service fixture pagination ${name}`);
   }

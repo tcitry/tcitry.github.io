@@ -18,6 +18,7 @@ import '../../styles/chat.css';
 
 const MyPanel = lazy(() => import('../reader/MyPanel'));
 const ReadingMarksPanel = lazy(() => import('../reader/ReadingMarksPanel'));
+const ReadingProgressPanel = lazy(() => import('../reader/ReadingProgressPanel'));
 const AgentChat = lazy(() => import('./AgentChat'));
 const ConsultationsPanel = lazy(() => import('../consultations/ConsultationsPanel'));
 const AdminPanel = lazy(() => import('./AdminPanel'));
@@ -111,7 +112,7 @@ function WorkspaceContent({onClose, onReady, view, myOpened, readingOpened, sele
             {myOpened && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><MyPanel /></ServiceView></div>}
           </div>
           <div className="assistant-workspace__personal" hidden={activeView !== 'reading'}>
-            {readingOpened && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><ReadingMarksPanel /></ServiceView></div>}
+            {readingOpened && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><ReadingMarksPanel /><ReadingProgressPanel /></ServiceView></div>}
           </div>
       </ConvexAuthGate>
     </div>

@@ -16,6 +16,7 @@ test('article reading mark sits left of like, and bookmark stays on the comment 
   assert.ok(mark >= 0 && like > mark && bookmark > like, 'Reading mark, like and bookmark stay in that order');
   const article = read('src/components/reader/ArticleReader.tsx');
   assert.doesNotMatch(article, /ReadingMarkControl/);
+  assert.match(article, /<ReadingProgress /);
   assert.match(article, /<BookmarkButton /);
   assert.match(article, /data-sentry-mask data-pagefind-ignore/);
   assert.match(article, /isAuthenticated \? \{pathname\} : 'skip'/);
@@ -27,6 +28,7 @@ test('reading list is a top-level assistant tab with its indexed filter and pagi
   const workspace = read('src/components/chat/AssistantWorkspace.tsx');
   assert.match(workspace, /\{id: 'reading', label: '阅读'\}/);
   assert.match(workspace, /<ReadingMarksPanel \/>/);
+  assert.match(workspace, /<ReadingProgressPanel \/>/);
   assert.match(read('src/scripts/assistant-ui-state.mjs'), /'reading'/);
   const list = read('src/components/reader/ReadingMarksPanel.tsx');
   assert.match(list, /api.reader.listReadingMarks/);

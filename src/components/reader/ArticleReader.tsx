@@ -4,6 +4,7 @@ import {api} from '../../../convex/_generated/api';
 import surface from '../demos/DemoSurface.module.css';
 import styles from './ReaderPanel.module.css';
 import BookmarkButton from './BookmarkButton';
+import ReadingProgress from './ReadingProgress';
 import './reader.css';
 
 interface ArticleReaderProps {
@@ -17,7 +18,8 @@ export default function ArticleReader({pathname, title}: ArticleReaderProps) {
   const [tooltipContainer, setTooltipContainer] = useState<HTMLElement | null>(null);
   const titleId = useId();
 
-  return <section ref={setTooltipContainer} className={`${surface.surface} ${styles.panel} ${styles.currentArticle}`} aria-label="文章收藏" data-reader-article data-book-island data-sentry-mask data-pagefind-ignore>
+  return <section ref={setTooltipContainer} className={`${surface.surface} ${styles.panel} ${styles.currentArticle}`} aria-label="文章阅读与收藏" data-reader-article data-book-island data-sentry-mask data-pagefind-ignore>
+    <ReadingProgress pathname={pathname} title={title} />
     <div className={styles.currentRow}>
       <div className={styles.currentText}>
         <div className={styles.currentLabel}>当前文章{page?.bookmarked && <span> · 已收藏</span>}</div>
