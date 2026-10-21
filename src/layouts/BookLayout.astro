@@ -1,7 +1,6 @@
 ---
 import ThemeLayout from '@tcitry/astro-book/components/BookLayout';
 import Comments from '../components/comments/Comments.astro';
-import ArticleReaderIsland from '../components/reader/ArticleReaderIsland';
 import HeadingTree from '@tcitry/astro-book/components/HeadingTree';
 import TermList from '@tcitry/astro-book/components/TermList';
 import type { NavigationItem } from '@tcitry/astro-book/types';
@@ -13,6 +12,7 @@ import blogStyles from '../styles/blog.module.css';
 import codeStyles from '../components/code/BlogCode.module.css';
 import BlogSearch from '../components/search/BlogSearch.astro';
 import BlogChatWidget from '../components/chat/BlogChatWidget.astro';
+import ReadingProgressIsland from '../components/reader/ReadingProgressIsland';
 import GoogleOneTapPrompt from '../components/auth/GoogleOneTapPrompt';
 import ObsidianNoteButton from '../components/book/ObsidianNoteButton';
 import { publicURL } from '../lib/public-url.mjs';
@@ -84,12 +84,12 @@ const site = {
     {tocHTML ? <Fragment set:html={tocHTML} /> : page.headings.length ? <nav id="TableOfContents"><HeadingTree headings={page.headings} /></nav> : <nav><TermList title="Tags" total={tags.length} items={tags.map((term) => ({ label: term.name, href: term.url, count: term.pageIds.length }))} /></nav>}
   </Fragment>
   <Fragment slot="comments">
-    {readerArticle && <ArticleReaderIsland pathname={page.url} title={bookTitle(page)} client:only="react" />}
-    {comments && <Comments pathname={page.url} title={bookTitle(page)} />}
+    {comments && <Comments pathname={page.url} title={bookTitle(page)} bookmarkable={readerArticle} />}
   </Fragment>
   <Fragment slot="overlays">
     {production && <GoogleOneTapPrompt client:only="react" />}
     {import.meta.env.DEV && page.source && <ObsidianNoteButton source={page.source} client:load />}
+    {readerArticle && <ReadingProgressIsland pathname={page.url} title={bookTitle(page)} client:only="react" />}
     <BlogChatWidget pathname={readerArticle ? page.url : undefined} title={readerArticle ? bookTitle(page) : undefined} />
     <script>import '../scripts/site'; import '../scripts/blog-code'; import '../scripts/floating-scrollbars';</script>
   </Fragment>

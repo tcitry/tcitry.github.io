@@ -11,6 +11,8 @@
 @import "@heroui/styles/components/avatar.css" layer(components);
 @import "@heroui/styles/components/card.css" layer(components);
 @import "@heroui/styles/components/tooltip.css" layer(components);
+@import "@heroui/styles/components/dropdown.css" layer(components);
+@import "@heroui/styles/components/menu-item.css" layer(components);
 @import "@heroui/styles/components/toolbar.css" layer(components);
 @import "@heroui/styles/components/separator.css" layer(components);
 @import "@heroui/styles/components/popover.css" layer(components);
@@ -59,8 +61,9 @@
 .blog-comments__root .blog-chat__auth-status { display: flex; flex-wrap: wrap; align-items: center; gap: .625rem; padding: .5rem 0; color: var(--comment-muted); font-size: .875rem; }
 .blog-comments .blog-chat__auth-status p,
 .blog-comments__root .blog-chat__auth-status p { margin: 0; }
-.blog-comments__summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .25rem; }
+.blog-comments__summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; margin-bottom: .25rem; }
 .blog-comments__article-actions { display: flex; align-items: center; gap: .25rem; flex-shrink: 0; }
+.blog-comments__article-actions [data-reading-mark] { display: flex; align-items: center; flex-shrink: 0; }
 .blog-comments__count { color: var(--comment-fg); font-size: .875rem; font-weight: 600; }
 .blog-comments__like { display: inline-flex; align-items: center; gap: .25rem; color: var(--comment-muted); font-variant-numeric: tabular-nums; }
 .blog-comments__like[aria-pressed="true"] { color: var(--comment-accent); }

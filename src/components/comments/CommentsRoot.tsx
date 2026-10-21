@@ -14,6 +14,7 @@ import {AuthLoading} from '../auth/SignInPanel';
 import ClerkSignInButton from '../auth/ClerkSignInButton';
 import surface from '../demos/DemoSurface.module.css';
 import BookmarkButton from '../reader/BookmarkButton';
+import ReadingMarkControl from '../reader/ReadingMarkControl';
 
 interface CommentsProps {pathname: string; title?: string; bookmarkable?: boolean}
 
@@ -66,6 +67,7 @@ function CommentsView({pathname, title, bookmarkable, onRetrySession}: CommentsP
     <div className="blog-comments__summary">
       <span className="blog-comments__count" role="status">{summary.commentCount.toLocaleString()} 条评论</span>
       <div className="blog-comments__article-actions">
+        {bookmarkable && title && <ReadingMarkControl pathname={pathname} title={title} container={tooltipContainer} />}
         {authState === 'anonymous' ? <ClerkSignInButton>{likeButton}</ClerkSignInButton> : likeButton}
         {bookmarkable && title && <BookmarkButton pathname={pathname} title={title} tooltipContainer={tooltipContainer} onAuthRetry={onRetrySession} unavailableNotice={false} />}
       </div>

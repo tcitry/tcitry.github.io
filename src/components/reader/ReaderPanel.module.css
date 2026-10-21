@@ -35,11 +35,10 @@
 }
 
 .currentRow {
-  @apply flex flex-wrap items-center justify-between gap-3;
+  @apply grid grid-cols-[minmax(0,1fr)_2.75rem] items-center gap-3;
 }
 
-.articleActions { @apply flex flex-wrap items-center gap-2; }
-.readingAction { @apply min-w-0; }
+.readingAction { @apply shrink-0; }
 .itemPath { @apply break-all text-xs text-muted; }
 
 .currentText {

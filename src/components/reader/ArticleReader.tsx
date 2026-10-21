@@ -4,7 +4,6 @@ import {api} from '../../../convex/_generated/api';
 import surface from '../demos/DemoSurface.module.css';
 import styles from './ReaderPanel.module.css';
 import BookmarkButton from './BookmarkButton';
-import ReadingMarkControl from './ReadingMarkControl';
 import ReadingProgress from './ReadingProgress';
 import './reader.css';
 
@@ -26,10 +25,7 @@ export default function ArticleReader({pathname, title}: ArticleReaderProps) {
         <div className={styles.currentLabel}>当前文章{page?.bookmarked && <span> · 已收藏</span>}</div>
         <p id={titleId} className={styles.currentTitle}>{title}</p>
       </div>
-      <div className={styles.articleActions}>
-        <ReadingMarkControl pathname={pathname} title={title} container={tooltipContainer} />
-        <BookmarkButton pathname={pathname} title={title} tooltipContainer={tooltipContainer} describedBy={titleId} />
-      </div>
+      <BookmarkButton pathname={pathname} title={title} tooltipContainer={tooltipContainer} describedBy={titleId} />
     </div>
   </section>;
 }

@@ -27,20 +27,24 @@ function scrollParent(article: HTMLElement): HTMLElement | Window {
   return window;
 }
 
+function isElementScroller(scroller: HTMLElement | Window): scroller is HTMLElement {
+  return scroller instanceof HTMLElement;
+}
+
 function viewportHeight(scroller: HTMLElement | Window) {
-  return scroller === window ? window.innerHeight : scroller.clientHeight;
+  return isElementScroller(scroller) ? scroller.clientHeight : window.innerHeight;
 }
 
 function measure(article: HTMLElement, scroller: HTMLElement | Window) {
-  const top = scroller === window
-    ? article.getBoundingClientRect().top
-    : article.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+  const top = isElementScroller(scroller)
+    ? article.getBoundingClientRect().top - scroller.getBoundingClientRect().top
+    : article.getBoundingClientRect().top;
   return articleProgress(top, article.offsetHeight, viewportHeight(scroller));
 }
 
 function scrollToRatio(article: HTMLElement, scroller: HTMLElement | Window, progress: number) {
   const offset = scrollOffsetForProgress(article.offsetHeight, viewportHeight(scroller), progress);
-  if (scroller === window) {
+  if (!isElementScroller(scroller)) {
     window.scrollTo({top: window.scrollY + article.getBoundingClientRect().top + offset, behavior: 'auto'});
     return;
   }
@@ -56,7 +60,7 @@ function scrollToStart(article: HTMLElement | null) {
     return;
   }
   const scroller = scrollParent(article);
-  if (scroller === window) window.scrollTo({top: 0, behavior: 'auto'});
+  if (!isElementScroller(scroller)) window.scrollTo({top: 0, behavior: 'auto'});
   else scroller.scrollTo({top: 0, behavior: 'auto'});
 }
 

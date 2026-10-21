@@ -5,9 +5,12 @@ import {readFileSync} from 'node:fs';
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
 test('article progress stays separate from reading status', () => {
+  const layout = read('src/layouts/BookLayout.astro');
+  assert.match(layout, /<ReadingProgressIsland /);
+  assert.doesNotMatch(layout, /ArticleReaderIsland/);
   const article = read('src/components/reader/ArticleReader.tsx');
   assert.match(article, /<ReadingProgress /);
-  assert.match(article, /<ReadingMarkControl /);
+  assert.doesNotMatch(article, /ReadingMarkControl/);
   assert.match(article, /<BookmarkButton /);
   const progress = read('src/components/reader/ReadingProgress.tsx');
   assert.match(progress, /api\.reader\.getReadingProgress/);
@@ -22,8 +25,10 @@ test('article progress stays separate from reading status', () => {
   const marks = read('src/components/reader/ReadingMarksPanel.tsx');
   assert.match(marks, /api\.reader\.listReadingMarks/);
   assert.doesNotMatch(marks, /readingProgress|listReadingProgress|item\.progress/);
+  const workspace = read('src/components/chat/AssistantWorkspace.tsx');
+  assert.match(workspace, /<ReadingMarksPanel \/>/);
+  assert.match(workspace, /<ReadingProgressPanel \/>/);
+  assert.match(workspace, /\{id: 'reading', label: '阅读'\}/);
   const panel = read('src/components/reader/MyPanel.tsx');
-  assert.match(panel, /<ReadingMarksPanel \/>/);
-  assert.match(panel, /<ReadingProgressPanel \/>/);
-  assert.match(panel, /\{id: 'reading', label: '阅读'\}/);
+  assert.doesNotMatch(panel, /ReadingMarksPanel|ReadingProgressPanel|id: 'reading'/);
 });

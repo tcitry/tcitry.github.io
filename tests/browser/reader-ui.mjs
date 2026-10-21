@@ -127,7 +127,7 @@ try {
     const article = page.locator('[data-reader-article]');
     const bar = article.getByRole('progressbar', {name: '进度'});
     await bar.waitFor();
-    await article.getByRole('button', {name: '阅读标记：未标记'}).waitFor();
+    assert.equal(await article.getByRole('button', {name: '阅读标记：未标记', exact: true}).count(), 0, 'Reading status stays on the comment row, not the progress strip');
     await page.waitForFunction(() => {
       const body = document.querySelector('article');
       return window.scrollY > 400 && !!body && body.getBoundingClientRect().top < -200;
