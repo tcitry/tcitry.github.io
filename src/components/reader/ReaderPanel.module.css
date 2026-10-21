@@ -8,28 +8,50 @@
   @apply pb-4;
 }
 
+/* Full-bleed strip on the viewport top. The label and skip control stay on the trailing edge. */
 .progress {
-  @apply fixed top-0 flex min-w-0 flex-col gap-1.5 border-b border-border bg-surface px-4 py-1.5;
+  position: fixed;
   z-index: 20;
-  inset-inline: 0;
-}
-
-/* The mobile drawer is position:fixed and otherwise paints under this strip. */
-@media (max-width: 64rem) {
-  :global(.book-menu-content) { z-index: 30; }
-}
-
-.progressMeta {
-  @apply flex items-center justify-between gap-3 text-xs leading-5 text-muted;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  pointer-events: none;
 }
 
 .progressTrack {
-  @apply h-0.5 overflow-hidden rounded-full bg-surface-tertiary;
+  height: 6px;
+  width: 100%;
+  background: #d4d4d8;
 }
 
 .progressFill {
   height: 100%;
-  background: var(--accent);
+  background: var(--accent, #8250df);
+}
+
+.progressMeta {
+  position: absolute;
+  top: 6px;
+  inset-inline-end: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  max-width: 100%;
+  min-height: 1.75rem;
+  padding-inline: 0.75rem;
+  border-end-start-radius: 0.5rem;
+  color: var(--muted, #71717a);
+  background: color-mix(in srgb, var(--surface, var(--body-background, #fff)) 94%, transparent);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  pointer-events: auto;
+}
+
+/* The open mobile drawer is position:fixed and should cover this strip. */
+@media (max-width: 64rem) {
+  :global(.book-menu-content) { z-index: 30; }
 }
 
 .currentRow {

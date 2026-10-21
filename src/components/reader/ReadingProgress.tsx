@@ -1,4 +1,4 @@
-import {useEffect, useId, useLayoutEffect, useRef, useState} from 'react';
+import {useEffect, useId, useRef, useState} from 'react';
 import {Button} from '@heroui/react';
 import {useConvexAuth, useMutation, useQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
@@ -8,11 +8,13 @@ import {
   articleProgress,
   flushProgress,
   noteProgress,
-  readingProgressFrame,
   scrollOffsetForProgress,
   type ProgressSyncState,
 } from './reading-progress';
 import styles from './ReaderPanel.module.css';
+
+// The indicator is a full-bleed strip fixed to the viewport top. Percent and
+// 「跳过本次」sit on its trailing edge so the left-hand site logo stays clear.
 
 function findArticle() {
   return document.querySelector<HTMLElement>('article.book-article, article.book-post');
@@ -69,37 +71,6 @@ function quantize(progress: number) {
   return Math.round(progress * 100) / 100;
 }
 
-function shownBox(element: Element | null) {
-  if (!(element instanceof HTMLElement)) return null;
-  const style = getComputedStyle(element);
-  if (style.display === 'none' || style.visibility === 'hidden' || style.visibility === 'collapse') return null;
-  const box = element.getBoundingClientRect();
-  if (box.width < 1 || box.height < 1) return null;
-  return box;
-}
-
-function readProgressFrame() {
-  const page = shownBox(document.querySelector('.book-page'));
-  const header = shownBox(document.querySelector('.book-page > .book-header'));
-  const obstacles = [...document.querySelectorAll('.book-brand, [data-sidebar-tools], .book-search')].flatMap(element => {
-    const box = shownBox(element);
-    return box ? [{left: box.left, right: box.right, top: box.top, bottom: box.bottom}] : [];
-  });
-  return readingProgressFrame({
-    viewportWidth: window.innerWidth,
-    page: page ? {left: page.left, right: page.right} : null,
-    headerBottom: header && header.top <= 80 && header.bottom > 0 ? header.bottom : null,
-    obstacles,
-  });
-}
-
-function applyProgressFrame(node: HTMLElement) {
-  const frame = readProgressFrame();
-  node.style.top = `${frame.top}px`;
-  node.style.left = `${frame.left}px`;
-  node.style.right = `${frame.right}px`;
-}
-
 export default function ReadingProgress({pathname, title}: {pathname: string; title: string}) {
   const {isAuthenticated} = useConvexAuth();
   const saved = useQuery(api.reader.getReadingProgress, isAuthenticated ? {pathname} : 'skip');
@@ -107,7 +78,6 @@ export default function ReadingProgress({pathname, title}: {pathname: string; ti
   const [shown, setShown] = useState<number | null>(null);
   const [offerSkip, setOfferSkip] = useState(false);
   const labelId = useId();
-  const frameRef = useRef<HTMLDivElement>(null);
   const sync = useRef<ProgressSyncState>({lastSent: 0, lastSentAt: 0, pending: null});
   const acked = useRef(0);
   const shownRef = useRef<number | null>(null);
@@ -184,32 +154,6 @@ export default function ReadingProgress({pathname, title}: {pathname: string; ti
       void persist(result.send);
     } else if (result.waitMs !== null) arm(result.waitMs);
   }
-
-  const placed = isAuthenticated && saved !== undefined;
-  useLayoutEffect(() => {
-    const node = frameRef.current;
-    if (!node) return;
-    let frame = 0;
-    const syncFrame = () => applyProgressFrame(node);
-    const schedule = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(() => {
-        frame = 0;
-        syncFrame();
-      });
-    };
-    syncFrame();
-    const observer = new ResizeObserver(schedule);
-    for (const element of document.querySelectorAll('.book-page, .book-page > .book-header, .book-menu, .book-menu-content, .book-toc')) observer.observe(element);
-    window.addEventListener('resize', schedule);
-    document.addEventListener('scroll', schedule, {capture: true, passive: true});
-    return () => {
-      if (frame) window.cancelAnimationFrame(frame);
-      observer.disconnect();
-      window.removeEventListener('resize', schedule);
-      document.removeEventListener('scroll', schedule, {capture: true});
-    };
-  }, [offerSkip, pathname, placed]);
 
   useEffect(() => {
     mounted.current = true;
@@ -288,17 +232,17 @@ export default function ReadingProgress({pathname, title}: {pathname: string; ti
   if (!isAuthenticated || saved === undefined) return null;
   const value = shown ?? saved.progress ?? 0;
   const percent = Math.round(value * 100);
-  return <div ref={frameRef} className={styles.progress} data-reading-progress data-sentry-mask data-pagefind-ignore>
-    <div className={styles.progressMeta}>
-      <span id={labelId}>进度</span>
-      <span>{percent}%</span>
-    </div>
+  return <div className={styles.progress} data-reading-progress data-sentry-mask data-pagefind-ignore>
     <div className={styles.progressTrack} role="progressbar" aria-labelledby={labelId} aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-valuetext={`${percent}%`}>
       <div className={styles.progressFill} style={{width: `${percent}%`}} />
     </div>
-    {offerSkip && <Button size="sm" variant="outline" onPress={() => {
-      setOfferSkip(false);
-      scrollToStart(findArticle());
-    }}>跳过本次</Button>}
+    <div className={styles.progressMeta}>
+      <span id={labelId}>进度</span>
+      <span>{percent}%</span>
+      {offerSkip && <Button size="sm" variant="outline" onPress={() => {
+        setOfferSkip(false);
+        scrollToStart(findArticle());
+      }}>跳过本次</Button>}
+    </div>
   </div>;
 }
