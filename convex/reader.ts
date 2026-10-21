@@ -7,6 +7,7 @@ import {
 import { ConvexError, v } from "convex/values";
 import { components } from "./_generated/api";
 import { mutation, query, type MutationCtx, type QueryCtx } from "./_generated/server";
+import { readingStatus } from "./schema";
 
 const rateLimiter = new RateLimiter(components.rateLimiter, {
   readerWrites: { kind: "token bucket", rate: 60, period: 60_000, capacity: 30 },
@@ -130,6 +131,71 @@ export const listLibrary = query({
         title: row.title,
         updatedAt: row.updatedAt,
       })),
+    };
+  },
+});
+
+export const getReadingMark = query({
+  args: pageArgs,
+  returns: v.object({ status: v.union(readingStatus, v.null()) }),
+  handler: async (ctx, args) => {
+    const owner = await requireOwner(ctx);
+    const pathname = canonicalPathname(args.pathname);
+    const mark = await ctx.db.query("readingMarks")
+      .withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique();
+    return { status: mark?.status ?? null };
+  },
+});
+
+export const setReadingMark = mutation({
+  args: { ...pageWriteArgs, status: readingStatus },
+  returns: readingStatus,
+  handler: async (ctx, args) => {
+    const owner = await requireOwner(ctx);
+    const pathname = canonicalPathname(args.pathname);
+    const title = pageTitle(args.title);
+    const existing = await ctx.db.query("readingMarks")
+      .withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique();
+    if (existing?.status === args.status && existing.title === title) return args.status;
+    await limitWrite(ctx, owner);
+    const fields = { owner, pathname, title, status: args.status, updatedAt: Date.now() };
+    if (existing) await ctx.db.patch("readingMarks", existing._id, fields);
+    else await ctx.db.insert("readingMarks", fields);
+    return args.status;
+  },
+});
+
+export const clearReadingMark = mutation({
+  args: pageArgs,
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const owner = await requireOwner(ctx);
+    const pathname = canonicalPathname(args.pathname);
+    const existing = await ctx.db.query("readingMarks")
+      .withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique();
+    if (existing) {
+      await limitWrite(ctx, owner);
+      await ctx.db.delete("readingMarks", existing._id);
+    }
+    return null;
+  },
+});
+
+export const listReadingMarks = query({
+  args: { paginationOpts: paginationOptsValidator, status: v.optional(readingStatus) },
+  returns: paginationResultValidator(v.object({
+    pathname: v.string(), title: v.string(), status: readingStatus, updatedAt: v.number(),
+  })),
+  handler: async (ctx, args) => {
+    const owner = await requireOwner(ctx);
+    validatePagination(args.paginationOpts);
+    const marks = args.status === undefined
+      ? ctx.db.query("readingMarks").withIndex("by_owner_and_updatedAt", q => q.eq("owner", owner))
+      : ctx.db.query("readingMarks").withIndex("by_owner_and_status_and_updatedAt", q => q.eq("owner", owner).eq("status", args.status!));
+    const result = await marks.order("desc").paginate(args.paginationOpts);
+    return {
+      ...result,
+      page: result.page.map(({ pathname, title, status, updatedAt }) => ({ pathname, title, status, updatedAt })),
     };
   },
 });

@@ -3,6 +3,8 @@ import { v } from "convex/values";
 
 const importSource = v.union(v.literal("github_discussion"), v.literal("giscus"));
 
+export const readingStatus = v.union(v.literal("later"), v.literal("skimmed"), v.literal("read"), v.literal("studied"));
+
 const pageFields = {
   owner: v.string(),
   pathname: v.string(),
@@ -96,6 +98,10 @@ export default defineSchema({
   bookmarks: defineTable(pageFields)
     .index("by_owner_and_pathname", ["owner", "pathname"])
     .index("by_owner_and_updatedAt", ["owner", "updatedAt"]),
+  readingMarks: defineTable({ ...pageFields, status: readingStatus })
+    .index("by_owner_and_pathname", ["owner", "pathname"])
+    .index("by_owner_and_updatedAt", ["owner", "updatedAt"])
+    .index("by_owner_and_status_and_updatedAt", ["owner", "status", "updatedAt"]),
   readingProgress: defineTable({ ...pageFields, progress: v.number() })
     .index("by_owner_and_pathname", ["owner", "pathname"])
     .index("by_owner_and_updatedAt", ["owner", "updatedAt"]),

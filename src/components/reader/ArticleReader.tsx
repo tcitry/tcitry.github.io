@@ -1,9 +1,10 @@
 import {useId, useState} from 'react';
-import {useQuery} from 'convex/react';
+import {useConvexAuth, useQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
 import surface from '../demos/DemoSurface.module.css';
 import styles from './ReaderPanel.module.css';
 import BookmarkButton from './BookmarkButton';
+import ReadingMarkControl from './ReadingMarkControl';
 import './reader.css';
 
 interface ArticleReaderProps {
@@ -12,17 +13,21 @@ interface ArticleReaderProps {
 }
 
 export default function ArticleReader({pathname, title}: ArticleReaderProps) {
-  const page = useQuery(api.reader.getPage, {pathname});
+  const {isAuthenticated} = useConvexAuth();
+  const page = useQuery(api.reader.getPage, isAuthenticated ? {pathname} : 'skip');
   const [tooltipContainer, setTooltipContainer] = useState<HTMLElement | null>(null);
   const titleId = useId();
 
-  return <section ref={setTooltipContainer} className={`${surface.surface} ${styles.panel} ${styles.currentArticle}`} aria-label="文章收藏" data-reader-article data-book-island>
+  return <section ref={setTooltipContainer} className={`${surface.surface} ${styles.panel} ${styles.currentArticle}`} aria-label="文章阅读与收藏" data-reader-article data-book-island data-sentry-mask data-pagefind-ignore>
     <div className={styles.currentRow}>
       <div className={styles.currentText}>
         <div className={styles.currentLabel}>当前文章{page?.bookmarked && <span> · 已收藏</span>}</div>
         <p id={titleId} className={styles.currentTitle}>{title}</p>
       </div>
-      <BookmarkButton pathname={pathname} title={title} tooltipContainer={tooltipContainer} describedBy={titleId} />
+      <div className={styles.articleActions}>
+        <ReadingMarkControl pathname={pathname} title={title} container={tooltipContainer} />
+        <BookmarkButton pathname={pathname} title={title} tooltipContainer={tooltipContainer} describedBy={titleId} />
+      </div>
     </div>
   </section>;
 }

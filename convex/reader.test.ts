@@ -8,6 +8,7 @@ import schema from "./schema";
 const modules = import.meta.glob(["./**/*.ts", "./**/*.js", "!./**/*.test.ts"]);
 const page = { pathname: "/docs/example/", title: "Example" };
 const paginationOpts = { numItems: 10, cursor: null };
+const readingStatuses = ["later", "skimmed", "read", "studied"] as const;
 
 function setup() {
   const t = convexTest(schema, modules);
@@ -157,5 +158,101 @@ describe("bookmark bounded pagination and throttling", () => {
     await expect(alice.mutation(api.reader.setBookmark, { ...page, pathname: "/docs/rate-0/", bookmarked: false })).rejects.toThrow();
     expect(await alice.query(api.reader.getPage, { pathname: "/docs/rate-0/" })).toEqual({ bookmarked: true });
     await expect(bob.mutation(api.reader.setBookmark, { ...page, bookmarked: true })).resolves.toBe(true);
+  });
+});
+
+describe("private reading marks", () => {
+  test("all endpoints reject anonymous callers and isolate owners without leaking identity", async () => {
+    const { t, alice, bob } = setup();
+    for (const call of [
+      () => t.query(api.reader.getReadingMark, { pathname: page.pathname }),
+      () => t.query(api.reader.listReadingMarks, { paginationOpts }),
+      () => t.mutation(api.reader.setReadingMark, { ...page, status: "later" }),
+      () => t.mutation(api.reader.clearReadingMark, { pathname: page.pathname }),
+    ]) await expect(call()).rejects.toThrow("UNAUTHENTICATED");
+    await alice.mutation(api.reader.setReadingMark, { ...page, status: "studied" });
+    expect(await bob.query(api.reader.getReadingMark, { pathname: page.pathname })).toEqual({ status: null });
+    expect((await bob.query(api.reader.listReadingMarks, { paginationOpts })).page).toEqual([]);
+    await bob.mutation(api.reader.clearReadingMark, { pathname: page.pathname });
+    await bob.mutation(api.reader.setReadingMark, { ...page, status: "later" });
+    expect(await alice.query(api.reader.getReadingMark, { pathname: page.pathname })).toEqual({ status: "studied" });
+    const result = await alice.query(api.reader.listReadingMarks, { paginationOpts, status: "studied" });
+    expect(result.page).toEqual([{ ...page, status: "studied", updatedAt: expect.any(Number) }]);
+    expect(Object.keys(result.page[0]).sort()).toEqual(["pathname", "status", "title", "updatedAt"]);
+    expect(JSON.stringify(result)).not.toMatch(/alice|Private real name|private@example|tokenIdentifier/);
+  });
+
+  test("four statuses persist on one canonical row, no-ops are idempotent, and clearing preserves bookmarks", async () => {
+    const { t, alice } = setup();
+    await alice.mutation(api.reader.setBookmark, { ...page, bookmarked: true });
+    for (const status of readingStatuses) {
+      await alice.mutation(api.reader.setReadingMark, { ...page, pathname: "/docs/%65xample", status });
+      expect(await alice.query(api.reader.getReadingMark, { pathname: page.pathname })).toEqual({ status });
+    }
+    for (let i = 0; i < 35; i++) await alice.mutation(api.reader.setReadingMark, { ...page, status: "studied" });
+    expect(await t.run(ctx => ctx.db.query("readingMarks").take(2))).toHaveLength(1);
+    await alice.mutation(api.reader.setReadingMark, { ...page, title: " Renamed ", status: "studied" });
+    expect((await alice.query(api.reader.listReadingMarks, { paginationOpts })).page[0].title).toBe("Renamed");
+    await alice.mutation(api.reader.clearReadingMark, { pathname: "/docs/%65xample" });
+    await alice.mutation(api.reader.clearReadingMark, { pathname: page.pathname });
+    expect(await alice.query(api.reader.getReadingMark, { pathname: page.pathname })).toEqual({ status: null });
+    expect(await alice.query(api.reader.getPage, { pathname: page.pathname })).toEqual({ bookmarked: true });
+    await alice.mutation(api.reader.setReadingMark, { ...page, status: "read" });
+    await alice.mutation(api.reader.setBookmark, { ...page, bookmarked: false });
+    expect(await alice.query(api.reader.getReadingMark, { pathname: page.pathname })).toEqual({ status: "read" });
+    expect(await t.run(ctx => ctx.db.query("readingProgress").take(1))).toEqual([]);
+    expect(await t.run(ctx => ctx.db.query("privateNotes").take(1))).toEqual([]);
+  });
+
+  test("validates paths, titles, statuses and bounded pagination", async () => {
+    const { alice } = setup();
+    for (const pathname of ["https://example.test/", "//example.test/", "/a?b", "/a#b", "/a/%2e%2e/b", "/a/%2fb", "/bad%", "/a\\b"]) {
+      await expect(alice.mutation(api.reader.setReadingMark, { ...page, pathname, status: "later" })).rejects.toThrow("INVALID_ARGUMENT");
+      await expect(alice.query(api.reader.getReadingMark, { pathname })).rejects.toThrow("INVALID_ARGUMENT");
+      await expect(alice.mutation(api.reader.clearReadingMark, { pathname })).rejects.toThrow("INVALID_ARGUMENT");
+    }
+    for (const title of ["", "   ", "a".repeat(241), "line\nbreak"]) {
+      await expect(alice.mutation(api.reader.setReadingMark, { ...page, title, status: "later" })).rejects.toThrow("INVALID_ARGUMENT");
+    }
+    // Runtime validation must reject clients that bypass TypeScript.
+    // @ts-expect-error invalid status
+    await expect(alice.mutation(api.reader.setReadingMark, { ...page, status: "finished" })).rejects.toThrow();
+    // @ts-expect-error invalid filter
+    await expect(alice.query(api.reader.listReadingMarks, { paginationOpts, status: "finished" })).rejects.toThrow();
+    for (const options of [{ numItems: 0 }, { numItems: 51 }, { maximumRowsRead: 101 }, { maximumBytesRead: 1_000_001 }]) {
+      await expect(alice.query(api.reader.listReadingMarks, { paginationOpts: { ...paginationOpts, ...options } })).rejects.toThrow("INVALID_ARGUMENT");
+    }
+  });
+
+  test("filtered and unfiltered cursors return only the owner's marks in updated order", async () => {
+    const { alice, bob } = setup();
+    for (let i = 0; i < 8; i++) {
+      await alice.mutation(api.reader.setReadingMark, { ...page, pathname: `/docs/mark-${i}/`, status: i % 2 ? "later" : "read" });
+    }
+    await bob.mutation(api.reader.setReadingMark, { ...page, status: "read" });
+    for (const status of [undefined, "read"] as const) {
+      const first = await alice.query(api.reader.listReadingMarks, { status, paginationOpts: { numItems: 3, cursor: null } });
+      const rest = await alice.query(api.reader.listReadingMarks, { status, paginationOpts: { numItems: 10, cursor: first.continueCursor } });
+      expect(first.page).toHaveLength(3);
+      expect(first.isDone).toBe(false);
+      expect(rest.isDone).toBe(true);
+      const rows = [...first.page, ...rest.page];
+      expect(new Set(rows.map(row => row.pathname)).size).toBe(status ? 4 : 8);
+      expect(rows.map(row => row.pathname)).not.toContain(page.pathname);
+      expect(rows.map(row => row.updatedAt)).toEqual(rows.map(row => row.updatedAt).sort((a, b) => b - a));
+      if (status) expect(rows.every(row => row.status === status)).toBe(true);
+    }
+  });
+
+  test("shares readerWrites limits while reads, no-ops and other owners remain available", async () => {
+    const { alice, bob } = setup();
+    await alice.mutation(api.reader.setReadingMark, { ...page, status: "later" });
+    for (let i = 0; i < 29; i++) await alice.mutation(api.reader.setBookmark, { ...page, pathname: `/docs/rate-${i}/`, bookmarked: true });
+    await expect(alice.mutation(api.reader.setReadingMark, { ...page, status: "read" })).rejects.toThrow();
+    await expect(alice.mutation(api.reader.clearReadingMark, { pathname: page.pathname })).rejects.toThrow();
+    await expect(alice.mutation(api.reader.setReadingMark, { ...page, status: "later" })).resolves.toBe("later");
+    await expect(alice.mutation(api.reader.clearReadingMark, { pathname: "/docs/unmarked/" })).resolves.toBeNull();
+    expect(await alice.query(api.reader.getReadingMark, { pathname: page.pathname })).toEqual({ status: "later" });
+    await expect(bob.mutation(api.reader.setReadingMark, { ...page, status: "read" })).resolves.toBe("read");
   });
 });
