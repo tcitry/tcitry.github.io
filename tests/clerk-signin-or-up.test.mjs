@@ -150,9 +150,9 @@ test('SignInPanel modal entry spreads the shared sign-in-or-up options', async (
   delete globalThis.__clerkSignInFixture;
 });
 
-test('anonymous bookmark sign-in uses the shared helper instead of a bare openSignIn', async () => {
+for (const component of ['BookmarkButton', 'ReadingMarkControl']) test(`anonymous ${component} sign-in uses the shared helper instead of a bare openSignIn`, async () => {
   const {default: BookmarkButton} = await importBundle(
-    new URL('../src/components/reader/BookmarkButton.tsx', import.meta.url),
+    new URL(`../src/components/reader/${component}.tsx`, import.meta.url),
     [{
       name: 'bookmark-signin-fixture',
       setup(build) {
@@ -174,13 +174,14 @@ test('anonymous bookmark sign-in uses the shared helper instead of a bare openSi
               export function useQuery() { return undefined; }
               export function useMutation() { return async () => {}; }
             `,
-            api: 'export const api = {reader: {getPage: "reader:getPage", setBookmark: "reader:setBookmark"}};',
+            api: 'export const api = {reader: {getPage: "reader:getPage", setBookmark: "reader:setBookmark", getReadingMark: "reader:getReadingMark", setReadingMark: "reader:setReadingMark", clearReadingMark: "reader:clearReadingMark"}};',
             heroui: `
               export function Button({onPress}) {
                 globalThis.__bookmarkSignIn.press = onPress;
                 return null;
               }
               export function Spinner() { return null; }
+              export function Dropdown() { return null; }
               export function Tooltip({children}) { return children; }
               Tooltip.Content = () => null;
             `,

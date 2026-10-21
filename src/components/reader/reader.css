@@ -2,6 +2,8 @@
 @import "tw-animate-css";
 @import "@heroui/styles/components/button.css" layer(components);
 @import "@heroui/styles/components/description.css" layer(components);
+@import "@heroui/styles/components/dropdown.css" layer(components);
+@import "@heroui/styles/components/menu-item.css" layer(components);
 @import "@heroui/styles/components/label.css" layer(components);
 @import "@heroui/styles/components/spinner.css" layer(components);
 @import "@heroui/styles/components/switch.css" layer(components);
