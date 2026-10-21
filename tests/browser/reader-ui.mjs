@@ -125,7 +125,7 @@ try {
     progressURL.searchParams.set('progress', '0.62');
     await page.goto(progressURL.href);
     const article = page.locator('[data-reader-article]');
-    const bar = article.getByRole('progressbar', {name: '进度'});
+    const bar = page.getByRole('progressbar', {name: '进度'});
     await bar.waitFor();
     assert.equal(await article.getByRole('button', {name: '阅读标记：未标记', exact: true}).count(), 0, 'Reading status stays on the comment row, not the progress strip');
     await page.waitForFunction(() => {
@@ -135,12 +135,14 @@ try {
     await page.evaluate(() => new Promise(resolve => queueMicrotask(resolve)));
     const restored = Number(await bar.getAttribute('aria-valuenow'));
     assert.ok(restored >= 60 && restored <= 70, `Restored progress is visible as a percent, got ${restored}`);
+    const restoredBox = await bar.boundingBox();
+    assert.ok(restoredBox && restoredBox.y <= 1 && restoredBox.x <= 1 && restoredBox.width >= 998, 'Restored progress strip is flush with the top and full width');
     assert.equal((await state(page)).writes.filter(write => write.name === 'reader:setReadingProgress').length, 0, 'Restoring saved progress does not write');
     await page.screenshot({path: '/opt/cursor/artifacts/reading-progress-restored.png'});
-    await article.getByRole('button', {name: '跳过本次', exact: true}).click();
+    await page.getByRole('button', {name: '跳过本次', exact: true}).click();
     await page.waitForFunction(() => window.scrollY < 40);
     assert.equal((await state(page)).writes.filter(write => write.name === 'reader:setReadingProgress').length, 0, 'Skipping this visit does not lower progress');
-    assert.equal(await article.getByRole('button', {name: '跳过本次', exact: true}).count(), 0);
+    assert.equal(await page.getByRole('button', {name: '跳过本次', exact: true}).count(), 0);
     await page.evaluate(() => {
       const body = document.querySelector('article');
       if (!body) throw new Error('missing article');
@@ -177,8 +179,11 @@ try {
       const article = page.locator('[data-reader-article]');
       const bookmark = bookmarkButton(article);
       await bookmarkButton(article, false).waitFor();
-      await article.getByRole('progressbar', {name: '进度'}).waitFor();
-      assert.equal(await article.getByRole('progressbar', {name: '进度'}).getAttribute('aria-valuenow'), '0');
+      const bar = article.getByRole('progressbar', {name: '进度'});
+      await bar.waitFor();
+      assert.equal(await bar.getAttribute('aria-valuenow'), '0');
+      const barBox = await bar.boundingBox();
+      assert.ok(barBox && barBox.y <= 1 && barBox.x <= 1 && barBox.width >= width - 2, `Progress strip is flush and full-bleed at ${width}px`);
       await article.getByText('当前文章', {exact: true}).waitFor();
       const currentTitle = article.getByText(title, {exact: true});
       await currentTitle.waitFor();
@@ -307,14 +312,23 @@ try {
       chromeURL.searchParams.set('progress', '0.62');
       chromeURL.searchParams.set('title', 'Cloudflare OS');
       await page.goto(chromeURL.href);
+      const bar = page.getByRole('progressbar', {name: '进度'});
       const skip = page.getByRole('button', {name: '跳过本次', exact: true});
       await skip.waitFor();
+      await page.waitForFunction(() => window.scrollY > 400);
+      const viewport = page.viewportSize();
+      const barBox = await bar.boundingBox();
+      assert.ok(barBox && viewport);
+      assert.ok(barBox.y <= 1, `Progress strip is flush with the top at ${width}px`);
+      assert.ok(barBox.x <= 1, `Progress strip starts at the left edge at ${width}px`);
+      assert.ok(barBox.width >= viewport.width - 2, `Progress strip spans the viewport at ${width}px`);
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.waitForFunction(() => window.scrollY < 2);
       await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
       const skipBox = await skip.boundingBox();
-      const progressBox = await page.locator('[data-reading-progress]').boundingBox();
-      assert.ok(skipBox && progressBox);
+      assert.ok(skipBox);
+      assert.ok(skipBox.x + skipBox.width >= viewport.width - 16, '跳过本次 sits on the trailing edge');
+      assert.ok(skipBox.y <= 16, '跳过本次 stays on the top bar');
       if (width > 1024) {
         const brand = page.locator('.book-brand');
         const search = page.getByRole('button', {name: '搜索博客', exact: true});
@@ -322,25 +336,23 @@ try {
         const searchBox = await search.boundingBox();
         assert.ok(brandBox && searchBox);
         assert.equal(overlaps(skipBox, brandBox), false, '跳过本次 does not overlap the site logo');
-        assert.equal(overlaps(progressBox, brandBox), false, 'The progress strip does not overlap the site logo');
+        assert.equal(overlaps(barBox, brandBox), false, 'The full-bleed track stays above the site logo');
         assert.equal(overlaps(skipBox, searchBox), false, '跳过本次 does not overlap search');
-        assert.equal(overlaps(progressBox, searchBox), false, 'The progress strip does not overlap search');
         assert.equal(await topHit(page, brandBox), 'chrome');
         assert.equal(await topHit(page, searchBox), 'chrome');
       } else {
-        const header = page.locator('.book-header');
-        const headerBox = await header.boundingBox();
-        assert.ok(headerBox);
-        assert.equal(overlaps(skipBox, headerBox), false, '跳过本次 does not overlap the mobile header');
-        assert.equal(overlaps(progressBox, headerBox), false, 'The progress strip does not overlap the mobile header');
-        assert.equal(await topHit(page, headerBox), 'chrome');
+        const menu = page.getByRole('button', {name: '打开导航', exact: true});
+        const menuBox = await menu.boundingBox();
+        assert.ok(menuBox);
+        assert.equal(overlaps(skipBox, menuBox), false, '跳过本次 does not cover the mobile menu button');
+        assert.equal(await topHit(page, menuBox), 'chrome');
       }
       assert.equal((await state(page)).writes.filter(write => write.name === 'reader:setReadingProgress').length, 0, 'Showing the restore control does not write');
-      await page.screenshot({path: `/opt/cursor/artifacts/reading-progress-header-${width}.png`});
+      await page.screenshot({path: `/opt/cursor/artifacts/article-progress-bar-${width}.png`});
       await skip.click();
       await page.waitForFunction(() => window.scrollY < 40);
       assert.equal(await skip.count(), 0, 'Skip still dismisses the restore control');
-      console.log(`Reading progress chrome ${width}px: restore control stays clear of branding.`);
+      console.log(`Reading progress bar ${width}px: full-bleed top strip, skip on the trailing edge.`);
     } finally {await context.close();}
   }
 } finally {
