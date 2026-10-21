@@ -9,8 +9,14 @@
 }
 
 .progress {
-  @apply fixed inset-x-0 top-0 flex min-w-0 flex-col gap-1.5 border-b border-border bg-surface px-4 py-1.5;
+  @apply fixed top-0 flex min-w-0 flex-col gap-1.5 border-b border-border bg-surface px-4 py-1.5;
   z-index: 20;
+  inset-inline: 0;
+}
+
+/* The mobile drawer is position:fixed and otherwise paints under this strip. */
+@media (max-width: 64rem) {
+  :global(.book-menu-content) { z-index: 30; }
 }
 
 .progressMeta {
@@ -26,20 +32,12 @@
   background: var(--accent);
 }
 
-.sectionLabel {
-  @apply mb-2 text-xs font-medium leading-5 text-foreground;
-}
-
-.itemProgress {
-  @apply text-xs leading-5 text-muted;
-}
-
 .currentRow {
   @apply grid grid-cols-[minmax(0,1fr)_2.75rem] items-center gap-3;
 }
 
 .readingAction { @apply shrink-0; }
-.itemPath { @apply break-all text-xs text-muted; }
+.itemMeta { @apply text-xs leading-5 text-muted; }
 
 .currentText {
   @apply min-w-0 flex-1;
