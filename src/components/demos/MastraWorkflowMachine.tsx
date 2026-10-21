@@ -1,104 +1,66 @@
-import {useEffect, useId, useReducer, useState} from 'react';
+import {useEffect, useId, useMemo, useState} from 'react';
 import {Button, Label, Slider} from '@heroui/react';
-import {APPROVAL_THRESHOLD, initialWorkflowState, MAX_AMOUNT, MIN_AMOUNT, workflowReadout, workflowReducer} from './mastra-workflow-model';
+import {initialWorkflowState, MAX_AMOUNT, MIN_AMOUNT, workflowReadout, workflowReducer} from './mastra-workflow-model';
+import MastraWorkflowMotion from './mastra-workflow-motion';
 import demoSurface from './DemoSurface.module.css';
+import frame from './AnatomyFrame.module.css';
 import styles from './MastraWorkflowMachine.module.css';
 
-export default function MastraWorkflowMachine({id = 'mastra-workflow-machine'}: {id?: string}) {
-  const uid = useId();
-  const [ready, setReady] = useState(false);
-  const [state, dispatch] = useReducer(workflowReducer, undefined, () => initialWorkflowState());
-  const readout = workflowReadout(state);
-  useEffect(() => setReady(true), []);
-  const paused = state.status === 'suspended';
-  const done = state.status === 'success';
-  const approval = state.snapshot?.context.approval;
-  const hasResume = readout.resumeData !== null;
-  const overThreshold = readout.savedAmount === null ? null : readout.savedAmount > APPROVAL_THRESHOLD;
-  const decisionSource = !state.snapshot ? '等待运行' : paused ? '尚未返回 output' : hasResume ? `resumeData.approved = ${readout.resumeData!.approved}` : '未暂停，直接返回 automatic';
+/** The reducer produces the fixture; the moving working copy exposes its causal path. */
+export default function MastraWorkflowMachine({id='mastra-workflow-machine'}:{id?:string}) {
+  const uid=useId();
+  const [hydrated,setHydrated]=useState(false);
+  const [amount,setAmount]=useState(180);
+  const [nextAmount,setNextAmount]=useState(60);
+  const [approved,setApproved]=useState(false);
+  useEffect(()=>setHydrated(true),[]);
+  const fixture=useMemo(()=>{
+    const initial=initialWorkflowState(amount);
+    const started=workflowReducer(initial,{type:'start'});
+    const changed=workflowReducer(started,{type:'amount',amount:nextAmount});
+    return started.status==='suspended'?workflowReducer(changed,{type:'resume',approved}):changed;
+  },[amount,nextAmount,approved]);
+  const readout=workflowReadout(fixture);
+  const automatic=amount<=100;
 
-  return <section id={id} className={`${demoSurface.surface} ${styles.root}`} data-book-island data-demo="mastra-workflow-machine" data-hydrated={ready} data-workflow-status={state.status} aria-labelledby={`${uid}-title`}>
+  return <section id={id} data-book-island data-demo="mastra-workflow-machine" data-hydrated={hydrated}
+    data-model-status={fixture.status} data-approval-decision={readout.output?.decision} className={`${demoSurface.surface} ${frame.surface} ${styles.root}`} aria-labelledby={`${uid}-title`}>
     <header className={styles.header}>
-      <span className={styles.eyebrow}>WORKFLOW · 字段来源实验</span>
-      <h3 id={`${uid}-title`}>旧输入与新决定，怎样组成恢复结果</h3>
-      <p>保存的 <code>payload.amount</code> 提供金额，恢复请求中的 <code>approved</code> 决定结果。下面把两份输入、分支条件和输出字段放在一起核对。</p>
+      <p className={frame.eyebrow}>ANATOMY · FIG. 01 / 保存与恢复</p>
+      <h3 id={`${uid}-title`}>原输入留下来，新决定接进来</h3>
+      <p>先看一次完整的暂停与恢复：保留的金额原件不会被下一笔草稿替换；恢复副本沿侧轨直接回到 approval，与新的决定接合，再进入 receipt。</p>
     </header>
-
-    <div className={styles.controls}>
-      <Slider minValue={MIN_AMOUNT} maxValue={MAX_AMOUNT} step={10} value={state.draftAmount} onChange={value => dispatch({type: 'amount', amount: Array.isArray(value) ? value[0]! : value})} isDisabled={!ready}>
-        <Label>待提交金额 amount</Label><Slider.Output /><Slider.Track><Slider.Fill /><Slider.Thumb /></Slider.Track>
+    <div className={styles.scenarios} aria-label="比较两种执行路径">
+      <Button size="sm" variant={automatic?'outline':'secondary'} isDisabled={!hydrated} data-scenario="suspend" onPress={()=>{setAmount(180);setNextAmount(60);setApproved(false);}}>180 → 草稿60 → 拒绝</Button>
+      <Button size="sm" variant={automatic?'secondary':'outline'} isDisabled={!hydrated} data-scenario="automatic" onPress={()=>{setAmount(100);setNextAmount(60);}}>100 · 不暂停</Button>
+    </div>
+    <MastraWorkflowMotion amount={amount} nextAmount={nextAmount} approved={approved} target={fixture}/>
+    <div className={styles.conditions}>
+      <Slider minValue={MIN_AMOUNT} maxValue={MAX_AMOUNT} step={10} value={amount} isDisabled={!hydrated} aria-label="当前 Run 开始时的金额" onChange={value=>setAmount(Array.isArray(value)?value[0]!:value)}>
+        <Label>当前 Run 的初始金额</Label><Slider.Output>{amount}</Slider.Output><Slider.Track><Slider.Fill/><Slider.Thumb/></Slider.Track>
       </Slider>
-      <div className={styles.actions}>
-        <Button size="sm" variant="primary" isDisabled={!ready || state.status !== 'ready'} onPress={() => dispatch({type: 'start'})}>运行 Workflow</Button>
-        <Button size="sm" variant="outline" isDisabled={!ready} onPress={() => dispatch({type: 'reset'})}>重置为新运行</Button>
-      </div>
-      <p className={styles.note}>先运行 180，暂停后把待提交金额改为 60，再选择批准或拒绝。已有 Run 的输入保存在下方；重置后才能用新金额启动另一个 Run。</p>
-    </div>
-
-    <ol className={styles.execution} aria-label="各步骤执行次数" data-counts>
-      <li><code>normalize</code><strong>{state.counts.normalize} 次</strong><span>{state.snapshot ? '已完成' : '尚未执行'}</span></li>
-      <li><code>approval</code><strong>{state.counts.approval} 次</strong><span>{paused ? '暂停，等待恢复' : done ? '已完成' : '尚未执行'}</span></li>
-      <li><code>receipt</code><strong>{state.counts.receipt} 次</strong><span>{readout.receipt ? '已完成' : '尚未执行'}</span></li>
-    </ol>
-
-    <div className={styles.sources}>
-      <div className={`${styles.source} ${styles.savedSource}`}>
-        <h4>① 保存的 Step 输入</h4>
-        <code className={styles.path}>snapshot.context.approval.payload</code>
-        <pre data-saved-payload>{JSON.stringify(approval?.payload ?? null, null, 2)}</pre>
-        <p className={styles.note}>{state.snapshot ? <>重新进入 <code>approval.execute()</code> 时，这份对象成为 <code>inputData</code>。</> : <>运行后，<code>normalize.output</code> 成为这份输入。</>}</p>
-        {readout.draftDiffers && <p className={styles.frozenNote} data-frozen-comparison>待提交 <strong>{state.draftAmount}</strong>；当前 Run 保存 <strong>{readout.savedAmount}</strong>。两者不同，恢复仍读取保存值。</p>}
-      </div>
-      <div className={`${styles.source} ${styles.resumeSource}`}>
-        <h4>② 本次恢复请求</h4>
-        <code className={styles.path}>resumeData</code>
-        <pre data-resume-data>{hasResume ? JSON.stringify(readout.resumeData, null, 2) : 'undefined'}</pre>
-        <div className={styles.actions}>
-          <Button size="sm" variant="secondary" isDisabled={!ready || !paused} onPress={() => dispatch({type: 'resume', approved: true})}>批准 · true</Button>
-          <Button size="sm" variant="outline" isDisabled={!ready || !paused} onPress={() => dispatch({type: 'resume', approved: false})}>拒绝 · false</Button>
-        </div>
-        <p className={styles.note}>{hasResume ? <>恢复数据已到达。<code>{String(readout.resumeData!.approved)}</code> 是决定的值，和缺少 <code>resumeData</code> 不同。</> : <>暂停后选择一个决定，传入 <code>{'{approved: true}'}</code> 或 <code>{'{approved: false}'}</code>。</>}</p>
+      <Slider minValue={MIN_AMOUNT} maxValue={MAX_AMOUNT} step={10} value={nextAmount} isDisabled={!hydrated} aria-label="暂停后下一笔草稿金额" onChange={value=>setNextAmount(Array.isArray(value)?value[0]!:value)}>
+        <Label>暂停后的下一笔草稿</Label><Slider.Output>{nextAmount}</Slider.Output><Slider.Track><Slider.Fill/><Slider.Thumb/></Slider.Track>
+      </Slider>
+      <div className={styles.decision} role="group" aria-label="本次恢复决定">
+        <span>恢复时传入</span>
+        <Button size="sm" variant={approved?'secondary':'outline'} aria-pressed={approved} isDisabled={!hydrated||automatic} onPress={()=>setApproved(true)}>批准 · true</Button>
+        <Button size="sm" variant={!approved?'secondary':'outline'} aria-pressed={!approved} isDisabled={!hydrated||automatic} onPress={()=>setApproved(false)}>拒绝 · false</Button>
       </div>
     </div>
-
-    <div className={styles.condition} data-pause-condition>
-      <h4>③ 重新执行 approval：先检查暂停条件</h4>
-      <div className={styles.expression}>
-        <span><code>inputData.amount &gt; {APPROVAL_THRESHOLD}</code><strong data-threshold-result>{overThreshold === null ? '—' : String(overThreshold)}</strong></span>
-        <code className={styles.operator}>&amp;&amp;</code>
-        <span><code>resumeData === undefined</code><strong data-resume-missing>{state.snapshot ? String(!hasResume) : '—'}</strong></span>
+    <p className={styles.explanation}>{automatic?'当前金额不超过100：直接通过，不取存档、不使用决定件。':'蓝色原件与工作副本都保持当前Run金额；灰色新草稿碰到独立挡块，不会进入恢复路径。true与false都会到达合成台；false产生rejected输出，流程仍会完成。'}</p>
+    <details className={styles.details}>
+      <summary>核对教学模型的最终字段与固定源码</summary>
+      <p>这里是完整演示结束后的预期值。主画面的读数按当前播放阶段出现；金额、阈值、审批规则是本文的教学场景，浏览器没有运行 Mastra、LLM 或数据库。</p>
+      <div className={styles.dataGrid}>
+        <div><h4>保存的 approval 输入</h4><pre data-saved-payload>{JSON.stringify(automatic?null:fixture.snapshot?.context.approval.payload,null,2)}</pre></div>
+        <div><h4>本次 resumeData</h4><pre data-resume-data>{readout.resumeData?JSON.stringify(readout.resumeData,null,2):'undefined'}</pre></div>
+        <div><h4>组合后的 approval.output</h4><pre data-approval-output>{JSON.stringify(readout.output,null,2)}</pre></div>
       </div>
-      <p className={styles.note} data-condition-result>{!state.snapshot
-        ? '尚未执行。两个条件同时为 true 时调用 suspend()，本次不产生 approval.output。'
-        : paused
-          ? 'true && true：调用 suspend()，保存输入并结束本次执行，等待外部决定。'
-          : hasResume
-            ? 'true && false：恢复数据已存在，继续构造 output。approved 为 false 也会走到这里。'
-            : 'false && true：金额未超过阈值，直接构造 automatic 结果。'}</p>
-    </div>
-
-    <div className={styles.output}>
-      <h4>④ 构造 output，再交给 receipt</h4>
-      <dl className={styles.mapping}>
-        <div><dt><code>output.amount</code></dt><dd><code className={styles.savedValue}>inputData.amount{readout.savedAmount === null ? '' : ` = ${readout.savedAmount}`}</code><span>从①原输入取值</span></dd></div>
-        <div><dt><code>output.decision</code></dt><dd><code className={styles.resumeValue}>{decisionSource}</code><span>{hasResume ? `从②的布尔值选择 ${readout.resumeData!.approved ? 'approved' : 'rejected'}` : '无恢复数据且未暂停时为 automatic'}</span></dd></div>
-      </dl>
-      <pre data-approval-output>{readout.output ? <>{'{\n  "amount": '}<span className={styles.savedValue}>{readout.output.amount}</span>{',\n  "decision": "'}<span className={styles.resumeValue}>{readout.output.decision}</span>{'"\n}'}</> : '尚无 output'}</pre>
-      {readout.receipt ? <div className={styles.receipt} data-receipt-construction>
-        <span><code>receipt</code> 组合两个输出字段：</span>
-        <div><code className={styles.resumeValue}>{readout.receipt.decision}</code><span> + </span><code>":"</code><span> + </span><code className={styles.savedValue}>{readout.receipt.amount.toFixed(2)}</code></div>
-        <output data-receipt>{readout.receipt.receipt}</output>
-      </div> : <p className={styles.note}>只有 <code>approval</code> 返回 output，才执行 <code>receipt</code>；金额用 <code>toFixed(2)</code> 格式化。</p>}
-    </div>
-
-    <div className={styles.status} role="status" aria-live="polite">
-      <strong data-status-readout>{readout.statusLabel}</strong><p>{readout.explanation}</p>
-    </div>
-    <details className={styles.snapshot}>
-      <summary>展开 Snapshot 的教学摘录</summary>
-      <p className={styles.note}>这里只保留本实验所需的步骤字段；这不是 Mastra 完整的存储记录。</p>
-      <pre data-snapshot>{JSON.stringify(state.snapshot, null, 2)}</pre>
+      <p>最终 receipt：<code data-receipt>{readout.receipt?.receipt}</code>。执行次数：<code data-counts>normalize {fixture.counts.normalize} / approval {fixture.counts.approval} / receipt {fixture.counts.receipt}</code>。</p>
+      <pre data-snapshot>{JSON.stringify(fixture.snapshot,null,2)}</pre>
+      <p><a href="https://github.com/mastra-ai/mastra/blob/a1fbf275e587d56a86c52295eceff6c0756169e8/packages/core/src/workflows/handlers/step.ts#L323-L465" target="_blank" rel="noopener noreferrer">固定版本的 Step 恢复入口</a>。恢复重新执行暂停的 Step，使用保存输入和新 resumeData；不会恢复旧 JavaScript 调用栈。实际副作用仍需业务幂等保护。</p>
     </details>
-    <p className={styles.note}>浏览器中的确定性教学模型，不调用 Mastra、LLM 或数据库。阈值和业务规则由本文设定；恢复输入的来源依据固定版本源码。业务结果 <code>rejected</code> 表示流程完成并拒绝请求，Workflow 状态仍为 <code>success</code>。</p>
+    <noscript><p className={styles.explanation}>静态结果：180 暂停后，下一笔草稿60不改变当前Run；传入 false 得到 rejected:180.00。normalize执行1次、approval2次、receipt1次。启用JavaScript可观看和接管动画。</p></noscript>
   </section>;
 }

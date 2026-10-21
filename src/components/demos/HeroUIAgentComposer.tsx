@@ -7,6 +7,7 @@ import {
 import demoSurface from './DemoSurface.module.css';
 import frame from './AnatomyFrame.module.css';
 import styles from './HeroUIAgentComposer.module.css';
+import HeroUIAgentMotion from './heroui-agent-motion';
 
 /** A local experiment: the received JSONL prefix drives the visible spec and result. */
 export default function HeroUIAgentComposer() {
@@ -57,20 +58,23 @@ export default function HeroUIAgentComposer() {
     data-hydrated={hydrated} data-accepted={accepted} data-presentation={presentation} data-received={received} aria-labelledby={`${id}-heading`}>
     <p className={frame.eyebrow}>HeroUI Agents / 数据到界面实验</p>
     <h3 className={frame.heading} id={`${id}-heading`}>一份销量数据，如何成为三种界面？</h3>
-    <p className={frame.note}>改变销量，核对工具结果怎样映射到组件 props；也可以从第一行重放 JSONL，观察 root、容器和组件引用逐个到达，何时才有足够的数据呈现界面。</p>
+    <p className={frame.note}>先观看数据条经过引用工位和字段量规，再进入输出纸面：四个销量值组成图表或表格，工具算好的合计组成指标。改变输入、缺少字段或切换呈现方式后，可以暂停、慢放和拖动进度，观察哪一步发生变化。</p>
+
+    <HeroUIAgentMotion state={state} />
 
     <fieldset className={styles.controls} disabled={!hydrated}>
       <legend>改变输入与呈现方式</legend>
       <div className={styles.presets}>{(Object.keys(PRESETS) as DatasetPreset[]).map(name => <Button key={name} size="sm" variant="secondary" onPress={() => preset(name)}>{PRESETS[name].label}</Button>)}<Button size="sm" variant="ghost" onPress={reset}>恢复示例</Button></div>
-      <div className={styles.sliders}>{quantities.map((quantity, index) => <Slider key={DAYS[index]} className={styles.slider} minValue={0} maxValue={MAX_QUANTITY} step={1} value={quantity} isDisabled={!hydrated} aria-label={`${DAYS[index]}销量`}
+      <details className={styles.inputDetails}><summary>逐日调整四个数值</summary><div className={styles.sliders}>{quantities.map((quantity, index) => <Slider key={DAYS[index]} className={styles.slider} minValue={0} maxValue={MAX_QUANTITY} step={1} value={quantity} isDisabled={!hydrated} aria-label={`${DAYS[index]}销量`}
         onChange={next => {manual();const quantity = Array.isArray(next) ? next[0] ?? 0 : next;setQuantities(current => current.map((value, at) => at === index ? quantity : value));}}>
         <Label>{DAYS[index]}</Label><Slider.Output>{quantity} 件</Slider.Output>
         <Slider.Track><Slider.Fill /><Slider.Thumb /></Slider.Track>
-      </Slider>)}</div>
+      </Slider>)}</div></details>
       <div className={styles.presentationOptions} role="radiogroup" aria-label="选择呈现组件">{PRESENTATIONS.map(type => <label key={type}><input type="radio" name={`${id}-presentation`} value={type} checked={type === presentation} onChange={() => {manual();setPresentation(type);}} /><span>{PRESENTATION_LABELS[type]}</span><code>{type}</code></label>)}</div>
       <label className={styles.missing}><input type="checkbox" checked={missing} onChange={event => {manual();setMissing(event.target.checked);}} />删除第一行的必需字段 <code>quantity</code>，测试本示例的拒绝分支</label>
     </fieldset>
 
+    <details className={styles.finalDetails}><summary>核对完整数据、协议与最终界面</summary>
     <div className={styles.trace}>
       <article><p className={styles.panelLabel}>01 / Client Tool Result</p><div className={styles.dataset}>
         {state.data.rows.map((row, index) => <div key={row.day} data-selected={selectedRow === index}><span>{row.day}</span><code>quantity: {row.quantity === undefined ? <em>缺失</em> : row.quantity}</code></div>)}
@@ -124,7 +128,8 @@ export default function HeroUIAgentComposer() {
       <p className={styles.small}>下面的字符串按行添加 <code>root</code>、<code>elements</code> 与组件。<code>children</code> 保存子节点 ID，决定顺序。容器 <code>teaching-stack</code> 与各 props 是此演示自写的简化 Schema，不是可直接提交给 HeroUI 的官方 schema。</p>
       <pre data-spec-stream><code>{state.specStream}</code></pre>
     </details>
-    <p className={styles.status} role="status" aria-live="polite">{readout}。{!ready ? streamStatus : accepted ? '切换组件保留同一份数据，只改变表达方式。' : '恢复必需字段后，同一组件可以重新呈现。'}</p>
+    </details>
+    <p className={styles.status} role="status" aria-live="polite">模型预期：{readout}。{!ready ? streamStatus : accepted ? '切换组件保留同一份数据，只改变表达方式。' : '恢复必需字段后，同一组件可以重新呈现。'}</p>
     <p className={frame.note}>这个教学模型不调用 AI 或 HeroUI 服务。它示范官方公开的“结构化工具数据 → 选择组件 Schema → JSONL spec → 校验 → 呈现”链路；这里的四条 add patches、编译器、组件选型、合计计算、字段规则和拒绝策略由本示例实现。真实服务还可以在后续 patches 到达时先显示已经就绪的组件，本例仅含一个数据组件。真实 Agent 遇到缺数据时可能换组件或再次调用工具；不能从本演示推断其一定拒绝整条回复。</p>
     <p className={frame.note}><a href="https://heroui.pro/docs/agents/configure/tools" target="_blank" rel="noopener noreferrer">官方 Tools 与 Dataset interfaces</a> · <a href="https://heroui.pro/docs/agents/components" target="_blank" rel="noopener noreferrer">官方 Agent UI 组件 Schema 与选择过程</a></p>
     <noscript><p className={frame.note}>当前静态结果：24、42、30、54 件，合计 150 件，呈现柱状图。启用 JavaScript 后可改数据、换组件并测试缺字段的教学分支。</p></noscript>

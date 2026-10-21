@@ -119,6 +119,10 @@ Agent 中的交互式代码示例使用 `@heroui-pro/react/code-block` 的 `Code
 
 ## 普通文章与 MDX 代码块
 
+Anatomy 博客装置使用 `MechanismPlayer` 统一管理默认演示、播放／暂停、0.25×／0.5×／1×、进度与键盘分镜。各场景的 `onFrame` 从纯模型与同一进度计算连续姿态，直接更新 SVG refs；不要用 React 状态每帧重绘。手动播放到终点会保持结果；只有空闲演示在停留后淡出复位。离屏和页面隐藏停止推进，减少动画默认显示终点并允许手动查看其他分镜。
+
+`npm run test:browser:anatomy-motion` 检查正常运动、同一对象身份、接触前后结果、慢放、拖动进度、离屏与减少动画。设置 `BLOG_SCREENSHOT_DIR` 保存中间帧，设置 `BLOG_VIDEO_DIR` 额外录制默认 1× 视频（需要 Playwright 的 ffmpeg 运行时和系统 `ffmpeg`）。旧命令 `test:browser:anatomy-mechanisms` 转到同一套检查；规则与边界仍由独立纯模型测试核对。视频、4× 局部与实际观看用于判断造型和动作质量，测试通过不能替代这一步。使用静态 build/preview 做最终验收，避免开发时 SSR 与 HMR 样式缓存错配影响结论。
+
 主题默认使用 Astro / Shiki 静态高亮与轻量复制，已移除 Expressive Code。本站通过 `astroBook({ markdown: { code: false } })` 与 `BookLayout code={false}` 继续使用自己的 Pro CodeBlock 渲染器。仅博客依赖 HeroUI Pro，主题没有商业包或商业代码。Mermaid 使用主题的图表渲染与轻量源码复制。
 
 `src/lib/markdown.mjs` 中的 `remarkBlogCodeSource` 保留代码内容、注释、空白及实际末尾换行；`rehypeBlogCodeBlocks` 为普通代码生成 `data-blog-code` 容器。它同时用于传统 Blog 的 `set:html` 输出和 Astro 原生 MDX，不能只靠 MDX `components.pre` 替换。`data-demo` / `data-book-island` 中的代码由其组件管理。

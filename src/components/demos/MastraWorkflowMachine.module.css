@@ -1,57 +1,20 @@
 @reference "../../styles/tailwind.css";
-
-.root { container-type: inline-size; min-width: 0; margin: 1.5rem 0; padding: clamp(1rem, 3vw, 1.75rem); border: 1px solid var(--border); border-radius: .75rem; background: var(--background); }
-.root h3, .root h4 { margin: 0; padding: 0; border: 0; line-height: 1.5; }
-.root h3::before, .root h4::before { content: none !important; }
-.root h3 { font-size: 1.15rem; font-weight: 600; }
-.root h4 { font-size: .9rem; font-weight: 600; }
-.root p { margin: .65rem 0 0; }
-.root code { overflow-wrap: anywhere; }
-.root :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
-.header { @apply grid gap-2; }
-.header p, .note { font-size: .8rem; line-height: 1.75; color: var(--muted); }
-.eyebrow { font: .72rem ui-monospace, SFMono-Regular, monospace; color: var(--muted); }
-.controls { @apply mt-5 grid gap-3; }
-.actions { @apply flex flex-wrap items-center gap-2; }
-.execution { @apply my-5 grid gap-2 p-0; list-style: none; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.execution li { @apply m-0 grid gap-1 rounded-md border p-3; border-color: var(--border); }
-.execution code { font-size: .78rem; }
-.execution strong { font-size: .95rem; }
-.execution span { color: var(--muted); font-size: .7rem; }
-.sources { @apply grid gap-3; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.source { @apply min-w-0 rounded-md border p-4; border-color: var(--border); }
-.savedSource { border-top: 3px solid var(--accent); }
-.resumeSource { border-top: 3px solid color-mix(in srgb, var(--foreground) 65%, var(--background)); }
-.path { display: block; margin-top: .6rem; color: var(--muted); font-size: .7rem; }
-.root pre { margin: .8rem 0; padding: .8rem; overflow-x: auto; border-radius: .4rem; background: var(--surface-secondary); font: .78rem/1.7 ui-monospace, SFMono-Regular, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
-.frozenNote { padding-top: .65rem; border-top: 1px solid var(--border); font-size: .78rem; line-height: 1.7; }
-.condition, .output { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
-.expression { @apply mt-3 flex flex-wrap items-center gap-3; }
-.expression > span { display: grid; gap: .3rem; }
-.expression code { font-size: .75rem; }
-.expression strong { font: 600 .9rem ui-monospace, SFMono-Regular, monospace; }
-.expression .operator { color: var(--muted); }
-.mapping { margin: .8rem 0; font-size: .78rem; }
-.mapping > div { @apply grid gap-2 py-2; grid-template-columns: 9rem minmax(0, 1fr); }
-.mapping dt, .mapping dd { margin: 0; min-width: 0; }
-.mapping dd span { display: block; margin-top: .25rem; font-size: .72rem; color: var(--muted); }
-.savedValue { color: var(--accent); font-weight: 600; }
-.resumeValue { text-decoration-line: underline; text-decoration-style: dotted; text-underline-offset: .25em; font-weight: 600; }
-.receipt { @apply grid gap-2 text-xs; line-height: 1.8; }
-.receipt > span { color: var(--muted); }
-.receipt output { font: 600 1rem ui-monospace, SFMono-Regular, monospace; overflow-wrap: anywhere; }
-.status { margin-top: 1.25rem; padding: .8rem 1rem; border-left: 3px solid var(--accent); background: var(--accent-soft); font-size: .8rem; line-height: 1.75; }
-.status strong { font-size: .85rem; }
-.snapshot { margin-top: 1rem; font-size: .8rem; }
-.snapshot summary { cursor: pointer; padding-block: .3rem; }
-@container (max-width: 36rem) {
-  .sources { grid-template-columns: minmax(0, 1fr); }
-  .source { padding: .85rem; }
-  .execution { gap: .4rem; }
-  .execution li { padding: .6rem; }
-  .execution code { font-size: .7rem; }
-  .execution span { font-size: .65rem; }
-  .mapping > div { grid-template-columns: minmax(0, 1fr); gap: .4rem; }
-  .expression { gap: .6rem; }
-  .expression code { font-size: .68rem; }
-}
+.root { container-type: inline-size; }
+.header { display: grid; gap: .5rem; }
+.header h3 { font-size: 1.25rem; line-height: 1.45; }
+.header p:last-child { font-size: .85rem; line-height: 1.7; color: var(--muted); }
+.scenarios { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+.scenarios button { font-size: .74rem; }
+.conditions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.25rem 1.4rem; margin-top: 1.3rem; }
+.conditions label { font-size: .76rem; }
+.decision { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; grid-column: 1/-1; }
+.decision > span { margin-right: .25rem; font-size: .75rem; color: var(--muted); }
+.decision button { font-size: .74rem; }
+.explanation { font-size: .8rem; line-height: 1.8; color: var(--muted); }
+.details { margin-top: 1rem; border-top: 1px solid var(--border); padding-top: .9rem; font-size: .78rem; line-height: 1.75; }
+.details summary { cursor: pointer; color: var(--muted); }
+.dataGrid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .6rem; margin-top: 1rem; }
+.dataGrid > div { min-width: 0; }
+.details h4 { margin: .3rem 0; font-size: .72rem; font-weight: 500; }
+.details pre { margin-top: .5rem; padding: .65rem; border: 1px solid var(--border); border-radius: .4rem; font: .68rem/1.65 ui-monospace,monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+@container(max-width:500px) { .conditions { grid-template-columns: 1fr; } .dataGrid { grid-template-columns: 1fr; } }

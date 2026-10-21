@@ -74,33 +74,11 @@ test('extra starts and resumes cannot overwrite a pending run or execute steps a
   assert.deepEqual(reset, initialWorkflowState(60));
   assert.equal(reduce(reset, {type: 'start'}).snapshot.context.receipt.output.amount, 60);
 });
-test('invalid UI inputs cannot leak NaN into tickets or geometry', () => {
+test('invalid UI inputs are clamped before deriving the amount fraction', () => {
   for (const amount of [NaN, Infinity, -10, 999]) {
     const state = initialWorkflowState(amount);
     const readout = workflowReadout(state);
     assert.ok(state.draftAmount >= 0 && state.draftAmount <= 300);
     assert.ok(Number.isFinite(readout.amountFraction));
-  }
-});
-
-const kitSource = await readFile(new URL('../src/components/demos/anatomy-iso-kit.ts', import.meta.url), 'utf8');
-const kitUrl = `data:text/javascript;base64,${Buffer.from(stripTypeScriptTypes(kitSource)).toString('base64')}`;
-const kit = await import(kitUrl);
-const geometrySource = await readFile(new URL('../src/components/demos/mastra-workflow-geometry.ts', import.meta.url), 'utf8');
-const geometry = await import(`data:text/javascript;base64,${Buffer.from(stripTypeScriptTypes(geometrySource).replace("'./anatomy-iso-kit'", JSON.stringify(kitUrl))).toString('base64')}`);
-test('the Figure records true solid shapes and fits its viewport', () => {
-  assert.ok(geometry.PART_COUNT >= 40 && geometry.PART_COUNT <= 80);
-  assert.equal(new Set(geometry.PARTS.map(p => p.name)).size, geometry.PART_COUNT);
-  for (const part of geometry.PARTS) {
-    assert.ok(part.purpose.length > 10);
-    assert.ok(part.shape.kind === 'slab' || part.shape.kind === 'cylinder');
-    assert.ok(part.center.every(Number.isFinite));
-    for (const field of ['fill', 'top', 'outline']) assert.ok(!/NaN|Infinity/.test(part.paths[field]), part.name);
-    const s = part.shape;
-    const plan = s.kind === 'slab' ? s.plan : {x: s.x - s.radius, y: s.y - s.radius, w: 2 * s.radius, d: 2 * s.radius};
-    for (const point of kit.boxCorners(plan, s.z, s.z + s.height)) {
-      const [x, y] = kit.iso(point, geometry.PROJECTION);
-      assert.ok(x > 0 && x < geometry.WIDTH && y > 0 && y < geometry.HEIGHT, `${part.name} stays within viewport`);
-    }
   }
 });
