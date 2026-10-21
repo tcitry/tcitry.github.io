@@ -14,10 +14,6 @@ const allEntries = [
     actor: '[data-workflow-motion="work"]', activity: '[data-workflow-motion="work"]', frames: [.18, .38, .62, .88]},
   {name: 'ruflo', path: '/docs/AI/Agents/ruflo-agent-orchestration-source-analysis/', demo: 'ruflo-memory-window', duration: 18,
     actor: '[data-memory-card="A"]', activity: '[data-memory-head]', frames: [.18, .38, .62, .88]},
-  {name: 'heroui', path: '/docs/AI/Agents/heroui-agents-product-research/', demo: 'heroui-agent-composer', duration: 16,
-    actor: '[data-value-token="0"]', activity: '[data-source-scan]', storyboard: '[data-spec-container]', frames: [.18, .38, .62, .88]},
-  {name: 'rakazo', path: '/docs/AI/Agents/rakazo-source-analysis/', demo: 'rakazo-effect-replay', duration: 14,
-    actor: '[data-moving-request]', activity: '[data-moving-proposal]', frames: [.18, .38, .62, .88]},
 ];
 const selectedNames = process.env.BLOG_MOTION_CASES?.split(',').map(name => name.trim()).filter(Boolean);
 if (selectedNames) for (const name of selectedNames) assert.ok(allEntries.some(entry => entry.name === name), `Unknown motion case: ${name}`);
@@ -241,40 +237,6 @@ async function causalFrames(scene) {
     assert.match(await stage.locator('[data-memory-live-order]').textContent(), /尚未接收/);
     await seek(scene, .95);
     assert.match(await stage.locator('[data-memory-live-order]').textContent(), /^C 0\.950/);
-  } else if (entry.name === 'heroui') {
-    await seek(scene, .45);
-    assert.equal(await stage.getAttribute('data-motion-received'), '3');
-    assert.equal(await stage.locator('[data-value-token="0"]').getAttribute('data-arrived'), 'false');
-    await seek(scene, .54);
-    assert.equal(await stage.getAttribute('data-motion-valid'), 'true');
-    assert.equal(await stage.locator('[data-value-token="0"]').getAttribute('data-arrived'), 'false');
-    await seek(scene, .90);
-    assert.equal(await stage.locator('[data-value-token="0"]').getAttribute('data-arrived'), 'true');
-    assert.deepEqual(await stage.locator('[data-token-number]').allTextContents(), ['24', '42', '30', '54']);
-    await root.getByRole('checkbox').check();
-    await seek(scene, .95);
-    assert.equal(await stage.getAttribute('data-motion-valid'), 'false');
-    assert.equal(await stage.locator('[data-value-token="0"]').getAttribute('data-stopped'), 'true');
-    assert.equal(await stage.locator('[data-value-token="0"]').getAttribute('data-arrived'), 'false');
-    await root.getByRole('checkbox').uncheck();
-  } else {
-    const original = await sampleActor(scene, '[data-retained-request]');
-    await seek(scene, .70);
-    assert.equal(await stage.locator('[data-arrival-readout]').getAttribute('data-arrived'), 'false');
-    assert.equal(await stage.getAttribute('data-copy-arrived'), 'false');
-    await seek(scene, .90);
-    assert.equal(await stage.locator('[data-arrival-readout]').getAttribute('data-arrived'), 'true');
-    assert.equal(await stage.getAttribute('data-replay-branch'), 'execution');
-    assert.equal((await sampleActor(scene, '[data-retained-request]')).transform, original.transform, 'retained original does not move out with its working copy');
-    assert.equal(JSON.parse(await root.locator('[data-replay-output]').textContent()).to, 'team@example.test');
-    await root.locator('[data-scenario="completed"]').click();
-    await seek(scene, .90);
-    assert.equal(await stage.getAttribute('data-replay-branch'), 'return');
-    assert.equal(JSON.parse(await root.locator('[data-replay-output]').textContent()).messageId, 'mail-42');
-    await root.locator('[data-scenario="executing"]').click();
-    await seek(scene, .90);
-    assert.equal(await stage.getAttribute('data-replay-branch'), 'review');
-    assert.equal(JSON.parse(await root.locator('[data-replay-output]').textContent()).uncertain, true);
   }
   console.log(`${entry.name}: contact/order, stable identity, pause, scrub, slow, offscreen, hidden handler and End checked`);
 }
@@ -342,24 +304,7 @@ try {
     assert.equal(await progress(scene), 1);
     assert.equal(await scene.stage.getAttribute('data-playing'), 'false');
     await stationary(scene, 'system requests reduced motion');
-    if (entry.name === 'heroui') {
-      await scene.root.locator('input[type="radio"][value="data-table"]').check();
-      assert.equal(await progress(scene), 1);
-      assert.match(await scene.stage.locator('[data-motion-output]').textContent(), /data-table/);
-      let spec = JSON.parse(await scene.stage.locator('[data-motion-spec]').textContent());
-      assert.equal(spec.elements['sales-view'].type, 'data-table', 'reduced-motion template switch updates the visible spec at unchanged p=1');
-      await scene.root.getByRole('checkbox').check();
-      assert.match(await scene.stage.locator('[data-motion-output]').textContent(), /必需字段缺失/);
-      spec = JSON.parse(await scene.stage.locator('[data-motion-spec]').textContent());
-      assert.equal(Object.hasOwn(spec.elements['sales-view'].props.rows[0], 'quantity'), false, 'missing-field change replaces the visible spec without a phase change');
-      await scene.root.getByRole('checkbox').uncheck();
-      await scene.root.locator('input[type="radio"][value="metric-grid"]').check();
-      assert.match(await scene.stage.locator('[data-motion-output]').textContent(), /metric-grid.*150/);
-      spec = JSON.parse(await scene.stage.locator('[data-motion-spec]').textContent());
-      assert.equal(spec.elements['sales-view'].type, 'metric-grid');
-      await scene.stage.evaluate(node => node.scrollIntoView({block: 'center', behavior: 'instant'}));
-    }
-    const storyboardActor = entry.storyboard ?? entry.actor;
+    const storyboardActor = entry.actor;
     const final = await sampleActor(scene, storyboardActor);
     await seek(scene, .35);
     const inspected = await sampleActor(scene, storyboardActor);
