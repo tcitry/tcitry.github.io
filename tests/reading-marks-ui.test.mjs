@@ -35,7 +35,8 @@ test('reading list is a top-level assistant tab with one merged row per article'
   assert.match(list, /api\.reader\.listReadingProgress/);
   assert.match(list, /usePaginatedQuery\(api\.reader\.listReadingProgress, \{\}/);
   assert.match(list, /filter \? \{status: filter\} : \{\}/);
-  assert.match(list, /emptyLabel="全部档次"/);
+  assert.match(list, /emptyLabel="全部状态"/);
+  assert.doesNotMatch(list, /全部档次/);
   assert.match(list, /mergeReadingEntries/);
   assert.match(list, /loadMore\(20\)/);
   assert.match(list, /href=\{entry\.pathname\}/);

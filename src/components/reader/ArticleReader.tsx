@@ -19,7 +19,7 @@ export default function ArticleReader({pathname, title}: ArticleReaderProps) {
   const titleId = useId();
 
   return <section ref={setTooltipContainer} className={`${surface.surface} ${styles.panel} ${styles.currentArticle}`} aria-label="文章阅读与收藏" data-reader-article data-book-island data-sentry-mask data-pagefind-ignore>
-    <ReadingProgress pathname={pathname} title={title} />
+    <ReadingProgress />
     <div className={styles.currentRow}>
       <div className={styles.currentText}>
         <div className={styles.currentLabel}>当前文章{page?.bookmarked && <span> · 已收藏</span>}</div>

@@ -1,19 +1,11 @@
-import {useEffect, useRef, useState} from 'react';
-import {useConvexAuth, useMutation, useQuery} from 'convex/react';
-import {api} from '../../../convex/_generated/api';
-import {
-  PROGRESS_MIN_DELTA,
-  PROGRESS_MIN_INTERVAL_MS,
-  articleProgress,
-  flushProgress,
-  noteProgress,
-  scrollOffsetForProgress,
-  type ProgressSyncState,
-} from './reading-progress';
+import {useEffect, useState} from 'react';
+import {articleProgress} from './reading-progress';
 import styles from './ReaderPanel.module.css';
 
-// The indicator is only a full-bleed strip fixed to the viewport top. Percent
-// stays in the progressbar value for assistive tech; nothing else is painted.
+// Full-bleed strip fixed to the viewport top. The fill is the current scroll
+// ratio of the article in this viewport. Percent stays on the progressbar for
+// assistive tech; nothing else is painted. Saved reading progress is not read
+// or written here.
 
 function findArticle() {
   return document.querySelector<HTMLElement>('article.book-article, article.book-post');
@@ -44,182 +36,33 @@ function measure(article: HTMLElement, scroller: HTMLElement | Window) {
   return articleProgress(top, article.offsetHeight, viewportHeight(scroller));
 }
 
-function scrollToRatio(article: HTMLElement, scroller: HTMLElement | Window, progress: number) {
-  const offset = scrollOffsetForProgress(article.offsetHeight, viewportHeight(scroller), progress);
-  if (!isElementScroller(scroller)) {
-    window.scrollTo({top: window.scrollY + article.getBoundingClientRect().top + offset, behavior: 'auto'});
-    return;
-  }
-  scroller.scrollTo({
-    top: scroller.scrollTop + article.getBoundingClientRect().top - scroller.getBoundingClientRect().top + offset,
-    behavior: 'auto',
-  });
-}
-
-function quantize(progress: number) {
-  return Math.round(progress * 100) / 100;
-}
-
-export default function ReadingProgress({pathname, title}: {pathname: string; title: string}) {
-  const {isAuthenticated} = useConvexAuth();
-  const saved = useQuery(api.reader.getReadingProgress, isAuthenticated ? {pathname} : 'skip');
-  const setProgress = useMutation(api.reader.setReadingProgress);
-  const [shown, setShown] = useState<number | null>(null);
-  const sync = useRef<ProgressSyncState>({lastSent: 0, lastSentAt: 0, pending: null});
-  const acked = useRef(0);
-  const shownRef = useRef<number | null>(null);
-  const timer = useRef<number | null>(null);
-  const suppress = useRef(false);
-  const ready = useRef(false);
-  const peak = useRef(0);
-  const decidedPath = useRef<string | null>(null);
-  const failures = useRef(0);
-  const mounted = useRef(true);
-  const saveRef = useRef(setProgress);
-  const pageRef = useRef({pathname, title});
-  saveRef.current = setProgress;
-  pageRef.current = {pathname, title};
-
-  function clearTimer() {
-    if (timer.current !== null) {
-      window.clearTimeout(timer.current);
-      timer.current = null;
-    }
-  }
-
-  function show(progress: number) {
-    if (shownRef.current !== null && progress <= shownRef.current) return;
-    shownRef.current = progress;
-    setShown(progress);
-  }
-
-  function arm(waitMs: number) {
-    if (timer.current !== null) return;
-    timer.current = window.setTimeout(() => {
-      timer.current = null;
-      const result = flushProgress(sync.current, Date.now());
-      sync.current = result.state;
-      if (result.send !== null) {
-        show(result.send);
-        void persist(result.send);
-      }
-    }, waitMs);
-  }
-
-  async function persist(progress: number) {
-    const page = pageRef.current;
-    try {
-      const stored = await saveRef.current({pathname: page.pathname, title: page.title, progress});
-      if (!mounted.current) return;
-      failures.current = 0;
-      acked.current = Math.max(acked.current, stored);
-      if (sync.current.lastSent < stored) {
-        const pending = sync.current.pending !== null && sync.current.pending > stored ? sync.current.pending : null;
-        sync.current = {lastSent: stored, lastSentAt: sync.current.lastSentAt, pending};
-        if (pending !== null) arm(PROGRESS_MIN_INTERVAL_MS);
-      }
-      show(Math.max(stored, sync.current.pending ?? stored));
-    } catch {
-      if (!mounted.current) return;
-      failures.current += 1;
-      const retry = Math.max(progress, sync.current.pending ?? 0, sync.current.lastSent);
-      sync.current = {
-        lastSent: acked.current,
-        lastSentAt: Date.now(),
-        pending: retry > acked.current ? retry : null,
-      };
-      if (sync.current.pending !== null && failures.current <= 2) arm(PROGRESS_MIN_INTERVAL_MS);
-    }
-  }
-
-  function observe(progress: number) {
-    const result = noteProgress(sync.current, quantize(progress), Date.now());
-    sync.current = result.state;
-    show(Math.max(result.state.lastSent, result.state.pending ?? 0));
-    if (result.send !== null) {
-      clearTimer();
-      void persist(result.send);
-    } else if (result.waitMs !== null) arm(result.waitMs);
-  }
+export default function ReadingProgress() {
+  const [ratio, setRatio] = useState(0);
 
   useEffect(() => {
-    mounted.current = true;
-    const previousRestoration = history.scrollRestoration;
-    history.scrollRestoration = 'manual';
+    let frame = 0;
+    const update = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        const article = findArticle();
+        setRatio(article ? measure(article, scrollParent(article)) : 0);
+      });
+    };
+    update();
+    document.addEventListener('scroll', update, {capture: true, passive: true});
+    window.addEventListener('resize', update);
     return () => {
-      mounted.current = false;
-      clearTimer();
-      history.scrollRestoration = previousRestoration;
+      document.removeEventListener('scroll', update, {capture: true});
+      window.removeEventListener('resize', update);
+      if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    const onScroll = () => {
-      const article = findArticle();
-      if (!article) return;
-      const progress = measure(article, scrollParent(article));
-      if (progress > peak.current) peak.current = progress;
-      if (!ready.current || suppress.current) return;
-      observe(progress);
-    };
-    const onHide = () => {
-      const result = flushProgress(sync.current, Date.now());
-      sync.current = result.state;
-      clearTimer();
-      if (result.send !== null) void persist(result.send);
-    };
-    document.addEventListener('scroll', onScroll, {capture: true, passive: true});
-    window.addEventListener('pagehide', onHide);
-    return () => {
-      document.removeEventListener('scroll', onScroll, {capture: true});
-      window.removeEventListener('pagehide', onHide);
-      clearTimer();
-    };
-  }, [isAuthenticated, pathname]);
-
-  useEffect(() => {
-    if (!isAuthenticated || saved === undefined || decidedPath.current === pathname) return;
-    decidedPath.current = pathname;
-    clearTimer();
-    ready.current = false;
-    peak.current = 0;
-    failures.current = 0;
-    const savedProgress = saved.progress ?? 0;
-    const quantizedSaved = quantize(savedProgress);
-    acked.current = savedProgress;
-    shownRef.current = null;
-    setShown(null);
-    const article = findArticle();
-    const measured = article ? measure(article, scrollParent(article)) : 0;
-    if (article && measured < PROGRESS_MIN_DELTA && savedProgress >= PROGRESS_MIN_DELTA) {
-      const scroller = scrollParent(article);
-      suppress.current = true;
-      scrollToRatio(article, scroller, savedProgress);
-      const restored = quantize(measure(article, scroller));
-      sync.current = {lastSent: Math.max(quantizedSaved, restored), lastSentAt: Date.now(), pending: null};
-      show(sync.current.lastSent);
-      queueMicrotask(() => {suppress.current = false;});
-      ready.current = true;
-      return;
-    }
-    const best = Math.max(measured, peak.current);
-    sync.current = {
-      lastSent: quantizedSaved,
-      lastSentAt: savedProgress > 0 ? Date.now() : 0,
-      pending: null,
-    };
-    show(Math.max(quantizedSaved, quantize(best)));
-    if (quantize(best) > sync.current.lastSent) observe(best);
-    ready.current = true;
-  }, [isAuthenticated, pathname, saved]);
-
-  if (!isAuthenticated || saved === undefined) return null;
-  const value = shown ?? saved.progress ?? 0;
-  const percent = Math.round(value * 100);
+  const percent = Math.round(ratio * 100);
   return <div className={styles.progress} data-reading-progress data-sentry-mask data-pagefind-ignore>
     <div className={styles.progressTrack} role="progressbar" aria-label="进度" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-valuetext={`${percent}%`}>
-      <div className={styles.progressFill} style={{width: `${percent}%`}} />
+      <div className={styles.progressFill} style={{width: `${ratio * 100}%`}} />
     </div>
   </div>;
 }

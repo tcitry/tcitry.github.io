@@ -36,6 +36,24 @@ let browser;
 
 async function state(page) {return page.evaluate(() => window.__readerFixture.getState());}
 const bookmarkButton = (article, pressed) => article.getByRole('button', {name: '收藏当前文章', exact: true, ...(pressed === undefined ? {} : {pressed})});
+const progressWrites = (pageState) => pageState.writes.filter(write => write.name === 'reader:setReadingProgress');
+const progressReads = (pageState) => pageState.queries.filter(query => query.name === 'reader:getReadingProgress');
+
+async function scrollArticleRatio(page, ratio) {
+  await page.evaluate((ratio) => {
+    const body = document.querySelector('article');
+    if (!body) throw new Error('missing article');
+    const distance = Math.max(body.offsetHeight - innerHeight, 1);
+    window.scrollTo(0, body.offsetTop + Math.round(distance * ratio));
+  }, ratio);
+}
+
+async function waitForTrack(page, minimum, maximum) {
+  await page.waitForFunction(([minimum, maximum]) => {
+    const now = Number(document.querySelector('[data-reading-progress] [role="progressbar"]')?.getAttribute('aria-valuenow'));
+    return now >= minimum && now <= maximum;
+  }, [minimum, maximum]);
+}
 
 try {
   await server.listen();
@@ -128,46 +146,38 @@ try {
     const bar = page.getByRole('progressbar', {name: '进度'});
     await bar.waitFor();
     assert.equal(await article.getByRole('button', {name: '阅读标记：未标记', exact: true}).count(), 0, 'Reading status stays on the comment row, not the progress strip');
-    await page.waitForFunction(() => {
-      const body = document.querySelector('article');
-      return window.scrollY > 400 && !!body && body.getBoundingClientRect().top < -200;
-    });
-    await page.evaluate(() => new Promise(resolve => queueMicrotask(resolve)));
-    const restored = Number(await bar.getAttribute('aria-valuenow'));
-    assert.ok(restored >= 60 && restored <= 70, `Restored progress is exposed on the track, got ${restored}`);
-    const restoredBox = await bar.boundingBox();
-    assert.ok(restoredBox && restoredBox.y <= 1 && restoredBox.x <= 1 && restoredBox.width >= 998, 'Restored progress strip is flush with the top and full width');
-    assert.ok(restoredBox.height <= 8, 'The restored track stays a thin strip');
+    await page.waitForFunction(() => window.scrollY < 2);
+    await waitForTrack(page, 0, 2);
+    const initial = Number(await bar.getAttribute('aria-valuenow'));
+    assert.ok(initial <= 2, `Saved progress does not restore the track, got ${initial}`);
+    const trackBox = await bar.boundingBox();
+    assert.ok(trackBox && trackBox.y <= 1 && trackBox.x <= 1 && trackBox.width >= 998, 'Progress strip is flush with the top and full width');
+    assert.ok(trackBox.height <= 8, 'The track stays a thin strip');
     assert.equal((await page.locator('[data-reading-progress]').innerText()).trim(), '', 'The progress strip has no percentage or skip label');
     assert.equal(await page.getByRole('button', {name: '跳过本次', exact: true}).count(), 0);
+    assert.equal(progressReads(await state(page)).length, 0, 'The track does not read saved progress');
+    assert.equal(progressWrites(await state(page)).length, 0, 'Mounting the track does not write progress');
+    await scrollArticleRatio(page, 0.84);
+    await waitForTrack(page, 78, 92);
     const fillRatio = await bar.evaluate(element => {
       const track = element.getBoundingClientRect();
       const fill = element.querySelector('div')?.getBoundingClientRect();
       return track.width > 0 && fill ? fill.width / track.width : 0;
     });
-    assert.ok(fillRatio >= 0.55 && fillRatio <= 0.75, `Fill follows the restored ratio, got ${fillRatio}`);
-    assert.equal((await state(page)).writes.filter(write => write.name === 'reader:setReadingProgress').length, 0, 'Restoring saved progress does not write');
-    await page.screenshot({path: '/opt/cursor/artifacts/reading-progress-restored.png'});
-    await page.evaluate(() => {
-      const body = document.querySelector('article');
-      if (!body) throw new Error('missing article');
-      const distance = Math.max(body.offsetHeight - innerHeight, 1);
-      window.scrollTo(0, body.offsetTop + Math.round(distance * 0.84));
-    });
-    await page.waitForFunction(() => window.__readerFixture.getState().writes.some(write => write.name === 'reader:setReadingProgress' && Number(write.args.progress) >= 0.8));
-    const writes = (await state(page)).writes.filter(write => write.name === 'reader:setReadingProgress');
-    assert.equal(writes.length, 1, 'A later scroll records one throttled progress write');
-    assert.ok(Number(writes[0].args.progress) <= 1);
-    assert.equal((await state(page)).writes.some(write => String(write.name).includes('ReadingMark')), false, 'Progress never writes reading status');
-    await page.screenshot({path: '/opt/cursor/artifacts/reading-progress-advanced.png'});
+    assert.ok(fillRatio >= 0.75 && fillRatio <= 0.95, `Fill follows the viewport ratio, got ${fillRatio}`);
+    assert.equal(progressWrites(await state(page)).length, 0, 'Scrolling does not write reading progress');
+    assert.equal((await state(page)).writes.some(write => String(write.name).includes('ReadingMark')), false, 'The track never writes reading status');
+    await page.screenshot({path: '/opt/cursor/artifacts/reading-progress-scrolled.png'});
     const count = (await state(page)).writes.length;
     await page.evaluate(() => window.scrollTo(0, 0));
+    await waitForTrack(page, 0, 2);
     await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide')));
     await page.waitForTimeout(1_800);
-    assert.equal((await state(page)).writes.length, count, 'Scrolling back does not lower stored progress');
-    assert.ok(Number(await bar.getAttribute('aria-valuenow')) >= 80, 'The progress value stays at the furthest position');
+    assert.equal((await state(page)).writes.length, count, 'Scrolling back and pagehide do not write progress');
+    assert.ok(Number(await bar.getAttribute('aria-valuenow')) <= 2, 'The track follows the current position back to the top');
+    assert.equal(progressReads(await state(page)).length, 0, 'The track still does not read saved progress');
     assert.equal((await page.locator('[data-reading-progress]').innerText()).trim(), '');
-    console.log('Reading progress: restore, monotonic scroll sync, and no status writes.');
+    console.log('Reading progress: viewport ratio only, no Convex read or write.');
   } finally {await progressContext.close();}
 
   for (const width of [1440, 390, 320]) {
@@ -228,21 +238,16 @@ try {
       const explicitWrites = (await state(page)).writes;
       assert.ok(explicitWrites.every((write) => write.name === 'reader:setBookmark'));
       assert.equal(explicitWrites.length, 3, 'Only the three explicit bookmark attempts wrote data');
-      await page.evaluate(() => {
-        const body = document.querySelector('article');
-        if (!body) throw new Error('missing article');
-        const distance = Math.max(body.offsetHeight - innerHeight, 1);
-        window.scrollTo(0, body.offsetTop + Math.round(distance * 0.35));
-      });
-      await page.waitForFunction(() => window.__readerFixture.getState().writes.some(write => write.name === 'reader:setReadingProgress'));
-      const progressWrites = (await state(page)).writes.slice(explicitWrites.length);
-      assert.ok(progressWrites.length >= 1, 'Logged-in scrolling records reading progress');
-      assert.ok(progressWrites.every(write => write.name === 'reader:setReadingProgress' && Number(write.args.progress) >= 0.02 && Number(write.args.progress) <= 1));
+      await scrollArticleRatio(page, 0.35);
+      await waitForTrack(page, 28, 45);
+      assert.equal(progressWrites(await state(page)).length, 0, 'Logged-in scrolling does not record reading progress on the article track');
+      assert.equal(progressReads(await state(page)).length, 0, 'The article track does not query saved progress');
       const afterProgress = (await state(page)).writes.length;
       await page.evaluate(() => window.scrollTo(0, 0));
+      await waitForTrack(page, 0, 2);
       await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide')));
       await page.waitForTimeout(1_800);
-      assert.equal((await state(page)).writes.length, afterProgress, 'Scrolling back, pagehide and elapsed timers do not lower progress');
+      assert.equal((await state(page)).writes.length, afterProgress, 'Scrolling back and pagehide do not write progress');
       assert.equal(await page.evaluate(() => localStorage.length), 0, 'Private account data never enters localStorage');
       await page.evaluate(() => window.scrollTo(0, 0));
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true,
@@ -263,7 +268,7 @@ try {
         `Bookmark list fits ${width}px`);
       if (width === 390) await page.screenshot({path: join('/tmp', 'reader-ui-library-390.png')});
       assert.deepEqual(errors, [], 'No browser runtime errors');
-      console.log(`Bookmarks UI ${width}px: add/remove, failure recovery, progress sync, pagination and no overflow passed.`);
+      console.log(`Bookmarks UI ${width}px: add/remove, failure recovery, scroll indicator, pagination and no overflow passed.`);
     } finally {
       await context.close();
     }
@@ -296,7 +301,7 @@ try {
     assert.equal(await list.getByRole('heading', {name: '进度', exact: true}).count(), 0);
     assert.equal(await page.getByText('进度', {exact: true}).count(), 0, 'There is no separate progress section');
     await page.screenshot({path: '/opt/cursor/artifacts/reading-list-merged.png'});
-    await list.getByRole('button', {name: '筛选阅读标记：全部档次', exact: true}).click();
+    await list.getByRole('button', {name: '筛选阅读标记：全部状态', exact: true}).click();
     await page.getByRole('menuitemradio', {name: '稍后读', exact: true}).click();
     await page.waitForFunction(() => document.querySelectorAll('[data-reading-marks] li').length === 1);
     const filtered = await list.innerText();
@@ -322,7 +327,11 @@ try {
       await bar.waitFor();
       assert.equal(await page.getByRole('button', {name: '跳过本次', exact: true}).count(), 0);
       assert.equal((await page.locator('[data-reading-progress]').innerText()).trim(), '');
-      await page.waitForFunction(() => window.scrollY > 400);
+      await page.waitForFunction(() => window.scrollY < 2);
+      await waitForTrack(page, 0, 2);
+      assert.equal(progressReads(await state(page)).length, 0, 'Saved progress is not loaded for the track');
+      await scrollArticleRatio(page, 0.55);
+      await waitForTrack(page, 48, 65);
       const viewport = page.viewportSize();
       const barBox = await bar.boundingBox();
       assert.ok(barBox && viewport);
@@ -330,8 +339,16 @@ try {
       assert.ok(barBox.x <= 1, `Progress strip starts at the left edge at ${width}px`);
       assert.ok(barBox.width >= viewport.width - 2, `Progress strip spans the viewport at ${width}px`);
       assert.ok(barBox.height <= 8, `Progress strip stays thin at ${width}px`);
+      const scrolledFill = await bar.evaluate(element => {
+        const track = element.getBoundingClientRect();
+        const fill = element.querySelector('div')?.getBoundingClientRect();
+        return track.width > 0 && fill ? fill.width / track.width : 0;
+      });
+      assert.ok(scrolledFill >= 0.45 && scrolledFill <= 0.7, `Fill follows the scroll ratio at ${width}px, got ${scrolledFill}`);
+      await page.screenshot({path: `/opt/cursor/artifacts/article-progress-bar-${width}.png`});
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.waitForFunction(() => window.scrollY < 2);
+      await waitForTrack(page, 0, 2);
       await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
       if (width > 1024) {
         const brand = page.locator('.book-brand');
@@ -350,7 +367,8 @@ try {
         assert.equal(overlaps(barBox, menuBox), false, 'The progress track does not cover the mobile menu button');
         assert.equal(await topHit(page, menuBox), 'chrome');
       }
-      assert.equal((await state(page)).writes.filter(write => write.name === 'reader:setReadingProgress').length, 0, 'Restoring progress does not write');
+      assert.equal(progressWrites(await state(page)).length, 0, 'Scrolling the article track does not write progress');
+      assert.equal(progressReads(await state(page)).length, 0, 'The article track does not read saved progress');
       const actions = page.locator('[data-fixture-article-actions]');
       const mark = actions.getByRole('button', {name: '阅读标记：未标记', exact: true});
       const like = actions.getByRole('button', {name: '喜欢这篇文章', exact: true});
@@ -370,8 +388,7 @@ try {
         assert.ok(markBox.x + markBox.width <= likeBox.x + 1, 'Reading mark stays left of like');
         assert.ok(likeBox.x + likeBox.width <= bookmarkBox.x + 1, 'Bookmark stays right of like');
       }
-      await page.screenshot({path: `/opt/cursor/artifacts/article-progress-bar-${width}.png`});
-      console.log(`Reading progress bar ${width}px: full-bleed top strip, comment actions unchanged.`);
+      console.log(`Reading progress bar ${width}px: full-bleed top strip follows scroll, comment actions unchanged.`);
     } finally {await context.close();}
   }
 } finally {
