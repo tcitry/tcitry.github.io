@@ -8,6 +8,32 @@
   @apply pb-4;
 }
 
+.progress {
+  @apply fixed inset-x-0 top-0 flex min-w-0 flex-col gap-1.5 border-b border-border bg-surface px-4 py-1.5;
+  z-index: 20;
+}
+
+.progressMeta {
+  @apply flex items-center justify-between gap-3 text-xs leading-5 text-muted;
+}
+
+.progressTrack {
+  @apply h-0.5 overflow-hidden rounded-full bg-surface-tertiary;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--accent);
+}
+
+.sectionLabel {
+  @apply mb-2 text-xs font-medium leading-5 text-foreground;
+}
+
+.itemProgress {
+  @apply text-xs leading-5 text-muted;
+}
+
 .currentRow {
   @apply flex flex-wrap items-center justify-between gap-3;
 }
@@ -17,7 +43,7 @@
 .itemPath { @apply break-all text-xs text-muted; }
 
 .currentText {
-  @apply min-w-0;
+  @apply min-w-0 flex-1;
 }
 
 .currentLabel {

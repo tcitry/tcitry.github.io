@@ -17,7 +17,7 @@ createRoot(document.getElementById('root')!).render(<main id="main-content">
   {!library && <>
     <article className="book-article" data-pagefind-body>
       <h2>正文区域</h2>
-      {Array.from({length: 28}, (_, i) => <p key={i}>这是公开测试文章的第 {i + 1} 段。滚动文章不会保存阅读进度。</p>)}
+      {Array.from({length: 28}, (_, i) => <p key={i}>这是公开测试文章的第 {i + 1} 段。登录后滚动文章会记录进度。</p>)}
     </article>
     <footer data-fixture-comments>讨论区占位，测试时不请求评论服务。</footer>
   </>}

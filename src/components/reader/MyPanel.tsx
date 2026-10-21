@@ -6,6 +6,7 @@ import styles from './MyPanel.module.css';
 const ReaderRoot = lazy(() => import('./ReaderRoot'));
 const LikedArticlesPanel = lazy(() => import('./LikedArticlesPanel'));
 const ReadingMarksPanel = lazy(() => import('./ReadingMarksPanel'));
+const ReadingProgressPanel = lazy(() => import('./ReadingProgressPanel'));
 const MyCommentsPanel = lazy(() => import('./MyCommentsPanel'));
 const EmailSettingsPanel = lazy(() => import('./EmailSettingsPanel'));
 type PersonalView = 'bookmarks' | 'reading' | 'likes' | 'comments' | 'email';
@@ -27,7 +28,10 @@ export default function MyPanel() {
     </nav>
     <Suspense fallback={<AuthLoading label="正在加载…" />}>
       {view === 'bookmarks' && <ReaderRoot library />}
-      {view === 'reading' && <ReadingMarksPanel />}
+      {view === 'reading' && <>
+        <ReadingMarksPanel />
+        <ReadingProgressPanel />
+      </>}
       {view === 'likes' && <LikedArticlesPanel />}
       {view === 'comments' && <MyCommentsPanel />}
       {view === 'email' && <EmailSettingsPanel />}

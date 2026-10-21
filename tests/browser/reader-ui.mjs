@@ -83,6 +83,7 @@ try {
     assert.equal(anonymous.queries.length, beforeSignout.queries.length, 'Anonymous state never queries private article state');
     assert.equal(anonymous.listRequests.length, beforeSignout.listRequests.length, 'Anonymous state never lists bookmarks');
     assert.equal(anonymous.writes.length, beforeSignout.writes.length, 'Anonymous scrolling never writes data');
+    assert.equal(anonymous.writes.filter(write => write.name === 'reader:setReadingProgress').length, 0, 'Anonymous scrolling never records progress');
     await page.getByRole('button', {name: '登录 / 注册'}).click();
     await library.getByRole('link', {name: '账号 A 的已收藏文章', exact: true}).waitFor();
     assert.equal(await library.getByRole('link', {name: /账号 B/}).count(), 0, 'Signing back in restores only that account bookmarks');
@@ -115,6 +116,52 @@ try {
     console.log('Bookmarks Convex gap: retry CTA instead of a silently disabled control.');
   } finally {await convexContext.close();}
 
+  const progressContext = await browser.newContext({viewport: {width: 1000, height: 720}, serviceWorkers: 'block'});
+  await progressContext.route('**/*', (route) => new URL(route.request().url()).origin === base.origin ? route.continue() : route.abort());
+  try {
+    const page = await progressContext.newPage();
+    page.setDefaultTimeout(15_000);
+    const progressURL = new URL('/tests/fixtures/reader-ui.html', base);
+    progressURL.searchParams.set('progress', '0.62');
+    await page.goto(progressURL.href);
+    const article = page.locator('[data-reader-article]');
+    const bar = article.getByRole('progressbar', {name: '进度'});
+    await bar.waitFor();
+    await article.getByRole('button', {name: '阅读标记：未标记'}).waitFor();
+    await page.waitForFunction(() => {
+      const body = document.querySelector('article');
+      return window.scrollY > 400 && !!body && body.getBoundingClientRect().top < -200;
+    });
+    await page.evaluate(() => new Promise(resolve => queueMicrotask(resolve)));
+    const restored = Number(await bar.getAttribute('aria-valuenow'));
+    assert.ok(restored >= 60 && restored <= 70, `Restored progress is visible as a percent, got ${restored}`);
+    assert.equal((await state(page)).writes.filter(write => write.name === 'reader:setReadingProgress').length, 0, 'Restoring saved progress does not write');
+    await page.screenshot({path: '/opt/cursor/artifacts/reading-progress-restored.png'});
+    await article.getByRole('button', {name: '跳过本次', exact: true}).click();
+    await page.waitForFunction(() => window.scrollY < 40);
+    assert.equal((await state(page)).writes.filter(write => write.name === 'reader:setReadingProgress').length, 0, 'Skipping this visit does not lower progress');
+    assert.equal(await article.getByRole('button', {name: '跳过本次', exact: true}).count(), 0);
+    await page.evaluate(() => {
+      const body = document.querySelector('article');
+      if (!body) throw new Error('missing article');
+      const distance = Math.max(body.offsetHeight - innerHeight, 1);
+      window.scrollTo(0, body.offsetTop + Math.round(distance * 0.84));
+    });
+    await page.waitForFunction(() => window.__readerFixture.getState().writes.some(write => write.name === 'reader:setReadingProgress' && Number(write.args.progress) >= 0.8));
+    const writes = (await state(page)).writes.filter(write => write.name === 'reader:setReadingProgress');
+    assert.equal(writes.length, 1, 'A later scroll records one throttled progress write');
+    assert.ok(Number(writes[0].args.progress) <= 1);
+    assert.equal((await state(page)).writes.some(write => String(write.name).includes('ReadingMark')), false, 'Progress never writes reading status');
+    await page.screenshot({path: '/opt/cursor/artifacts/reading-progress-advanced.png'});
+    const count = (await state(page)).writes.length;
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide')));
+    await page.waitForTimeout(1_800);
+    assert.equal((await state(page)).writes.length, count, 'Scrolling back does not lower stored progress');
+    assert.ok(Number(await bar.getAttribute('aria-valuenow')) >= 80, 'The progress label stays at the furthest position');
+    console.log('Reading progress: restore, skip, monotonic scroll sync, and no status writes.');
+  } finally {await progressContext.close();}
+
   for (const width of [1440, 390, 320]) {
     const context = await browser.newContext({viewport: {width, height: 900}, reducedMotion: 'reduce', serviceWorkers: 'block'});
     const errors = [];
@@ -130,6 +177,8 @@ try {
       const article = page.locator('[data-reader-article]');
       const bookmark = bookmarkButton(article);
       await bookmarkButton(article, false).waitFor();
+      await article.getByRole('progressbar', {name: '进度'}).waitFor();
+      assert.equal(await article.getByRole('progressbar', {name: '进度'}).getAttribute('aria-valuenow'), '0');
       await article.getByText('当前文章', {exact: true}).waitFor();
       const currentTitle = article.getByText(title, {exact: true});
       await currentTitle.waitFor();
@@ -168,20 +217,27 @@ try {
       const explicitWrites = (await state(page)).writes;
       assert.ok(explicitWrites.every((write) => write.name === 'reader:setBookmark'));
       assert.equal(explicitWrites.length, 3, 'Only the three explicit bookmark attempts wrote data');
-      await page.clock.install();
-      await page.mouse.move(width / 2, 450);
-      await page.mouse.wheel(0, 650);
-      await page.waitForFunction(() => window.scrollY > 0);
+      await page.evaluate(() => {
+        const body = document.querySelector('article');
+        if (!body) throw new Error('missing article');
+        const distance = Math.max(body.offsetHeight - innerHeight, 1);
+        window.scrollTo(0, body.offsetTop + Math.round(distance * 0.35));
+      });
+      await page.waitForFunction(() => window.__readerFixture.getState().writes.some(write => write.name === 'reader:setReadingProgress'));
+      const progressWrites = (await state(page)).writes.slice(explicitWrites.length);
+      assert.ok(progressWrites.length >= 1, 'Logged-in scrolling records reading progress');
+      assert.ok(progressWrites.every(write => write.name === 'reader:setReadingProgress' && Number(write.args.progress) >= 0.02 && Number(write.args.progress) <= 1));
+      const afterProgress = (await state(page)).writes.length;
+      await page.evaluate(() => window.scrollTo(0, 0));
       await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide')));
-      await page.clock.fastForward(10_100);
-      await page.clock.runFor(100);
-      assert.equal((await state(page)).writes.length, explicitWrites.length, 'Scrolling, pagehide and elapsed timers never save reading progress');
+      await page.waitForTimeout(1_800);
+      assert.equal((await state(page)).writes.length, afterProgress, 'Scrolling back, pagehide and elapsed timers do not lower progress');
       assert.equal(await page.evaluate(() => localStorage.length), 0, 'Private account data never enters localStorage');
       await page.evaluate(() => window.scrollTo(0, 0));
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true,
         `Article controls fit ${width}px`);
       await page.screenshot({path: join('/tmp', `reader-ui-article-${width}.png`)});
-      await page.clock.resume();
+      if (width === 390) await page.screenshot({path: '/opt/cursor/artifacts/reading-progress-article-390.png'});
 
       await page.goto(new URL('/tests/fixtures/reader-ui.html?view=library', base).href);
       const library = page.locator('[data-reader-library]');
@@ -196,7 +252,7 @@ try {
         `Bookmark list fits ${width}px`);
       if (width === 390) await page.screenshot({path: join('/tmp', 'reader-ui-library-390.png')});
       assert.deepEqual(errors, [], 'No browser runtime errors');
-      console.log(`Bookmarks UI ${width}px: add/remove, failure recovery, pagination, no automatic writes and no overflow passed.`);
+      console.log(`Bookmarks UI ${width}px: add/remove, failure recovery, progress sync, pagination and no overflow passed.`);
     } finally {
       await context.close();
     }

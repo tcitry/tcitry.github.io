@@ -4,8 +4,11 @@ import {getFunctionName} from 'convex/server';
 import {currentFixtureAuth, useAuth} from './reader-clerk';
 
 type Bookmark = {pathname: string; title: string; updatedAt: number};
+type ProgressRow = {pathname: string; title: string; progress: number; updatedAt: number; view: {progress: number}};
 type Page = {bookmarked: boolean};
-type Account = {page: Page; bookmarks: Bookmark[]};
+type Account = {page: Page; bookmarks: Bookmark[]; progress: ProgressRow[]};
+const EMPTY_MARK = {status: null};
+const EMPTY_PROGRESS = {progress: null as number | null};
 const listeners = new Set<() => void>();
 const writes: {name: string; args: Record<string, unknown>; userId: string | null}[] = [];
 const queries: {name: string; userId: string | null}[] = [];
@@ -22,9 +25,19 @@ function createAccount(owner: string, bookmarked = false): Account {
     updatedAt: Date.UTC(2026, 8, 8) - index * 86_400_000,
   }));
   if (bookmarked) bookmarks.unshift({pathname: '/docs/fixture/', title: `${label}的已收藏文章`, updatedAt: Date.UTC(2026, 8, 9)});
-  return {page: {bookmarked}, bookmarks};
+  return {page: {bookmarked}, bookmarks, progress: []};
 }
-let snapshot = createAccount('测试');
+function withInitialProgress(account: Account): Account {
+  const raw = new URLSearchParams(location.search).get('progress');
+  if (raw === null) return account;
+  const progress = Number(raw);
+  if (!Number.isFinite(progress)) return account;
+  const clamped = Math.min(1, Math.max(0, progress));
+  return {...account, progress: [{
+    pathname: '/docs/fixture/', title: '公开测试文章', progress: clamped, updatedAt: Date.UTC(2026, 8, 9), view: {progress: clamped},
+  }]};
+}
+let snapshot = withInitialProgress(createAccount('测试'));
 const accounts = new Map([
   ['fixture-a', createAccount('账号 A', true)],
   ['fixture-b', createAccount('账号 B')],
@@ -58,12 +71,25 @@ function publish(client: ConvexReactClient | null, next: Account) {
   listeners.forEach((listener) => listener());
 }
 
-export function useQuery(reference: Parameters<typeof getFunctionName>[0]) {
+export function useQuery(reference: Parameters<typeof getFunctionName>[0], args?: Record<string, unknown> | 'skip') {
   const client = useContext(FixtureClientContext);
   const name = getFunctionName(reference);
-  if (name !== 'reader:getPage') throw new Error(`Unsupported fixture query: ${name}`);
-  useEffect(() => {queries.push({name, userId: client?.record.userId ?? currentFixtureAuth().userId});}, [client, name]);
-  return useSyncExternalStore(subscribe, () => account(client).page);
+  const skipped = args === 'skip';
+  const pathname = !skipped && args ? String(args.pathname ?? '') : '';
+  useEffect(() => {
+    if (skipped) return;
+    queries.push({name, userId: client?.record.userId ?? currentFixtureAuth().userId});
+  }, [client, name, pathname, skipped]);
+  return useSyncExternalStore(subscribe, () => {
+    if (skipped) return undefined;
+    const data = account(client);
+    if (name === 'reader:getPage') return data.page;
+    if (name === 'reader:getReadingMark') return EMPTY_MARK;
+    if (name === 'reader:getReadingProgress') {
+      return data.progress.find(item => item.pathname === pathname)?.view ?? EMPTY_PROGRESS;
+    }
+    throw new Error(`Unsupported fixture query: ${name}`);
+  });
 }
 
 export function useMutation(reference: Parameters<typeof getFunctionName>[0]) {
@@ -75,12 +101,26 @@ export function useMutation(reference: Parameters<typeof getFunctionName>[0]) {
     writes.push({name, args, userId});
     await new Promise((resolve) => setTimeout(resolve, 30));
     if (rejectNext) {rejectNext = false; throw new Error('Fixture request failure');}
-    if (name !== 'reader:setBookmark') throw new Error(`Unsupported fixture mutation: ${name}`);
     const current = account(client);
+    if (name === 'reader:setReadingProgress') {
+      const progress = Math.min(1, Math.max(0, Number(args.progress)));
+      if (!Number.isFinite(progress)) throw new Error('Invalid progress');
+      const existing = current.progress.find(item => item.pathname === args.pathname);
+      if (existing && progress <= existing.progress) return existing.progress;
+      const view = {progress};
+      const row = {pathname: String(args.pathname), title: String(args.title), progress, updatedAt: Date.now(), view};
+      const progressRows = existing
+        ? current.progress.map(item => item.pathname === row.pathname ? row : item)
+        : [row, ...current.progress];
+      publish(client, {...current, progress: progressRows});
+      return progress;
+    }
+    if (name === 'reader:setReadingMark' || name === 'reader:clearReadingMark') return args.status ?? null;
+    if (name !== 'reader:setBookmark') throw new Error(`Unsupported fixture mutation: ${name}`);
     const bookmarked = Boolean(args.bookmarked);
     const bookmarks = current.bookmarks.filter((item) => item.pathname !== args.pathname);
     if (bookmarked) bookmarks.unshift({pathname: String(args.pathname), title: String(args.title), updatedAt: Date.now()});
-    publish(client, {page: {bookmarked}, bookmarks});
+    publish(client, {...current, page: {bookmarked}, bookmarks});
     return bookmarked;
   }, [client, name]);
 }
