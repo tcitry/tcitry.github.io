@@ -152,7 +152,25 @@ try {
     assert.ok(initial <= 2, `Saved progress does not restore the track, got ${initial}`);
     const trackBox = await bar.boundingBox();
     assert.ok(trackBox && trackBox.y <= 1 && trackBox.x <= 1 && trackBox.width >= 998, 'Progress strip is flush with the top and full width');
-    assert.ok(trackBox.height <= 8, 'The track stays a thin strip');
+    assert.ok(trackBox.height <= 3, 'The track stays a 2px hairline');
+    const overlay = await page.locator('[data-reading-progress]').evaluate(element => {
+      const style = getComputedStyle(element);
+      const track = element.querySelector('[role="progressbar"]');
+      const section = element.closest('section');
+      const row = section?.querySelector(':scope > div:not([data-reading-progress])');
+      return {
+        position: style.position,
+        height: style.height,
+        background: style.backgroundColor,
+        trackBackground: track ? getComputedStyle(track).backgroundColor : '',
+        flowGap: row && section ? row.getBoundingClientRect().top - section.getBoundingClientRect().top : -1,
+      };
+    });
+    assert.equal(overlay.position, 'fixed', 'The progress strip overlays the viewport');
+    assert.equal(overlay.height, '2px');
+    assert.equal(overlay.background, 'rgba(0, 0, 0, 0)');
+    assert.equal(overlay.trackBackground, 'rgba(0, 0, 0, 0)', 'The track does not paint a grey band');
+    assert.ok(overlay.flowGap < 1, `The progress strip reserves layout height, gap ${overlay.flowGap}`);
     assert.equal((await page.locator('[data-reading-progress]').innerText()).trim(), '', 'The progress strip has no percentage or skip label');
     assert.equal(await page.getByRole('button', {name: '跳过本次', exact: true}).count(), 0);
     assert.equal(progressReads(await state(page)).length, 0, 'The track does not read saved progress');
@@ -338,7 +356,7 @@ try {
       assert.ok(barBox.y <= 1, `Progress strip is flush with the top at ${width}px`);
       assert.ok(barBox.x <= 1, `Progress strip starts at the left edge at ${width}px`);
       assert.ok(barBox.width >= viewport.width - 2, `Progress strip spans the viewport at ${width}px`);
-      assert.ok(barBox.height <= 8, `Progress strip stays thin at ${width}px`);
+      assert.ok(barBox.height <= 3, `Progress strip stays a 2px hairline at ${width}px`);
       const scrolledFill = await bar.evaluate(element => {
         const track = element.getBoundingClientRect();
         const fill = element.querySelector('div')?.getBoundingClientRect();
