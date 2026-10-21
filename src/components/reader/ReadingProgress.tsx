@@ -1,5 +1,4 @@
-import {useEffect, useId, useRef, useState} from 'react';
-import {Button} from '@heroui/react';
+import {useEffect, useRef, useState} from 'react';
 import {useConvexAuth, useMutation, useQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
 import {
@@ -13,8 +12,8 @@ import {
 } from './reading-progress';
 import styles from './ReaderPanel.module.css';
 
-// The indicator is a full-bleed strip fixed to the viewport top. Percent and
-// 「跳过本次」sit on its trailing edge so the left-hand site logo stays clear.
+// The indicator is only a full-bleed strip fixed to the viewport top. Percent
+// stays in the progressbar value for assistive tech; nothing else is painted.
 
 function findArticle() {
   return document.querySelector<HTMLElement>('article.book-article, article.book-post');
@@ -57,16 +56,6 @@ function scrollToRatio(article: HTMLElement, scroller: HTMLElement | Window, pro
   });
 }
 
-function scrollToStart(article: HTMLElement | null) {
-  if (!article) {
-    window.scrollTo({top: 0, behavior: 'auto'});
-    return;
-  }
-  const scroller = scrollParent(article);
-  if (!isElementScroller(scroller)) window.scrollTo({top: 0, behavior: 'auto'});
-  else scroller.scrollTo({top: 0, behavior: 'auto'});
-}
-
 function quantize(progress: number) {
   return Math.round(progress * 100) / 100;
 }
@@ -76,8 +65,6 @@ export default function ReadingProgress({pathname, title}: {pathname: string; ti
   const saved = useQuery(api.reader.getReadingProgress, isAuthenticated ? {pathname} : 'skip');
   const setProgress = useMutation(api.reader.setReadingProgress);
   const [shown, setShown] = useState<number | null>(null);
-  const [offerSkip, setOfferSkip] = useState(false);
-  const labelId = useId();
   const sync = useRef<ProgressSyncState>({lastSent: 0, lastSentAt: 0, pending: null});
   const acked = useRef(0);
   const shownRef = useRef<number | null>(null);
@@ -203,7 +190,6 @@ export default function ReadingProgress({pathname, title}: {pathname: string; ti
     acked.current = savedProgress;
     shownRef.current = null;
     setShown(null);
-    setOfferSkip(false);
     const article = findArticle();
     const measured = article ? measure(article, scrollParent(article)) : 0;
     if (article && measured < PROGRESS_MIN_DELTA && savedProgress >= PROGRESS_MIN_DELTA) {
@@ -213,7 +199,6 @@ export default function ReadingProgress({pathname, title}: {pathname: string; ti
       const restored = quantize(measure(article, scroller));
       sync.current = {lastSent: Math.max(quantizedSaved, restored), lastSentAt: Date.now(), pending: null};
       show(sync.current.lastSent);
-      setOfferSkip(true);
       queueMicrotask(() => {suppress.current = false;});
       ready.current = true;
       return;
@@ -233,16 +218,8 @@ export default function ReadingProgress({pathname, title}: {pathname: string; ti
   const value = shown ?? saved.progress ?? 0;
   const percent = Math.round(value * 100);
   return <div className={styles.progress} data-reading-progress data-sentry-mask data-pagefind-ignore>
-    <div className={styles.progressTrack} role="progressbar" aria-labelledby={labelId} aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-valuetext={`${percent}%`}>
+    <div className={styles.progressTrack} role="progressbar" aria-label="进度" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-valuetext={`${percent}%`}>
       <div className={styles.progressFill} style={{width: `${percent}%`}} />
-    </div>
-    <div className={styles.progressMeta}>
-      <span id={labelId}>进度</span>
-      <span>{percent}%</span>
-      {offerSkip && <Button size="sm" variant="outline" onPress={() => {
-        setOfferSkip(false);
-        scrollToStart(findArticle());
-      }}>跳过本次</Button>}
     </div>
   </div>;
 }

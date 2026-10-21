@@ -8,7 +8,7 @@
   @apply pb-4;
 }
 
-/* Full-bleed strip on the viewport top. The label and skip control stay on the trailing edge. */
+/* Full-bleed 6px track on the viewport top. No percentage or skip control. */
 .progress {
   position: fixed;
   z-index: 20;
@@ -28,25 +28,6 @@
 .progressFill {
   height: 100%;
   background: var(--accent, #8250df);
-}
-
-.progressMeta {
-  position: absolute;
-  top: 6px;
-  inset-inline-end: 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  max-width: 100%;
-  min-height: 1.75rem;
-  padding-inline: 0.75rem;
-  border-end-start-radius: 0.5rem;
-  color: var(--muted, #71717a);
-  background: color-mix(in srgb, var(--surface, var(--body-background, #fff)) 94%, transparent);
-  font-size: 0.75rem;
-  line-height: 1.25rem;
-  pointer-events: auto;
 }
 
 /* The open mobile drawer is position:fixed and should cover this strip. */
