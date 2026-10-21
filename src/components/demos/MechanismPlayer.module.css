@@ -1,0 +1,16 @@
+@reference "../../styles/tailwind.css";
+.player { border: 1px solid var(--border, var(--gray-200)); border-radius: .7rem; overflow: hidden; background: var(--body-background); }
+.stage { position: relative; width: 100%; touch-action: pan-y; overflow: hidden; background: radial-gradient(ellipse at 50% 65%, color-mix(in srgb, var(--gray-200) 35%, transparent), transparent 65%); }
+.stage > svg { display: block; width: 100%; height: auto; }
+.stage:focus-visible { outline: 2px solid var(--color-link); outline-offset: -4px; }
+.controls { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; padding: .8rem 1rem; border-top: 1px solid var(--border, var(--gray-200)); }
+.controls button { font-size: .75rem; }
+.speed { display: flex; align-items: center; gap: .25rem; font-size: .72rem; color: var(--muted); white-space: nowrap; }
+.speed select { appearance: auto; color: var(--body-font-color); background: var(--body-background); border: 1px solid var(--border); border-radius: .3rem; padding: .25rem; }
+.scrub { display: flex; align-items: center; flex: 1 1 9rem; gap: .5rem; font-size: .72rem; color: var(--muted); }
+.scrub > span { white-space: nowrap; flex: none; }
+.scrub input { appearance: auto; accent-color: var(--color-link); min-width: 4rem; width: 100%; height: 1.2rem; cursor: pointer; }
+.position { min-width: 2.4rem; text-align: right; font: .7rem/1.4 ui-monospace,monospace; color: var(--muted); }
+.player .caption { margin: 0; padding: .1rem 1rem .6rem; min-height: 2.5rem; font-size: .85rem; line-height: 1.6; }
+.player .hint { margin: 0; padding: 0 1rem .85rem; color: var(--muted); font-size: .68rem; line-height: 1.6; }
+@media (max-width: 480px) { .controls { padding: .7rem; gap: .4rem; } .scrub { flex-basis: 60%; } .player .caption,.player .hint { padding-inline: .7rem; } }

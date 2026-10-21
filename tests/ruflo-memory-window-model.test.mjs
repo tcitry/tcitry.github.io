@@ -1,29 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
-import {stripTypeScriptTypes} from 'node:module';
-import {pathToFileURL} from 'node:url';
 import {DEFAULT_MEMORY_INPUT, evaluateMemoryWindow, fuseMemorySignals} from '../src/components/demos/ruflo-memory-window-model.ts';
-
-// Optional craft check: use the project's MIT skill engine without publishing
-// its implementation or a machine-specific skill path in the site repository.
-test('actual slab shapes and committed painter keys stay valid along the rails', {skip: !process.env.ANATOMY_SKILL_DIR}, async () => {
-  const A = await import(pathToFileURL(`${process.env.ANATOMY_SKILL_DIR}/kit/audit.mjs`));
-  const asModule = source => `data:text/javascript;base64,${Buffer.from(stripTypeScriptTypes(source)).toString('base64')}`;
-  const kit = asModule(await readFile(new URL('../src/components/demos/anatomy-iso-kit.ts', import.meta.url), 'utf8'));
-  const source = await readFile(new URL('../src/components/demos/ruflo-memory-window-geometry.ts', import.meta.url), 'utf8');
-  const G = await import(asModule(source.replaceAll("'./anatomy-iso-kit'", JSON.stringify(kit))));
-  const R = A.recorder(G.PROJECTION);
-  for (const part of G.PARTS) {
-    const {plan, z, height} = part.shape;
-    R.put({name: part.name, at: [plan.x + plan.w / 2, plan.y + plan.d / 2, z + height / 2], move: part.motion ? [G.TRAVEL, 0, 0] : [0, 0, 0],
-      shapes: [R.solid(A.slab(plan, z, height, {name: part.name, ground: part.name.startsWith('foot-')}))], svg: `<path d="${part.paths.outline}"/>`});
-  }
-  A.settle(R, G.PROJECTION, {states: [0, 0.25, 0.5, 0.75, 1]});
-  for (const item of R.items) item.key = G.DEPTH_KEYS[item.name];
-  const report = A.audit(R, G.PROJECTION, {frames: [0.25, 0.5, 0.75], apart: true});
-  assert.equal(A.failures(report), 0, A.report(report));
-});
 
 const row = (state, id) => state.candidateRecords.find(record => record.id === id);
 

@@ -28,6 +28,7 @@
     "test:browser:threejs": "node tests/browser/threejs-basics.mjs",
     "test:browser:anatomy": "node tests/browser/anatomy-collection.mjs",
     "test:browser:anatomy-mechanisms": "node tests/browser/anatomy-blog-mechanisms.mjs",
+    "test:browser:anatomy-motion": "node tests/browser/anatomy-motion.mjs",
     "test:browser:timeline": "node tests/browser/timeline.mjs",
     "test:browser:sentry": "node tests/browser/sentry.mjs",
     "verify": "node scripts/verify-build.mjs",

@@ -1,0 +1,21 @@
+.shadow { fill: var(--machine-ink); opacity: .07; filter: blur(5px); }
+.seam { stroke: var(--machine-faint); stroke-width: .6; fill: none; vector-effect: non-scaling-stroke; }
+.engraving { font-family: ui-monospace,SFMono-Regular,monospace; font-size: 9px; fill: var(--machine-ink); }
+.rule { stroke: var(--machine-faint); stroke-width: .5; fill: none; }
+.amountBar { fill: var(--machine-accent); }
+.draftBar { fill: var(--machine-faint); }
+.imprint { stroke: var(--machine-accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.token { font: 10px ui-monospace,monospace; fill: var(--machine-accent); }
+.receiptInk { font: 6px ui-monospace,monospace; fill: var(--machine-ink); }
+.receiptInk path { stroke: var(--machine-faint); stroke-width: .6; }
+.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: .45rem 1rem; padding: 0 1rem .8rem; font-size: .68rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: .3rem; }
+.legend i { width: .65rem; height: .4rem; background: var(--machine-accent); border-radius: 1px; }
+.legend i.draftKey { background: var(--machine-faint); }
+.readouts { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .6rem; margin: 0 1rem .75rem; }
+.readouts > div { min-width: 0; border-left: 1px solid var(--border); padding-left: .7rem; }
+.readouts span { display: block; color: var(--muted); font-size: .65rem; }
+.readouts strong { display: block; margin-top: .25rem; font: .8rem/1.5 ui-monospace,monospace; overflow-wrap: anywhere; }
+.current { margin: 0 1rem 1rem !important; color: var(--machine-accent); font-size: .8rem; min-height: 1.5rem; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media (max-width: 500px) { .readouts { grid-template-columns: repeat(2,minmax(0,1fr)); row-gap: .8rem; } }

@@ -53,3 +53,52 @@
 .empty { font-size: 0.85rem; }
 .result { font-size: 0.85rem; line-height: 1.7; color: var(--color-link); }
 @media (min-width: 40rem) { .controls { grid-template-columns: 1fr 1fr; } }
+
+/* The figure is the primary explanation; exact values remain in the disclosure. */
+.demo { padding: 0; container-type: inline-size; }
+.header { padding: 1.25rem 1.4rem .9rem; }
+.header .eyebrow { margin-top: 0; font: .65rem/1.4 ui-monospace, monospace; letter-spacing: .14em; }
+.header .note { margin-bottom: 0; }
+.machine { display: block; width: 100%; height: auto; max-height: 31rem; }
+.shadow { fill: var(--machine-ink); opacity: .065; filter: blur(4px); }
+.cardLetter { fill: var(--machine-ink); font: 600 8px ui-monospace, monospace; }
+.cardRule { fill: none; stroke: var(--machine-line); stroke-width: .45; vector-effect: non-scaling-stroke; }
+.barTop { fill: color-mix(in srgb, var(--machine-accent) 65%, var(--machine-paper)); }
+.barSide { fill: color-mix(in srgb, var(--machine-accent) 52%, var(--machine-ink)); }
+.barEnd { fill: color-mix(in srgb, var(--machine-accent) 78%, var(--machine-paper)); }
+.lexicalMotion > :nth-child(1) { fill: var(--machine-top); }
+.lexicalMotion > :nth-child(2) { fill: var(--machine-side-0); }
+.lexicalMotion > :nth-child(3) { fill: var(--machine-side-1); }
+.barOutline { fill: none; stroke: var(--machine-line); stroke-width: .55; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+.armTop { fill: var(--machine-top); }
+.armSide { fill: var(--machine-side-0); }
+.armEnd { fill: var(--machine-side-1); }
+.stageLegend { display: grid; grid-template-columns: 1.2fr 1.4fr 1fr; gap: .5rem; margin: -.25rem 1rem 1rem; color: var(--muted); font: .68rem/1.5 ui-monospace, monospace; text-align: center; }
+.stageLegend span { border-top: 1px solid var(--gray-200); padding-top: .55rem; }
+.livePhase { margin: .65rem 1rem; font-size: .88rem; font-weight: 600; line-height: 1.65; }
+.liveReadout { display: grid; grid-template-columns: 1.4fr 1fr; gap: .5rem 1rem; margin-inline: 1rem; font: .73rem/1.65 ui-monospace, monospace; }
+.liveReadout > strong { color: var(--machine-accent); font-weight: 600; text-align: right; }
+.liveReadout > span:last-child { grid-column: 1 / -1; min-height: 1.65em; }
+.liveEquation { min-height: 1.65em; margin: .75rem 1rem 1rem; color: var(--muted); font-size: .75rem; line-height: 1.65; }
+.experiment { padding: 1rem 1.4rem; border-top: 1px solid var(--gray-200); }
+.tourStatus { display: flex; flex-wrap: wrap; gap: .25rem .75rem; justify-content: space-between; align-items: center; }
+.tourStatus > span { color: var(--muted); font-size: .72rem; line-height: 1.65; }
+.experiment .presets { margin: .8rem 0; }
+.experiment .presets button { font-size: .72rem; }
+.details { margin: 0 1.4rem 1rem; padding: .8rem 1rem; border: 1px solid var(--gray-200); border-radius: .45rem; }
+.details > summary { cursor: pointer; font-size: .78rem; line-height: 1.6; }
+.details .scoreCards { margin-top: 1rem; }
+.boundary { margin: 0 !important; padding: 1rem 1.4rem .6rem; border-top: 1px solid var(--gray-200); color: var(--muted); font-size: .72rem; line-height: 1.75; }
+.source { margin: 0 !important; padding: 0 1.4rem 1.1rem; font-size: .72rem; }
+@container (max-width: 500px) {
+  .header, .experiment { padding-inline: 1rem; }
+  .details { margin-inline: 1rem; padding-inline: .75rem; }
+  .stageLegend { font-size: .59rem; gap: .3rem; }
+  .liveReadout { grid-template-columns: 1fr; gap: .3rem; font-size: .7rem; }
+  .liveReadout > strong { text-align: left; }
+  .liveReadout > span:last-child { grid-column: auto; }
+  .livePhase { font-size: .8rem; }
+  .liveEquation { font-size: .7rem; }
+  .boundary { padding-inline: 1rem; }
+  .source { padding-inline: 1rem; }
+}
