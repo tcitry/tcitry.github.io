@@ -2,23 +2,49 @@ import {createRoot} from 'react-dom/client';
 import ArticleReader from '../../src/components/reader/ArticleReader';
 import ReaderLibrary from '../../src/components/reader/ReaderLibrary';
 import ReaderRoot from '../../src/components/reader/ReaderRoot';
+import ReadingMarksPanel from '../../src/components/reader/ReadingMarksPanel';
 import '../../src/styles/tailwind.css';
 import './reader-ui.css';
 
-const library = new URLSearchParams(location.search).get('view') === 'library';
-const root = new URLSearchParams(location.search).get('view') === 'root';
-const title = new URLSearchParams(location.search).get('title') ?? '公开测试文章';
+const params = new URLSearchParams(location.search);
+const library = params.get('view') === 'library';
+const root = params.get('view') === 'root';
+const title = params.get('title') ?? '公开测试文章';
+const article = <>
+  <article className="book-article" data-pagefind-body>
+    <h2>正文区域</h2>
+    {Array.from({length: 28}, (_, i) => <p key={i}>这是公开测试文章的第 {i + 1} 段。登录后滚动文章会记录进度。</p>)}
+  </article>
+  <footer data-fixture-comments>讨论区占位，测试时不请求评论服务。</footer>
+</>;
 
-createRoot(document.getElementById('root')!).render(<main id="main-content">
+if (params.get('readingList') === '1') {
+  createRoot(document.getElementById('root')!).render(<main className="reading-list-fixture"><ReadingMarksPanel /></main>);
+} else if (params.get('chrome') === '1') {
+  createRoot(document.getElementById('root')!).render(<main className="reader-chrome">
+    <aside className="book-menu">
+      <div className="book-menu-content">
+        <h2 className="book-brand"><a href="/"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><rect width="24" height="24" rx="4" fill="#111" /><path d="M6 16 V8 h3.2 a3.2 3.2 0 0 1 0 6.4 H8.2 V16 Z m2.2-4.2 h.8 a1.2 1.2 0 0 0 0-2.4 h-.8 Z" fill="#fff" /></svg><span>LYon's Blog</span></a></h2>
+        <div data-sidebar-tools><button type="button" aria-label="搜索博客">Search</button></div>
+      </div>
+    </aside>
+    <div className="book-page">
+      <header className="book-header">
+        <button type="button" aria-label="打开导航">菜单</button>
+        <strong>{title}</strong>
+        <button type="button" aria-label="打开目录">目录</button>
+      </header>
+      <div data-pagefind-ignore data-sentry-mask>
+        <ArticleReader pathname="/docs/fixture/" title={title} />
+      </div>
+      {article}
+    </div>
+    <aside className="book-toc"><div className="book-toc-content">目录</div></aside>
+  </main>);
+} else createRoot(document.getElementById('root')!).render(<main id="main-content">
   <h1>{library ? '我的收藏' : '公开测试文章'}</h1>
   <div data-pagefind-ignore data-sentry-mask>
     {root ? <ReaderRoot pathname="/docs/fixture/" title={title} library /> : library ? <ReaderLibrary /> : <ArticleReader pathname="/docs/fixture/" title={title} />}
   </div>
-  {!library && <>
-    <article className="book-article" data-pagefind-body>
-      <h2>正文区域</h2>
-      {Array.from({length: 28}, (_, i) => <p key={i}>这是公开测试文章的第 {i + 1} 段。登录后滚动文章会记录进度。</p>)}
-    </article>
-    <footer data-fixture-comments>讨论区占位，测试时不请求评论服务。</footer>
-  </>}
+  {!library && article}
 </main>);

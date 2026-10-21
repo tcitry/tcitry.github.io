@@ -257,6 +257,92 @@ try {
       await context.close();
     }
   }
+
+  const overlaps = (a, b) => Boolean(a && b && a.x < b.x + b.width - 0.5 && a.x + a.width > b.x + 0.5 && a.y < b.y + b.height - 0.5 && a.y + a.height > b.y + 0.5);
+  const topHit = (page, box) => page.evaluate(({x, y}) => {
+    const target = document.elementFromPoint(x, y);
+    if (target?.closest('[data-reading-progress]')) return 'progress';
+    if (target?.closest('.book-brand, [data-sidebar-tools], .book-header')) return 'chrome';
+    return target?.tagName ?? 'none';
+  }, {x: box.x + Math.min(12, box.width / 2), y: box.y + box.height / 2});
+
+  const readingContext = await browser.newContext({viewport: {width: 420, height: 800}, serviceWorkers: 'block'});
+  await readingContext.route('**/*', (route) => new URL(route.request().url()).origin === base.origin ? route.continue() : route.abort());
+  try {
+    const page = await readingContext.newPage();
+    page.setDefaultTimeout(15_000);
+    await page.goto(new URL('/tests/fixtures/reader-ui.html?readingList=1', base).href);
+    const list = page.locator('[data-reading-marks]');
+    await list.getByRole('link', {name: /Cloudflare OS/}).waitFor();
+    assert.equal(await list.getByRole('listitem').count(), 3, 'One row per article across marks and progress');
+    assert.equal(await list.getByRole('link', {name: /Cloudflare OS/}).count(), 1, 'A marked article with progress is not listed twice');
+    assert.match(await list.getByRole('link', {name: /Cloudflare OS/}).innerText(), /稍后读 · 进度 100% · 2026年10月21日/);
+    assert.match(await list.getByRole('link', {name: /只有阅读标记的文章/}).innerText(), /已细读 · 2026年10月20日/);
+    assert.match(await list.getByRole('link', {name: /只有进度的文章/}).innerText(), /进度 42% · 2026年10月19日/);
+    const visible = await list.innerText();
+    assert.equal(visible.includes('/docs/'), false, 'The reading list does not show pathnames');
+    assert.equal(await list.locator('.itemPath, [data-reading-progress-list]').count(), 0);
+    assert.equal(await list.getByRole('heading', {name: '进度', exact: true}).count(), 0);
+    assert.equal(await page.getByText('进度', {exact: true}).count(), 0, 'There is no separate progress section');
+    await page.screenshot({path: '/opt/cursor/artifacts/reading-list-merged.png'});
+    await list.getByRole('button', {name: '筛选阅读标记：全部档次', exact: true}).click();
+    await page.getByRole('menuitemradio', {name: '稍后读', exact: true}).click();
+    await page.waitForFunction(() => document.querySelectorAll('[data-reading-marks] li').length === 1);
+    const filtered = await list.innerText();
+    assert.match(filtered, /稍后读 · 进度 100%/);
+    assert.equal(filtered.includes('只有进度的文章'), false, 'Status filter hides progress-only articles');
+    assert.equal(filtered.includes('只有阅读标记的文章'), false);
+    assert.equal(filtered.includes('/docs/'), false);
+    console.log('Reading list: one merged row, compact meta, status filter keeps progress.');
+  } finally {await readingContext.close();}
+
+  for (const width of [1440, 390]) {
+    const context = await browser.newContext({viewport: {width, height: 800}, serviceWorkers: 'block'});
+    await context.route('**/*', (route) => new URL(route.request().url()).origin === base.origin ? route.continue() : route.abort());
+    const page = await context.newPage();
+    page.setDefaultTimeout(15_000);
+    try {
+      const chromeURL = new URL('/tests/fixtures/reader-ui.html', base);
+      chromeURL.searchParams.set('chrome', '1');
+      chromeURL.searchParams.set('progress', '0.62');
+      chromeURL.searchParams.set('title', 'Cloudflare OS');
+      await page.goto(chromeURL.href);
+      const skip = page.getByRole('button', {name: '跳过本次', exact: true});
+      await skip.waitFor();
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.waitForFunction(() => window.scrollY < 2);
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      const skipBox = await skip.boundingBox();
+      const progressBox = await page.locator('[data-reading-progress]').boundingBox();
+      assert.ok(skipBox && progressBox);
+      if (width > 1024) {
+        const brand = page.locator('.book-brand');
+        const search = page.getByRole('button', {name: '搜索博客', exact: true});
+        const brandBox = await brand.boundingBox();
+        const searchBox = await search.boundingBox();
+        assert.ok(brandBox && searchBox);
+        assert.equal(overlaps(skipBox, brandBox), false, '跳过本次 does not overlap the site logo');
+        assert.equal(overlaps(progressBox, brandBox), false, 'The progress strip does not overlap the site logo');
+        assert.equal(overlaps(skipBox, searchBox), false, '跳过本次 does not overlap search');
+        assert.equal(overlaps(progressBox, searchBox), false, 'The progress strip does not overlap search');
+        assert.equal(await topHit(page, brandBox), 'chrome');
+        assert.equal(await topHit(page, searchBox), 'chrome');
+      } else {
+        const header = page.locator('.book-header');
+        const headerBox = await header.boundingBox();
+        assert.ok(headerBox);
+        assert.equal(overlaps(skipBox, headerBox), false, '跳过本次 does not overlap the mobile header');
+        assert.equal(overlaps(progressBox, headerBox), false, 'The progress strip does not overlap the mobile header');
+        assert.equal(await topHit(page, headerBox), 'chrome');
+      }
+      assert.equal((await state(page)).writes.filter(write => write.name === 'reader:setReadingProgress').length, 0, 'Showing the restore control does not write');
+      await page.screenshot({path: `/opt/cursor/artifacts/reading-progress-header-${width}.png`});
+      await skip.click();
+      await page.waitForFunction(() => window.scrollY < 40);
+      assert.equal(await skip.count(), 0, 'Skip still dismisses the restore control');
+      console.log(`Reading progress chrome ${width}px: restore control stays clear of branding.`);
+    } finally {await context.close();}
+  }
 } finally {
   await browser?.close();
   await server.close();

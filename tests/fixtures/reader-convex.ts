@@ -5,8 +5,9 @@ import {currentFixtureAuth, useAuth} from './reader-clerk';
 
 type Bookmark = {pathname: string; title: string; updatedAt: number};
 type ProgressRow = {pathname: string; title: string; progress: number; updatedAt: number; view: {progress: number}};
+type MarkRow = {pathname: string; title: string; status: 'later' | 'skimmed' | 'read' | 'studied'; updatedAt: number};
 type Page = {bookmarked: boolean};
-type Account = {page: Page; bookmarks: Bookmark[]; progress: ProgressRow[]};
+type Account = {page: Page; bookmarks: Bookmark[]; progress: ProgressRow[]; marks: MarkRow[]};
 const EMPTY_MARK = {status: null};
 const EMPTY_PROGRESS = {progress: null as number | null};
 const listeners = new Set<() => void>();
@@ -25,7 +26,7 @@ function createAccount(owner: string, bookmarked = false): Account {
     updatedAt: Date.UTC(2026, 8, 8) - index * 86_400_000,
   }));
   if (bookmarked) bookmarks.unshift({pathname: '/docs/fixture/', title: `${label}的已收藏文章`, updatedAt: Date.UTC(2026, 8, 9)});
-  return {page: {bookmarked}, bookmarks, progress: []};
+  return {page: {bookmarked}, bookmarks, progress: [], marks: []};
 }
 function withInitialProgress(account: Account): Account {
   const raw = new URLSearchParams(location.search).get('progress');
@@ -37,7 +38,24 @@ function withInitialProgress(account: Account): Account {
     pathname: '/docs/fixture/', title: '公开测试文章', progress: clamped, updatedAt: Date.UTC(2026, 8, 9), view: {progress: clamped},
   }]};
 }
-let snapshot = withInitialProgress(createAccount('测试'));
+function withReadingList(account: Account): Account {
+  if (new URLSearchParams(location.search).get('readingList') !== '1') return account;
+  const pathname = '/docs/Cloudflare/cloudflare-os-product-and-workers-architecture/';
+  const title = 'Cloudflare OS：产品形态、Gadgets、Gatekeepers 与 Workers 架构';
+  const day = Date.UTC(2026, 9, 21, 12);
+  return {
+    ...account,
+    marks: [
+      {pathname, title, status: 'later', updatedAt: day},
+      {pathname: '/docs/mark-only/', title: '只有阅读标记的文章', status: 'read', updatedAt: day - 86_400_000},
+    ],
+    progress: [
+      {pathname, title, progress: 1, updatedAt: day, view: {progress: 1}},
+      {pathname: '/docs/progress-only/', title: '只有进度的文章', progress: 0.42, updatedAt: day - 2 * 86_400_000, view: {progress: 0.42}},
+    ],
+  };
+}
+let snapshot = withReadingList(withInitialProgress(createAccount('测试')));
 const accounts = new Map([
   ['fixture-a', createAccount('账号 A', true)],
   ['fixture-b', createAccount('账号 B')],
@@ -125,24 +143,40 @@ export function useMutation(reference: Parameters<typeof getFunctionName>[0]) {
   }, [client, name]);
 }
 
-export function usePaginatedQuery(reference: Parameters<typeof getFunctionName>[0], args: Record<string, never>, {initialNumItems}: {initialNumItems: number}) {
+export function usePaginatedQuery(reference: Parameters<typeof getFunctionName>[0], args: Record<string, unknown>, {initialNumItems}: {initialNumItems: number}) {
   const client = useContext(FixtureClientContext);
   const name = getFunctionName(reference);
-  if (name !== 'reader:listLibrary' || Object.keys(args).length > 0) throw new Error('Only bookmark pagination is supported');
   const data = useSyncExternalStore(subscribe, () => account(client));
   const [limit, setLimit] = useState(initialNumItems);
   const [loading, setLoading] = useState(false);
   const userId = client?.record.userId ?? currentFixtureAuth().userId;
-  useEffect(() => {listRequests.push({limit: initialNumItems, userId});}, [client, initialNumItems, userId]);
-  return {
-    results: data.bookmarks.slice(0, limit),
-    status: loading ? 'LoadingMore' : limit >= data.bookmarks.length ? 'Exhausted' : 'CanLoadMore',
+  const argsKey = JSON.stringify(args ?? {});
+  useEffect(() => {listRequests.push({limit: initialNumItems, userId});}, [client, initialNumItems, userId, name, argsKey]);
+  useEffect(() => {setLimit(initialNumItems);}, [argsKey, name, initialNumItems]);
+  const page = <T,>(rows: T[]) => ({
+    results: rows.slice(0, limit),
+    status: loading ? 'LoadingMore' as const : limit >= rows.length ? 'Exhausted' as const : 'CanLoadMore' as const,
     loadMore(count: number) {
       listRequests.push({limit: limit + count, userId});
       setLoading(true);
-      setTimeout(() => {setLimit((current) => current + count); setLoading(false);}, 30);
+      setTimeout(() => {setLimit(current => current + count); setLoading(false);}, 30);
     },
-  };
+  });
+  if (name === 'reader:listLibrary') {
+    if (Object.keys(args).length > 0) throw new Error('Only bookmark pagination is supported');
+    return page(data.bookmarks);
+  }
+  if (name === 'reader:listReadingMarks') {
+    const status = typeof args.status === 'string' ? args.status : undefined;
+    const rows = data.marks.filter(item => !status || item.status === status).sort((a, b) => b.updatedAt - a.updatedAt);
+    return page(rows);
+  }
+  if (name === 'reader:listReadingProgress') {
+    if (Object.keys(args).length > 0) throw new Error('Progress list does not accept filters');
+    const rows = data.progress.map(({pathname, title, progress, updatedAt}) => ({pathname, title, progress, updatedAt})).sort((a, b) => b.updatedAt - a.updatedAt);
+    return page(rows);
+  }
+  throw new Error(`Unsupported fixture pagination: ${name}`);
 }
 
 Object.assign(window, {__readerFixture: {
