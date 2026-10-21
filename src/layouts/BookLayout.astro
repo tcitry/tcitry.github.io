@@ -89,7 +89,7 @@ const site = {
   <Fragment slot="overlays">
     {production && <GoogleOneTapPrompt client:only="react" />}
     {import.meta.env.DEV && page.source && <ObsidianNoteButton source={page.source} client:load />}
-    {readerArticle && <ReadingProgressIsland pathname={page.url} title={bookTitle(page)} client:only="react" />}
+    {readerArticle && <ReadingProgressIsland client:only="react" />}
     <BlogChatWidget pathname={readerArticle ? page.url : undefined} title={readerArticle ? bookTitle(page) : undefined} />
     <script>import '../scripts/site'; import '../scripts/blog-code'; import '../scripts/floating-scrollbars';</script>
   </Fragment>

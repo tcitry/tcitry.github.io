@@ -29,12 +29,12 @@ export default function ReadingMarksPanel() {
   }
 
   return <section ref={setContainer} className={styles.panel} aria-label="阅读列表" aria-busy={loading} data-reading-marks data-sentry-mask data-pagefind-ignore>
-    <ReadingStatusMenu value={filter} onChange={setFilter} emptyLabel="全部档次" label="筛选阅读标记" container={container} />
+    <ReadingStatusMenu value={filter} onChange={setFilter} emptyLabel="全部状态" label="筛选阅读标记" container={container} />
     {loading
       ? <p className={styles.message} role="status">正在读取阅读记录…</p>
       : <>
         {entries.length === 0
-          ? <p className={styles.empty}>{filter ? '该档次还没有阅读标记。' : '还没有阅读记录。在文章文末选择理解档次，或打开文章并滚动后会自动记录。'}</p>
+          ? <p className={styles.empty}>{filter ? '该档次还没有阅读标记。' : '还没有阅读记录。在文章文末选择理解档次后会出现在这里。'}</p>
           : <ul className={styles.list}>
             {entries.map(entry => <li key={entry.pathname} className={styles.item}>
               <a href={entry.pathname} className={styles.itemLink}>

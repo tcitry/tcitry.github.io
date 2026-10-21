@@ -13,9 +13,8 @@ test('article progress stays separate from reading status', () => {
   assert.doesNotMatch(article, /ReadingMarkControl/);
   assert.match(article, /<BookmarkButton /);
   const progress = read('src/components/reader/ReadingProgress.tsx');
-  assert.match(progress, /api\.reader\.getReadingProgress/);
-  assert.match(progress, /api\.reader\.setReadingProgress/);
-  assert.match(progress, /scrollToRatio/);
+  assert.doesNotMatch(progress, /getReadingProgress|setReadingProgress|useQuery|useMutation|useConvexAuth|scrollToRatio|scrollRestoration|convex\/react/);
+  assert.match(progress, /articleProgress/);
   assert.match(progress, /aria-label="进度"/);
   assert.match(progress, /role="progressbar"/);
   assert.match(progress, /data-reading-progress/);
@@ -23,6 +22,9 @@ test('article progress stays separate from reading status', () => {
   assert.doesNotMatch(progress, /跳过本次|progressMeta|offerSkip|scrollToStart|<span>\{percent\}%/);
   assert.doesNotMatch(progress, /readingProgressFrame|style\.left|style\.right|style\.top/);
   assert.doesNotMatch(progress, /setReadingMark|clearReadingMark|readingMarks|listReadingMarks/);
+  const island = read('src/components/reader/ReadingProgressIsland.tsx');
+  assert.match(island, /<ReadingProgress \/>/);
+  assert.doesNotMatch(island, /getReadingProgress|setReadingProgress|BlogClerkProvider|ConvexSession|PUBLIC_CONVEX_URL|PUBLIC_CLERK_PUBLISHABLE_KEY/);
   const list = read('src/components/reader/ReadingMarksPanel.tsx');
   assert.match(list, /api\.reader\.listReadingMarks/);
   assert.match(list, /api\.reader\.listReadingProgress/);
