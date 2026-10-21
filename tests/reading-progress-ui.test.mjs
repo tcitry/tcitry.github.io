@@ -16,9 +16,11 @@ test('article progress stays separate from reading status', () => {
   assert.match(progress, /api\.reader\.getReadingProgress/);
   assert.match(progress, /api\.reader\.setReadingProgress/);
   assert.match(progress, /scrollToRatio/);
-  assert.match(progress, /跳过本次/);
+  assert.match(progress, /aria-label="进度"/);
   assert.match(progress, /role="progressbar"/);
   assert.match(progress, /data-reading-progress/);
+  assert.match(progress, /progressFill/);
+  assert.doesNotMatch(progress, /跳过本次|progressMeta|offerSkip|scrollToStart|<span>\{percent\}%/);
   assert.doesNotMatch(progress, /readingProgressFrame|style\.left|style\.right|style\.top/);
   assert.doesNotMatch(progress, /setReadingMark|clearReadingMark|readingMarks|listReadingMarks/);
   const list = read('src/components/reader/ReadingMarksPanel.tsx');
@@ -31,9 +33,10 @@ test('article progress stays separate from reading status', () => {
   assert.match(css, /\.progress\s*\{[^}]*left:\s*0/);
   assert.match(css, /\.progress\s*\{[^}]*right:\s*0/);
   assert.match(css, /\.progress\s*\{[^}]*width:\s*100%/);
-  assert.match(css, /\.progressMeta\s*\{[^}]*inset-inline-end:\s*0/);
+  assert.match(css, /\.progressTrack\s*\{[^}]*height:\s*6px/);
+  assert.match(css, /\.progressTrack\s*\{[^}]*width:\s*100%/);
   assert.match(css, /book-menu-content/);
-  assert.doesNotMatch(css, /readingProgressFrame/);
+  assert.doesNotMatch(css, /readingProgressFrame|\.progressMeta/);
   const workspace = read('src/components/chat/AssistantWorkspace.tsx');
   assert.match(workspace, /<ReadingMarksPanel \/>/);
   assert.doesNotMatch(workspace, /ReadingProgressPanel/);

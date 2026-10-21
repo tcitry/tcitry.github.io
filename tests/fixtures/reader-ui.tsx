@@ -1,8 +1,12 @@
 import {createRoot} from 'react-dom/client';
+import {Button} from '@heroui/react';
 import ArticleReader from '../../src/components/reader/ArticleReader';
+import BookmarkButton from '../../src/components/reader/BookmarkButton';
 import ReaderLibrary from '../../src/components/reader/ReaderLibrary';
 import ReaderRoot from '../../src/components/reader/ReaderRoot';
+import ReadingMarkControl from '../../src/components/reader/ReadingMarkControl';
 import ReadingMarksPanel from '../../src/components/reader/ReadingMarksPanel';
+import {HeartIcon} from '../../src/components/comments/CommentIcons';
 import '../../src/styles/tailwind.css';
 import './reader-ui.css';
 
@@ -38,6 +42,14 @@ if (params.get('readingList') === '1') {
         <ArticleReader pathname="/docs/fixture/" title={title} />
       </div>
       {article}
+      <footer className="reader-chrome-comments" data-fixture-article-actions>
+        <span className="reader-chrome-comments__count">3 条评论</span>
+        <div className="reader-chrome-comments__actions">
+          <ReadingMarkControl pathname="/docs/fixture/" title={title} container={null} />
+          <Button size="sm" variant="ghost" aria-label="喜欢这篇文章"><HeartIcon /><span>12</span></Button>
+          <BookmarkButton pathname="/docs/fixture/" title={title} tooltipContainer={null} unavailableNotice={false} />
+        </div>
+      </footer>
     </div>
     <aside className="book-toc"><div className="book-toc-content">目录</div></aside>
   </main>);

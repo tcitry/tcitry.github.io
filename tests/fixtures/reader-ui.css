@@ -57,6 +57,18 @@ footer { min-height: 800px; padding-top: 40px; border-top: 1px solid var(--gray-
   text-align: left;
 }
 .reader-chrome .book-page { flex: 1 1 auto; min-width: 0; padding: 1rem; }
+.reader-chrome-comments {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem 1rem;
+  margin-top: 2.5rem;
+  border-top: 1px solid #e4e4e7;
+  padding-top: 1rem;
+}
+.reader-chrome-comments__count { font-size: .875rem; font-weight: 600; }
+.reader-chrome-comments__actions { display: flex; align-items: center; gap: .25rem; min-width: 0; }
 .reader-chrome .book-header { display: none; align-items: center; justify-content: space-between; gap: .75rem; min-height: 3rem; margin-bottom: 1rem; }
 .reader-chrome .book-toc { flex: 0 0 var(--book-toc-width); }
 .reader-chrome .book-toc-content {
