@@ -1,15 +1,15 @@
 @reference "../../styles/tailwind.css";
 
-.root { padding: clamp(1rem, 3vw, 1.5rem); }
+.root { margin: 1.5rem 0; padding: clamp(1rem, 3vw, 1.5rem); border: 1px solid var(--border, var(--gray-200)); border-radius: .75rem; background: var(--body-background); color: var(--body-font-color); }
+.root h3 { margin: 0; padding: 0; border: 0; }
+.root h3::before { content: none !important; }
+.root p { margin-block: .65rem; }
+.root :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .header { margin-bottom: 1rem; }
 .header h3 { font-size: clamp(1.1rem, 3vw, 1.45rem); line-height: 1.4; }
-.header p, .caption, .source { font-size: 0.8rem; line-height: 1.75; color: var(--muted); }
+.header p, .source { font-size: 0.8rem; line-height: 1.75; color: var(--muted); }
 .eyebrow { display: block; margin-bottom: 0.55rem; font: 0.65rem/1.5 var(--font-mono, monospace); letter-spacing: 0.12em; color: var(--muted); }
-.figure { margin: 0; }
-.drawing { display: block; width: 100%; height: auto; }
-.shadow { fill: var(--machine-ink); opacity: 0.055; }
-.root[data-animated="true"] .moving { transition: transform 260ms ease-out; }
-.caption { margin: 0.7rem 0 0; }
+.matchCount { font-size: .8rem; }
 .controls { display: grid; gap: 1rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--gray-200); }
 .controls fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 .controls legend { margin-bottom: 0.45rem; font-size: 0.75rem; color: var(--muted); }
@@ -24,7 +24,7 @@
 .preview :global(.checkbox__control) { pointer-events: none; }
 .rules { display: grid; gap: 0.5rem; }
 .rules code { display: block; min-width: 0; padding-left: 0.7rem; border-left: 2px solid var(--gray-200); font-size: 0.67rem; line-height: 1.75; overflow-wrap: anywhere; color: var(--muted); }
-.rules code[data-hit="true"] { border-color: var(--machine-accent); color: var(--machine-accent); }
+.rules code[data-hit="true"] { border-color: var(--accent); color: var(--accent); }
 .status { min-height: 3em; font-size: 0.82rem; line-height: 1.75; }
 .source { margin-top: 1rem; }
 .source summary { cursor: pointer; color: var(--body-font-color); }
@@ -36,8 +36,7 @@
 }
 @media (max-width: 480px) {
   .root { padding: 0.8rem; }
-  .drawing { width: 112%; max-width: none; margin-inline: -6%; }
   .buttons { gap: 0.4rem; }
   .buttons button { font-size: 0.69rem; padding-inline: 0.7rem; }
 }
-@media (prefers-reduced-motion: reduce) { .moving { transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { .root *, .root *::before, .root *::after { animation: none !important; transition: none !important; } }
