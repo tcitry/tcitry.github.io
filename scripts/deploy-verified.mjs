@@ -7,10 +7,19 @@ import { promisify } from 'node:util';
 import { assertSealedRelease, assetHashes } from './release-manifest.mjs';
 import { assertClerkIssuer, assertConvexSearchURL, assertProductionDeployKey, loadReaderEnvironment, readProductionReaderConfig, withoutReaderSecrets } from './reader-config.mjs';
 import { assertProductionWorkersBranch } from './ci-branch.mjs';
+import { publishedReleaseSupersedes, resolveWorkersProductionDeploy } from './production-release-guard.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const execute = promisify(execFile);
 const convexEnvFile = path.join(root, '.generated/convex-release.env');
+
+class SupersededRelease extends Error {}
+
+async function assertCurrentProductionRelease(siteCommit) {
+  const decision = await resolveWorkersProductionDeploy({ root, ourCommit: siteCommit });
+  if (decision.action === 'skip') throw new SupersededRelease(decision.message);
+  if (decision.action === 'fail') assert.fail(decision.message);
+}
 
 try {
   assertProductionWorkersBranch();
@@ -20,6 +29,9 @@ try {
   const reader = readProductionReaderConfig(configured);
   assert.deepEqual(reader, manifest.reader, 'Reader configuration changed after production verification.');
   assertProductionDeployKey(configured, reader);
+  // Two main builds can overlap. Uploading the older sealed Worker replaces the
+  // newer release and makes its Pagefind check compare against the wrong index.
+  await assertCurrentProductionRelease(manifest.siteCommit);
   const env = withoutReaderSecrets(configured);
   await rm(path.join(root, '.generated/deployment.json'), { force: true });
   for (const name of ['BLOG_READ_TOKEN', 'BLOG_CONTENT_REPOSITORY', 'BLOG_CONTENT_COMMIT', 'HEROUI_AUTH_TOKEN', 'GITHUB_TOKEN', 'GH_TOKEN']) delete env[name];
@@ -83,6 +95,7 @@ try {
     '--cmd-url-env-var-name', 'CONVEX_DEPLOYMENT_URL'], convexEnv);
   // Backend failure stops here. Also reject any local change before Worker upload.
   await assertSealedRelease(root, manifest);
+  await assertCurrentProductionRelease(manifest.siteCommit);
   console.log(`Deploying ${Object.keys(assets).length} sealed production assets without rebuilding.`);
   // Use the installed, lockfile-pinned CLI. Never download a different Wrangler.
   await run('Uploading the verified Worker assets', ['node_modules/wrangler/bin/wrangler.js', 'deploy'], env);
@@ -96,7 +109,14 @@ try {
     for (const name of Object.keys(verificationEnv)) {
       if (/^(?:CLOUDFLARE_|CF_)/.test(name) || /(?:TOKEN|SECRET|PASSWORD|DEPLOY_KEY|ADMIN_KEY)/.test(name)) delete verificationEnv[name];
     }
-    await run('Verifying the published site', ['scripts/verify-deployment.mjs', '--env', 'production'], verificationEnv);
+    try {
+      await run('Verifying the published site', ['scripts/verify-deployment.mjs', '--env', 'production'], verificationEnv);
+    } catch (error) {
+      if (error?.name !== 'DeployStepError') throw error;
+      const superseded = await publishedReleaseSupersedes({ root, ourCommit: manifest.siteCommit });
+      if (superseded) throw new SupersededRelease(superseded.message);
+      throw error;
+    }
     await run('Verifying the published AI Search corpus and chat API', ['scripts/verify-ai-search-deployment.mjs'], verificationEnv);
     // Article sync is best-effort after a successful site/API verification.
     // Incomplete indexing, a newer production release, or API errors must not
@@ -109,14 +129,18 @@ try {
     }
   }
 } catch (error) {
-  if (error instanceof assert.AssertionError) {
+  if (error instanceof SupersededRelease) {
+    console.log(error.message);
+  } else if (error instanceof assert.AssertionError) {
     console.error(error.message.split('\n')[0]);
+    process.exitCode = 1;
   } else if (error?.name === 'DeployStepError') {
     console.error(error.message);
+    process.exitCode = 1;
   } else {
     console.error('Verified deployment failed. Check the Convex/Worker deployment result; the next deployment step did not run.');
+    process.exitCode = 1;
   }
-  process.exitCode = 1;
 } finally {
   await rm(convexEnvFile, { force: true });
 }

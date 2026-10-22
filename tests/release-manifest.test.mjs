@@ -20,7 +20,7 @@ async function fixture(t) {
   for (const subdirectory of [content, site, 'site/scripts', 'site/dist', 'site/.generated', 'site/node_modules/wrangler/bin', 'site/node_modules/convex/bin']) {
     await mkdir(path.isAbsolute(subdirectory) ? subdirectory : path.join(directory, subdirectory), { recursive: true });
   }
-  for (const file of ['release-manifest.mjs', 'verify-release.mjs', 'deploy-verified.mjs', 'theme-package.mjs', 'reader-config.mjs', 'reader-build.mjs', 'finalize-build.mjs', 'build-site.mjs', 'verify-convex-target.mjs', 'ci-branch.mjs']) {
+  for (const file of ['release-manifest.mjs', 'verify-release.mjs', 'deploy-verified.mjs', 'theme-package.mjs', 'reader-config.mjs', 'reader-build.mjs', 'finalize-build.mjs', 'build-site.mjs', 'verify-convex-target.mjs', 'ci-branch.mjs', 'production-release-guard.mjs']) {
     await copyFile(new URL(`../scripts/${file}`, import.meta.url), path.join(site, 'scripts', file));
   }
   await mkdir(path.join(site, 'src/lib'), {recursive: true});
@@ -438,4 +438,56 @@ test('AI Search article sync is best-effort after a verified Worker deploy', asy
   assert.equal(complete.code, 0, complete.stdout + complete.stderr);
   assert.doesNotMatch(complete.stdout + complete.stderr, /WARNING: AI Search article sync did not finish/);
   assert.deepEqual(JSON.parse(await readFile(path.join(succeeded.site, '.generated/sync-args.json'), 'utf8')), ['--apply', '--best-effort']);
+});
+
+async function publishDescendantMain(context) {
+  const bare = path.join(context.directory, 'origin.git');
+  const newer = path.join(context.directory, 'newer');
+  await execute('git', ['init', '--bare', '--quiet', '--initial-branch=main', bare]);
+  await context.git(context.site, ['remote', 'add', 'origin', bare]);
+  await context.git(context.site, ['push', '--quiet', 'origin', 'HEAD:refs/heads/main']);
+  await context.git(context.site, ['clone', '--quiet', bare, newer]);
+  await writeFile(path.join(newer, 'newer.txt'), 'newer main\n');
+  await context.git(newer, ['add', 'newer.txt']);
+  await context.git(newer, ['commit', '--quiet', '-m', 'Newer main']);
+  await context.git(newer, ['push', '--quiet', 'origin', 'HEAD:refs/heads/main']);
+}
+
+test('An older Workers build does not replace a newer main release', async t => {
+  const context = await fixture(t);
+  assert.equal((await context.run('verify-release.mjs')).code, 0);
+  await publishDescendantMain(context);
+  const skipped = await context.run('deploy-verified.mjs');
+  assert.equal(skipped.code, 0, skipped.stdout + skipped.stderr);
+  assert.match(skipped.stdout, /Skipping this Workers deploy: origin\/main [a-f0-9]{40} already contains sealed release [a-f0-9]{40}/);
+  assert.match(skipped.stdout, /must not replace the newer production Worker/);
+  await assert.rejects(readFile(path.join(context.site, '.generated/deploy-env.json')), { code: 'ENOENT' });
+  await assert.rejects(readFile(path.join(context.site, '.generated/convex-deployed')), { code: 'ENOENT' });
+  await assert.rejects(readFile(path.join(context.site, '.generated/convex-release.env')), { code: 'ENOENT' });
+
+  await context.git(context.site, ['branch', '-M', 'main']);
+  const manual = await context.run('deploy-verified.mjs', { WORKERS_CI: '', WORKERS_CI_BRANCH: '' });
+  assert.equal(manual.code, 0, manual.stdout + manual.stderr);
+  assert.match(manual.stdout, /without rebuilding/);
+  JSON.parse(await readFile(path.join(context.site, '.generated/deploy-env.json'), 'utf8'));
+});
+
+test('A Workers build refuses to upload when origin/main does not contain the sealed release', async t => {
+  const context = await fixture(t);
+  assert.equal((await context.run('verify-release.mjs')).code, 0);
+  const bare = path.join(context.directory, 'origin.git');
+  const other = path.join(context.directory, 'other');
+  await execute('git', ['init', '--bare', '--quiet', '--initial-branch=main', bare]);
+  await execute('git', ['init', '--quiet', '--initial-branch=main', other]);
+  await writeFile(path.join(other, 'other.txt'), 'unrelated\n');
+  await context.git(other, ['add', 'other.txt']);
+  await context.git(other, ['commit', '--quiet', '-m', 'Unrelated']);
+  await context.git(other, ['remote', 'add', 'origin', bare]);
+  await context.git(other, ['push', '--quiet', 'origin', 'HEAD:refs/heads/main']);
+  await context.git(context.site, ['remote', 'add', 'origin', bare]);
+  const rejected = await context.run('deploy-verified.mjs');
+  assert.equal(rejected.code, 1, rejected.stdout + rejected.stderr);
+  assert.match(rejected.stderr, /Refusing to deploy sealed release [a-f0-9]{40}: origin\/main is [a-f0-9]{40}/);
+  await assert.rejects(readFile(path.join(context.site, '.generated/deploy-env.json')), { code: 'ENOENT' });
+  await assert.rejects(readFile(path.join(context.site, '.generated/convex-deployed')), { code: 'ENOENT' });
 });

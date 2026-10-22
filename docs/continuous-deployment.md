@@ -75,7 +75,7 @@ Workers Builds 的 GitHub check 对应 `deploy:verified` 的硬失败步骤：�
 
 ## Workers Builds
 
-Workers Builds 在 `main` 上运行 `build:workers` / `deploy:verified`；其他分支运行 `build:preview` / `deploy:preview`（见 [Workers Builds 预览部署](workers-preview-builds.md)）。`build:workers` 会：
+Workers Builds 在 `main` 上运行 `build:workers` / `deploy:verified`；其他分支运行 `build:preview` / `deploy:preview`（见 [Workers Builds 预览部署](workers-preview-builds.md)）。连续合并会并行构建。`deploy:verified` 在 `WORKERS_CI=1` 时先 `git fetch origin main`：封存提交若已是当前 `origin/main` 的祖先，就不再部署 Convex 或 Worker，并成功退出，避免较慢的旧构建覆盖新版本。线上核验失败时，若生产 marker 已是包含本次提交的更新 `main`，同样成功退出。手动回滚不设置 `WORKERS_CI`，仍可发布指定的旧提交。`build:workers` 会：
 
 1. 获取 Blog 远端 `main` 并解析为固定提交；
 2. 在隔离目录安装准确依赖；
