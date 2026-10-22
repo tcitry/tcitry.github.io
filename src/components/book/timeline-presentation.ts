@@ -1,6 +1,6 @@
 import {parseFragment, type DefaultTreeAdapterMap} from 'parse5';
 
-export type TimelineKind = 'pinned' | 'star' | 'repository' | 'media' | 'image' | 'code' | 'link' | 'note';
+export type TimelineKind = 'pinned' | 'star' | 'x' | 'publish' | 'weekly' | 'repository' | 'media' | 'image' | 'code' | 'link' | 'note';
 
 export interface TimelinePresentation {
   kind: TimelineKind;
@@ -8,15 +8,23 @@ export interface TimelinePresentation {
   linkCount: number;
   weekday?: string;
   linksOnly?: true;
+  /** Publish and weekly entries are hub nodes: the body keeps every related article link. */
+  hub?: true;
 }
 
 type Node = DefaultTreeAdapterMap['node'];
 type Element = DefaultTreeAdapterMap['element'];
 
 const labels: Record<TimelineKind, string> = {
-  pinned: '置顶', star: 'GitHub Star', repository: '开源收录', media: '媒体',
-  image: '图片', code: '代码', link: '链接收录', note: '随记',
+  pinned: '置顶', star: 'GitHub Star', x: 'X 发布', publish: '站点发布', weekly: 'Weekly 发布',
+  repository: '开源收录', media: '媒体', image: '图片', code: '代码', link: '链接收录', note: '随记',
 };
+const paragraphMarkers = new Map<string, 'star' | 'x' | 'publish' | 'weekly'>([
+  ['⭐ Starred Github Repo', 'star'],
+  ['🐦 Posted on X', 'x'],
+  ['📝 Published on site', 'publish'],
+  ['📰 Weekly published', 'weekly'],
+]);
 const ignored = new Set(['pre', 'code', 'script', 'style']);
 const githubSections = new Set([
   'about', 'account', 'apps', 'codespaces', 'collections', 'contact', 'copilot',
@@ -41,6 +49,12 @@ function repositoryUrl(url: URL): boolean {
   const match = /^\/([a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\/([a-z0-9_.-]+)\/?$/i.exec(url.pathname);
   return Boolean(match && !githubSections.has(match[1].toLowerCase()) &&
     !/^\.{1,2}$/.test(match[2]) && !match[2].endsWith('.git'));
+}
+
+function xStatusUrl(url: URL): boolean {
+  if (url.protocol !== 'https:' || url.port || url.username || url.password) return false;
+  if (url.hostname !== 'x.com' && url.hostname !== 'www.x.com') return false;
+  return /^\/(?:[A-Za-z0-9_]{1,15}|i(?:\/web)?)\/status\/\d+(?:\/(?:photo|video)\/\d+)?\/?$/.test(url.pathname);
 }
 
 function youtubeUrl(url: URL): boolean {
@@ -95,6 +109,9 @@ function weekday(label: string): string | undefined {
 export function getTimelinePresentation(item: {label: string; html: string}): TimelinePresentation {
   const links = new Map<string, URL>();
   let star = false;
+  let posted = false;
+  let publish = false;
+  let weekly = false;
   let repository = false;
   let media = false;
   let image = false;
@@ -111,7 +128,11 @@ export function getTimelinePresentation(item: {label: string; html: string}): Ti
         if (url) links.set(url.href, url);
       }
       if (node.tagName === 'p') {
-        if (text(node).replace(/\s+/g, ' ').trim() === '⭐ Starred Github Repo') star = true;
+        const marker = paragraphMarkers.get(text(node).replace(/\s+/g, ' ').trim());
+        if (marker === 'star') star = true;
+        else if (marker === 'x') posted = true;
+        else if (marker === 'publish') publish = true;
+        else if (marker === 'weekly') weekly = true;
         const url = standaloneUrl(node);
         if (url && repositoryUrl(url)) repository = true;
         if (url && youtubeUrl(url)) media = true;
@@ -124,12 +145,18 @@ export function getTimelinePresentation(item: {label: string; html: string}): Ti
   visit(fragment);
   const kind: TimelineKind = /^Top\s+\d{4}$/.test(item.label) ? 'pinned'
     : star && [...links.values()].some(repositoryUrl) ? 'star'
+    : posted && [...links.values()].some(xStatusUrl) ? 'x'
+    : publish ? 'publish'
+    : weekly ? 'weekly'
     : media ? 'media' : image ? 'image' : code ? 'code' : repository ? 'repository'
     : links.size > 0 ? 'link' : 'note';
   const day = weekday(item.label);
-  const linksOnly = kind !== 'pinned' && kind !== 'star' && links.size > 0 && containsOnlyTextLinks(fragment);
+  const linksOnly = kind !== 'pinned' && kind !== 'star' && kind !== 'x' && kind !== 'publish' && kind !== 'weekly'
+    && links.size > 0 && containsOnlyTextLinks(fragment);
+  const hub = kind === 'publish' || kind === 'weekly';
   return {
     kind, label: labels[kind], linkCount: links.size,
     ...(day ? {weekday: day} : {}), ...(linksOnly ? {linksOnly: true as const} : {}),
+    ...(hub ? {hub: true as const} : {}),
   };
 }

@@ -1,3 +1,5 @@
+import Calendar from '@gravity-ui/icons/Calendar';
+import CircleLetterX from '@gravity-ui/icons/CircleLetterX';
 import Code from '@gravity-ui/icons/Code';
 import CodePullRequest from '@gravity-ui/icons/CodePullRequest';
 import FileText from '@gravity-ui/icons/FileText';
@@ -5,12 +7,13 @@ import Link from '@gravity-ui/icons/Link';
 import Picture from '@gravity-ui/icons/Picture';
 import Pin from '@gravity-ui/icons/Pin';
 import Play from '@gravity-ui/icons/Play';
+import SquareArticle from '@gravity-ui/icons/SquareArticle';
 import Star from '@gravity-ui/icons/Star';
 import {Card, Chip} from '@heroui/react';
 import {NativeSelect} from '@heroui-pro/react/native-select';
 import {Timeline} from '@heroui-pro/react/timeline';
 import type {TimelineItem} from './special-pages';
-import {getTimelinePresentation} from './timeline-presentation';
+import {getTimelinePresentation, type TimelineKind} from './timeline-presentation';
 import './ContentSections.css';
 import styles from './ContentSections.module.css';
 
@@ -20,7 +23,10 @@ export interface TimelineViewProps {
   selected?: string;
 }
 
-const eventIcons = {pinned: Pin, star: Star, repository: CodePullRequest, media: Play, image: Picture, code: Code, link: Link, note: FileText};
+const eventIcons: Record<TimelineKind, typeof Pin> = {
+  pinned: Pin, star: Star, x: CircleLetterX, publish: SquareArticle, weekly: Calendar,
+  repository: CodePullRequest, media: Play, image: Picture, code: Code, link: Link, note: FileText,
+};
 
 /** Render only on the server: authored HTML remains owned by Book's enhancements. */
 export default function TimelineView({items, years = [], selected}: TimelineViewProps) {
@@ -46,7 +52,7 @@ export default function TimelineView({items, years = [], selected}: TimelineView
         const Icon = eventIcons[presentation.kind];
         const content = <div className={styles.authored} data-timeline-entry dangerouslySetInnerHTML={{__html: item.html}} />;
 
-        return <Timeline.Item className={styles.event} key={item.id || `${item.label}-${index}`} id={item.id} data-timeline-kind={presentation.kind} data-timeline-links-only={presentation.linksOnly}>
+        return <Timeline.Item className={styles.event} key={item.id || `${item.label}-${index}`} id={item.id} data-timeline-kind={presentation.kind} data-timeline-links-only={presentation.linksOnly} data-timeline-hub={presentation.hub}>
           <Timeline.Content className={styles.eventMeta} side="start" data-timeline-meta data-book-island>
             <h2 className={styles.eventDate}>
               <a href={item.id ? `#${item.id}` : undefined}>{presentation.weekday ? <time dateTime={item.label}>{item.label}</time> : item.label}</a>

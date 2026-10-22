@@ -21,6 +21,60 @@ test('pinned groups keep their priority and count links without inventing a week
   assert.equal(present('<p>置顶建议</p>', 'Top choices').kind, 'note');
 });
 
+test('an exact X post marker and a status link stay a simple post', () => {
+  const marker = '<p>🐦 Posted on X</p>';
+  const status = 'https://x.com/example/status/1234567890123456789';
+  assert.deepEqual(present(`${marker}<p>${link(status)}</p>`), {
+    kind: 'x', label: 'X 发布', linkCount: 1, weekday: '星期二',
+  });
+  assert.equal(present(`<blockquote>整理说明</blockquote>${marker}<p>\n${link(`${status}?s=20`)}\n</p>`).kind, 'x');
+  assert.equal(present(`${marker}<p>${link('https://www.x.com/i/web/status/42')}</p>`).kind, 'x');
+  assert.equal(present(`${marker}<p>${link('https://x.com/example/status/42/photo/1')}</p>`).kind, 'x');
+  const listed = present(`${marker}<ul><li>${link(status)}</li><li>${link('https://example.com/extra')}</li></ul>`);
+  assert.equal(listed.kind, 'x');
+  assert.equal(listed.hub, undefined);
+  assert.equal(listed.linkCount, 2);
+  assert.equal(present(marker).kind, 'note');
+  assert.equal(present(`<p>我看到了 🐦 Posted on X 字样。</p><p>${link(status)}</p>`).kind, 'link');
+  assert.equal(present(`<p><code>🐦 Posted on X</code></p><p>${link(status)}</p>`).kind, 'link');
+  for (const url of [
+    'https://twitter.com/example/status/42',
+    'https://x.com/example',
+    'https://x.com/example/status/',
+    'https://x.com/example/status/not-a-number',
+    'http://x.com/example/status/42',
+    'https://x.com.evil.example/example/status/42',
+    'https://mobile.x.com/example/status/42',
+  ]) assert.notEqual(present(`${marker}<p>${link(url)}</p>`).kind, 'x', url);
+  assert.equal(present(`${marker}<p>${link(status)}</p><img src="cover.png">`).kind, 'x');
+  assert.equal(present(marker + `<p>${link(status)}</p>`, 'Top 2026').kind, 'pinned');
+  assert.equal(present(star + `<p>${link(repository)}</p>${marker}<p>${link(status)}</p>`).kind, 'star');
+});
+
+test('publish and weekly markers keep every related article as a hub', () => {
+  const articles = `<ul>
+    <li><a href="/posts/2026/contract-testing/">契约测试</a></li>
+    <li><a href="https://yindongliang.com/docs/agents/testing/">Agent 测试</a></li>
+    <li><a href="https://yindongliang.com/posts/2026/weaving/">知识编织</a></li>
+    <li><p><a href="https://yindongliang.com/weekly/2026/42/">Weekly 42</a> 同一张图上的周刊。</p></li>
+  </ul><p>这些链接一起读，不收成一条主链接。</p>`;
+  assert.deepEqual(present(`<p>📝 Published on site</p>${articles}`), {
+    kind: 'publish', label: '站点发布', linkCount: 3, weekday: '星期二', hub: true,
+  });
+  assert.deepEqual(present('<p>\n📰 Weekly published\n</p>' + articles), {
+    kind: 'weekly', label: 'Weekly 发布', linkCount: 3, weekday: '星期二', hub: true,
+  });
+  assert.equal(present('<p>📝 Published on site</p>').hub, true);
+  assert.equal(present(`<p>📝 Published on site</p>${articles}<img src="map.png"><pre>snippet</pre>`).kind, 'publish');
+  assert.equal(present(`<p>今天 📝 Published on site 了。</p>${articles}`).kind, 'link');
+  assert.equal(present(`<p><code>📰 Weekly published</code></p>${articles}`).kind, 'link');
+  assert.equal(present(articles).kind, 'link');
+  assert.equal(present(`<p>📝 Published on site</p><p>📰 Weekly published</p>${articles}`).kind, 'publish');
+  assert.equal(present(`<p>📝 Published on site</p>${articles}`, 'Top 2026').hub, undefined);
+  assert.equal(present(star + `<p>${link(repository)}</p><p>📝 Published on site</p>${articles}`).kind, 'star');
+  assert.equal(present(`<p>📝 Published on site</p>${articles}`).linksOnly, undefined);
+});
+
 test('an exact standalone Star marker and a repository link classify a mixed daily group', () => {
   const html = '<blockquote>Agent 整理说明</blockquote>' + star +
     `<p>${link(repository)}</p><p>第一个项目含 <code>API</code> 和图片功能说明。</p>` +
