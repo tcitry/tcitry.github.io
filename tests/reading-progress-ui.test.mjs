@@ -31,12 +31,17 @@ test('article progress stays separate from reading status', () => {
   assert.match(list, /readingListMeta/);
   assert.doesNotMatch(list, /itemPath|sectionLabel/);
   const css = read('src/components/reader/ReaderPanel.module.css');
+  assert.match(css, /\.progress\s*\{[^}]*position:\s*fixed/);
   assert.match(css, /\.progress\s*\{[^}]*top:\s*0/);
   assert.match(css, /\.progress\s*\{[^}]*left:\s*0/);
   assert.match(css, /\.progress\s*\{[^}]*right:\s*0/);
   assert.match(css, /\.progress\s*\{[^}]*width:\s*100%/);
-  assert.match(css, /\.progressTrack\s*\{[^}]*height:\s*6px/);
+  assert.match(css, /\.progress\s*\{[^}]*height:\s*2px/);
+  assert.match(css, /\.progress\s*\{[^}]*background:\s*transparent/);
+  assert.match(css, /\.progressTrack\s*\{[^}]*height:\s*2px/);
   assert.match(css, /\.progressTrack\s*\{[^}]*width:\s*100%/);
+  assert.match(css, /\.progressTrack\s*\{[^}]*background:\s*transparent/);
+  assert.doesNotMatch(css, /#d4d4d8/);
   assert.match(css, /book-menu-content/);
   assert.doesNotMatch(css, /readingProgressFrame|\.progressMeta/);
   const workspace = read('src/components/chat/AssistantWorkspace.tsx');

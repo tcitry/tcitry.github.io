@@ -2,10 +2,10 @@ import {useEffect, useState} from 'react';
 import {articleProgress} from './reading-progress';
 import styles from './ReaderPanel.module.css';
 
-// Full-bleed strip fixed to the viewport top. The fill is the current scroll
-// ratio of the article in this viewport. Percent stays on the progressbar for
-// assistive tech; nothing else is painted. Saved reading progress is not read
-// or written here.
+// Hairline fill fixed over the viewport top. It does not take document-flow
+// height. The fill is the current scroll ratio of the article in this
+// viewport. Percent stays on the progressbar for assistive tech; nothing else
+// is painted. Saved reading progress is not read or written here.
 
 function findArticle() {
   return document.querySelector<HTMLElement>('article.book-article, article.book-post');
