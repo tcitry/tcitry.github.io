@@ -43,6 +43,7 @@ test('article progress stays separate from reading status', () => {
   assert.match(css, /\.progressTrack\s*\{[^}]*background:\s*transparent/);
   assert.doesNotMatch(css, /#d4d4d8/);
   assert.match(css, /book-menu-content/);
+  assert.match(css, /@media\s*\(\s*max-width:\s*639px\s*\)\s*\{[^}]*\.progress\s*\{[^}]*display:\s*none/);
   assert.doesNotMatch(css, /readingProgressFrame|\.progressMeta/);
   const workspace = read('src/components/chat/AssistantWorkspace.tsx');
   assert.match(workspace, /<ReadingMarksPanel \/>/);

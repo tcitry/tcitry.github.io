@@ -36,6 +36,12 @@
   background: var(--accent, #8250df);
 }
 
+/* Same phone cutoff as the assistant viewport. Browser chrome keeps this fixed
+   strip off the true screen top there; tablet and desktop widths keep it. */
+@media (max-width: 639px) {
+  .progress { display: none; }
+}
+
 /* The open mobile drawer is position:fixed and should cover this strip. */
 @media (max-width: 64rem) {
   :global(.book-menu-content) { z-index: 30; }

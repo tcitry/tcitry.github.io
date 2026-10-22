@@ -55,6 +55,23 @@ async function waitForTrack(page, minimum, maximum) {
   }, [minimum, maximum]);
 }
 
+// Site phone cutoff shared with the assistant viewport (max-width: 639px).
+const phoneProgressWidth = 639;
+
+async function assertProgressHidden(page, width) {
+  const strip = page.locator('[data-reading-progress]');
+  await strip.waitFor({state: 'attached'});
+  const box = await strip.evaluate(element => {
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return {display: style.display, width: rect.width, height: rect.height};
+  });
+  assert.equal(box.display, 'none', `Progress strip is hidden at ${width}px`);
+  assert.equal(box.width, 0, `Hidden progress strip has no width at ${width}px`);
+  assert.equal(box.height, 0, `Hidden progress strip has no height at ${width}px`);
+  assert.equal(await page.getByRole('progressbar', {name: '进度'}).count(), 0, `Progress strip is not exposed at ${width}px`);
+}
+
 try {
   await server.listen();
   const base = new URL(server.resolvedUrls.local[0]);
@@ -195,6 +212,18 @@ try {
     assert.ok(Number(await bar.getAttribute('aria-valuenow')) <= 2, 'The track follows the current position back to the top');
     assert.equal(progressReads(await state(page)).length, 0, 'The track still does not read saved progress');
     assert.equal((await page.locator('[data-reading-progress]').innerText()).trim(), '');
+    await page.screenshot({path: '/opt/cursor/artifacts/reading-progress-desktop.png'});
+    await page.setViewportSize({width: 390, height: 720});
+    await assertProgressHidden(page, 390);
+    await page.screenshot({path: '/opt/cursor/artifacts/reading-progress-phone.png'});
+    await page.setViewportSize({width: 768, height: 720});
+    await bar.waitFor();
+    const tablet = await bar.boundingBox();
+    assert.ok(tablet && tablet.y <= 1 && tablet.width >= 766, 'A tablet-width viewport keeps the progress strip');
+    await page.setViewportSize({width: 1000, height: 720});
+    await bar.waitFor();
+    const restored = await bar.boundingBox();
+    assert.ok(restored && restored.y <= 1 && restored.width >= 998, 'The progress strip returns on a wide viewport');
     console.log('Reading progress: viewport ratio only, no Convex read or write.');
   } finally {await progressContext.close();}
 
@@ -213,11 +242,16 @@ try {
       const article = page.locator('[data-reader-article]');
       const bookmark = bookmarkButton(article);
       await bookmarkButton(article, false).waitFor();
-      const bar = article.getByRole('progressbar', {name: '进度'});
-      await bar.waitFor();
-      assert.equal(await bar.getAttribute('aria-valuenow'), '0');
-      const barBox = await bar.boundingBox();
-      assert.ok(barBox && barBox.y <= 1 && barBox.x <= 1 && barBox.width >= width - 2, `Progress strip is flush and full-bleed at ${width}px`);
+      const phone = width <= phoneProgressWidth;
+      if (phone) {
+        await assertProgressHidden(page, width);
+      } else {
+        const bar = article.getByRole('progressbar', {name: '进度'});
+        await bar.waitFor();
+        assert.equal(await bar.getAttribute('aria-valuenow'), '0');
+        const barBox = await bar.boundingBox();
+        assert.ok(barBox && barBox.y <= 1 && barBox.x <= 1 && barBox.width >= width - 2, `Progress strip is flush and full-bleed at ${width}px`);
+      }
       await article.getByText('当前文章', {exact: true}).waitFor();
       const currentTitle = article.getByText(title, {exact: true});
       await currentTitle.waitFor();
@@ -286,7 +320,7 @@ try {
         `Bookmark list fits ${width}px`);
       if (width === 390) await page.screenshot({path: join('/tmp', 'reader-ui-library-390.png')});
       assert.deepEqual(errors, [], 'No browser runtime errors');
-      console.log(`Bookmarks UI ${width}px: add/remove, failure recovery, scroll indicator, pagination and no overflow passed.`);
+      console.log(`Bookmarks UI ${width}px: add/remove, failure recovery, ${phone ? 'hidden progress strip' : 'scroll indicator'}, pagination and no overflow passed.`);
     } finally {
       await context.close();
     }
@@ -330,7 +364,7 @@ try {
     console.log('Reading list: one merged row, compact meta, status filter keeps progress.');
   } finally {await readingContext.close();}
 
-  for (const width of [1440, 390]) {
+  for (const width of [1440, 768, 390]) {
     const context = await browser.newContext({viewport: {width, height: 800}, serviceWorkers: 'block'});
     await context.route('**/*', (route) => new URL(route.request().url()).origin === base.origin ? route.continue() : route.abort());
     const page = await context.newPage();
@@ -341,39 +375,55 @@ try {
       chromeURL.searchParams.set('progress', '0.62');
       chromeURL.searchParams.set('title', 'Cloudflare OS');
       await page.goto(chromeURL.href);
-      const bar = page.getByRole('progressbar', {name: '进度'});
-      await bar.waitFor();
+      const phone = width <= phoneProgressWidth;
+      const strip = page.locator('[data-reading-progress]');
+      await strip.waitFor({state: 'attached'});
       assert.equal(await page.getByRole('button', {name: '跳过本次', exact: true}).count(), 0);
-      assert.equal((await page.locator('[data-reading-progress]').innerText()).trim(), '');
+      assert.equal((await strip.innerText()).trim(), '');
       await page.waitForFunction(() => window.scrollY < 2);
+      if (phone) await assertProgressHidden(page, width);
       await waitForTrack(page, 0, 2);
       assert.equal(progressReads(await state(page)).length, 0, 'Saved progress is not loaded for the track');
       await scrollArticleRatio(page, 0.55);
       await waitForTrack(page, 48, 65);
       const viewport = page.viewportSize();
-      const barBox = await bar.boundingBox();
-      assert.ok(barBox && viewport);
-      assert.ok(barBox.y <= 1, `Progress strip is flush with the top at ${width}px`);
-      assert.ok(barBox.x <= 1, `Progress strip starts at the left edge at ${width}px`);
-      assert.ok(barBox.width >= viewport.width - 2, `Progress strip spans the viewport at ${width}px`);
-      assert.ok(barBox.height <= 3, `Progress strip stays a 2px hairline at ${width}px`);
-      const scrolledFill = await bar.evaluate(element => {
-        const track = element.getBoundingClientRect();
-        const fill = element.querySelector('div')?.getBoundingClientRect();
-        return track.width > 0 && fill ? fill.width / track.width : 0;
-      });
-      assert.ok(scrolledFill >= 0.45 && scrolledFill <= 0.7, `Fill follows the scroll ratio at ${width}px, got ${scrolledFill}`);
+      assert.ok(viewport);
+      let barBox;
+      if (phone) {
+        await assertProgressHidden(page, width);
+      } else {
+        const bar = page.getByRole('progressbar', {name: '进度'});
+        await bar.waitFor();
+        barBox = await bar.boundingBox();
+        assert.ok(barBox);
+        assert.ok(barBox.y <= 1, `Progress strip is flush with the top at ${width}px`);
+        assert.ok(barBox.x <= 1, `Progress strip starts at the left edge at ${width}px`);
+        assert.ok(barBox.width >= viewport.width - 2, `Progress strip spans the viewport at ${width}px`);
+        assert.ok(barBox.height <= 3, `Progress strip stays a 2px hairline at ${width}px`);
+        const scrolledFill = await bar.evaluate(element => {
+          const track = element.getBoundingClientRect();
+          const fill = element.querySelector('div')?.getBoundingClientRect();
+          return track.width > 0 && fill ? fill.width / track.width : 0;
+        });
+        assert.ok(scrolledFill >= 0.45 && scrolledFill <= 0.7, `Fill follows the scroll ratio at ${width}px, got ${scrolledFill}`);
+      }
       await page.screenshot({path: `/opt/cursor/artifacts/article-progress-bar-${width}.png`});
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.waitForFunction(() => window.scrollY < 2);
       await waitForTrack(page, 0, 2);
       await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-      if (width > 1024) {
+      if (phone) {
+        await assertProgressHidden(page, width);
+        const menu = page.getByRole('button', {name: '打开导航', exact: true});
+        const menuBox = await menu.boundingBox();
+        assert.ok(menuBox);
+        assert.equal(await topHit(page, menuBox), 'chrome');
+      } else if (width > 1024) {
         const brand = page.locator('.book-brand');
         const search = page.getByRole('button', {name: '搜索博客', exact: true});
         const brandBox = await brand.boundingBox();
         const searchBox = await search.boundingBox();
-        assert.ok(brandBox && searchBox);
+        assert.ok(brandBox && searchBox && barBox);
         assert.equal(overlaps(barBox, brandBox), false, 'The full-bleed track stays above the site logo');
         assert.equal(overlaps(barBox, searchBox), false, 'The progress track does not overlap search');
         assert.equal(await topHit(page, brandBox), 'chrome');
@@ -381,7 +431,7 @@ try {
       } else {
         const menu = page.getByRole('button', {name: '打开导航', exact: true});
         const menuBox = await menu.boundingBox();
-        assert.ok(menuBox);
+        assert.ok(menuBox && barBox);
         assert.equal(overlaps(barBox, menuBox), false, 'The progress track does not cover the mobile menu button');
         assert.equal(await topHit(page, menuBox), 'chrome');
       }
@@ -396,17 +446,25 @@ try {
       const markBox = await mark.boundingBox();
       const likeBox = await like.boundingBox();
       const bookmarkBox = await bookmark.boundingBox();
-      const trackBox = await bar.boundingBox();
-      assert.ok(markBox && likeBox && bookmarkBox && trackBox);
-      assert.ok(trackBox.y <= 1 && trackBox.width >= viewport.width - 2, 'The track stays full-bleed while comment actions are in view');
-      assert.ok(markBox.y >= trackBox.height && bookmarkBox.y < viewport.height && likeBox.y < viewport.height, 'Comment actions sit below the track and in the viewport');
-      assert.equal(await page.locator('[data-reading-progress]').getByRole('button').count(), 0);
-      assert.equal((await page.locator('[data-reading-progress]').innerText()).includes('%'), false);
+      assert.ok(markBox && likeBox && bookmarkBox);
+      assert.ok(bookmarkBox.y < viewport.height && likeBox.y < viewport.height, 'Comment actions stay in the viewport');
+      if (!phone) {
+        const trackBox = await page.getByRole('progressbar', {name: '进度'}).boundingBox();
+        assert.ok(trackBox);
+        assert.ok(trackBox.y <= 1 && trackBox.width >= viewport.width - 2, 'The track stays full-bleed while comment actions are in view');
+        assert.ok(markBox.y >= trackBox.height, 'Comment actions sit below the track');
+      } else {
+        await assertProgressHidden(page, width);
+      }
+      assert.equal(await strip.getByRole('button').count(), 0);
+      assert.equal((await strip.innerText()).includes('%'), false);
       if (Math.abs(markBox.y - bookmarkBox.y) < 16 && Math.abs(likeBox.y - bookmarkBox.y) < 16) {
         assert.ok(markBox.x + markBox.width <= likeBox.x + 1, 'Reading mark stays left of like');
         assert.ok(likeBox.x + likeBox.width <= bookmarkBox.x + 1, 'Bookmark stays right of like');
       }
-      console.log(`Reading progress bar ${width}px: full-bleed top strip follows scroll, comment actions unchanged.`);
+      console.log(phone
+        ? `Reading progress bar ${width}px: hidden on a phone, comment actions unchanged.`
+        : `Reading progress bar ${width}px: full-bleed top strip follows scroll, comment actions unchanged.`);
     } finally {await context.close();}
   }
 } finally {
