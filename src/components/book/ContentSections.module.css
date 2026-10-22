@@ -103,6 +103,9 @@
 .section .event[data-timeline-kind="pinned"],
 .section .event[data-timeline-kind="link"] { --event-tone: var(--accent); }
 .section .event[data-timeline-kind="star"] { --event-tone: light-dark(#956110, #e8b65c); }
+.section .event[data-timeline-kind="x"] { --event-tone: light-dark(#1a56a8, #8eb4ef); }
+.section .event[data-timeline-kind="publish"] { --event-tone: light-dark(#0f6e8a, #7ec8dc); }
+.section .event[data-timeline-kind="weekly"] { --event-tone: light-dark(#8d3d4a, #e7a0ad); }
 .section .event[data-timeline-kind="repository"],
 .section .event[data-timeline-kind="code"] { --event-tone: light-dark(#30745a, #84c5a6); }
 .section .event[data-timeline-kind="image"],
@@ -146,6 +149,46 @@
 .section .authored :is(img, video, iframe) { max-width: 100%; }
 .section .authored :is(pre, .table-scroll) { max-width: 100%; overflow-x: auto; }
 .section .authored pre { white-space: pre; overflow-wrap: normal; }
+/* Publish and weekly entries are hub nodes. Every article in the list stays a readable row. */
+.section .event[data-timeline-hub] .authored :is(ul, ol) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.section .event[data-timeline-hub] .authored :is(li ul, li ol) { margin-top: 0.45rem; padding-inline-start: 0.75rem; }
+.section .event[data-timeline-hub] .authored :is(ul, ol) > li { margin: 0; min-width: 0; }
+.section .event[data-timeline-hub] .authored :is(ul, ol) > li > a[href],
+.section .event[data-timeline-hub] .authored :is(ul, ol) > li > p:has(> a[href]) {
+  display: block;
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--event-tone) 28%, var(--border));
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--event-tone) 5%, var(--background));
+  color: var(--foreground);
+  line-height: 1.5;
+  text-decoration: none;
+}
+.section .event[data-timeline-hub] .authored :is(ul, ol) > li > p:has(> a[href]) > a[href] {
+  color: inherit;
+  text-decoration: none;
+}
+.section .event[data-timeline-hub] .authored :is(ul, ol) > li > a[href]:hover,
+.section .event[data-timeline-hub] .authored :is(ul, ol) > li > p:has(> a[href]):hover > a[href] {
+  color: var(--accent);
+}
+.section .event[data-timeline-hub] .authored :is(ul, ol) > li > a[href]:hover,
+.section .event[data-timeline-hub] .authored :is(ul, ol) > li > p:has(> a[href]):hover {
+  border-color: var(--event-tone);
+}
+.section .event[data-timeline-hub] .authored :is(ul, ol) > li > a[href]:focus-visible,
+.section .event[data-timeline-hub] .authored :is(ul, ol) > li > p:has(> a[href]:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
 .section .yearSelect { width: 9rem; max-width: 100%; }
 
 /* Keep the shared article width; only the date lane is compact. Both layouts
