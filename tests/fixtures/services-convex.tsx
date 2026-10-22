@@ -75,7 +75,7 @@ let convexAuthOverride: {isAuthenticated: boolean; isLoading: boolean} | null =
 type Source = {id: string; title: string; url: string; sourceKind: 'author'};
 type AiConversation = {id: string; owner: string; threadId: string; title: string; activeRun: string | null; updatedAt: number};
 type AiMessage = {id: string; key: string; role: 'user' | 'assistant'; parts: {type: 'text'; text: string}[]; text: string; order: number; stepOrder: number; status: 'success' | 'streaming'; _creationTime: number; threadId: string};
-type AiRun = {id: string; conversationId: string; order: number; status: 'running' | 'completed' | 'canceled' | 'failed'; sources: Source[]; error?: string};
+type AiRun = {id: string; conversationId: string; order: number; status: 'running' | 'completed' | 'canceled' | 'failed'; sources: Source[]; error?: string; completedAt?: number | null};
 const sources: Source[] = [{id: '1', title: '已核验的 RAG 文章', url: 'https://yindongliang.com/docs/rag-fixture/', sourceKind: 'author'}];
 const safeAnswer = '根据已核验的文章[1]回答。\n\n[外部链接](https://example.invalid/unsafe)与 ![图片替代文字](https://example.invalid/unsafe.png) 不应成为可操作链接或图片。';
 const aiConversations: AiConversation[] = [
@@ -92,7 +92,7 @@ function addAiMessage(threadId: string, order: number, role: AiMessage['role'], 
 for (const conversation of aiConversations) {
   addAiMessage(conversation.threadId, 0, 'user', conversation.title);
   addAiMessage(conversation.threadId, 0, 'assistant', conversation.id === 'ai_a1' ? safeAnswer : conversation.id === 'ai_a2' ? '另一条历史回答。' : '仅账号 B 的历史回答。');
-  aiRuns.push({id: `run_${conversation.id}`, conversationId: conversation.id, order: 0, status: 'completed', sources});
+  aiRuns.push({id: `run_${conversation.id}`, conversationId: conversation.id, order: 0, status: 'completed', sources, completedAt: Date.UTC(2026, 8, 9, 6)});
 }
 function notifyAuthorComment(comment: Comment) {
   if (comment.owner === 'fixture-author') return;
@@ -395,6 +395,7 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
       const run = aiRuns.find(run => run.id === conversation.activeRun);
       if (run) {
         run.status = 'canceled';
+        run.completedAt = Date.now();
         for (const message of aiMessages.filter(item => item.threadId === conversation.threadId && item.order === run.order)) message.status = 'success';
       }
       conversation.activeRun = null; publish(); return null;
@@ -641,7 +642,7 @@ Object.assign(window, {__services: {
     for (const conversation of aiConversations) {
       const run = aiRuns.find(run => run.id === conversation.activeRun);
       if (!run) continue;
-      run.status = 'completed'; conversation.activeRun = null;
+      run.status = 'completed'; run.completedAt = Date.now(); conversation.activeRun = null;
       const message = aiMessages.find(item => item.threadId === conversation.threadId && item.order === run.order && item.role === 'assistant');
       if (message) { message.status = 'success'; message.text = safeAnswer; message.parts = [{type: 'text', text: safeAnswer}]; }
     }
@@ -651,7 +652,7 @@ Object.assign(window, {__services: {
     for (const conversation of aiConversations) {
       const run = aiRuns.find(item => item.id === conversation.activeRun);
       if (!run) continue;
-      run.status = 'failed'; run.error = error; conversation.activeRun = null;
+      run.status = 'failed'; run.error = error; run.completedAt = Date.now(); conversation.activeRun = null;
       const message = aiMessages.find(item => item.threadId === conversation.threadId && item.order === run.order && item.role === 'assistant');
       if (message) { message.status = 'success'; message.text = '失败轮次的部分回答。'; message.parts = [{type: 'text', text: message.text}]; }
     }

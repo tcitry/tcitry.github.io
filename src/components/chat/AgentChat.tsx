@@ -14,6 +14,7 @@ import {PromptSuggestion} from '@heroui-pro/react/prompt-suggestion';
 import {api} from '../../../convex/_generated/api';
 import type {Id} from '../../../convex/_generated/dataModel';
 import {deriveFollowUpSuggestions} from '../../lib/chat-follow-ups';
+import {armCopySuccess, formatAnswerFinishedAt, releaseCopySuccess, type CopyTimer} from './answer-finished-at';
 import {CitationSourcesFooter, injectCitationLinks, type ChatCitationSource, useCitationMarkdownComponents} from './citations';
 import surface from '../demos/DemoSurface.module.css';
 import '../../styles/chat.css';
@@ -51,21 +52,41 @@ function errorMessage(error: unknown) {
   return '暂时无法完成操作，请稍后重试。';
 }
 
-function Answer({message, sources}: {message: RenderMessage; sources: ChatCitationSource[]}) {
+function Answer({message, sources, finishedAt, busy}: {message: RenderMessage; sources: ChatCitationSource[]; finishedAt: number | null; busy: boolean}) {
   const [copied, setCopied] = useState(false);
   const [copyFailed, setCopyFailed] = useState(false);
+  const copyTimer = useRef<CopyTimer>({current: null});
   const text = message.parts.filter(part => part.type === 'text').map(part => part.text).join('');
   const answer = useMemo(() => injectCitationLinks(text, sources), [text, sources]);
   const components = useCitationMarkdownComponents(sources);
+  const finishedLabel = text && message.status !== 'streaming' && message.status !== 'pending' && finishedAt !== null
+    ? formatAnswerFinishedAt(finishedAt)
+    : null;
+  useEffect(() => () => {
+    const timer = copyTimer.current;
+    if (timer.current !== null) window.clearTimeout(timer.current);
+  }, []);
+  useEffect(() => {
+    if (busy || message.status === 'streaming' || message.status === 'pending') releaseCopySuccess(setCopied, copyTimer.current, window.clearTimeout);
+  }, [busy, message.status]);
   return <ChatMessage.Assistant className="blog-chat__assistant" data-message-state={message.status}>
     <ChatMessage.Body className="blog-chat__body">
       {text && <ChatMessage.Content><Markdown id={message.key} components={components} className="blog-chat__answer">{answer}</Markdown></ChatMessage.Content>}
       <CitationSourcesFooter sources={sources} />
       {text && message.status !== 'streaming' && message.status !== 'pending' && <ChatMessageActions className="blog-chat__actions">
         <ChatMessageActions.Copy isCopied={copied} aria-label={copied ? '回答和出处已复制' : '复制回答和出处'} tooltip={false} onPress={async () => {
-          try { await navigator.clipboard.writeText(`${text}\n\n${sources.map(source => `[${source.id}] ${source.title} ${source.url}`).join('\n')}`); setCopied(true); setCopyFailed(false); }
-          catch { setCopyFailed(true); }
+          try {
+            await navigator.clipboard.writeText(`${text}\n\n${sources.map(source => `[${source.id}] ${source.title} ${source.url}`).join('\n')}`);
+            armCopySuccess(setCopied, copyTimer.current, window.setTimeout, window.clearTimeout);
+            setCopyFailed(false);
+          } catch {
+            releaseCopySuccess(setCopied, copyTimer.current, window.clearTimeout);
+            setCopyFailed(true);
+          }
         }} />
+        {finishedLabel && finishedAt !== null && <time className="blog-chat__finished" dateTime={new Date(finishedAt).toISOString()} title={`回答完成于 ${finishedLabel}`}>
+          <span className="blog-chat__sr-only">回答完成于 </span>{finishedLabel}
+        </time>}
       </ChatMessageActions>}
       {copyFailed && <p role="status" className="blog-chat__notice">浏览器未允许复制，可以选中回答文字复制。</p>}
     </ChatMessage.Body>
@@ -108,13 +129,14 @@ function Turn({conversationId, order, messages, isLatest, busy, onFollowUp, onRe
   const answerText = assistant?.parts.filter(part => part.type === 'text').map(part => part.text).join('') ?? '';
   const hasAnswer = Boolean(answerText);
   const completed = run?.status === 'completed' && assistant?.status !== 'streaming' && assistant?.status !== 'pending';
+  const finishedAt = run && (run.status === 'completed' || run.status === 'failed' || run.status === 'canceled') ? run.completedAt ?? null : null;
   const followUps = completed && isLatest && !busy
     ? deriveFollowUpSuggestions(userPrompt, answerText, run?.sources ?? [])
     : [];
   return <div className="agent-chat__turn">
     {messages.map(message => message.role === 'user'
       ? <ChatMessage.User key={message.key} className="blog-chat__user"><ChatMessage.Bubble><ChatMessage.Content>{message.text}</ChatMessage.Content></ChatMessage.Bubble></ChatMessage.User>
-      : message.role === 'assistant' ? <Answer key={message.key} message={message} sources={run?.sources ?? []} /> : null)}
+      : message.role === 'assistant' ? <Answer key={message.key} message={message} sources={run?.sources ?? []} finishedAt={finishedAt} busy={busy} /> : null)}
     {pending && !hasAnswer && userPrompt && <ChatLoader.Dots className="blog-chat__pending" label={runLoaderLabel(run)} />}
     {run?.status === 'canceled' && <p className="blog-chat__notice">已停止生成。{hasAnswer ? '当前回答可能不完整。' : ''}</p>}
     {run?.status === 'failed' && <>

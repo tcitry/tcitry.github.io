@@ -165,7 +165,7 @@ export const getRunStates = query({
     const runs = await Promise.all([...new Set(orders)].map(order => ctx.db.query('assistantRuns')
       .withIndex('by_conversationId_and_promptOrder', q => q.eq('conversationId', conversationId).eq('promptOrder', order)).unique()));
     return runs.filter(run => run !== null).map(run => ({order: run.promptOrder, status: run.status, sources: run.sources, error: run.error ?? null,
-      phase: run.phase ?? null, toolCalls: run.toolCalls ?? 0}));
+      phase: run.phase ?? null, toolCalls: run.toolCalls ?? 0, completedAt: run.completedAt ?? null}));
   },
 });
 

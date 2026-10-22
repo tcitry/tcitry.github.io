@@ -112,7 +112,11 @@ describe('assistant authorization and persisted submissions', () => {
     await t.mutation(internal.assistant.start, {runId});
     expect(await t.mutation(internal.assistant.setSources, {runId, sources: [source]})).toBe(true);
     await t.mutation(internal.assistant.finish, {runId, failed: false, noSources: true});
-    expect(await t.run(ctx => ctx.db.get('assistantRuns', runId))).toMatchObject({status: 'completed', sources: []});
+    const finished = await t.run(ctx => ctx.db.get('assistantRuns', runId));
+    expect(finished).toMatchObject({status: 'completed', sources: []});
+    expect(finished?.completedAt).toEqual(expect.any(Number));
+    const states = await alice.query(api.assistant.getRunStates, {conversationId, orders: [finished!.promptOrder]});
+    expect(states[0]).toMatchObject({status: 'completed', sources: [], completedAt: finished?.completedAt});
   });
 
   test('deleteConversation removes the conversation, runs and agent thread for the owner only', async () => {
