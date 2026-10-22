@@ -11,6 +11,11 @@ export function sourcePreviewDescription(source: ChatCitationSource) {
   return source.sourceKind === 'ai-assisted' ? 'AI 整理' : undefined;
 }
 
+export function citationHost(url: string) {
+  try { return new URL(url).hostname.replace(/^www\./, ''); }
+  catch { return url; }
+}
+
 export function injectCitationLinks(text: string, sources: readonly ChatCitationSource[]) {
   const ids = new Set(sources.map(source => source.id));
   return text.replace(/\[(\d+)\](?!\()/g, (match, id: string) => (

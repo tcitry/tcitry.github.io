@@ -101,7 +101,8 @@
 .blog-chat .blog-chat__table table { margin-block: .75rem; width: 100%; font-size: .875rem; }
 .blog-chat .blog-chat__table :is(td, th) { padding: .5rem .75rem; border: 1px solid var(--border); text-align: start; }
 @import "./citations.css";
-.blog-chat__actions { opacity: 1; margin-top: .5rem; }
+.blog-chat__actions { display: flex; align-items: center; gap: .5rem; min-height: 2rem; opacity: 1; margin-top: .375rem; }
+.blog-chat__finished { margin: 0; color: var(--muted); font-size: .75rem; font-variant-numeric: tabular-nums; line-height: 1.4; letter-spacing: .01em; white-space: nowrap; }
 .blog-chat .blog-chat__notice, .blog-chat .blog-chat__error { margin: .75rem 0 0; font-size: .8125rem; line-height: 1.7; color: var(--muted); }
 .blog-chat .blog-chat__error { color: var(--danger-soft-foreground); }
 .blog-chat__composer { flex-shrink: 0; padding: .5rem 1rem .75rem; }

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import {citationHost} from '../src/components/chat/citation-links.ts';
 
 // Mirrors src/components/chat/citation-links.ts so node --test can run without a TS loader.
 function injectCitationLinks(text, sources) {
@@ -15,6 +16,12 @@ test('injectCitationLinks maps known source ids to cite links', () => {
     injectCitationLinks('同步更新导航页 [1]，并参考 [2]。', sources),
     '同步更新导航页 [1](#cite-1)，并参考 [2]。',
   );
+});
+
+test('citationHost strips www and keeps unparsable text', () => {
+  assert.equal(citationHost('https://www.yindongliang.com/docs/a/'), 'yindongliang.com');
+  assert.equal(citationHost('https://yindongliang.com/posts/durable-objects/'), 'yindongliang.com');
+  assert.equal(citationHost('not a url'), 'not a url');
 });
 
 test('injectCitationLinks leaves markdown links untouched', () => {
