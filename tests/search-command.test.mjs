@@ -26,6 +26,16 @@ test('in-flight search shows a centered spinner instead of footer-only copy', ()
   assert.match(source, /相关结果正在更新，请稍后再试。/);
 });
 
+test('ask AI stays in the footer and drops the login hint', () => {
+  const loading = source.slice(source.indexOf('data-search-loading'), source.indexOf('</Command.List>'));
+  const footer = source.slice(source.indexOf('<Command.Footer'));
+  assert.doesNotMatch(source, /登录后免费/);
+  assert.doesNotMatch(loading, /用这个问题问 AI/);
+  assert.match(footer, /data-search-ask-ai/);
+  assert.match(footer, /用这个问题问 AI/);
+  assert.doesNotMatch(source, /styles\.askHint/);
+});
+
 test('search dialog loads HeroUI spinner styles', async () => {
   const css = await readFile(new URL('../src/components/search/search-vendor.css', import.meta.url), 'utf8');
   assert.match(css, /@import "@heroui\/styles\/components\/spinner\.css"/);

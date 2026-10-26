@@ -289,20 +289,16 @@ function SearchCommand({onClose, onAskAI}: Props) {
             </Command.Group>}
           </Command.List>
 
-          {onAskAI && normalizedQuery && !composing && <div className={styles.ask}>
-            <Button variant="ghost" className={styles.askButton} aria-label="用这个问题问 AI" onPress={() => onAskAI(normalizedQuery)} data-search-ask-ai>
-              <span className={styles.askLabel}>用这个问题问 AI</span>
-              <span className={styles.askHint}>登录后免费</span>
-              <span className={styles.askArrow} aria-hidden="true">→</span>
-            </Button>
-          </div>}
-
           {activeResult?.fallback === 'ai-unavailable' && <div className={styles.fallback} data-search-fallback>
             <span role="status">AI 搜索暂不可用，当前显示全文搜索结果</span>
             <button type="button" className={styles.action} disabled={busy} onClick={retryAISearch}>重试 AI 搜索</button>
           </div>}
 
           <Command.Footer className={styles.footer}>
+            {onAskAI && normalizedQuery && !composing && <Button variant="ghost" className={styles.askButton} aria-label="用这个问题问 AI" onPress={() => onAskAI(normalizedQuery)} data-search-ask-ai>
+              <span className={styles.askLabel}>用这个问题问 AI</span>
+              <span className={styles.askArrow} aria-hidden="true">→</span>
+            </Button>}
             <span role="status" aria-live="polite" aria-atomic="true" className={styles.status} data-search-status>{status}</span>
             {failed ? <button type="button" className={styles.action} onClick={() => { setBusy(true); setRetry((value) => value + 1); }}>重试</button>
               : !normalizedQuery && recentState === 'error' ? <button type="button" className={styles.action} data-search-recent-retry onClick={() => { setRecentState('loading'); setRecentRetry((value) => value + 1); }}>重试最近更新</button>
