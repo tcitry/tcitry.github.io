@@ -20,11 +20,20 @@ const articles = [
   ['https://yindongliang.com/posts/2026/weaving/', '知识编织'],
 ];
 const articleList = `<ul>${articles.map(([href, label]) => `<li><a href="${href}">${label}</a></li>`).join('')}</ul>`;
+const primary = 'https://yindongliang.com/docs/Cloudflare/AI-Agents/cloudflare-agents-sdk-guide/';
+const dayList = `<ul>
+  <li><a href="https://yindongliang.com/docs/Frontend/TanStack/tanstack-ai-vs-ai-sdk/">TanStack AI 1.0 与 AI SDK 7：机制、能力与工程选型</a> — 模型接入桥接与界面消息协议对照</li>
+  <li><a href="https://yindongliang.com/docs/Cloudflare/workflows-api-and-recovery/">Workflows：实例、步骤、事件与恢复 API 实战</a> — 执行步骤持久化与重放的相邻能力</li>
+</ul>`;
 const html = renderToStaticMarkup(createElement(TimelineView, {items: [
   {id: 'x', label: '2026-09-08', html: '<p>🐦 Posted on X</p><p><a href="https://x.com/example/status/42">https://x.com/example/status/42</a></p>'},
   {id: 'publish', label: '2026-09-08', html: `<p>📝 Published on site</p>${articleList}<p>放在同一张知识网上。</p>`},
   {id: 'weekly', label: '2026-09-09', html: `<p>📰 Weekly published</p>${articleList}`},
   {id: 'star', label: '2026-09-08', html: '<p>⭐ Starred Github Repo</p><p><a href="https://github.com/example/project">https://github.com/example/project</a></p>'},
+  {id: 'publish-day', label: '2026-10-24', html: `<p>📝 Published on site</p><p><a href="${primary}">${primary}</a></p><p>用工单 T-42 串起 Cloudflare Agents SDK。</p>${dayList}`},
+  {id: 'publish-caption', label: '2026-10-25', html: `<p>📝 Published on site</p><p><a href="https://example.com/primary">https://example.com/primary</a></p><p>当天说明。</p><p>关联阅读</p><ul><li><a href="https://example.com/related">相关文章</a> — 补充</li></ul>`},
+  {id: 'publish-solo', label: '2026-10-26', html: '<p>📝 Published on site</p><p><a href="https://example.com/only">https://example.com/only</a></p>'},
+  {id: 'plain', label: '2026-10-27', html: '<p>关联阅读</p><ul><li><a href="https://example.com/plain">普通链接</a></li></ul>'},
 ]}));
 
 function event(id) {
@@ -38,27 +47,52 @@ test('timeline hubs keep every related article link and X posts stay a single st
   const posted = event('x');
   assert.match(posted, /data-timeline-kind="x"/);
   assert.match(posted, /X 发布/);
-  assert.doesNotMatch(posted, /data-timeline-hub/);
+  assert.match(posted, /1 个链接/);
+  assert.doesNotMatch(posted, /篇发布|条关联|data-timeline-hub|data-timeline-related-caption/);
   assert.match(posted, /href="https:\/\/x\.com\/example\/status\/42"/);
 
   const published = event('publish');
   assert.match(published, /data-timeline-kind="publish"/);
   assert.match(published, /data-timeline-hub="true"/);
   assert.match(published, /站点发布/);
+  assert.match(published, /2 条关联/);
+  assert.doesNotMatch(published, /个链接|篇发布/);
   assert.match(published, /放在同一张知识网上/);
   const weekly = event('weekly');
   assert.match(weekly, /data-timeline-kind="weekly"/);
   assert.match(weekly, /data-timeline-hub="true"/);
   assert.match(weekly, /Weekly 发布/);
+  assert.match(weekly, /2 条关联/);
   for (const hub of [published, weekly]) {
     for (const [href, label] of articles) {
       assert.match(hub, new RegExp(`href="${href.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
       assert.match(hub, new RegExp(label));
     }
   }
+  const day = event('publish-day');
+  assert.match(day, /data-timeline-hub="true"/);
+  assert.match(day, /1 篇发布 · 2 条关联/);
+  assert.doesNotMatch(day, /个链接|data-timeline-related-caption/);
+  assert.match(day, new RegExp(`href="${primary.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
+  assert.match(day, /TanStack AI 1\.0 与 AI SDK 7：机制、能力与工程选型/);
+  assert.match(day, /Workflows：实例、步骤、事件与恢复 API 实战/);
+  assert.match(day, /用工单 T-42 串起 Cloudflare Agents SDK。/);
+  const caption = event('publish-caption');
+  assert.match(caption, /1 篇发布 · 1 条关联/);
+  assert.match(caption, /<p data-timeline-related-caption="">关联阅读<\/p>/);
+  assert.match(caption, /href="https:\/\/example\.com\/related"/);
+  assert.equal(caption.match(/data-timeline-related-caption/g)?.length, 1);
+  const solo = event('publish-solo');
+  assert.match(solo, /1 篇发布/);
+  assert.doesNotMatch(solo, /个链接|条关联|data-timeline-related-caption/);
+  const plain = event('plain');
+  assert.match(plain, /1 个链接/);
+  assert.doesNotMatch(plain, /data-timeline-hub|data-timeline-related-caption|篇发布|条关联/);
+  assert.match(plain, /关联阅读/);
   const starred = event('star');
   assert.match(starred, /data-timeline-kind="star"/);
   assert.match(starred, /GitHub Star/);
+  assert.match(starred, /1 个链接/);
   assert.doesNotMatch(starred, /data-timeline-hub/);
-  assert.equal(html.match(/<svg\b/g)?.length, 4);
+  assert.equal(html.match(/<svg\b/g)?.length, 8);
 });

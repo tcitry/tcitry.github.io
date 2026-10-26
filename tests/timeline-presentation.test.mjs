@@ -6,7 +6,7 @@ const result = await build({
   entryPoints: [new URL('../src/components/book/timeline-presentation.ts', import.meta.url).pathname],
   bundle: true, platform: 'node', format: 'esm', write: false,
 });
-const {getTimelinePresentation} = await import(
+const {getTimelinePresentation, hubLinkLabel, markHubRelatedCaption} = await import(
   'data:text/javascript;base64,' + Buffer.from(result.outputFiles[0].text).toString('base64')
 );
 const present = (html, label = '2026-09-08') => getTimelinePresentation({html, label});
@@ -60,11 +60,18 @@ test('publish and weekly markers keep every related article as a hub', () => {
   </ul><p>这些链接一起读，不收成一条主链接。</p>`;
   assert.deepEqual(present(`<p>📝 Published on site</p>${articles}`), {
     kind: 'publish', label: '站点发布', linkCount: 3, weekday: '星期二', hub: true,
+    publishCount: 0, relatedCount: 3,
   });
   assert.deepEqual(present('<p>\n📰 Weekly published\n</p>' + articles), {
     kind: 'weekly', label: 'Weekly 发布', linkCount: 3, weekday: '星期二', hub: true,
+    publishCount: 0, relatedCount: 3,
   });
-  assert.equal(present('<p>📝 Published on site</p>').hub, true);
+  assert.equal(hubLinkLabel(0, 3), '3 条关联');
+  const bare = present('<p>📝 Published on site</p>');
+  assert.equal(bare.hub, true);
+  assert.equal(bare.publishCount, 0);
+  assert.equal(bare.relatedCount, 0);
+  assert.equal(hubLinkLabel(0, 0), undefined);
   assert.equal(present(`<p>📝 Published on site</p>${articles}<img src="map.png"><pre>snippet</pre>`).kind, 'publish');
   assert.equal(present(`<p>今天 📝 Published on site 了。</p>${articles}`).kind, 'link');
   assert.equal(present(`<p><code>📰 Weekly published</code></p>${articles}`).kind, 'link');
@@ -73,6 +80,81 @@ test('publish and weekly markers keep every related article as a hub', () => {
   assert.equal(present(`<p>📝 Published on site</p>${articles}`, 'Top 2026').hub, undefined);
   assert.equal(present(star + `<p>${link(repository)}</p><p>📝 Published on site</p>${articles}`).kind, 'star');
   assert.equal(present(`<p>📝 Published on site</p>${articles}`).linksOnly, undefined);
+});
+
+test('a hub separates the primary publish URL from related list links', () => {
+  const primary = 'https://yindongliang.com/docs/Cloudflare/AI-Agents/cloudflare-agents-sdk-guide/';
+  const related = [
+    ['https://yindongliang.com/docs/Frontend/TanStack/tanstack-ai-vs-ai-sdk/', 'TanStack AI 1.0 与 AI SDK 7：机制、能力与工程选型'],
+    ['https://yindongliang.com/docs/Cloudflare/workflows-api-and-recovery/', 'Workflows：实例、步骤、事件与恢复 API 实战'],
+  ];
+  const html = `<p>📝 Published on site</p><p>${link(primary)}</p>` +
+    '<p>用工单 T-42 串起 Cloudflare Agents SDK。</p><ul>' +
+    related.map(([href, label]) => `<li>${link(href, label)} — 相邻说明</li>`).join('') +
+    '</ul>';
+  const published = present(html);
+  assert.deepEqual(published, {
+    kind: 'publish', label: '站点发布', linkCount: 3, weekday: '星期二', hub: true,
+    publishCount: 1, relatedCount: 2,
+  });
+  assert.equal(hubLinkLabel(published.publishCount, published.relatedCount), '1 篇发布 · 2 条关联');
+  const weekly = present(`<p>📰 Weekly published</p><p>${link('https://yindongliang.com/weekly/2026/42/')}</p>` +
+    `<ul><li>${link(related[0][0], related[0][1])}</li></ul>`);
+  assert.equal(weekly.kind, 'weekly');
+  assert.equal(weekly.publishCount, 1);
+  assert.equal(weekly.relatedCount, 1);
+  assert.equal(hubLinkLabel(weekly.publishCount, weekly.relatedCount), '1 篇发布 · 1 条关联');
+
+  const only = present(`<p>📝 Published on site</p><p>${link(primary)}</p><p>只有当天这一篇。</p>`);
+  assert.equal(only.publishCount, 1);
+  assert.equal(only.relatedCount, 0);
+  assert.equal(hubLinkLabel(only.publishCount, only.relatedCount), '1 篇发布');
+
+  const repeated = present(`<p>📝 Published on site</p><p>${link(primary)}</p><ul><li>${link(primary, '同一篇')}</li><li>${link(related[1][0], related[1][1])}</li></ul>`);
+  assert.equal(repeated.linkCount, 2);
+  assert.equal(repeated.publishCount, 1);
+  assert.equal(repeated.relatedCount, 1);
+  assert.equal(hubLinkLabel(2, 4), '2 篇发布 · 4 条关联');
+
+  const nested = present(`<p>📝 Published on site</p><p>${link(primary)}</p><ul><li>延伸<ol><li>${link(related[0][0], related[0][1])}</li></ol></li></ul>`);
+  assert.equal(nested.publishCount, 1);
+  assert.equal(nested.relatedCount, 1);
+
+  const hidden = present(`<p>📝 Published on site</p><pre><ul><li>${link('https://example.com/secret', 'secret')}</li></ul></pre><p>${link(primary)}</p>`);
+  assert.equal(hidden.linkCount, 1);
+  assert.equal(hidden.publishCount, 1);
+  assert.equal(hidden.relatedCount, 0);
+  assert.equal(present(`<p>📝 Published on site</p><p>${link(primary)}</p><ul><li>${link('/posts/older/', '站内旧文')}</li></ul>`).relatedCount, 0);
+});
+
+test('an authored 关联阅读 caption is marked only when it introduces a list', () => {
+  const entry = [
+    '<p>📝 Published on site</p>',
+    `<p>${link('https://example.com/post')}</p>`,
+    '<p>当天说明。</p>',
+    '<p>关联阅读</p>',
+    `<ul><li>${link('https://example.com/related', '相关')}</li></ul>`,
+  ].join('\n');
+  assert.equal(markHubRelatedCaption(entry), entry.replace('<p>关联阅读</p>', '<p data-timeline-related-caption="">关联阅读</p>'));
+  assert.equal(markHubRelatedCaption('<p>\n关联阅读\n</p>\n<ul></ul>'), '<p data-timeline-related-caption="">\n关联阅读\n</p>\n<ul></ul>');
+  assert.equal(
+    markHubRelatedCaption('<h3 id="rel">关联阅读</h3><ol><li>延伸</li></ol>'),
+    '<h3 id="rel" data-timeline-related-caption="">关联阅读</h3><ol><li>延伸</li></ol>',
+  );
+  assert.equal(
+    markHubRelatedCaption('<h2 id="rel"><a class="anchor" href="#rel">#</a>关联阅读</h2><ul></ul>'),
+    '<h2 id="rel" data-timeline-related-caption=""><a class="anchor" href="#rel">#</a>关联阅读</h2><ul></ul>',
+  );
+  const untouched = [
+    '<p>说明里提到关联阅读。</p><ul><li>不是标题</li></ul>',
+    '<p>关联阅读</p><p>然后才是列表</p><ul><li>a</li></ul>',
+    '<pre><code><p>关联阅读</p><ul></ul></code></pre>',
+    '<p title="关联阅读">正文</p><ul></ul>',
+    '<p>关联阅读：</p><ul></ul>',
+  ];
+  for (const html of untouched) assert.equal(markHubRelatedCaption(html), html, html);
+  const both = '<p>关联阅读</p><ul></ul><h4>关联阅读</h4><ol></ol>';
+  assert.equal(markHubRelatedCaption(both), '<p data-timeline-related-caption="">关联阅读</p><ul></ul><h4 data-timeline-related-caption="">关联阅读</h4><ol></ol>');
 });
 
 test('an exact standalone Star marker and a repository link classify a mixed daily group', () => {

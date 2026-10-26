@@ -13,7 +13,7 @@ import {Card, Chip} from '@heroui/react';
 import {NativeSelect} from '@heroui-pro/react/native-select';
 import {Timeline} from '@heroui-pro/react/timeline';
 import type {TimelineItem} from './special-pages';
-import {getTimelinePresentation, type TimelineKind} from './timeline-presentation';
+import {getTimelinePresentation, hubLinkLabel, markHubRelatedCaption, type TimelineKind} from './timeline-presentation';
 import './ContentSections.css';
 import styles from './ContentSections.module.css';
 
@@ -50,7 +50,11 @@ export default function TimelineView({items, years = [], selected}: TimelineView
       {items.map((item, index) => {
         const presentation = getTimelinePresentation(item);
         const Icon = eventIcons[presentation.kind];
-        const content = <div className={styles.authored} data-timeline-entry dangerouslySetInnerHTML={{__html: item.html}} />;
+        const body = presentation.hub ? markHubRelatedCaption(item.html) : item.html;
+        const content = <div className={styles.authored} data-timeline-entry dangerouslySetInnerHTML={{__html: body}} />;
+        const linkLabel = presentation.hub
+          ? hubLinkLabel(presentation.publishCount ?? 0, presentation.relatedCount ?? 0)
+          : presentation.linkCount > 0 ? `${presentation.linkCount} 个链接` : undefined;
 
         return <Timeline.Item className={styles.event} key={item.id || `${item.label}-${index}`} id={item.id} data-timeline-kind={presentation.kind} data-timeline-links-only={presentation.linksOnly} data-timeline-hub={presentation.hub}>
           <Timeline.Content className={styles.eventMeta} side="start" data-timeline-meta data-book-island>
@@ -60,7 +64,7 @@ export default function TimelineView({items, years = [], selected}: TimelineView
             {!presentation.linksOnly && <>
               {presentation.weekday && <span className={styles.eventWeekday}>{presentation.weekday}</span>}
               <Chip className={styles.eventKind} size="sm" variant="soft">{presentation.label}</Chip>
-              {presentation.linkCount > 0 && <span className={styles.eventLinks}>{presentation.linkCount} 个链接</span>}
+              {linkLabel && <span className={styles.eventLinks}>{linkLabel}</span>}
             </>}
           </Timeline.Content>
           <Timeline.Marker className={styles.eventMarker} aria-hidden="true"><Icon /></Timeline.Marker>
