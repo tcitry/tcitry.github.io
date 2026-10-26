@@ -174,6 +174,37 @@ async function assertRecentDestinations(page, label) {
   }
 }
 
+async function assertLoadingSpinner(page, label) {
+  const loading = page.locator('[data-search-loading]');
+  await loading.waitFor({ state: 'visible' });
+  const info = await loading.evaluate((element) => {
+    const spinner = element.querySelector('[data-slot="spinner"]');
+    const spinnerBox = spinner?.getBoundingClientRect();
+    const list = element.closest('[data-search-results]');
+    const listBox = list?.getBoundingClientRect();
+    const status = document.querySelector('[data-search-status]')?.textContent ?? '';
+    const centerDelta = spinnerBox && listBox
+      ? Math.abs((spinnerBox.top + spinnerBox.bottom) / 2 - (listBox.top + listBox.bottom) / 2)
+      : Number.POSITIVE_INFINITY;
+    return {
+      text: element.textContent?.replace(/\s+/g, ' ').trim() ?? '',
+      className: spinner?.className ?? '',
+      hidden: spinner?.getAttribute('aria-hidden') ?? '',
+      status,
+      centered: Boolean(listBox && listBox.height >= 96 && centerDelta <= listBox.height * 0.3),
+      resultCount: document.querySelectorAll('[data-blog-search-result]').length,
+    };
+  });
+  assert.match(info.text, new RegExp(label), 'the results area names the in-flight state');
+  assert.match(info.className, /spinner--lg/, 'the results spinner uses the large HeroUI size');
+  assert.match(info.className, /spinner--accent/, 'the results spinner uses the accent color');
+  assert.equal(info.hidden, 'true', 'the spinner graphic does not add a second status name');
+  assert.equal(info.status.includes('正在搜索'), false, 'the footer is not the searching message');
+  assert.equal(info.status, '', 'the footer stays quiet while the results spinner is showing');
+  assert.equal(info.centered, true, 'the spinner sits in the middle of the results area');
+  assert.equal(info.resultCount, 0, 'the spinner replaces an empty results list');
+}
+
 async function assertBounds(page, label) {
   await renderFrames(page);
   const layout = await page.locator(selectors.command).evaluate((dialog) => {
@@ -198,7 +229,7 @@ const mockModule = `
 const trace = window.__blogSearchMock = { calls: [], settled: [], retries: 0 };
 export async function search(query) {
   trace.calls.push(query);
-  if (query === 'slow') await new Promise((resolve) => setTimeout(resolve, 650));
+  if (query === 'slow') await new Promise((resolve) => setTimeout(resolve, 1200));
   if (query === 'retry' && ++trace.retries === 1) {
     trace.settled.push(query);
     throw new Error('Intentional search retry fixture');
@@ -266,6 +297,7 @@ try {
       await input.fill('"zzzzcodexnomatch20260908xyz"');
       await waitState(page, 'results');
       assert.equal(await page.locator(selectors.result).count(), 0, `${label}: an unmatched query has no results`);
+      assert.equal(await page.locator('[data-search-loading]').count(), 0, `${label}: an empty result does not keep the spinner`);
       assert.ok((await page.locator(selectors.command).innerText()).includes('没有找到匹配内容'), `${label}: the empty state explains the result`);
       await page.getByRole('button', { name: '清除搜索', exact: true }).click();
       await assertRecent(page, `${label}, cleared query`);
@@ -323,6 +355,7 @@ try {
     });
     try {
       await openCommand(page, trigger, 'recent-loading');
+      await assertLoadingSpinner(page, '正在加载最近更新');
       const input = page.locator(selectors.input);
       await input.fill('fast');
       await waitMockResult(page, 'fast');
@@ -430,6 +463,8 @@ try {
     const input = page.locator(selectors.input);
     await input.fill('slow');
     await page.waitForFunction(() => window.__blogSearchMock?.calls.includes('slow'));
+    await waitState(page, 'loading');
+    await assertLoadingSpinner(page, '搜索中');
     await input.fill('fast');
     await waitMockResult(page, 'fast');
     await page.waitForFunction(() => window.__blogSearchMock.settled.includes('slow'));
@@ -443,6 +478,8 @@ try {
 
     await input.fill('retry');
     await waitState(page, 'error');
+    assert.equal(await page.locator('[data-search-loading]').count(), 0, 'A failed search explains the error without a spinner');
+    assert.match(await page.locator('[data-search-status]').innerText(), /搜索暂时不可用/);
     await page.getByRole('button', { name: '重试', exact: true }).click();
     await waitMockResult(page, 'retry');
     assert.equal(await page.evaluate(() => window.__blogSearchMock.retries), 2, 'Retry recovers from a rejected search');
