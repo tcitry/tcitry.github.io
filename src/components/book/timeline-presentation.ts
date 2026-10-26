@@ -10,6 +10,10 @@ export interface TimelinePresentation {
   linksOnly?: true;
   /** Publish and weekly entries are hub nodes: the body keeps every related article link. */
   hub?: true;
+  /** HTTP(S) links outside lists. Hubs only; this is the day's publish URL. */
+  publishCount?: number;
+  /** HTTP(S) links that appear only inside lists. Hubs only; these are related reading. */
+  relatedCount?: number;
 }
 
 type Node = DefaultTreeAdapterMap['node'];
@@ -26,6 +30,7 @@ const paragraphMarkers = new Map<string, 'star' | 'x' | 'publish' | 'weekly'>([
   ['📰 Weekly published', 'weekly'],
 ]);
 const ignored = new Set(['pre', 'code', 'script', 'style']);
+const captionTags = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
 const githubSections = new Set([
   'about', 'account', 'apps', 'codespaces', 'collections', 'contact', 'copilot',
   'customer-stories', 'discussions', 'education', 'enterprise', 'events', 'explore',
@@ -98,6 +103,69 @@ function containsOnlyTextLinks(node: Node): boolean {
   return 'childNodes' in node && node.childNodes.every(containsOnlyTextLinks);
 }
 
+function listed(node: Node): boolean {
+  let current: Node | undefined = node;
+  while (current) {
+    if ('tagName' in current && (current.tagName === 'ul' || current.tagName === 'ol')) return true;
+    current = 'parentNode' in current ? current.parentNode ?? undefined : undefined;
+  }
+  return false;
+}
+
+/** Meta line for a hub. List links are related reading, not extra posts from the same day. */
+export function hubLinkLabel(publishCount: number, relatedCount: number): string | undefined {
+  if (publishCount > 0 && relatedCount > 0) return `${publishCount} 篇发布 · ${relatedCount} 条关联`;
+  if (relatedCount > 0) return `${relatedCount} 条关联`;
+  if (publishCount > 0) return `${publishCount} 篇发布`;
+}
+
+function normalizedCaption(node: Node): string {
+  return text(node).replace(/\s+/g, ' ').trim().replace(/^#\s*/, '').replace(/\s*#$/, '');
+}
+
+function nextElementSibling(node: Node): Element | undefined {
+  const parent = 'parentNode' in node ? node.parentNode : undefined;
+  if (!parent || !('childNodes' in parent)) return;
+  const siblings = parent.childNodes;
+  const index = siblings.indexOf(node as (typeof siblings)[number]);
+  if (index < 0) return;
+  for (let cursor = index + 1; cursor < siblings.length; cursor++) {
+    const sibling = siblings[cursor];
+    if (sibling.nodeName === '#comment') continue;
+    if ('value' in sibling && sibling.nodeName === '#text') {
+      if (!sibling.value.trim()) continue;
+      return;
+    }
+    if ('tagName' in sibling) return sibling;
+    return;
+  }
+}
+
+/**
+ * Mark a 「关联阅读」 paragraph or heading that introduces the related list.
+ * Only that start tag gains an attribute; every other byte stays as authored.
+ */
+export function markHubRelatedCaption(html: string): string {
+  const fragment = parseFragment(html, {sourceCodeLocationInfo: true});
+  const offsets: number[] = [];
+  function visit(node: Node): void {
+    if ('tagName' in node) {
+      if (ignored.has(node.tagName)) return;
+      const end = node.sourceCodeLocation?.startTag?.endOffset;
+      const following = nextElementSibling(node);
+      if (captionTags.has(node.tagName) && normalizedCaption(node) === '关联阅读' &&
+          following && (following.tagName === 'ul' || following.tagName === 'ol') &&
+          end != null && html[end - 1] === '>') offsets.push(end - 1);
+    }
+    if ('childNodes' in node) node.childNodes.forEach(visit);
+  }
+  visit(fragment);
+  if (offsets.length === 0) return html;
+  const attribute = ' data-timeline-related-caption=""';
+  return offsets.sort((left, right) => right - left).reduce(
+    (source, offset) => source.slice(0, offset) + attribute + source.slice(offset), html);
+}
+
 function weekday(label: string): string | undefined {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(label) || label.startsWith('0000-')) return;
   const date = new Date(`${label}T00:00:00.000Z`);
@@ -105,9 +173,11 @@ function weekday(label: string): string | undefined {
   return ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'][date.getUTCDay()];
 }
 
-/** Read authored HTML on the server; presentation never rewrites or reorders it. */
+/** Read authored HTML on the server. Classification does not rewrite or reorder it. */
 export function getTimelinePresentation(item: {label: string; html: string}): TimelinePresentation {
   const links = new Map<string, URL>();
+  const outsideLists = new Set<string>();
+  const insideLists = new Set<string>();
   let star = false;
   let posted = false;
   let publish = false;
@@ -125,7 +195,10 @@ export function getTimelinePresentation(item: {label: string; html: string}): Ti
       if (node.tagName === 'img') image = true;
       if (node.tagName === 'a') {
         const url = httpUrl(node.attrs.find((attr) => attr.name === 'href')?.value);
-        if (url) links.set(url.href, url);
+        if (url) {
+          links.set(url.href, url);
+          (listed(node) ? insideLists : outsideLists).add(url.href);
+        }
       }
       if (node.tagName === 'p') {
         const marker = paragraphMarkers.get(text(node).replace(/\s+/g, ' ').trim());
@@ -154,9 +227,11 @@ export function getTimelinePresentation(item: {label: string; html: string}): Ti
   const linksOnly = kind !== 'pinned' && kind !== 'star' && kind !== 'x' && kind !== 'publish' && kind !== 'weekly'
     && links.size > 0 && containsOnlyTextLinks(fragment);
   const hub = kind === 'publish' || kind === 'weekly';
+  let relatedCount = 0;
+  if (hub) for (const href of insideLists) if (!outsideLists.has(href)) relatedCount += 1;
   return {
     kind, label: labels[kind], linkCount: links.size,
     ...(day ? {weekday: day} : {}), ...(linksOnly ? {linksOnly: true as const} : {}),
-    ...(hub ? {hub: true as const} : {}),
+    ...(hub ? {hub: true as const, publishCount: outsideLists.size, relatedCount} : {}),
   };
 }
