@@ -10,10 +10,11 @@ import Play from '@gravity-ui/icons/Play';
 import SquareArticle from '@gravity-ui/icons/SquareArticle';
 import Star from '@gravity-ui/icons/Star';
 import {Card, Chip} from '@heroui/react';
+import {ChatSource, ChatSources} from '@heroui-pro/react/chat-source';
 import {NativeSelect} from '@heroui-pro/react/native-select';
 import {Timeline} from '@heroui-pro/react/timeline';
 import type {TimelineItem} from './special-pages';
-import {getTimelinePresentation, hubLinkLabel, markHubRelatedCaption, type TimelineKind} from './timeline-presentation';
+import {getTimelinePresentation, hubLinkLabel, splitHubRelatedReading, timelineFaviconUrl, type TimelineKind, type TimelineRelatedSource} from './timeline-presentation';
 import './ContentSections.css';
 import styles from './ContentSections.module.css';
 
@@ -21,6 +22,36 @@ export interface TimelineViewProps {
   items: TimelineItem[];
   years?: {label: string; value: string}[];
   selected?: string;
+}
+
+function RelatedReading({sources}: {sources: TimelineRelatedSource[]}) {
+  if (sources.length === 0) return null;
+  return <div className={styles.related} data-timeline-related="">
+    <p className={styles.relatedLabel}>关联阅读</p>
+    <ChatSources className={styles.relatedSources} defaultExpanded>
+      <ChatSources.Trigger>{sources.length} 条关联</ChatSources.Trigger>
+      <ChatSources.Content>
+        <ChatSources.List>
+          {sources.map((source, index) => <ChatSource
+            key={`${source.href}-${index}`}
+            href={source.href}
+            title={source.title}
+            description={source.description}
+            faviconUrl={timelineFaviconUrl(source.href)}
+            enablePreview={false}
+          >
+            <ChatSource.Trigger>
+              <ChatSource.Icon />
+              <span className={styles.relatedSourceCopy}>
+                <ChatSource.Title />
+                {source.description ? <span className={styles.relatedSourceNote}>{source.description}</span> : null}
+              </span>
+            </ChatSource.Trigger>
+          </ChatSource>)}
+        </ChatSources.List>
+      </ChatSources.Content>
+    </ChatSources>
+  </div>;
 }
 
 const eventIcons: Record<TimelineKind, typeof Pin> = {
@@ -50,8 +81,8 @@ export default function TimelineView({items, years = [], selected}: TimelineView
       {items.map((item, index) => {
         const presentation = getTimelinePresentation(item);
         const Icon = eventIcons[presentation.kind];
-        const body = presentation.hub ? markHubRelatedCaption(item.html) : item.html;
-        const content = <div className={styles.authored} data-timeline-entry dangerouslySetInnerHTML={{__html: body}} />;
+        const reading = presentation.hub ? splitHubRelatedReading(item.html) : undefined;
+        const content = <div className={styles.authored} data-timeline-entry dangerouslySetInnerHTML={{__html: reading?.html ?? item.html}} />;
         const linkLabel = presentation.hub
           ? hubLinkLabel(presentation.publishCount ?? 0, presentation.relatedCount ?? 0)
           : presentation.linkCount > 0 ? `${presentation.linkCount} 个链接` : undefined;
@@ -69,7 +100,10 @@ export default function TimelineView({items, years = [], selected}: TimelineView
           </Timeline.Content>
           <Timeline.Marker className={styles.eventMarker} aria-hidden="true"><Icon /></Timeline.Marker>
           <Timeline.Content className={styles.eventContent} side="end" data-timeline-body>
-            <Card className={styles.eventPanel} variant="transparent">{content}</Card>
+            <Card className={styles.eventPanel} variant="transparent">
+              {content}
+              {reading ? <RelatedReading sources={reading.sources} /> : null}
+            </Card>
           </Timeline.Content>
         </Timeline.Item>;
       })}

@@ -1,7 +1,24 @@
 import assert from 'node:assert/strict';
 import {mkdir, readFile} from 'node:fs/promises';
 import path from 'node:path';
+import {build} from 'esbuild';
 import {chromium} from 'playwright';
+
+const presentationBuild = await build({
+  entryPoints: [new URL('../../src/components/book/timeline-presentation.ts', import.meta.url).pathname],
+  bundle: true, platform: 'node', format: 'esm', write: false,
+});
+const {getTimelinePresentation, splitHubRelatedReading} = await import(
+  'data:text/javascript;base64,' + Buffer.from(presentationBuild.outputFiles[0].text).toString('base64')
+);
+
+function timelineBlocksFromHtml(html) {
+  return [...html.matchAll(/<h2\b([^>]*)>([\s\S]*?)<\/h2>([\s\S]*?)(?=<h2\b|$)/g)].map((match) => ({
+    id: /\bid="([^"]*)"/.exec(match[1])?.[1] || '',
+    title: match[2].replace(/<a\b[^>]*class="anchor"[^>]*>[\s\S]*?<\/a>/g, '').replace(/<[^>]+>/g, '').replace(/\s*#\s*$/, '').trim(),
+    html: match[3],
+  }));
+}
 
 const base = process.env.BLOG_TEST_URL ?? 'http://127.0.0.1:4321';
 const screenshots = process.env.BLOG_SCREENSHOT_DIR;
@@ -123,25 +140,43 @@ try {
   for (const year of years.slice(0, 2)) {
     await staticPage.goto(new URL(year.url, base).href);
     const collection = staticPage.locator('[data-content-collection="timeline"]');
-    const fidelity = await collection.evaluate((root, source) => {
-      const sourceDocument = new DOMParser().parseFromString(source, 'text/html');
-      const headings = [...sourceDocument.body.querySelectorAll('h2')];
-      const first = headings[0];
-      while (sourceDocument.body.firstChild && sourceDocument.body.firstChild !== first) sourceDocument.body.firstChild.remove();
-      const ids = headings.map((heading) => heading.id);
-      headings.forEach((heading) => heading.remove());
-      const rendered = document.createElement('div');
-      for (const entry of root.querySelectorAll('[data-timeline-entry]')) rendered.insertAdjacentHTML('beforeend', entry.innerHTML);
+    const expectedEntries = timelineBlocksFromHtml(year.html).map((block) => {
+      const presentation = getTimelinePresentation({label: block.title, html: block.html});
+      const reading = presentation.hub ? splitHubRelatedReading(block.html) : {html: block.html, sources: []};
+      return {id: block.id, html: reading.html, hrefs: reading.sources.map((source) => source.href)};
+    });
+    const fidelity = await collection.evaluate((root, expectedEntries) => {
       const snapshot = (node) => ({
         text: node.textContent.replace(/\s+/g, ' ').trim(),
         links: [...node.querySelectorAll('a[href]')].map((link) => link.getAttribute('href')),
         media: [...node.querySelectorAll('img, video, iframe, source')].map((item) => [item.tagName, item.getAttribute('src'), item.getAttribute('srcset'), item.getAttribute('alt')]),
         code: [...node.querySelectorAll('pre code')].map((code) => code.textContent),
       });
-      return {expected: snapshot(sourceDocument.body), actual: snapshot(rendered), ids, renderedIds: [...root.querySelectorAll('.timeline > .timeline__item')].map((item) => item.id)};
-    }, year.html);
-    assert.deepEqual(fidelity.actual, fidelity.expected, `${year.url}: authored text, links, media and exact code survive the Timeline layout`);
+      const items = [...root.querySelectorAll('.timeline > .timeline__item')].map((item) => {
+        const entry = item.querySelector('[data-timeline-entry]');
+        const related = item.querySelector('[data-timeline-related]');
+        return {
+          id: item.id,
+          entry: snapshot(entry),
+          relatedHrefs: [...(related?.querySelectorAll('a[href]') ?? [])].map((link) => link.getAttribute('href')),
+          relatedLabel: related ? [...related.querySelectorAll('p')].filter((node) => node.textContent.trim() === '关联阅读').length : 0,
+        };
+      });
+      const expected = expectedEntries.map((item) => {
+        const holder = document.createElement('div');
+        holder.innerHTML = item.html;
+        return {id: item.id, entry: snapshot(holder), hrefs: item.hrefs};
+      });
+      return {items, expected, ids: expectedEntries.map((item) => item.id), renderedIds: items.map((item) => item.id)};
+    }, expectedEntries);
     assert.deepEqual(fidelity.renderedIds, fidelity.ids, `${year.url}: original ordering, Top entry and date IDs survive`);
+    assert.equal(fidelity.items.length, fidelity.expected.length, `${year.url}: every authored group is rendered`);
+    for (const [index, item] of fidelity.items.entries()) {
+      const expected = fidelity.expected[index];
+      assert.deepEqual(item.entry, expected.entry, `${year.url} ${item.id}: primary HTML keeps its text, links, media and code`);
+      assert.deepEqual(item.relatedHrefs, expected.hrefs, `${year.url} ${item.id}: related list links render as citations`);
+      assert.equal(item.relatedLabel, expected.hrefs.length > 0 ? 1 : 0, `${year.url} ${item.id}: one 关联阅读 label for citation groups`);
+    }
     assert.equal(await collection.locator('select').count(), 1, 'Only one year selector is shown');
     assert.equal(await collection.locator('select').getAttribute('aria-label'), '时间线年份', 'The year selector keeps its accessible name');
     assert.equal(await collection.getByText('时间线年份', {exact: true}).count(), 0, 'The redundant visible year label is removed');
@@ -174,7 +209,7 @@ try {
       markerIcons.add(event.icon);
     }
     assert.equal(await collection.locator('astro-island').count(), 0, 'Timeline content remains server-rendered without a React hydration boundary');
-    console.log(`${year.url}: ${fidelity.ids.length} original groups and all authored content preserved in static HTML.`);
+    console.log(`${year.url}: ${fidelity.ids.length} original groups preserved; hub lists render as citations.`);
   }
   assert.ok(markerIcons.size >= 3, 'Published Timeline events use at least three distinct marker icons');
   await staticContext.close();

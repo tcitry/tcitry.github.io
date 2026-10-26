@@ -10,4 +10,22 @@ interface Props extends TimelineViewProps {}
       if (destination.origin === location.origin) location.assign(destination.href);
     });
   });
+  // ChatSources is server-rendered and starts open. This toggles it without a React island.
+  document.querySelectorAll<HTMLButtonElement>('[data-timeline-related] [data-slot="chat-sources-trigger"]').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const root = trigger.closest<HTMLElement>('[data-slot="chat-sources"]');
+      const panelId = trigger.getAttribute('aria-controls');
+      const panel = panelId ? document.getElementById(panelId) : null;
+      if (!root || !panel) return;
+      const expanded = trigger.getAttribute('aria-expanded') !== 'true';
+      trigger.setAttribute('aria-expanded', String(expanded));
+      root.setAttribute('data-expanded', String(expanded));
+      root.querySelectorAll<HTMLElement>('.disclosure__indicator, .disclosure__content').forEach((node) => {
+        node.setAttribute('data-expanded', String(expanded));
+      });
+      if (expanded) panel.removeAttribute('hidden');
+      else panel.setAttribute('hidden', '');
+      panel.setAttribute('aria-hidden', String(!expanded));
+    });
+  });
 </script>

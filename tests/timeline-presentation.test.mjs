@@ -6,7 +6,7 @@ const result = await build({
   entryPoints: [new URL('../src/components/book/timeline-presentation.ts', import.meta.url).pathname],
   bundle: true, platform: 'node', format: 'esm', write: false,
 });
-const {getTimelinePresentation, hubLinkLabel, markHubRelatedCaption} = await import(
+const {getTimelinePresentation, hubLinkLabel, splitHubRelatedReading, timelineFaviconUrl} = await import(
   'data:text/javascript;base64,' + Buffer.from(result.outputFiles[0].text).toString('base64')
 );
 const present = (html, label = '2026-09-08') => getTimelinePresentation({html, label});
@@ -127,34 +127,87 @@ test('a hub separates the primary publish URL from related list links', () => {
   assert.equal(present(`<p>📝 Published on site</p><p>${link(primary)}</p><ul><li>${link('/posts/older/', '站内旧文')}</li></ul>`).relatedCount, 0);
 });
 
-test('an authored 关联阅读 caption is marked only when it introduces a list', () => {
-  const entry = [
+test('hub lists become citation sources and leave the primary HTML untouched', () => {
+  const primary = `<p>📝 Published on site</p>\n<p>${link('https://example.com/a?x=1&amp;y=2')}</p>\n<p>说明 &amp; 保留。</p>`;
+  const listed = `${primary}\n<ul><li>${link('https://example.com/b', '相关')}</li></ul>`;
+  const split = splitHubRelatedReading(listed);
+  assert.equal(split.html, `${primary}\n`);
+  assert.deepEqual(split.sources, [{href: 'https://example.com/b', title: '相关'}]);
+
+  const captioned = [
     '<p>📝 Published on site</p>',
     `<p>${link('https://example.com/post')}</p>`,
     '<p>当天说明。</p>',
     '<p>关联阅读</p>',
-    `<ul><li>${link('https://example.com/related', '相关')}</li></ul>`,
+    `<ul><li>${link('https://example.com/related', '相关')} — 补充</li></ul>`,
   ].join('\n');
-  assert.equal(markHubRelatedCaption(entry), entry.replace('<p>关联阅读</p>', '<p data-timeline-related-caption="">关联阅读</p>'));
-  assert.equal(markHubRelatedCaption('<p>\n关联阅读\n</p>\n<ul></ul>'), '<p data-timeline-related-caption="">\n关联阅读\n</p>\n<ul></ul>');
-  assert.equal(
-    markHubRelatedCaption('<h3 id="rel">关联阅读</h3><ol><li>延伸</li></ol>'),
-    '<h3 id="rel" data-timeline-related-caption="">关联阅读</h3><ol><li>延伸</li></ol>',
-  );
-  assert.equal(
-    markHubRelatedCaption('<h2 id="rel"><a class="anchor" href="#rel">#</a>关联阅读</h2><ul></ul>'),
-    '<h2 id="rel" data-timeline-related-caption=""><a class="anchor" href="#rel">#</a>关联阅读</h2><ul></ul>',
-  );
-  const untouched = [
-    '<p>说明里提到关联阅读。</p><ul><li>不是标题</li></ul>',
-    '<p>关联阅读</p><p>然后才是列表</p><ul><li>a</li></ul>',
-    '<pre><code><p>关联阅读</p><ul></ul></code></pre>',
-    '<p title="关联阅读">正文</p><ul></ul>',
-    '<p>关联阅读：</p><ul></ul>',
-  ];
-  for (const html of untouched) assert.equal(markHubRelatedCaption(html), html, html);
-  const both = '<p>关联阅读</p><ul></ul><h4>关联阅读</h4><ol></ol>';
-  assert.equal(markHubRelatedCaption(both), '<p data-timeline-related-caption="">关联阅读</p><ul></ul><h4 data-timeline-related-caption="">关联阅读</h4><ol></ol>');
+  const cited = splitHubRelatedReading(captioned);
+  assert.equal(cited.html, [
+    '<p>📝 Published on site</p>',
+    `<p>${link('https://example.com/post')}</p>`,
+    '<p>当天说明。</p>',
+    '',
+    '',
+  ].join('\n'));
+  assert.equal(cited.html.includes('关联阅读'), false);
+  assert.deepEqual(cited.sources, [{href: 'https://example.com/related', title: '相关', description: '补充'}]);
+
+  assert.deepEqual(splitHubRelatedReading('<p>\n关联阅读\n</p>\n<ul></ul>'), {
+    html: '<p>\n关联阅读\n</p>\n<ul></ul>', sources: [],
+  });
+  assert.deepEqual(splitHubRelatedReading('<h3 id="rel">关联阅读</h3><ol><li>延伸</li></ol>'), {
+    html: '<h3 id="rel">关联阅读</h3><ol><li>延伸</li></ol>', sources: [],
+  });
+  const anchorCaption = '<h2 id="rel"><a class="anchor" href="#rel">#</a>关联阅读</h2>' +
+    `<ul><li>${link('https://example.com/a', '标题')}</li></ul>`;
+  const headed = splitHubRelatedReading(anchorCaption);
+  assert.equal(headed.html, '');
+  assert.deepEqual(headed.sources, [{href: 'https://example.com/a', title: '标题'}]);
+
+  const separated = splitHubRelatedReading(`<p>关联阅读</p><p>然后才是列表</p><ul><li>${link('/posts/a/', '甲')} — 说明</li></ul>`);
+  assert.equal(separated.html, '<p>关联阅读</p><p>然后才是列表</p>');
+  assert.deepEqual(separated.sources, [{href: '/posts/a/', title: '甲', description: '说明'}]);
+
+  const hidden = '<pre><code><p>关联阅读</p><ul><li><a href="https://example.com/secret">secret</a></li></ul></code></pre>';
+  assert.deepEqual(splitHubRelatedReading(hidden), {html: hidden, sources: []});
+  const mention = `<p>说明里提到关联阅读。</p><ul><li>${link('https://example.com/x', '不是标题')}</li></ul>`;
+  const mentioned = splitHubRelatedReading(mention);
+  assert.equal(mentioned.html, '<p>说明里提到关联阅读。</p>');
+  assert.deepEqual(mentioned.sources, [{href: 'https://example.com/x', title: '不是标题'}]);
+  for (const html of ['<p title="关联阅读">正文</p><ul></ul>', '<p>关联阅读：</p><ul></ul>']) {
+    assert.deepEqual(splitHubRelatedReading(html), {html, sources: []}, html);
+  }
+
+  const both = `<p>关联阅读</p><ul><li>${link('https://example.com/a', 'A')}</li></ul>` +
+    `<h4>关联阅读</h4><ol><li>${link('/b', 'B')}：后记</li></ol>`;
+  assert.equal(splitHubRelatedReading(both).html, '');
+  assert.deepEqual(splitHubRelatedReading(both).sources, [
+    {href: 'https://example.com/a', title: 'A'},
+    {href: '/b', title: 'B', description: '后记'},
+  ]);
+
+  const rich = `<ul><li>${link('https://example.com/a', 'A')}<img src="x.png"></li></ul>`;
+  assert.deepEqual(splitHubRelatedReading(rich), {html: rich, sources: []});
+  const blank = splitHubRelatedReading(`<ul><li>${link('https://example.com/a', '  ')}</li></ul>`);
+  assert.deepEqual(blank.sources, [{href: 'https://example.com/a', title: 'https://example.com/a'}]);
+  const scripted = '<ul><li><a href="javascript:alert(1)">x</a></li></ul>';
+  assert.deepEqual(splitHubRelatedReading(scripted), {html: scripted, sources: []});
+
+  const nested = `<ul><li>延伸<ol><li>${link('https://example.com/a', '标题')} — 注</li></ol></li>` +
+    `<li>前言 ${link('https://example.com/b', '乙')} — 后半</li></ul>`;
+  assert.deepEqual(splitHubRelatedReading(nested).sources, [
+    {href: 'https://example.com/a', title: '标题', description: '注'},
+    {href: 'https://example.com/b', title: '乙', description: '后半'},
+  ]);
+  const paired = `<ul><li>${link('https://example.com/a', 'A')} — 甲 ${link('https://example.com/b', 'B')} — 乙</li></ul>`;
+  assert.deepEqual(splitHubRelatedReading(paired).sources, [
+    {href: 'https://example.com/a', title: 'A', description: '甲'},
+    {href: 'https://example.com/b', title: 'B', description: '乙'},
+  ]);
+
+  const absolute = 'https://example.com/a';
+  assert.equal(timelineFaviconUrl(absolute), `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(absolute)}&sz=64`);
+  assert.equal(timelineFaviconUrl('/posts/a/'), '/favicon.png');
 });
 
 test('an exact standalone Star marker and a repository link classify a mixed daily group', () => {

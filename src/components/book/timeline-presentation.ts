@@ -8,12 +8,19 @@ export interface TimelinePresentation {
   linkCount: number;
   weekday?: string;
   linksOnly?: true;
-  /** Publish and weekly entries are hub nodes: the body keeps every related article link. */
+  /** Publish and weekly entries are hub nodes. Related list links render as citations. */
   hub?: true;
   /** HTTP(S) links outside lists. Hubs only; this is the day's publish URL. */
   publishCount?: number;
   /** HTTP(S) links that appear only inside lists. Hubs only; these are related reading. */
   relatedCount?: number;
+}
+
+/** One related-reading link taken out of a hub list. */
+export interface TimelineRelatedSource {
+  href: string;
+  title: string;
+  description?: string;
 }
 
 type Node = DefaultTreeAdapterMap['node'];
@@ -123,13 +130,30 @@ function normalizedCaption(node: Node): string {
   return text(node).replace(/\s+/g, ' ').trim().replace(/^#\s*/, '').replace(/\s*#$/, '');
 }
 
-function nextElementSibling(node: Node): Element | undefined {
+const embedded = new Set(['img', 'video', 'audio', 'iframe', 'picture', 'svg', 'table', 'pre', 'script', 'style']);
+
+function relatedHref(value: string | undefined): string | undefined {
+  const href = value?.trim();
+  if (!href || href.startsWith('//')) return;
+  if (href.startsWith('/')) return href;
+  return httpUrl(href) ? href : undefined;
+}
+
+function elementSpan(node: Element): {start: number; end: number} | undefined {
+  const location = node.sourceCodeLocation;
+  if (!location) return;
+  const {startOffset, endOffset} = location;
+  if (!Number.isInteger(startOffset) || !Number.isInteger(endOffset) || endOffset < startOffset) return;
+  return {start: startOffset, end: endOffset};
+}
+
+function previousElementSibling(node: Node): Element | undefined {
   const parent = 'parentNode' in node ? node.parentNode : undefined;
   if (!parent || !('childNodes' in parent)) return;
   const siblings = parent.childNodes;
   const index = siblings.indexOf(node as (typeof siblings)[number]);
   if (index < 0) return;
-  for (let cursor = index + 1; cursor < siblings.length; cursor++) {
+  for (let cursor = index - 1; cursor >= 0; cursor--) {
     const sibling = siblings[cursor];
     if (sibling.nodeName === '#comment') continue;
     if ('value' in sibling && sibling.nodeName === '#text') {
@@ -141,29 +165,114 @@ function nextElementSibling(node: Node): Element | undefined {
   }
 }
 
+function embedsContent(node: Node): boolean {
+  if ('tagName' in node && embedded.has(node.tagName)) return true;
+  return 'childNodes' in node && node.childNodes.some(embedsContent);
+}
+
+function anchorsIn(list: Element): Element[] {
+  const anchors: Element[] = [];
+  function walk(node: Node): void {
+    if ('tagName' in node) {
+      if (ignored.has(node.tagName)) return;
+      if (node.tagName === 'a') anchors.push(node);
+    }
+    if ('childNodes' in node) node.childNodes.forEach(walk);
+  }
+  walk(list);
+  return anchors;
+}
+
+function closestItem(anchor: Element, list: Element): Element {
+  let current: Node | undefined = anchor;
+  while (current && current !== list) {
+    if ('tagName' in current && current.tagName === 'li') return current;
+    current = 'parentNode' in current ? current.parentNode ?? undefined : undefined;
+  }
+  return list;
+}
+
+/** Text in the same list item after the link, up to the next link. */
+function descriptionAfter(anchor: Element, boundary: Element): string | undefined {
+  const parts: string[] = [];
+  let passed = false;
+  function walk(node: Node): boolean {
+    if (node === anchor) {
+      passed = true;
+      return false;
+    }
+    if (passed && 'tagName' in node && node.tagName === 'a') return true;
+    if ('tagName' in node && ignored.has(node.tagName)) return false;
+    if (!passed) {
+      if ('childNodes' in node) for (const child of node.childNodes) if (walk(child)) return true;
+      return false;
+    }
+    if ('value' in node && node.nodeName === '#text') parts.push(node.value);
+    else if ('childNodes' in node) for (const child of node.childNodes) if (walk(child)) return true;
+    return false;
+  }
+  walk(boundary);
+  const description = parts.join('').replace(/\s+/g, ' ').trim().replace(/^[—–\-·•:：]+\s*/, '');
+  return description || undefined;
+}
+
 /**
- * Mark a 「关联阅读」 paragraph or heading that introduces the related list.
- * Only that start tag gains an attribute; every other byte stays as authored.
+ * Favicon for a related-reading citation.
+ * Absolute links use Google's s2 favicon service; root-relative links use this site's icon.
  */
-export function markHubRelatedCaption(html: string): string {
+export function timelineFaviconUrl(href: string): string {
+  if (/^https?:\/\//i.test(href)) {
+    return `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(href)}&sz=64`;
+  }
+  return '/favicon.png';
+}
+
+/**
+ * Lift hub list links out of the authored HTML so they can render as citations.
+ * Lists that contain media, tables, or code blocks stay in the HTML.
+ * A 「关联阅读」 caption is removed only together with the list it introduces.
+ */
+export function splitHubRelatedReading(html: string): {html: string; sources: TimelineRelatedSource[]} {
   const fragment = parseFragment(html, {sourceCodeLocationInfo: true});
-  const offsets: number[] = [];
+  const sources: TimelineRelatedSource[] = [];
+  const ranges: {start: number; end: number}[] = [];
+
+  function consider(list: Element): void {
+    if (embedsContent(list)) return;
+    const range = elementSpan(list);
+    if (!range) return;
+    const found: TimelineRelatedSource[] = [];
+    for (const anchor of anchorsIn(list)) {
+      const href = relatedHref(anchor.attrs.find((attr) => attr.name === 'href')?.value);
+      if (!href) continue;
+      const title = text(anchor).replace(/\s+/g, ' ').trim() || href;
+      const description = descriptionAfter(anchor, closestItem(anchor, list));
+      found.push(description ? {href, title, description} : {href, title});
+    }
+    if (found.length === 0) return;
+    const caption = previousElementSibling(list);
+    const captionIsLabel = Boolean(caption && captionTags.has(caption.tagName) && normalizedCaption(caption) === '关联阅读');
+    const captionRange = captionIsLabel && caption ? elementSpan(caption) : undefined;
+    if (captionIsLabel && !captionRange) return;
+    ranges.push(range);
+    if (captionRange) ranges.push(captionRange);
+    sources.push(...found);
+  }
+
   function visit(node: Node): void {
     if ('tagName' in node) {
       if (ignored.has(node.tagName)) return;
-      const end = node.sourceCodeLocation?.startTag?.endOffset;
-      const following = nextElementSibling(node);
-      if (captionTags.has(node.tagName) && normalizedCaption(node) === '关联阅读' &&
-          following && (following.tagName === 'ul' || following.tagName === 'ol') &&
-          end != null && html[end - 1] === '>') offsets.push(end - 1);
+      if (node.tagName === 'ul' || node.tagName === 'ol') {
+        consider(node);
+        return;
+      }
     }
     if ('childNodes' in node) node.childNodes.forEach(visit);
   }
   visit(fragment);
-  if (offsets.length === 0) return html;
-  const attribute = ' data-timeline-related-caption=""';
-  return offsets.sort((left, right) => right - left).reduce(
-    (source, offset) => source.slice(0, offset) + attribute + source.slice(offset), html);
+  const next = ranges.sort((left, right) => right.start - left.start).reduce(
+    (source, range) => source.slice(0, range.start) + source.slice(range.end), html);
+  return {html: next, sources};
 }
 
 function weekday(label: string): string | undefined {
