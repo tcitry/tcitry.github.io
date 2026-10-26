@@ -174,15 +174,38 @@
   overflow-wrap: anywhere;
 }
 
-.loading {
-  display: grid;
-  gap: 1.5rem;
-  padding: 1.25rem 0.75rem;
+.backdrop .list:has([data-search-loading]) {
+  display: flex;
+  flex-direction: column;
+  min-height: 16rem;
 }
 
-.loading > div { display: grid; gap: 0.625rem; }
-.loadingTitle { width: 70%; height: 0.875rem; }
-.loadingExcerpt { width: 92%; height: 0.625rem; }
+.backdrop .list:has([data-search-loading]) :global([data-slot="command-empty"]) {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 100%;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 1.5rem 1rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.loadingLabel {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
 
 .ask {
   flex: 0 0 auto;

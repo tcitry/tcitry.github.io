@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import {flushSync} from 'react-dom';
 import {createRoot} from 'react-dom/client';
 import {Command} from '@heroui-pro/react/command';
-import {Button, Skeleton} from '@heroui/react';
+import {Button, Spinner} from '@heroui/react';
 import {searchContent} from '../../lib/search-client';
 import {loadRecentUpdates} from '../../lib/search-recent-client';
 import {captureFeatureError, withFeatureSpan} from '../../lib/monitoring';
@@ -148,8 +148,13 @@ function SearchCommand({onClose, onAskAI}: Props) {
   const activeResult = result?.query === normalizedQuery ? result : null;
   const entries = normalizedQuery ? activeResult?.results ?? [] : recent.slice(0, 6);
   const hasMore = Boolean(normalizedQuery && activeResult && activeResult.limit < activeResult.total);
+  // Blank results use the centered spinner. Pagination keeps the list and a footer count.
+  const queryLoading = Boolean(normalizedQuery) && busy && entries.length === 0;
+  const recentLoading = !normalizedQuery && recentState === 'loading' && entries.length === 0;
+  const showLoading = queryLoading || recentLoading;
   const status = composing ? '正在输入…'
-    : busy ? (entries.length ? '正在加载更多…' : '正在搜索…')
+    : showLoading ? ''
+    : busy ? '正在加载更多…'
     : failed ? '搜索暂时不可用，请重试。'
     : normalizedQuery ? activeResult?.updating && !entries.length ? '相关结果正在更新，请稍后重试。'
       : `找到 ${activeResult?.total ?? 0} 条结果${hasMore ? `，已显示 ${entries.length} 条` : ''}${activeResult?.updating ? ' · 部分结果正在更新' : ''}`
@@ -157,10 +162,8 @@ function SearchCommand({onClose, onAskAI}: Props) {
     : recentState === 'error' ? '最近更新暂时不可用，仍可输入关键词搜索。'
     : `最近更新 · ${entries.length} 篇`;
   const emptyMessage = composing ? '完成输入后即可搜索。'
-    : busy ? '正在搜索…'
     : failed ? '暂时无法搜索，请稍后重试。'
     : normalizedQuery ? activeResult?.updating ? '相关结果正在更新，请稍后再试。' : '没有找到匹配内容，试试其他关键词。'
-    : recentState === 'loading' ? '正在加载最近更新…'
     : recentState === 'error' ? '暂时无法加载最近更新，可以重试或直接搜索。'
     : '暂无最近更新的文章。';
   const retryAISearch = () => {
@@ -262,11 +265,11 @@ function SearchCommand({onClose, onAskAI}: Props) {
               }
               queueMicrotask(onClose);
             }}
-            renderEmptyState={() => busy || (!normalizedQuery && recentState === 'loading')
-              ? <div className={styles.loading} aria-hidden="true">{[0, 1, 2].map(index => <div key={index}>
-                <Skeleton animationType="none" className={styles.loadingTitle} />
-                <Skeleton animationType="none" className={styles.loadingExcerpt} />
-              </div>)}</div>
+            renderEmptyState={() => showLoading
+              ? <div className={styles.loading} role="status" data-search-loading>
+                <Spinner aria-hidden={true} size="lg" color="accent" />
+                <p className={styles.loadingLabel}>{queryLoading ? '搜索中' : '正在加载最近更新…'}</p>
+              </div>
               : <div className={styles.empty}>{emptyMessage}</div>}
           >
             {entries.length > 0 && <Command.Group heading={normalizedQuery ? '搜索结果' : '最近更新'}>

@@ -3,3 +3,4 @@
 @import "@heroui-pro/react/css/components/command.css" layer(components);
 @import "@heroui/styles/components/input.css" layer(components);
 @import "@heroui/styles/components/close-button.css" layer(components);
+@import "@heroui/styles/components/spinner.css" layer(components);

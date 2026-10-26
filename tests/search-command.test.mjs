@@ -9,3 +9,24 @@ test('idle commander does not render redundant public-search copy', () => {
   assert.match(source, /基于 Cloudflare AI Search/);
   assert.match(source, /基于 Pagefind · 全文搜索/);
 });
+
+test('in-flight search shows a centered spinner instead of footer-only copy', () => {
+  assert.match(source, /import \{Button, Spinner\} from '@heroui\/react'/);
+  assert.match(source, /<Spinner aria-hidden=\{true\} size="lg" color="accent" \/>/);
+  assert.match(source, /data-search-loading/);
+  assert.match(source, /queryLoading \? '搜索中' : '正在加载最近更新…'/);
+  assert.doesNotMatch(source, /正在搜索…/);
+  assert.doesNotMatch(source, /Skeleton/);
+  assert.match(source, /showLoading \? ''/);
+  assert.match(source, /busy \? '正在加载更多…'/);
+  assert.match(source, /没有找到匹配内容，试试其他关键词。/);
+  assert.match(source, /暂时无法搜索，请稍后重试。/);
+  assert.match(source, /搜索暂时不可用，请重试。/);
+  assert.match(source, /完成输入后即可搜索。/);
+  assert.match(source, /相关结果正在更新，请稍后再试。/);
+});
+
+test('search dialog loads HeroUI spinner styles', async () => {
+  const css = await readFile(new URL('../src/components/search/search-vendor.css', import.meta.url), 'utf8');
+  assert.match(css, /@import "@heroui\/styles\/components\/spinner\.css"/);
+});
