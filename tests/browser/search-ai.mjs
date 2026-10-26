@@ -50,7 +50,8 @@ async function assertEngine(page, engine) {
   const source = page.locator('[data-search-engine]');
   assert.equal(await source.count(), 1, 'Completed search identifies exactly one actual result engine');
   assert.equal(await source.getAttribute('data-search-engine'), engine);
-  assert.equal(await source.innerText(), engine === 'ai-search' ? '基于 Cloudflare AI Search' : '基于 Pagefind · 全文搜索');
+  assert.equal(await page.getByText('基于 Pagefind · 全文搜索', {exact: true}).count(), 0, 'Pagefind attribution is not shown in the search chrome');
+  assert.equal(await page.getByText('基于 Cloudflare AI Search', {exact: true}).count(), engine === 'ai-search' ? 1 : 0);
 }
 
 async function installRoutes(context, base) {
@@ -260,8 +261,6 @@ try {
         await page.getByText('AI 搜索暂不可用，当前显示全文搜索结果', {exact: true}).waitFor();
         assert.equal(await results(page).count(), 8);
         await assertEngine(page, 'pagefind');
-        const source = await page.locator('[data-search-engine]').boundingBox();
-        assert.ok(source && source.x >= 0 && source.x + source.width <= width + 1, 'The engine label fits 320px');
         const notice = await page.locator('[data-search-fallback]').boundingBox();
         const retry = await page.getByRole('button', {name: '重试 AI 搜索', exact: true}).boundingBox();
         assert.ok(notice && retry && notice.x >= 0 && notice.x + notice.width <= width + 1 && retry.x + retry.width <= width + 1,

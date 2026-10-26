@@ -4,10 +4,11 @@ import test from 'node:test';
 
 const source = await readFile(new URL('../src/components/search/SearchCommand.tsx', import.meta.url), 'utf8');
 
-test('idle commander does not render redundant public-search copy', () => {
+test('search chrome omits redundant Pagefind attribution and idle public-search copy', () => {
   assert.doesNotMatch(source, /搜索公开文章 · 无需登录/);
+  assert.doesNotMatch(source, /基于 Pagefind · 全文搜索/);
   assert.match(source, /基于 Cloudflare AI Search/);
-  assert.match(source, /基于 Pagefind · 全文搜索/);
+  assert.match(source, /activeResult\?\.engine === 'ai-search'/);
 });
 
 test('in-flight search shows a centered spinner instead of footer-only copy', () => {

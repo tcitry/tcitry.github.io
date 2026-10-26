@@ -197,6 +197,7 @@ function SearchCommand({onClose, onAskAI}: Props) {
           data-search-dialog
           data-blog-command
           data-search-state={composing ? 'composing' : busy ? 'loading' : failed ? 'error' : normalizedQuery ? 'results' : recentState === 'loading' ? 'recent-loading' : recentState === 'error' ? 'recent-error' : 'recent'}
+          data-search-engine={normalizedQuery && activeResult?.engine ? activeResult.engine : undefined}
         >
           <Command.InputGroup aria-label="搜索博客" className={styles.inputGroup}>
             <Command.InputGroup.Prefix>
@@ -240,8 +241,8 @@ function SearchCommand({onClose, onAskAI}: Props) {
             </Command.InputGroup.Suffix>
           </Command.InputGroup>
 
-          {normalizedQuery && activeResult?.engine && <div className={styles.source} data-search-engine={activeResult.engine}>
-            {activeResult.engine === 'ai-search' ? '基于 Cloudflare AI Search' : '基于 Pagefind · 全文搜索'}
+          {normalizedQuery && activeResult?.engine === 'ai-search' && <div className={styles.source}>
+            基于 Cloudflare AI Search
           </div>}
 
           <Command.List
