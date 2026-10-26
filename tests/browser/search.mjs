@@ -182,7 +182,10 @@ async function assertLoadingSpinner(page, label) {
     const spinnerBox = spinner?.getBoundingClientRect();
     const list = element.closest('[data-search-results]');
     const listBox = list?.getBoundingClientRect();
-    const status = document.querySelector('[data-search-status]')?.textContent ?? '';
+    const statusNode = document.querySelector('[data-search-status]');
+    const status = statusNode?.textContent ?? '';
+    const footerBox = statusNode?.parentElement?.getBoundingClientRect();
+    const askBox = document.querySelector('[data-search-ask-ai]')?.getBoundingClientRect();
     const centerDelta = spinnerBox && listBox
       ? Math.abs((spinnerBox.top + spinnerBox.bottom) / 2 - (listBox.top + listBox.bottom) / 2)
       : Number.POSITIVE_INFINITY;
@@ -193,6 +196,8 @@ async function assertLoadingSpinner(page, label) {
       status,
       centered: Boolean(listBox && listBox.height >= 96 && centerDelta <= listBox.height * 0.3),
       resultCount: document.querySelectorAll('[data-blog-search-result]').length,
+      loginHint: document.querySelector('[data-blog-command]')?.textContent?.includes('登录后免费') ?? false,
+      askInFooter: !askBox || Boolean(footerBox && askBox.top >= footerBox.top - 1 && askBox.bottom <= footerBox.bottom + 1 && listBox && askBox.top >= listBox.bottom - 1),
     };
   });
   assert.match(info.text, new RegExp(label), 'the results area names the in-flight state');
@@ -203,6 +208,8 @@ async function assertLoadingSpinner(page, label) {
   assert.equal(info.status, '', 'the footer stays quiet while the results spinner is showing');
   assert.equal(info.centered, true, 'the spinner sits in the middle of the results area');
   assert.equal(info.resultCount, 0, 'the spinner replaces an empty results list');
+  assert.equal(info.loginHint, false, 'the search modal does not mention 登录后免费');
+  assert.equal(info.askInFooter, true, 'Ask AI stays in the footer, below the results area');
 }
 
 async function assertBounds(page, label) {
