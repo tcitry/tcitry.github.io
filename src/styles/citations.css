@@ -29,10 +29,16 @@ a.blog-chat__cite-card:hover,
 a.blog-chat__cite-card:visited {
   display: flex;
   flex-direction: column;
+  /* Book base sets `a { align-items: center }`, which centers this column's short header. */
+  align-items: stretch;
+  justify-content: flex-start;
   gap: .5rem;
+  box-sizing: border-box;
+  width: 100%;
   padding: .8125rem .875rem .875rem;
   color: var(--overlay-foreground);
   background: transparent;
+  text-align: start;
   text-decoration: none;
   transition: background-color 150ms ease;
 }
@@ -47,7 +53,11 @@ a.blog-chat__cite-card:focus-visible {
 .blog-chat__cite-meta {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  align-self: flex-start;
   gap: .5rem;
+  width: fit-content;
+  max-width: 100%;
   min-width: 0;
 }
 
