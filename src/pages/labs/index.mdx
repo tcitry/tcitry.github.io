@@ -14,6 +14,7 @@ import packageJson from '../../../package.json';
 import {content} from '../../lib/site';
 
 export const demoDirectory = [
+  ...(content.pages.some(page => page.source === 'docs/AI/Agents/deepseek-harness-plugin-architecture.mdx') ? [{name: 'Anatomy · DeepSeek 插件生命周期', description: '对照必需服务、HTTP provider 与显式 dispose，观察依赖插件和所属注册如何退出与重建。', links: [{label: '正文体验', href: '/docs/AI/Agents/deepseek-harness-plugin-architecture/#plugin-lifecycle'}]}] : []),
   ...(content.pages.some(page => page.url === '/docs/AI/Agents/ruflo-agent-orchestration-source-analysis/') ? [{name: 'Anatomy · Ruflo 候选窗口与评分', description: '看同一卡片进入窗口、被取走评分，量尺形成后再按实际分数入槽；可慢放比较边界两侧。', links: [{label: '正文体验', href: '/docs/AI/Agents/ruflo-agent-orchestration-source-analysis/#memory-window'}]}] : []),
   ...(content.pages.some(page => page.source === 'docs/AI/Skills/anatomy-interactive-technical-illustrations.mdx') ? [{name: 'Anatomy 官方作品对照', description: '操作 LRU、Turbofan、Seasons 和 Separable blur，比较 SVG、WebGL、3D 与早期软件机制示例。', links: [{label: '正文体验', href: '/docs/AI/Skills/anatomy-interactive-technical-illustrations/#anatomy-collection-study'}]}] : []),
   {name: 'Waza 版本校验实验', description: '逐步核对前缀归一化、字段一致性和 SemVer 比较，对照 build 不一致与统一后比较 Tag 的结果。', links: [{label: '正文体验', href: '/docs/AI/Skills/waza-project-analysis/#waza-release-gate-machine'}]},
