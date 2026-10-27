@@ -1,0 +1,7 @@
+@reference "../../styles/tailwind.css";
+.figure { margin-block: 2rem; }
+.legend { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.5rem; font-size:.75rem; color:var(--muted); margin-block:.75rem; }
+.readouts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem; padding:1rem; border-block:1px solid var(--gray-200); font-size:.85rem; }
+.readouts strong { color:var(--machine-accent); }
+.readouts code { font-size:.75rem; overflow-wrap:anywhere; white-space:normal; }
+@media(max-width:540px) { .legend,.readouts { grid-template-columns:1fr; } }
