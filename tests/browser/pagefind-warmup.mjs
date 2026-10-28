@@ -9,7 +9,27 @@ import {chromium} from 'playwright';
 const browserBundle = await build({
   entryPoints: [new URL('../fixtures/pagefind-warmup-browser.ts', import.meta.url).pathname],
   bundle: true, platform: 'browser', format: 'esm', write: false,
-  define: {'import.meta.env.BASE_URL': '"/"'},
+  define: {
+    'import.meta.env.BASE_URL': '"/"',
+    'import.meta.env.DEV': 'false',
+  },
+  plugins: [{
+    name: 'stub-search-command',
+    setup(pluginBuild) {
+      pluginBuild.onResolve({filter: /components\/search\/SearchCommand$/}, () => ({
+        path: 'search-command-stub', namespace: 'search-command-stub',
+      }));
+      pluginBuild.onLoad({filter: /.*/, namespace: 'search-command-stub'}, () => ({
+        contents: `
+          globalThis.__commandLoads = (globalThis.__commandLoads || 0) + 1;
+          export function mountSearchCommand() {
+            globalThis.__commandMounts = (globalThis.__commandMounts || 0) + 1;
+          }
+        `,
+        loader: 'js',
+      }));
+    },
+  }],
 });
 const script = browserBundle.outputFiles[0].text;
 const requests = [];
@@ -49,33 +69,36 @@ try {
     else setTimeout(finish, 250);
   }));
   assert.equal(initsOffHome, 0, 'Pages other than the homepage do not start Pagefind');
+  assert.equal(await absent.evaluate(() => globalThis.__commandLoads || 0), 0, 'Pages other than the homepage do not import SearchCommand');
   assert.equal(requests.includes('/pagefind/pagefind.js'), false);
 
   await absent.evaluate(() => {
     history.pushState({}, '', '/');
     document.dispatchEvent(new Event('astro:page-load'));
   });
-  await absent.waitForFunction(() => globalThis.__pfInits === 1);
+  await absent.waitForFunction(() => globalThis.__pfInits === 1 && globalThis.__commandLoads === 1);
   const searched = await absent.evaluate(() => window.__searchContent('正文'));
   assert.equal(searched.engine, 'pagefind');
   assert.equal(searched.total, 0);
   assert.equal(await absent.evaluate(() => globalThis.__pfSearches), 1);
   assert.equal(await absent.evaluate(() => globalThis.__pfInits), 1);
+  assert.equal(await absent.evaluate(() => globalThis.__commandMounts || 0), 0, 'Idle prefetch evaluates SearchCommand without mounting it');
   assert.deepEqual(requests.filter((path) => path.startsWith('/pagefind/')), ['/pagefind/pagefind.js']);
 
   const home = await browser.newPage();
   await home.goto(`http://127.0.0.1:${port}/`, {waitUntil: 'load'});
-  await home.waitForFunction(() => globalThis.__pfInits === 1);
+  await home.waitForFunction(() => globalThis.__pfInits === 1 && globalThis.__commandLoads === 1);
   const direct = await home.evaluate(() => window.__searchContent('首页'));
   assert.equal(direct.engine, 'pagefind');
   assert.equal(await home.evaluate(() => globalThis.__pfSearches), 1);
+  assert.equal(await home.evaluate(() => globalThis.__commandMounts || 0), 0);
   await home.close();
   await absent.close();
 
   const pagefindRequests = requests.filter((path) => path.startsWith('/pagefind/'));
   assert.ok(pagefindRequests.length >= 1 && pagefindRequests.every((path) => path === '/pagefind/pagefind.js'));
   assert.equal(requests.some((path) => path.includes('/fragment') || path.includes('/pagefind/index/') || path.endsWith('.pf_meta')), false);
-  console.log('Homepage idle warmup calls Pagefind init once per page and leaves query chunks unloaded.');
+  console.log('Homepage idle warmup calls Pagefind init and evaluates SearchCommand once per page without mounting it or loading query chunks.');
 } finally {
   await browser.close();
   await new Promise((resolve) => server.close(resolve));

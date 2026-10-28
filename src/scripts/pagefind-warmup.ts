@@ -1,3 +1,4 @@
+import {loadSearchCommandModule} from '../lib/search-command-module';
 import {warmupPagefind} from '../lib/search-client';
 
 export function isBlogHomepage(pathname: string, base: string) {
@@ -12,7 +13,7 @@ interface PagefindIdleHost {
   setTimeout: (callback: () => void, delay?: number) => number;
 }
 
-/** Start Pagefind init while the browser is idle. Browsers without idle callbacks wait one short task. */
+/** Run one homepage idle task. Browsers without idle callbacks wait one short task. */
 export function schedulePagefindWarmup(warm: () => Promise<unknown>, host: Pick<PagefindIdleHost, 'requestIdleCallback' | 'setTimeout'>) {
   const run = () => { void Promise.resolve(warm()).catch(() => {}); };
   if (typeof host.requestIdleCallback === 'function') {
@@ -34,7 +35,30 @@ export function createPagefindWarmupController(warm: () => Promise<unknown>) {
   };
 }
 
-const homepageWarmup = createPagefindWarmupController(warmupPagefind);
+/**
+ * One homepage idle callback starts Pagefind init and the SearchCommand import together.
+ * The import only evaluates that module. It does not mount the dialog or run a query.
+ * Either failure is ignored so the other warmup can still finish.
+ */
+export function runHomepageIdleWarmup(
+  warmPagefind: () => Promise<unknown>,
+  prefetchCommand: () => Promise<unknown>,
+) {
+  const tasks = [warmPagefind, prefetchCommand].map((start) => {
+    try {
+      return Promise.resolve(start()).catch(() => {});
+    } catch {
+      return Promise.resolve();
+    }
+  });
+  return Promise.all(tasks);
+}
+
+export function warmHomepageSearch() {
+  return runHomepageIdleWarmup(warmupPagefind, loadSearchCommandModule);
+}
+
+const homepageWarmup = createPagefindWarmupController(warmHomepageSearch);
 
 function armHomepagePagefind() {
   homepageWarmup.arm(window, import.meta.env.BASE_URL || '/');
