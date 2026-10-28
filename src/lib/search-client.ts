@@ -8,6 +8,8 @@ interface PagefindData {
 }
 export interface PagefindModule {
   search(query: string): Promise<{results: {data(): Promise<PagefindData>}[]}>;
+  // Pagefind's init starts the fixed runtime (worker, wasm, metadata) and is safe to call again.
+  init?(): void | Promise<void>;
   destroy?(): void | Promise<void>;
 }
 
@@ -87,14 +89,48 @@ export function createConfiguredSearchClient(options: SearchClientOptions) {
   };
 }
 
+/** One module promise for idle warmup and the first typed query. Failed imports can be retried. */
+export function createPagefindLoader(load: () => Promise<PagefindModule>) {
+  let pending: Promise<PagefindModule> | undefined;
+  const loadPagefindModule = () => {
+    pending ??= load().then(
+      (module) => module,
+      (error: unknown) => {
+        pending = undefined;
+        throw error;
+      },
+    );
+    return pending;
+  };
+  const warmupPagefind = async () => {
+    const module = await loadPagefindModule();
+    await module.init?.();
+  };
+  return {loadPagefindModule, warmupPagefind};
+}
+
+function pagefindModuleUrl() {
+  return `${import.meta.env.BASE_URL.replace(/\/$/, '')}/pagefind/pagefind.js`;
+}
+
+const pagefindRuntime = createPagefindLoader(
+  () => import(/* @vite-ignore */ pagefindModuleUrl()) as Promise<PagefindModule>,
+);
+
+export function loadPagefindModule() {
+  return pagefindRuntime.loadPagefindModule();
+}
+
+/** Import `/pagefind/pagefind.js` and call `init()`. Query fragments stay on `search()`. */
+export function warmupPagefind() {
+  return pagefindRuntime.warmupPagefind();
+}
+
 let search: ReturnType<typeof createConfiguredSearchClient> | undefined;
 export function searchContent(query: string, limit = 8, signal?: AbortSignal): Promise<SearchResponse> {
   search ??= createConfiguredSearchClient({
     localOrigin: window.location.origin,
-    loadPagefind: async () => {
-      const path = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/pagefind/pagefind.js`;
-      return import(/* @vite-ignore */ path) as Promise<PagefindModule>;
-    },
+    loadPagefind: loadPagefindModule,
   });
   return search(query, limit, signal);
 }
