@@ -21,7 +21,6 @@ const { page, entries, pagination } = view;
 const regular = allPages.filter((item) => item.kind === 'page');
 const isTimeline = page.type === 'timeline' || page.section === 'timeline';
 const isPortfolio = page.type === 'portfolio' || page.section === 'portfolio';
-const isModified = page.layout === 'modified' || page.url === '/modified/';
 const isArchive = page.type === 'archives' || page.section === 'archives';
 const isWeeklyList = (page.type === 'weekly' || page.section === 'weekly') && page.kind !== 'page';
 const isLinksList = (page.type === 'links' || page.section === 'links') && page.kind !== 'page';
@@ -56,8 +55,6 @@ const cloudSize = (count: number) => {
 </> : page.kind === 'term' ? <>
   <TagsNavbar url={page.url} tags={tags} /><h1 class="text-[dimgray]">{page.title}&nbsp;<sup>{view.term?.pageIds.length || entries.length}</sup></h1>
   <div data-pagefind-body>{entries.map((item) => <PostRow page={item} tags={tags} />)}</div>
-</> : isModified ? <>
-  <TagsNavbar url={page.url} tags={tags} /><section><div class="posts" data-pagefind-body>{entries.map((item) => <PostRow page={item} tags={tags} modified />)}</div></section>
 </> : isArchive || isPostList || isLinksList ? <>
   <TagsNavbar url={page.url} tags={tags} />
   <GroupedArticleList groups={groups(entries, isLinksList ? 'month' : 'year').map((group) => ({ id: group.key, label: group.key, items: group.pages.map((item) => articleItem(item, tags, { showSummary: isLinksList, showBreadcrumb: !isPostList && !isLinksList })) }))} />

@@ -104,12 +104,15 @@ test('generated content preserves every exported public legacy route and unique 
   assert.equal(shadowed.kind, 'section');
   assert.equal(shadowed.html, '');
   assert.deepEqual(shadowed.params.legacySuppressedSources, ['docs/Python/语言基础.md']);
-  for (const name of ['archives', 'ghstar', 'modified', 'portfolio', 'timeline']) {
+  for (const name of ['archives', 'ghstar', 'portfolio', 'timeline']) {
     const page = content.pages.find((page) => page.url === `/${name}/`);
     assert.equal(page.kind, 'page');
     assert.equal(page.source, '');
     assert.equal(page.params.siteOwned, true);
   }
+  const archives = content.pages.find((page) => page.url === '/archives/');
+  assert.deepEqual(archives.aliases, ['/modified/']);
+  assert.equal(content.pages.some((page) => page.url === '/modified/'), false);
 });
 
 test('legacy math delimiters render without treating emphasis-separated currency or URLs as formulas', async () => {

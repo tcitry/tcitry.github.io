@@ -63,13 +63,7 @@ const archiveTypes = new Set(['docs', 'posts', 'weekly']);
 const datedArchivePages = () => regularPages.filter(p => archiveTypes.has(p.type) && p.date);
 function entriesFor(page: ContentPage): ContentPage[] {
   if (page.kind === 'home') return datedArchivePages().sort(byDate);
-  if (page.type === 'archives' || page.url === '/archives/' || page.url === '/modified/') {
-    const modified = page.layout === 'modified' || page.url === '/modified/';
-    const entries = modified
-      ? regularPages.filter(p => p.date && (archiveTypes.has(p.type) || p.type === 'links'))
-      : datedArchivePages();
-    return entries.sort(modified ? (a, b) => dateValue(b.lastmod) - dateValue(a.lastmod) || byDate(a, b) : byDate);
-  }
+  if (page.type === 'archives' || page.url === '/archives/') return datedArchivePages().sort(byDate);
   if (page.type === 'timeline') return regularPages.filter(p => p.type === 'timeline' && dateValue(p.date) >= Date.parse('2000-01-01')).sort(byDate);
   if (page.kind === 'section') {
     if (page.url === '/posts/') return regularPages.filter(p => ['posts', 'weekly'].includes(p.type) && p.date).sort(byDate);

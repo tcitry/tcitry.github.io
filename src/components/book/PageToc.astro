@@ -12,7 +12,7 @@ const regular = allPages.filter((item) => item.kind === 'page');
 const weeklies = byDate(regular.filter((item) => item.type === 'weekly' && dateText(item.date)));
 const timelines = byDate(regular.filter((item) => item.type === 'timeline' && dateText(item.date) >= '2000'));
 const timeline = page.kind === 'page' && page.layout !== 'list' && dateText(page.date) >= '2000' ? page : timelines[0];
-const listing = page.kind !== 'page' || ['list', 'modified'].includes(page.layout);
+const listing = page.kind !== 'page' || page.layout === 'list';
 const isCategory = page.section === 'categories' || page.url.startsWith('/categories/');
 const isTags = page.section === 'tags' || page.url.startsWith('/tags/');
 const isArchive = page.url === '/archives/';

@@ -1,9 +1,9 @@
 // These navigation pages belong to the site, not the Markdown knowledge base.
 // Keep their published metadata, including modification dates, through the move.
 const definitions = [
-  { name: 'archives', title: 'archives', type: 'archives', layout: 'list', toc: true, lastmod: '2025-05-19T12:28:45.000Z', params: { type: 'archives', layout: 'list', legacySortTitle: '' } },
+  // /modified/ was the LastModified listing. Keep that historical URL as an alias so it redirects here.
+  { name: 'archives', title: 'archives', type: 'archives', layout: 'list', toc: true, lastmod: '2025-05-19T12:28:45.000Z', aliases: ['/modified/'], params: { type: 'archives', layout: 'list', legacySortTitle: '' } },
   { name: 'ghstar', title: 'ghstar', type: 'ghstar', layout: 'list', toc: false, lastmod: '2025-08-22T07:33:40.000Z', params: { layout: 'list', type: 'ghstar', booktoc: false, legacySortTitle: '' } },
-  { name: 'modified', title: 'modified', type: 'archives', layout: 'modified', toc: true, lastmod: '2025-05-21T13:50:46.000Z', params: { type: 'archives', layout: 'modified', legacySortTitle: '' } },
   { name: 'portfolio', title: 'Portfolio', type: 'portfolio', layout: 'list', toc: false, lastmod: '2025-11-19T08:55:31.000Z', params: { title: 'Portfolio', type: 'portfolio', booktoc: false, layout: 'list', legacySortTitle: 'Portfolio' } },
   { name: 'timeline', title: 'Timeline', type: 'timeline', layout: 'list', toc: true, lastmod: '2025-11-19T06:55:07.000Z', params: { type: 'timeline', layout: 'list', title: 'Timeline', booktoc: true, legacySortTitle: 'Timeline' } },
 ];
@@ -16,8 +16,11 @@ export function addSitePages(contentPages) {
     ...metadata, params: { ...params, siteOwned: true },
   }));
   for (const page of sitePages) {
-    const conflict = contentPages.find((candidate) => candidate.url === page.url);
-    if (conflict) throw new Error(`Content source ${conflict.source || conflict.id} conflicts with site-owned route ${page.url}. Maintain this page in scripts/site-pages.mjs.`);
+    const conflict = contentPages.find((candidate) => candidate.url === page.url || (page.aliases || []).includes(candidate.url));
+    if (conflict) {
+      const route = conflict.url === page.url ? page.url : `${conflict.url} (alias of ${page.url})`;
+      throw new Error(`Content source ${conflict.source || conflict.id} conflicts with site-owned route ${route}. Maintain this page in scripts/site-pages.mjs.`);
+    }
   }
   return [...contentPages, ...sitePages];
 }
