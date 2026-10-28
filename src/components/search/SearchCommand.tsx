@@ -318,7 +318,7 @@ export interface SearchCommandController {
   destroy(): void;
 }
 
-/** The caller imports and mounts this module only on the first search request. */
+/** Mount the dialog. Idle prefetch may already have imported this module; this still does not run a search. */
 export function mountSearchCommand(host: HTMLElement, onClose: () => void, onAskAI?: (prompt: string) => void): SearchCommandController {
   const root = createRoot(host, {
     onUncaughtError: (error) => captureFeatureError(error, 'search', 'render'),

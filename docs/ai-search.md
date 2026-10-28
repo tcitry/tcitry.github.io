@@ -9,7 +9,7 @@
 匿名站内搜索使用构建时生成的 Pagefind 本地索引，不再调用 AI Search public endpoint：
 
 - 不要求 Clerk 登录，不发送账户 token 或 Cloudflare API token；
-- 首页空闲时预热 `/pagefind/pagefind.js` 并调用 `init()`，提前加载固定运行时（脚本、worker、wasm 与元数据）；其他页面仍在首次查询时懒加载。索引与 fragment 不预取；
+- 首页空闲时预热 `/pagefind/pagefind.js` 并调用 `init()`，提前加载固定运行时（脚本、worker、wasm 与元数据）；同一次空闲回调还会预取 SearchCommand 模块，不挂载搜索框、不发查询、不请求 `/search/recent.json`。其他页面仍在首次打开或查询时懒加载。索引与 fragment 不预取；
 - 结果由本地索引过滤，URL、section 和 excerpt 在返回前再次校验；
 - 空查询、危险 URL 和未索引路径直接拒绝。
 

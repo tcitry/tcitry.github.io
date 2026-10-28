@@ -1,7 +1,7 @@
 import {captureFeatureError} from '../lib/monitoring';
+import {loadSearchCommandModule, type SearchCommandModule} from '../lib/search-command-module';
 
 let cleanup: (() => void) | undefined;
-let library: Promise<typeof import('../components/search/SearchCommand')> | undefined;
 
 function initializeSearch() {
   cleanup?.();
@@ -10,7 +10,7 @@ function initializeSearch() {
   if (!host) return;
   const mountHost = host;
   const events = new AbortController();
-  let mount: ReturnType<typeof import('../components/search/SearchCommand')['mountSearchCommand']> | undefined;
+  let mount: ReturnType<SearchCommandModule['mountSearchCommand']> | undefined;
   let previousFocus: HTMLElement | null = null;
   let opened = false;
   let generation = 0;
@@ -45,9 +45,7 @@ function initializeSearch() {
     errors.forEach((error) => { error.hidden = true; });
     triggers().forEach((button) => button.setAttribute('aria-busy', 'true'));
     try {
-      if (import.meta.env.DEV) await import('@vitejs/plugin-react/preamble');
-      library ??= import('../components/search/SearchCommand');
-      const module = await library;
+      const module = await loadSearchCommandModule();
       if (events.signal.aborted || request !== generation) return;
       mount ??= module.mountSearchCommand(mountHost, restoreFocus, document.querySelector('[data-blog-chat-widget]') ? (prompt) => {
         // The assistant takes focus after the search modal releases its focus scope.
@@ -62,7 +60,6 @@ function initializeSearch() {
       } : undefined);
       mount.open();
     } catch (error) {
-      library = undefined;
       if (events.signal.aborted || request !== generation) return;
       opened = false;
       errors.forEach((message) => { message.hidden = false; });
