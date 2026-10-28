@@ -320,7 +320,7 @@ async function main() {
     readFile(path.join(root, 'dist/_redirects'), 'utf8'),
   ]);
   const routeMap = new Map(routes.map(route => [route.url, route]));
-  const selected = new Set(['/', '/archives/', '/modified/', '/posts/', '/weekly/', '/timeline/', '/portfolio/', '/links/', '/tags/', '/categories/', '/about/', '/docs/', '/labs/', '/labs/agent-replay/', '/demos/2026/rounded-timeline/']);
+  const selected = new Set(['/', '/archives/', '/posts/', '/weekly/', '/timeline/', '/portfolio/', '/links/', '/tags/', '/categories/', '/about/', '/docs/', '/labs/', '/labs/agent-replay/', '/demos/2026/rounded-timeline/']);
   const expectedRecent = JSON.parse(await readFile(path.join(root, 'dist/search/recent.json'), 'utf8'));
   assertRecentUpdates(expectedRecent, routes);
   for (const entry of expectedRecent) selected.add(entry.url);

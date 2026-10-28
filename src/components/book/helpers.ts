@@ -31,9 +31,9 @@ export function headTitle(page: ContentPage): string {
   return bookTitle(page);
 }
 /** Hugo uses the frontmatter date's own calendar day, even when it has an offset. */
-export function displayDate(page: ContentPage, format: 'short' | 'dots' | 'month' | 'localized' = 'short', field: 'date' | 'lastmod' = 'date'): string {
-  const raw = param(page, field);
-  const original = typeof raw === 'string' && /^\d{4}-\d{2}-\d{2}/.test(raw) ? raw.slice(0, 10) : dateText(page[field]);
+export function displayDate(page: ContentPage, format: 'short' | 'dots' | 'month' | 'localized' = 'short'): string {
+  const raw = param(page, 'date');
+  const original = typeof raw === 'string' && /^\d{4}-\d{2}-\d{2}/.test(raw) ? raw.slice(0, 10) : dateText(page.date);
   if (!original || original.startsWith('0001')) return '';
   if (format === 'short') return original;
   if (format === 'dots') return original.replaceAll('-', '.');

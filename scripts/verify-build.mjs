@@ -118,7 +118,8 @@ for (const route of routes) {
 assert.equal(counts.blogMdx, content.pages.filter(page => page.mdx).length, 'Every public Blog MDX page must have a verified final route');
 assert.ok(counts.code > 0, 'Article code blocks must retain static source for the blog Pro renderer');
 assert.ok(counts.math > 0 && counts.mermaid > 0, 'Math and Mermaid must survive the build');
-for (const url of ['/', '/archives/', '/modified/', '/posts/', '/weekly/', '/timeline/', '/portfolio/', '/links/', '/tags/', '/categories/', '/about/', '/docs/']) assert.ok(urls.has(url), `Core route missing: ${url}`);
+for (const url of ['/', '/archives/', '/posts/', '/weekly/', '/timeline/', '/portfolio/', '/links/', '/tags/', '/categories/', '/about/', '/docs/']) assert.ok(urls.has(url), `Core route missing: ${url}`);
+assert.ok(!urls.has('/modified/'), 'LastModified must not remain a canonical route');
 {
   const home = await readFile(htmlPath('/'), 'utf8');
   assert.match(home, /href="\/favicon.ico"/, 'Browsers request /favicon.ico; the page must name that file');
@@ -179,6 +180,8 @@ assertSitemapLocations(locations, { canonicalOf: loc => canonicals.get(loc), red
 const links = await auditContentLinks({ pages: content.pages, output, redirects, site: 'https://yindongliang.com' });
 assert.deepEqual(links.errors, [], 'Every internal article link and fragment must have a published destination');
 assert.ok(redirects.some(rule => rule.from === '/page/1/' && rule.to === '/'), 'First-page redirect missing');
+assert.ok(redirects.some(rule => rule.from === '/modified/' && rule.to === '/archives/' && rule.status === 301), 'Retired LastModified URL must redirect to archives');
+assert.ok(!sitemap.includes(`<loc>${publicURL('/modified/')}</loc>`), 'Retired LastModified URL must stay out of the sitemap');
 for (const rule of redirects) { assert.ok(!urls.has(rule.from), `Redirect shadows a canonical route: ${rule.from}`); assert.ok(urls.has(rule.to), `Redirect has no destination: ${rule.from}`); }
 for (const page of content.pages) for (const alias of page.aliases) {
   if (!urls.has(alias)) assert.ok(redirects.some(rule => rule.from === alias && rule.to === page.url), `Legacy alias redirect missing: ${alias}`);

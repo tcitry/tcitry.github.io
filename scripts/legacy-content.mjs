@@ -5,7 +5,8 @@ import YAML from 'yaml';
 
 export const PUBLIC_SECTIONS = ['docs', 'posts', 'weekly', 'links', 'timeline'];
 export const CONTENT_DENIED = /^(?:private|draft|drafts|template|templates|skills|demo|demos|test|tests|node_modules)$/i;
-export const ROOT_PAGES = new Set(['_index', 'about', 'archives', 'modified', 'portfolio', 'timeline', 'ghstar'].flatMap(name => [name + '.md', name + '.mdx']));
+// modified.md only described the retired LastModified listing. Leave it unread so it cannot publish /modified/ again.
+export const ROOT_PAGES = new Set(['_index', 'about', 'archives', 'portfolio', 'timeline', 'ghstar'].flatMap(name => [name + '.md', name + '.mdx']));
 /** The approved public category is the only exception for an authoring-directory name. */
 export function isDeniedContentPath(relative) {
   const parts = relative.split('/');

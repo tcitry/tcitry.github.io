@@ -8,7 +8,6 @@ const items = [
   { label: 'All', href: '/archives/' }, { label: 'Posts', href: '/posts/' },
   { label: 'Recommended', href: termURL('Recommended'), badge: { label: 'R', class: 'recommended-title' } },
   { label: 'Reading', href: termURL('读书笔记') }, { label: '项目分析', href: termURL('项目分析') },
-  { label: 'LastModified', href: '/modified/' },
 ];
 ---
 <Tabs items={items} current={url} />

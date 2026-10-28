@@ -23,13 +23,13 @@ export function articleMetadata(page: ContentPage, tags: TaxonomyTerm[]): Articl
   };
 }
 
-export function articleItem(page: ContentPage, tags: TaxonomyTerm[], options: { modified?: boolean; showSummary?: boolean; showBreadcrumb?: boolean; detailed?: boolean } = {}): ArticleItem {
-  const { modified = false, showSummary = false, showBreadcrumb = true, detailed = true } = options;
+export function articleItem(page: ContentPage, tags: TaxonomyTerm[], options: { showSummary?: boolean; showBreadcrumb?: boolean; detailed?: boolean } = {}): ArticleItem {
+  const { showSummary = false, showBreadcrumb = true, detailed = true } = options;
   return {
     label: page.title,
     href: page.url,
     target: page.type === 'links' && page.redirect ? '_blank' : undefined,
-    date: { value: modified ? page.lastmod : page.date, label: displayDate(page, 'short', modified ? 'lastmod' : 'date') },
+    date: { value: page.date, label: displayDate(page, 'short') },
     metadata: articleMetadata(page, tags),
     breadcrumb: showBreadcrumb ? breadcrumb(page) : undefined,
     summary: showSummary ? excerpt(page.summary) : undefined,
