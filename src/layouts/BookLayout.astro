@@ -92,5 +92,6 @@ const site = {
     {readerArticle && <ReadingProgressIsland client:only="react" />}
     <BlogChatWidget pathname={readerArticle ? page.url : undefined} title={readerArticle ? bookTitle(page) : undefined} />
     <script>import '../scripts/site'; import '../scripts/blog-code'; import '../scripts/floating-scrollbars';</script>
+    {page.url === '/' && <script>import '../scripts/pagefind-warmup';</script>}
   </Fragment>
 </ThemeLayout>
