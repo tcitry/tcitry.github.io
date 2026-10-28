@@ -1,9 +1,0 @@
-@reference "../../styles/tailwind.css";
-.figure { margin-block: 2rem; }
-.figure .scenarios { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr)); }
-.scenarios button { width:100%; min-height:2rem; height:auto; white-space:normal; }
-.legend { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.75rem; padding:1rem; font-size:.75rem; color:var(--muted); }
-.readouts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; padding:1rem; border-top:1px solid var(--gray-200); font-size:.85rem; }
-.readouts strong { color:var(--machine-accent); }
-.readouts code { font-size:.75rem; overflow-wrap:anywhere; white-space:normal; }
-@media(max-width:540px) { .legend,.readouts { grid-template-columns:1fr; } }
