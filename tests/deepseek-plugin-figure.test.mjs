@@ -6,6 +6,9 @@ const figure = readFileSync(new URL('../src/components/demos/DeepSeekPluginFigur
 
 test('reader-facing Anatomy no longer offers the tool-web plugin figure', () => {
   assert.match(figure, /export default function DeepSeekPluginFigure/);
+  assert.match(figure, /return\s*<><\/\s*>/);
+  assert.equal(/\breturn null\b/.test(figure), false);
+  assert.equal(/\b(window|document|localStorage)\b/.test(figure), false);
   assert.equal(figure.includes('tool-web'), false);
   assert.equal(figure.includes('对照条件'), false);
   assert.equal(figure.includes('移除 ctx.web'), false);
