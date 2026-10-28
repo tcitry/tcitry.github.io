@@ -21,13 +21,13 @@
 }
 .surface h2, .surface h3 { margin: 0; padding: 0; border: 0; }
 .surface h2::before, .surface h3::before { content: none !important; }
-.surface p { margin-block: 0.65rem; }
+.surface p { margin-block: 0.75rem; }
 .eyebrow { @apply text-xs font-mono tracking-widest; color: var(--muted); }
 .heading { @apply text-xl font-semibold leading-snug; }
 .card { border: 1px solid var(--gray-200); border-radius: 0.5rem; overflow: hidden; }
-.corners { @apply flex flex-wrap justify-between gap-2 p-3 text-xs font-mono; color: var(--muted); }
+.corners { @apply flex flex-wrap items-center justify-between gap-3 p-4 text-xs font-mono; color: var(--muted); }
 .figure { display: block; width: 100%; height: auto; max-height: 29rem; }
-.controls { @apply mt-4 flex flex-wrap items-center gap-2; }
+.controls { @apply my-4 flex flex-wrap items-center gap-3; }
 .legend { @apply mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs; color: var(--muted); }
 .readout { @apply mt-4 grid gap-3; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
 .metric { padding: 0.8rem; border: 1px solid var(--gray-200); border-radius: 0.4rem; }

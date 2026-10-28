@@ -66,7 +66,7 @@ export default function DeepSeekPluginFigure() {
     <header><p className={frame.eyebrow}>ANATOMY / CORDIS PLUGIN LIFETIME</p>
       <h3 id={`${id}-heading`}>拔掉服务，谁的注册会跟着退出？</h3>
       <p className={frame.note}>后排三个插接点对应 inject；中间电路板对应 tool-web；前排两枚插片对应它拥有的工具注册。最前方为不依赖 web 的独立插件。</p></header>
-    <div className={frame.controls} aria-label="对照条件">
+    <div className={`${frame.controls} ${styles.scenarios}`} aria-label="对照条件">
       {([['service','移除 ctx.web'],['backend','只移除 HTTP provider'],['dispose','显式 dispose consumer']] as const).map(([value,label])=><Button size="sm" key={value} variant={scenario===value?'secondary':'outline'} aria-pressed={scenario===value} onPress={()=>setScenario(value)}>{label}</Button>)}
     </div>
     <MechanismPlayer label="Cordis 必需依赖与资源回收" duration={16} resetKey={scenario} phases={phasesFor(scenario)} onFrame={paint}>
