@@ -102,7 +102,7 @@
     "ai": "7.0.94",
     "anatomy-figures": "0.1.0",
     "astro": "7.3.1",
-    "convex": "^1.45.0",
+    "convex": "^1.48.0",
     "convex-helpers": "0.1.124",
     "jose": "^6.2.12",
     "marked": "18.0.12",
