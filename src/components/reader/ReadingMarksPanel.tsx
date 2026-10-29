@@ -13,7 +13,6 @@ export default function ReadingMarksPanel() {
     filter ? {status: filter} : {}, {initialNumItems: 20});
   const loading = marks.status === 'LoadingFirstPage';
   const entries = readingEntries(marks.results);
-  const canLoadMore = marks.status === 'CanLoadMore';
 
   return <section ref={setContainer} className={styles.panel} aria-label="阅读列表" aria-busy={loading} data-reading-marks data-sentry-mask data-pagefind-ignore>
     <ReadingStatusMenu value={filter} onChange={setFilter} emptyLabel="全部状态" label="筛选阅读标记" container={container} />
@@ -33,7 +32,7 @@ export default function ReadingMarksPanel() {
               </a>
             </li>)}
           </ul>}
-        {canLoadMore && <Button className={styles.loadMore} size="sm" variant="outline" isPending={marks.status === 'LoadingMore'} onPress={() => marks.loadMore(20)}>加载更多</Button>}
+        {(marks.status === 'CanLoadMore' || marks.status === 'LoadingMore') && <Button className={styles.loadMore} size="sm" variant="outline" isPending={marks.status === 'LoadingMore'} onPress={() => marks.loadMore(20)}>加载更多</Button>}
       </>}
   </section>;
 }

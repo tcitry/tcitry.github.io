@@ -38,6 +38,9 @@ test('reading list is a top-level assistant tab with one merged row per article'
   assert.doesNotMatch(list, /全部档次/);
   assert.match(list, /readingEntries/);
   assert.match(list, /loadMore\(20\)/);
+  assert.match(list, /marks\.status === 'CanLoadMore' \|\| marks\.status === 'LoadingMore'/);
+  assert.match(list, /isPending=\{marks\.status === 'LoadingMore'\}/);
+  assert.doesNotMatch(list, /const canLoadMore = marks\.status === 'CanLoadMore'/);
   assert.match(list, /href=\{entry\.pathname\}/);
   assert.doesNotMatch(list, /itemPath|sectionLabel|>进度</);
   assert.doesNotMatch(list, /api\.reader\.listLibrary/);
