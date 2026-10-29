@@ -138,7 +138,7 @@
     "playwright": "1.62.1",
     "typescript": "6.0.3",
     "vitest": "5.0.5",
-    "wrangler": "4.149.0"
+    "wrangler": "4.155.0"
   },
   "overrides": {
     "katex": "0.18.10",
