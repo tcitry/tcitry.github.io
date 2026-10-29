@@ -6,7 +6,7 @@
 
 - **资产**：下列资产全部同等重要，没有哪一类可以降级。
 - **攻击者**：下列攻击者全部要考虑。
-- **范围**：没有排除项，也没有接受的风险。
+- **范围**：除「范围 / 接受的风险」里的 AI 成本和退订 token 两项以外，没有排除项。
 - 因此重排只看威胁模型能否改变扫描器的判断；扫描器给出的严重度通常保持不变。
 
 ## 系统概览与信任边界
@@ -14,8 +14,8 @@
 ```
 浏览器 ──(静态 HTML/JS)── Cloudflare Worker tcitry-blog（worker/index.ts，assets + /api/* 404）
    │
-   ├─ Clerk（pk_live，modal / Google OAuth popup / One Tap）→ session JWT（aud=convex）
-   ├─ Convex（hushed-mallard-700.convex.cloud）：queries / mutations / actions + httpActions（convex/http.ts）
+   ├─ Clerk（publishable key，modal / Google OAuth popup / One Tap）→ session JWT（aud=convex）
+   ├─ Convex（`PUBLIC_CONVEX_URL`）：queries / mutations / actions + httpActions（convex/http.ts）
    │     ├─ Convex Agent → AI Search /search → Workers AI，经 Gateway tcitry-blog-chat
    │     └─ Resend（发邮件、newsletter audience、Svix 签名的 webhook）
    └─ AI Search 公开端点（匿名搜索）
@@ -73,10 +73,14 @@
 
 ## 范围 / 接受的风险
 
-- 用户没有排除任何内容，也没有接受任何风险。`scripts/`、`tests/`、Labs/Demos 和 AI 回答质量同样在范围内。
+- 除下面列出的接受风险以外，没有排除项。`scripts/`、`tests/`、Labs/Demos 和 AI 回答质量同样在范围内。
+- **AI 成本（作者确认，2026-10-28）**：Cloudflare 侧已经为 Workers AI 设置限额并开启 AI 限流，限额以内的消耗可以接受。因此只造成 AI / Gateway / AI Search 用量或成本上升的问题（例如自助注册后刷对话）不必关心；越权读取 AI 对话、绕过公开引用校验、泄露 `CLOUDFLARE_API_TOKEN` 仍在范围内。
+- **退订 token（作者确认，2026-10-28）**：退订流程不影响 token 相关逻辑，作者接受现状。token 由 `newUnsubscribeToken` 生成，24 字节随机数（192 bit），没有有效期；`getByToken` 凭 token 返回 `cachedEmail`，作者认为可以接受。
+
+## 已回答的问题
+
+- `CHAT_ALLOWED_ORIGINS` 是 Convex 环境变量（`convex/convex.config.ts`），只由 `convex/commentImages.ts` 的 `permittedOrigin` 读取，也就是附件的 Origin 白名单（评论图片和咨询附件的 `/comment-images/upload`、`/comment-images/file`）。值可以是 JSON 数组，也可以是逗号分隔的列表。未设置时一律返回 403，失败是闭合的，所以这是可用性问题，不是安全问题。production 需要把它设成站点的 Origin。
 
 ## 开放问题
 
-- 退订 token 的熵和有效期（`newUnsubscribeToken`）；`getByToken` 返回 `cachedEmail`，这是否可以接受？
-- `CHAT_ALLOWED_ORIGINS` 和附件 Origin 白名单在 production 的实际取值。
-- Clerk 自助注册开放，任何人都能成为“已登录读者”；AI 限流额度是否足以控制成本？
+- 暂无。
