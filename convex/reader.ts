@@ -6,8 +6,9 @@ import {
 } from "convex/server";
 import { ConvexError, v } from "convex/values";
 import { components } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import { mutation, query, type MutationCtx, type QueryCtx } from "./_generated/server";
-import { readingStatus } from "./schema";
+import { annotationType, readingStatus } from "./schema";
 
 const rateLimiter = new RateLimiter(components.rateLimiter, {
   readerWrites: { kind: "token bucket", rate: 60, period: 60_000, capacity: 30 },
@@ -270,5 +271,133 @@ export const listReadingProgress = query({
       ...result,
       page: result.page.map(({ pathname, title, progress, updatedAt }) => ({ pathname, title, progress, updatedAt })),
     };
+  },
+});
+
+const textAnnotationItem = v.object({
+  id: v.id("textAnnotations"),
+  pathname: v.string(),
+  title: v.string(),
+  type: annotationType,
+  quote: v.string(),
+  prefix: v.string(),
+  suffix: v.string(),
+  note: v.union(v.string(), v.null()),
+  updatedAt: v.number(),
+});
+
+const textAnnotationWriteArgs = {
+  ...pageWriteArgs,
+  type: annotationType,
+  quote: v.string(),
+  prefix: v.string(),
+  suffix: v.string(),
+  note: v.optional(v.string()),
+};
+
+function annotationQuote(value: string) {
+  const quote = value.trim();
+  if (!quote || quote.length > 2_000) invalid("选中的文字须为 1–2000 个字符。");
+  if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(quote)) invalid("选中的文字包含无效字符。");
+  return quote;
+}
+
+function annotationContext(value: string, label: string) {
+  if (value.length > 80) invalid(`${label}过长。`);
+  if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(value)) invalid(`${label}包含无效字符。`);
+  return value;
+}
+
+function annotationNote(value: string | undefined) {
+  if (value === undefined) return undefined;
+  const note = value.trim();
+  if (!note) return undefined;
+  if (note.length > 4_000) invalid("笔记须为 1–4000 个字符。");
+  if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(note)) invalid("笔记包含无效字符。");
+  return note;
+}
+
+function presentTextAnnotation(row: {
+  _id: Id<"textAnnotations">;
+  pathname: string; title: string; type: "underline" | "highlight" | "note";
+  quote: string; prefix: string; suffix: string; note?: string; updatedAt: number;
+}) {
+  return {
+    id: row._id, pathname: row.pathname, title: row.title, type: row.type,
+    quote: row.quote, prefix: row.prefix, suffix: row.suffix,
+    note: row.note ?? null, updatedAt: row.updatedAt,
+  };
+}
+
+// One article can carry many selections. The painter reads this capped page;
+// older rows remain in the paginated library.
+const pageAnnotationLimit = 200;
+
+export const listPageTextAnnotations = query({
+  args: pageArgs,
+  returns: v.array(textAnnotationItem),
+  handler: async (ctx, args) => {
+    const owner = await requireOwner(ctx);
+    const pathname = canonicalPathname(args.pathname);
+    const rows = await ctx.db.query("textAnnotations")
+      .withIndex("by_owner_and_pathname_and_updatedAt", q => q.eq("owner", owner).eq("pathname", pathname))
+      .order("desc")
+      .take(pageAnnotationLimit);
+    return rows.reverse().map(presentTextAnnotation);
+  },
+});
+
+export const listTextAnnotations = query({
+  args: { paginationOpts: paginationOptsValidator, type: v.optional(annotationType) },
+  returns: paginationResultValidator(textAnnotationItem),
+  handler: async (ctx, args) => {
+    const owner = await requireOwner(ctx);
+    validatePagination(args.paginationOpts);
+    const annotations = args.type === undefined
+      ? ctx.db.query("textAnnotations").withIndex("by_owner_and_updatedAt", q => q.eq("owner", owner))
+      : ctx.db.query("textAnnotations").withIndex("by_owner_and_type_and_updatedAt", q => q.eq("owner", owner).eq("type", args.type!));
+    const result = await annotations.order("desc").paginate(args.paginationOpts);
+    return { ...result, page: result.page.map(presentTextAnnotation) };
+  },
+});
+
+export const createTextAnnotation = mutation({
+  args: textAnnotationWriteArgs,
+  returns: v.id("textAnnotations"),
+  handler: async (ctx, args) => {
+    const owner = await requireOwner(ctx);
+    const pathname = canonicalPathname(args.pathname);
+    const title = pageTitle(args.title);
+    const quote = annotationQuote(args.quote);
+    const prefix = annotationContext(args.prefix, "上文");
+    const suffix = annotationContext(args.suffix, "下文");
+    const note = annotationNote(args.note);
+    const existingRows = await ctx.db.query("textAnnotations")
+      .withIndex("by_owner_and_pathname_and_updatedAt", q => q.eq("owner", owner).eq("pathname", pathname))
+      .order("desc")
+      .take(pageAnnotationLimit);
+    const existing = existingRows.find(row =>
+      row.type === args.type && row.quote === quote && row.prefix === prefix && row.suffix === suffix
+      && (args.type !== "note" || (row.note ?? "") === (note ?? "")));
+    if (existing) return existing._id;
+    await limitWrite(ctx, owner);
+    const now = Date.now();
+    return await ctx.db.insert("textAnnotations", {
+      owner, pathname, title, type: args.type, quote, prefix, suffix, ...(note ? { note } : {}),
+      createdAt: now, updatedAt: now,
+    });
+  },
+});
+
+export const deleteTextAnnotation = mutation({
+  args: { id: v.id("textAnnotations") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const owner = await requireOwner(ctx);
+    const existing = await ctx.db.get("textAnnotations", args.id);
+    if (!existing || existing.owner !== owner) invalid("笔记不存在。");
+    await limitWrite(ctx, owner);
+    await ctx.db.delete("textAnnotations", existing._id);
+    return null;
   },
 });

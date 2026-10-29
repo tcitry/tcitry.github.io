@@ -4,6 +4,7 @@ import {useUser} from '@clerk/react';
 import type {ReactNode} from 'react';
 import BlogClerkProvider from '../auth/BlogClerkProvider';
 import LauncherUnread from './LauncherUnread';
+import ReaderAnnotations from '../reader/ReaderAnnotations';
 
 function initials(user: {firstName?: string | null; lastName?: string | null; fullName?: string | null; username?: string | null}) {
   const fromName = [user.firstName?.[0], user.lastName?.[0]].filter(Boolean).join('');
@@ -32,6 +33,7 @@ export default function ChatLauncherFace({launcher, panel, panelTarget}: {
   return <BlogClerkProvider>
     <Face launcher={launcher} />
     <LauncherUnread launcher={launcher} />
+    <ReaderAnnotations launcher={launcher} />
     {panel && panelTarget ? createPortal(panel, panelTarget) : null}
   </BlogClerkProvider>;
 }

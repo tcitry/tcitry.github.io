@@ -6,8 +6,12 @@ import {currentFixtureAuth, useAuth} from './reader-clerk';
 type Bookmark = {pathname: string; title: string; updatedAt: number};
 type ProgressRow = {pathname: string; title: string; progress: number; updatedAt: number; view: {progress: number}};
 type MarkRow = {pathname: string; title: string; status: 'later' | 'skimmed' | 'read' | 'studied'; updatedAt: number};
+type TextAnnotationRow = {
+  id: string; pathname: string; title: string; type: 'underline' | 'highlight' | 'note';
+  quote: string; prefix: string; suffix: string; note: string | null; updatedAt: number;
+};
 type Page = {bookmarked: boolean};
-type Account = {page: Page; bookmarks: Bookmark[]; progress: ProgressRow[]; marks: MarkRow[]};
+type Account = {page: Page; bookmarks: Bookmark[]; progress: ProgressRow[]; marks: MarkRow[]; annotations: TextAnnotationRow[]};
 const EMPTY_MARK = {status: null};
 const EMPTY_PROGRESS = {progress: null as number | null};
 const listeners = new Set<() => void>();
@@ -26,7 +30,7 @@ function createAccount(owner: string, bookmarked = false): Account {
     updatedAt: Date.UTC(2026, 8, 8) - index * 86_400_000,
   }));
   if (bookmarked) bookmarks.unshift({pathname: '/docs/fixture/', title: `${label}的已收藏文章`, updatedAt: Date.UTC(2026, 8, 9)});
-  return {page: {bookmarked}, bookmarks, progress: [], marks: []};
+  return {page: {bookmarked}, bookmarks, progress: [], marks: [], annotations: []};
 }
 function withInitialProgress(account: Account): Account {
   const raw = new URLSearchParams(location.search).get('progress');
@@ -134,6 +138,21 @@ export function useMutation(reference: Parameters<typeof getFunctionName>[0]) {
       return progress;
     }
     if (name === 'reader:setReadingMark' || name === 'reader:clearReadingMark') return args.status ?? null;
+    if (name === 'reader:createTextAnnotation') {
+      const row: TextAnnotationRow = {
+        id: `ann-${(current.annotations?.length ?? 0) + 1}`,
+        pathname: String(args.pathname), title: String(args.title),
+        type: args.type as TextAnnotationRow['type'], quote: String(args.quote),
+        prefix: String(args.prefix ?? ''), suffix: String(args.suffix ?? ''),
+        note: typeof args.note === 'string' ? args.note : null, updatedAt: Date.now(),
+      };
+      publish(client, {...current, annotations: [row, ...(current.annotations ?? [])]});
+      return row.id;
+    }
+    if (name === 'reader:deleteTextAnnotation') {
+      publish(client, {...current, annotations: (current.annotations ?? []).filter(item => item.id !== args.id)});
+      return null;
+    }
     if (name !== 'reader:setBookmark') throw new Error(`Unsupported fixture mutation: ${name}`);
     const bookmarked = Boolean(args.bookmarked);
     const bookmarks = current.bookmarks.filter((item) => item.pathname !== args.pathname);
@@ -176,6 +195,11 @@ export function usePaginatedQuery(reference: Parameters<typeof getFunctionName>[
     const rows = data.progress.map(({pathname, title, progress, updatedAt}) => ({pathname, title, progress, updatedAt})).sort((a, b) => b.updatedAt - a.updatedAt);
     return page(rows);
   }
+  if (name === 'reader:listTextAnnotations') {
+    const type = typeof args.type === 'string' ? args.type : undefined;
+    const rows = (data.annotations ?? []).filter(item => !type || item.type === type).sort((a, b) => b.updatedAt - a.updatedAt);
+    return page(rows);
+  }
   throw new Error(`Unsupported fixture pagination: ${name}`);
 }
 
@@ -184,6 +208,10 @@ Object.assign(window, {__readerFixture: {
   rejectNext: () => {rejectNext = true;},
   setConvexAuth: (value: {isAuthenticated: boolean; isLoading: boolean} | null) => {
     convexAuthOverride = value;
+    listeners.forEach((listener) => listener());
+  },
+  setTextAnnotations: (rows: TextAnnotationRow[]) => {
+    snapshot = {...snapshot, annotations: rows};
     listeners.forEach((listener) => listener());
   },
 }});

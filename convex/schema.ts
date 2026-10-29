@@ -5,6 +5,8 @@ const importSource = v.union(v.literal("github_discussion"), v.literal("giscus")
 
 export const readingStatus = v.union(v.literal("later"), v.literal("skimmed"), v.literal("read"), v.literal("studied"));
 
+export const annotationType = v.union(v.literal("underline"), v.literal("highlight"), v.literal("note"));
+
 const pageFields = {
   owner: v.string(),
   pathname: v.string(),
@@ -108,6 +110,23 @@ export default defineSchema({
   privateNotes: defineTable({ ...pageFields, note: v.string() })
     .index("by_owner_and_pathname", ["owner", "pathname"])
     .index("by_owner_and_updatedAt", ["owner", "updatedAt"]),
+  // Text selections are separate from readingMarks (article status) and from
+  // privateNotes (one page-level note). Quote plus nearby context relocates a
+  // range after soft reflow. `type` is underline, highlight, or note.
+  textAnnotations: defineTable({
+    owner: v.string(),
+    pathname: v.string(),
+    title: v.string(),
+    type: annotationType,
+    quote: v.string(),
+    prefix: v.string(),
+    suffix: v.string(),
+    note: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_owner_and_updatedAt", ["owner", "updatedAt"])
+    .index("by_owner_and_pathname_and_updatedAt", ["owner", "pathname", "updatedAt"])
+    .index("by_owner_and_type_and_updatedAt", ["owner", "type", "updatedAt"]),
   emailPreferences: defineTable({
     owner: v.string(),
     enabled: v.boolean(),

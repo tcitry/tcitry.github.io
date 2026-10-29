@@ -1,5 +1,6 @@
 import {captureFeatureError} from '../lib/monitoring';
 import {assistantUIState, type AssistantView} from './assistant-ui-state.mjs';
+import {mountSelectionTools} from './selection-tools.mjs';
 import {
   allowViteCssPreloadFallback,
   CHAT_LOAD_RETRY_DELAY_MS,
@@ -279,6 +280,13 @@ function initializeChat() {
     void loadChat();
   }
 
+  const selectionTools = mountSelectionTools({
+    widget,
+    signal,
+    onAction(detail) {
+      document.dispatchEvent(new CustomEvent('blog:text-annotation', {detail}));
+    },
+  });
   launcher.hidden = false;
   expandHandle.hidden = false;
   const face = launcher.querySelector<HTMLElement>('[data-chat-launcher-face]');
@@ -305,8 +313,30 @@ function initializeChat() {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
     restoreOpenerFocus = true;
   }, {capture: true, signal});
-  launcher.addEventListener('click', () => panel.open ? close() : open(launcher), {signal});
+  launcher.addEventListener('click', () => {
+    selectionTools.dismiss();
+    panel.open ? close() : open(launcher);
+  }, {signal});
   expandHandle.addEventListener('click', () => open(expandHandle), {signal});
+  document.addEventListener('blog:open-assistant', (event) => {
+    const view = event instanceof CustomEvent ? event.detail?.view : undefined;
+    if (view !== 'notes' && view !== 'chat' && view !== 'reading' && view !== 'my' && view !== 'consult') return;
+    currentView = view;
+    try {
+      if (!panel.open) open();
+      else state.save(view);
+    } catch (error) {
+      captureFeatureError(error, 'chat', 'mount');
+      showLoadFailure(error, 'mount');
+      return;
+    }
+    void loadChat().then(() => {
+      if (stopped || !panel.open) return;
+      requestAnimationFrame(() => {
+        document.dispatchEvent(new CustomEvent('blog:assistant-view', {detail: {view}}));
+      });
+    });
+  }, {signal});
   document.addEventListener('blog:ask-ai', (event) => {
     const prompt = event instanceof CustomEvent && typeof event.detail?.prompt === 'string' ? event.detail.prompt.trim() : '';
     if (!prompt || prompt.length > 2000) return;
@@ -339,6 +369,11 @@ function initializeChat() {
   // History, image and Clerk overlays own their first Escape. Remember the event:
   // either overlay may unmount before the document's bubble handler runs.
   document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !event.isComposing && selectionTools.dismiss()) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return;
+    }
     if (event.key !== 'Escape' || event.isComposing || !panel.open) return;
     const clerkModal = document.querySelector<HTMLElement>('.blog-clerk-modal');
     const clerkModalOpen = Boolean(clerkModal?.getClientRects().length);

@@ -1,7 +1,7 @@
-/** @typedef {'chat' | 'consult' | 'my' | 'reading' | 'messages' | 'admin'} AssistantView */
+/** @typedef {'chat' | 'consult' | 'my' | 'reading' | 'notes' | 'messages' | 'admin'} AssistantView */
 
 const storageKey = 'blog-assistant-ui';
-const views = new Set(['chat', 'consult', 'my', 'reading', 'messages', 'admin']);
+const views = new Set(['chat', 'consult', 'my', 'reading', 'notes', 'messages', 'admin']);
 
 /**
  * Only the public page and selected tab survive a full-page sign-in callback.
