@@ -14,8 +14,8 @@
 ```
 浏览器 ──(静态 HTML/JS)── Cloudflare Worker tcitry-blog（worker/index.ts，assets + /api/* 404）
    │
-   ├─ Clerk（pk_live，modal / Google OAuth popup / One Tap）→ session JWT（aud=convex）
-   ├─ Convex（hushed-mallard-700.convex.cloud）：queries / mutations / actions + httpActions（convex/http.ts）
+   ├─ Clerk（publishable key，modal / Google OAuth popup / One Tap）→ session JWT（aud=convex）
+   ├─ Convex（`PUBLIC_CONVEX_URL`）：queries / mutations / actions + httpActions（convex/http.ts）
    │     ├─ Convex Agent → AI Search /search → Workers AI，经 Gateway tcitry-blog-chat
    │     └─ Resend（发邮件、newsletter audience、Svix 签名的 webhook）
    └─ AI Search 公开端点（匿名搜索）
@@ -79,7 +79,7 @@
 
 ## 已回答的问题
 
-- `CHAT_ALLOWED_ORIGINS` 是 Convex 环境变量（`convex/convex.config.ts`），只由 `convex/commentImages.ts` 的 `permittedOrigin` 读取，也就是附件的 Origin 白名单（评论图片和咨询附件的 `/comment-images/upload`、`/comment-images/file`）。值可以是 JSON 数组，也可以是逗号分隔的列表。未设置时一律返回 403，失败是闭合的，所以这是可用性问题，不是安全问题。截至 2026-10-28，production（`hushed-mallard-700`）的环境变量列表里没有它。
+- `CHAT_ALLOWED_ORIGINS` 是 Convex 环境变量（`convex/convex.config.ts`），只由 `convex/commentImages.ts` 的 `permittedOrigin` 读取，也就是附件的 Origin 白名单（评论图片和咨询附件的 `/comment-images/upload`、`/comment-images/file`）。值可以是 JSON 数组，也可以是逗号分隔的列表。未设置时一律返回 403，失败是闭合的，所以这是可用性问题，不是安全问题。production 需要把它设成站点的 Origin。
 
 ## 开放问题
 
