@@ -286,6 +286,9 @@ function initializeChat() {
     onAction(detail) {
       document.dispatchEvent(new CustomEvent('blog:text-annotation', {detail}));
     },
+    onClear(detail) {
+      document.dispatchEvent(new CustomEvent('blog:text-annotation-clear', {detail}));
+    },
   });
   launcher.hidden = false;
   expandHandle.hidden = false;

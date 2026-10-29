@@ -3,6 +3,7 @@ import {useAuth, useClerk} from '@clerk/react';
 import {useConvexAuth, useMutation, useQuery} from 'convex/react';
 import {ConvexProviderWithClerk} from 'convex/react-clerk';
 import {api} from '../../../convex/_generated/api';
+import type {Id} from '../../../convex/_generated/dataModel';
 import {openClerkSignIn} from '../auth/clerk-signin';
 import useSessionConvexClient from '../auth/useSessionConvexClient';
 import {
@@ -94,6 +95,22 @@ function AnnotationPainter({pathname}: {pathname: string}) {
   return null;
 }
 
+function AnnotationRemover() {
+  const remove = useMutation(api.reader.deleteTextAnnotation);
+  useEffect(() => {
+    const onClear = (event: Event) => {
+      const id = event instanceof CustomEvent ? event.detail?.id : undefined;
+      if (typeof id !== 'string' || !id) return;
+      void remove({id: id as Id<'textAnnotations'>})
+        .then(() => announce('已取消高亮'))
+        .catch(() => announce('未能取消高亮，请稍后重试。'));
+    };
+    document.addEventListener('blog:text-annotation-clear', onClear);
+    return () => document.removeEventListener('blog:text-annotation-clear', onClear);
+  }, [remove]);
+  return null;
+}
+
 function AnnotationWriter() {
   const {isAuthenticated} = useConvexAuth();
   const create = useMutation(api.reader.createTextAnnotation);
@@ -132,7 +149,7 @@ function AnnotationWriter() {
               if (session && stored && stored.type === draft.type && stored.pathname === draft.pathname && stored.quote === draft.quote) {
                 clearAnnotationDraft(session);
               }
-              announce(draft.type === 'underline' ? '已划线' : '已高亮');
+              announce('已高亮');
             } catch {
               announce('未能保存，请稍后重试。');
             }
@@ -160,6 +177,7 @@ function AnnotationSession({url, pathname}: {url: string; pathname: string}) {
   const client = useSessionConvexClient(url);
   return <ConvexProviderWithClerk client={client} useAuth={useAuth}>
     {pathname ? <AnnotationPainter pathname={pathname} /> : null}
+    <AnnotationRemover />
     <AnnotationWriter />
   </ConvexProviderWithClerk>;
 }

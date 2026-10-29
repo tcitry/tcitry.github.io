@@ -27,7 +27,7 @@ test('article progress stays separate from reading status', () => {
   assert.doesNotMatch(island, /getReadingProgress|setReadingProgress|BlogClerkProvider|ConvexSession|PUBLIC_CONVEX_URL|PUBLIC_CLERK_PUBLISHABLE_KEY/);
   const list = read('src/components/reader/ReadingMarksPanel.tsx');
   assert.match(list, /api\.reader\.listReadingMarks/);
-  assert.match(list, /api\.reader\.listReadingProgress/);
+  assert.doesNotMatch(list, /listReadingProgress|进度/);
   assert.match(list, /readingListMeta/);
   assert.doesNotMatch(list, /itemPath|sectionLabel/);
   const css = read('src/components/reader/ReaderPanel.module.css');
@@ -51,7 +51,7 @@ test('article progress stays separate from reading status', () => {
   assert.match(workspace, /\{id: 'reading', label: '阅读'\}/);
   const reader = read('convex/reader.ts');
   assert.match(reader, /export const listReadingMarks/);
-  assert.match(reader, /export const listReadingProgress/);
+  assert.doesNotMatch(reader, /listReadingProgress|setReadingProgress|getReadingProgress|clearReadingProgress/);
   assert.doesNotMatch(reader, /listReadingEntries|mergeReadingEntries/);
   const panel = read('src/components/reader/MyPanel.tsx');
   assert.doesNotMatch(panel, /ReadingMarksPanel|ReadingProgressPanel|id: 'reading'/);

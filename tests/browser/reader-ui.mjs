@@ -342,11 +342,11 @@ try {
     await page.goto(new URL('/tests/fixtures/reader-ui.html?readingList=1', base).href);
     const list = page.locator('[data-reading-marks]');
     await list.getByRole('link', {name: /Cloudflare OS/}).waitFor();
-    assert.equal(await list.getByRole('listitem').count(), 3, 'One row per article across marks and progress');
-    assert.equal(await list.getByRole('link', {name: /Cloudflare OS/}).count(), 1, 'A marked article with progress is not listed twice');
-    assert.match(await list.getByRole('link', {name: /Cloudflare OS/}).innerText(), /稍后读 · 进度 100% · 2026年10月21日/);
+    assert.equal(await list.getByRole('listitem').count(), 2, 'One row per reading mark');
+    assert.equal(await list.getByRole('link', {name: /Cloudflare OS/}).count(), 1, 'A marked article is listed once');
+    assert.match(await list.getByRole('link', {name: /Cloudflare OS/}).innerText(), /稍后读 · 2026年10月21日/);
+    assert.doesNotMatch(await list.innerText(), /进度|%/);
     assert.match(await list.getByRole('link', {name: /只有阅读标记的文章/}).innerText(), /已细读 · 2026年10月20日/);
-    assert.match(await list.getByRole('link', {name: /只有进度的文章/}).innerText(), /进度 42% · 2026年10月19日/);
     const visible = await list.innerText();
     assert.equal(visible.includes('/docs/'), false, 'The reading list does not show pathnames');
     assert.equal(await list.locator('.itemPath, [data-reading-progress-list]').count(), 0);
@@ -357,11 +357,11 @@ try {
     await page.getByRole('menuitemradio', {name: '稍后读', exact: true}).click();
     await page.waitForFunction(() => document.querySelectorAll('[data-reading-marks] li').length === 1);
     const filtered = await list.innerText();
-    assert.match(filtered, /稍后读 · 进度 100%/);
-    assert.equal(filtered.includes('只有进度的文章'), false, 'Status filter hides progress-only articles');
+    assert.match(filtered, /稍后读 · 2026年10月21日/);
+    assert.doesNotMatch(filtered, /进度|%/);
     assert.equal(filtered.includes('只有阅读标记的文章'), false);
     assert.equal(filtered.includes('/docs/'), false);
-    console.log('Reading list: one merged row, compact meta, status filter keeps progress.');
+    console.log('Reading list: one row per mark, status and date, no progress percentage.');
   } finally {await readingContext.close();}
 
   for (const width of [1440, 768, 390]) {

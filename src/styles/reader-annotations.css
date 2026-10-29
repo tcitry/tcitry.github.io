@@ -7,13 +7,6 @@ mark.reader-annotation {
   scroll-margin-top: 4.5rem;
 }
 
-mark.reader-annotation--underline {
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-decoration-color: var(--color-link, #0055bb);
-  text-underline-offset: .16em;
-}
-
 mark.reader-annotation--highlight {
   background: color-mix(in srgb, #f5c451 68%, transparent);
   border-radius: .15em;

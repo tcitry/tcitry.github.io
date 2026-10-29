@@ -133,16 +133,20 @@
   transition: transform 220ms cubic-bezier(.2, .85, .2, 1), opacity 160ms ease;
 }
 .reader-selection-tools[data-open] button { pointer-events: auto; opacity: 1; }
-.reader-selection-tools[data-open] button[data-selection-action="underline"] {
-  transform: translate(calc(-50% - 4.5rem), calc(-50% - .35rem)) scale(1);
-}
 .reader-selection-tools[data-open] button[data-selection-action="highlight"] {
   transform: translate(calc(-50% - 3.15rem), calc(-50% - 3.15rem)) scale(1);
-  transition-delay: 40ms;
 }
 .reader-selection-tools[data-open] button[data-selection-action="note"] {
   transform: translate(calc(-50% - .45rem), calc(-50% - 4.5rem)) scale(1);
+  transition-delay: 40ms;
+}
+.reader-selection-tools[data-open] button[data-selection-action="clear-highlight"] {
+  transform: translate(calc(-50% - 4.5rem), calc(-50% - .35rem)) scale(1);
   transition-delay: 80ms;
+}
+.reader-selection-tools[data-anchor="mark"][data-open] button[data-selection-action="clear-highlight"] {
+  transform: translate(-50%, calc(-100% - .4rem)) scale(1);
+  transition-delay: 0ms;
 }
 .reader-selection-tools button:hover { background: color-mix(in srgb, var(--chat-fg) 6%, var(--chat-bg)); }
 .reader-selection-tools button svg { display: block; }
@@ -217,13 +221,14 @@ html.blog-chat-modal-open { overflow: hidden; scrollbar-gutter: auto; }
 /* Reserve real reading space beside the docked panel. Public theme classes and
    width tokens remain the integration boundary; article max widths stay shared. */
 @media (min-width: 640px) {
-  html.blog-chat-sidebar-open .blog-chat-widget {
-    --selection-anchor-right: calc(var(--blog-chat-sidebar-width) + max(var(--chat-edge), env(safe-area-inset-right)));
+  html.blog-chat-sidebar-open .reader-selection-tools[data-anchor="edge"] {
+    z-index: 47;
+    right: calc(var(--blog-chat-sidebar-width) + .75rem);
+    bottom: auto;
+    top: 50%;
   }
-  html.blog-chat-sidebar-open .blog-chat-widget__launcher[data-selection-active] {
-    visibility: visible;
-    pointer-events: auto;
-    right: var(--selection-anchor-right);
+  html.blog-chat-sidebar-open :is(.assistant-workspace__close, .blog-chat-widget__close)[data-selection-active] {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--chat-accent) 24%, transparent), -1px 1px 4px #00000008;
   }
   html.blog-chat-sidebar-open body.blog-chat-layout { width: calc(100% - var(--blog-chat-sidebar-width)); }
   html.blog-chat-sidebar-open .blog-chat-layout > main > .book-page { min-width: 0; max-width: var(--book-content-max-width); }

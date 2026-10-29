@@ -1,4 +1,4 @@
-/** @typedef {'underline' | 'highlight' | 'note'} AnnotationType */
+/** @typedef {'highlight' | 'note'} AnnotationType */
 /**
  * @typedef {{
  *   type: AnnotationType,
@@ -12,7 +12,7 @@
  */
 
 const storageKey = 'blog-annotation-draft';
-const types = new Set(['underline', 'highlight', 'note']);
+const types = new Set(['highlight', 'note']);
 
 /**
  * @param {unknown} value
@@ -92,7 +92,7 @@ export function subscribeAnnotationSaves(listener) {
 }
 
 /**
- * Replay a signed-out underline or highlight once after login.
+ * Replay a signed-out highlight once after login.
  * Notes stay in draft storage for the notes panel.
  * @param {Pick<Storage, 'getItem'>} storage
  */

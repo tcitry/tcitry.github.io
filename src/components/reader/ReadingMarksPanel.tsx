@@ -3,12 +3,7 @@ import {Button} from '@heroui/react';
 import {usePaginatedQuery} from 'convex/react';
 import {api} from '../../../convex/_generated/api';
 import ReadingStatusMenu, {readingLabels, type ReadingStatus} from './ReadingStatusMenu';
-import {
-  canLoadReadingList,
-  mergeReadingEntries,
-  readingListMeta,
-  shouldLoadReadingProgress,
-} from './reading-list';
+import {readingEntries, readingListMeta} from './reading-list';
 import styles from './ReaderPanel.module.css';
 
 export default function ReadingMarksPanel() {
@@ -16,17 +11,9 @@ export default function ReadingMarksPanel() {
   const [container, setContainer] = useState<HTMLElement | null>(null);
   const marks = usePaginatedQuery(api.reader.listReadingMarks,
     filter ? {status: filter} : {}, {initialNumItems: 20});
-  const progress = usePaginatedQuery(api.reader.listReadingProgress, {}, {initialNumItems: 20});
-  const loading = marks.status === 'LoadingFirstPage' || progress.status === 'LoadingFirstPage';
-  const entries = mergeReadingEntries(marks.results, progress.results, filter);
-  const missingProgress = entries.some(entry => entry.progress === null);
-  const canLoadMore = canLoadReadingList(filter, marks.status, progress.status, missingProgress);
-  const loadingMore = marks.status === 'LoadingMore' || progress.status === 'LoadingMore';
-
-  function loadNext() {
-    if (marks.status === 'CanLoadMore') marks.loadMore(20);
-    if (shouldLoadReadingProgress(filter, marks.status, progress.status, missingProgress)) progress.loadMore(20);
-  }
+  const loading = marks.status === 'LoadingFirstPage';
+  const entries = readingEntries(marks.results);
+  const canLoadMore = marks.status === 'CanLoadMore';
 
   return <section ref={setContainer} className={styles.panel} aria-label="阅读列表" aria-busy={loading} data-reading-marks data-sentry-mask data-pagefind-ignore>
     <ReadingStatusMenu value={filter} onChange={setFilter} emptyLabel="全部状态" label="筛选阅读标记" container={container} />
@@ -40,14 +27,13 @@ export default function ReadingMarksPanel() {
               <a href={entry.pathname} className={styles.itemLink}>
                 <span className={styles.itemTitle}>{entry.title}</span>
                 <span className={styles.itemMeta}>{readingListMeta({
-                  statusLabel: entry.status ? readingLabels[entry.status] : null,
-                  progress: entry.progress,
+                  statusLabel: readingLabels[entry.status],
                   updatedAt: entry.updatedAt,
                 })}</span>
               </a>
             </li>)}
           </ul>}
-        {canLoadMore && <Button className={styles.loadMore} size="sm" variant="outline" isPending={loadingMore} onPress={loadNext}>加载更多</Button>}
+        {canLoadMore && <Button className={styles.loadMore} size="sm" variant="outline" isPending={marks.status === 'LoadingMore'} onPress={() => marks.loadMore(20)}>加载更多</Button>}
       </>}
   </section>;
 }
