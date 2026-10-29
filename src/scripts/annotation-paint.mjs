@@ -1,6 +1,8 @@
 import {locateQuote} from './text-quote.mjs';
 
-const SKIP = 'script, style, noscript, svg, canvas, nav, pre, code, [data-book-island], [data-pagefind-ignore], [data-blog-code], [data-demo], .blog-comments, .blog-chat-widget, .mermaid';
+// Block-level skips only. Inline `code` stays in the quote: a paragraph
+// selection often contains it, and rejecting that range hid the tools.
+const SKIP = 'script, style, noscript, svg, canvas, nav, pre, [data-book-island], [data-pagefind-ignore], [data-blog-code], [data-demo], .blog-comments, .blog-chat-widget, .mermaid';
 const CONTEXT = 48;
 
 /** @param {ParentNode} [doc] */
@@ -84,34 +86,35 @@ function offsetOf(index, container, offset) {
 }
 
 /**
- * @param {Range} range
- * @param {Element} root
+ * A triple-click paragraph range often ends inside the next code block, or
+ * merely touches one at the boundary. `Range.intersectsNode` treats that
+ * boundary as a hit, so the old check rejected the whole paragraph.
+ * Endpoints inside a skipped region are pulled back to the indexed text
+ * beside that region. A selection that never leaves the region stays empty.
+ * @param {ReturnType<typeof textIndex>} index
+ * @param {Node} container
+ * @param {number} offset
+ * @param {'start' | 'end'} edge
  */
-function selectionAllowed(range, root) {
-  if (!root.contains(range.startContainer) || !root.contains(range.endContainer)) return false;
-  if (skipped(range.startContainer) || skipped(range.endContainer)) return false;
-  const ancestor = range.commonAncestorContainer instanceof Element
-    ? range.commonAncestorContainer
-    : range.commonAncestorContainer.parentElement;
-  if (!ancestor || !root.contains(ancestor)) return false;
-  for (const element of ancestor.querySelectorAll(SKIP)) {
-    if (typeof range.intersectsNode === 'function' && range.intersectsNode(element)) return false;
-  }
-  return true;
+function endpointOffset(index, container, offset, edge) {
+  if (!skipped(container)) return offsetOf(index, container, offset);
+  const element = elementOf(container);
+  const region = element?.closest(SKIP);
+  if (!(region instanceof Element)) return null;
+  return edge === 'end' ? positionBefore(index, region) : positionAfter(index, region);
 }
 
 /**
- * @param {Selection | null} selection
- * @param {Element | null} root
+ * @param {Range} range
+ * @param {Element} root
  * @returns {{quote: string, prefix: string, suffix: string} | null}
  */
-export function captureSelection(selection, root) {
-  if (!selection || selection.rangeCount === 0 || selection.isCollapsed || !root) return null;
-  const range = selection.getRangeAt(0);
-  if (!selectionAllowed(range, root)) return null;
+export function captureRange(range, root) {
+  if (!range || range.collapsed || !root) return null;
+  if (!root.contains(range.startContainer) || !root.contains(range.endContainer)) return null;
   const index = textIndex(root);
-  const rawStart = offsetOf(index, range.startContainer, range.startOffset);
-  const rawEnd = offsetOf(index, range.endContainer, range.endOffset);
+  const rawStart = endpointOffset(index, range.startContainer, range.startOffset, 'start');
+  const rawEnd = endpointOffset(index, range.endContainer, range.endOffset, 'end');
   if (rawStart === null || rawEnd === null || rawEnd <= rawStart) return null;
   const raw = index.text.slice(rawStart, rawEnd);
   const leading = raw.length - raw.trimStart().length;
@@ -129,12 +132,23 @@ export function captureSelection(selection, root) {
 }
 
 /**
+ * @param {Selection | null} selection
+ * @param {Element | null} root
+ * @returns {{quote: string, prefix: string, suffix: string} | null}
+ */
+export function captureSelection(selection, root) {
+  if (!selection || selection.rangeCount === 0 || selection.isCollapsed || !root) return null;
+  return captureRange(selection.getRangeAt(0), root);
+}
+
+/**
  * @param {Element} root
  * @param {{id: string, type: string, quote: string, prefix?: string, suffix?: string}[]} annotations
  */
 export function paintAnnotations(root, annotations) {
   clearAnnotations(root);
   for (const annotation of annotations) {
+    if (annotation.type === 'underline') continue;
     const index = textIndex(root);
     const located = locateQuote(index.text, annotation.quote, annotation.prefix ?? '', annotation.suffix ?? '');
     if (!located) continue;

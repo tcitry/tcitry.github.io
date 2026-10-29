@@ -18,8 +18,7 @@ import {focusAnnotation} from '../../scripts/annotation-paint.mjs';
 import styles from './ReaderPanel.module.css';
 
 const emptyCopy: Record<AnnotationFilter, string> = {
-  all: '还没有划线、高亮或笔记。选中正文后，右下角头像会展开工具。',
-  underline: '还没有划线。',
+  all: '还没有高亮或笔记。选中正文后，助手入口旁会展开工具。',
   highlight: '还没有高亮。',
   note: '还没有笔记。',
 };

@@ -104,6 +104,10 @@ export default defineSchema({
     .index("by_owner_and_pathname", ["owner", "pathname"])
     .index("by_owner_and_updatedAt", ["owner", "updatedAt"])
     .index("by_owner_and_status_and_updatedAt", ["owner", "status", "updatedAt"]),
+  // Historical scroll ratios. Nothing reads or writes this table anymore:
+  // the article hairline is computed in the browser, and the reading list
+  // shows status and date only. The table stays so existing documents still
+  // match the schema.
   readingProgress: defineTable({ ...pageFields, progress: v.number() })
     .index("by_owner_and_pathname", ["owner", "pathname"])
     .index("by_owner_and_updatedAt", ["owner", "updatedAt"]),
@@ -112,7 +116,8 @@ export default defineSchema({
     .index("by_owner_and_updatedAt", ["owner", "updatedAt"]),
   // Text selections are separate from readingMarks (article status) and from
   // privateNotes (one page-level note). Quote plus nearby context relocates a
-  // range after soft reflow. `type` is underline, highlight, or note.
+  // range after soft reflow. New writes are highlight or note. `underline`
+  // remains in the union so older rows still validate; list and paint skip them.
   textAnnotations: defineTable({
     owner: v.string(),
     pathname: v.string(),

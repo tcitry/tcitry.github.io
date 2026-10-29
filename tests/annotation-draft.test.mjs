@@ -33,11 +33,12 @@ test('draft storage keeps a selection and drops malformed records', () => {
   assert.equal(readAnnotationDraft(session), null);
 });
 
-test('underline and highlight queue for sync, notes stay out of that queue', () => {
+test('highlight queues for sync, notes stay out of that queue', () => {
   resetAnnotationSaveState();
   const session = storage();
   assert.equal(enqueueAnnotationSave(draft), true);
   assert.equal(enqueueAnnotationSave({...draft, type: 'note'}), false);
+  assert.equal(enqueueAnnotationSave({...draft, type: 'underline'}), false);
   assert.deepEqual(drainAnnotationSaves().map(item => item.type), ['highlight']);
   assert.deepEqual(drainAnnotationSaves(), []);
   saveAnnotationDraft(session, draft);

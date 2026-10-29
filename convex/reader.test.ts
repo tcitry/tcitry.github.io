@@ -257,126 +257,9 @@ describe("private reading marks", () => {
   });
 });
 
-describe("private reading progress", () => {
-  test("all endpoints reject anonymous callers and isolate owners without leaking identity", async () => {
-    const { t, alice, bob } = setup();
-    for (const call of [
-      () => t.query(api.reader.getReadingProgress, { pathname: page.pathname }),
-      () => t.query(api.reader.listReadingProgress, { paginationOpts }),
-      () => t.mutation(api.reader.setReadingProgress, { ...page, progress: 0.4 }),
-      () => t.mutation(api.reader.clearReadingProgress, { pathname: page.pathname }),
-    ]) await expect(call()).rejects.toThrow("UNAUTHENTICATED");
-    await alice.mutation(api.reader.setReadingProgress, { ...page, progress: 0.7 });
-    expect(await bob.query(api.reader.getReadingProgress, { pathname: page.pathname })).toEqual({ progress: null });
-    expect((await bob.query(api.reader.listReadingProgress, { paginationOpts })).page).toEqual([]);
-    await bob.mutation(api.reader.clearReadingProgress, { pathname: page.pathname });
-    await bob.mutation(api.reader.setReadingProgress, { ...page, title: "Bob", progress: 0.2 });
-    expect(await alice.query(api.reader.getReadingProgress, { pathname: page.pathname })).toEqual({ progress: 0.7 });
-    const otherIssuer = t.withIdentity({ issuer: "https://another.example.test", subject: "alice" });
-    expect(await otherIssuer.query(api.reader.getReadingProgress, { pathname: page.pathname })).toEqual({ progress: null });
-    await otherIssuer.mutation(api.reader.clearReadingProgress, { pathname: page.pathname });
-    const result = await alice.query(api.reader.listReadingProgress, { paginationOpts });
-    expect(result.page).toEqual([{ ...page, progress: 0.7, updatedAt: expect.any(Number) }]);
-    expect(Object.keys(result.page[0]).sort()).toEqual(["pathname", "progress", "title", "updatedAt"]);
-    expect(JSON.stringify(result)).not.toMatch(/alice|Private real name|private@example|tokenIdentifier|owner/);
-    await expect(alice.mutation(api.reader.setReadingProgress, {
-      ...page, progress: 0.8,
-      // @ts-expect-error The API must not allow client supplied authorization keys.
-      owner: "another-user",
-    })).rejects.toThrow();
-  });
-
-  test("progress is clamped, monotonic, canonical, and does not change reading status or bookmarks", async () => {
-    const { t, alice } = setup();
-    await alice.mutation(api.reader.setBookmark, { ...page, bookmarked: true });
-    await alice.mutation(api.reader.setReadingMark, { ...page, status: "studied" });
-    expect(await alice.mutation(api.reader.setReadingProgress, { ...page, pathname: "/docs/%65xample", progress: 0.4 })).toBe(0.4);
-    expect(await alice.mutation(api.reader.setReadingProgress, { ...page, progress: 0.2, title: "Should not stick" })).toBe(0.4);
-    expect(await alice.mutation(api.reader.setReadingProgress, { ...page, progress: 0.4 })).toBe(0.4);
-    expect((await alice.query(api.reader.listReadingProgress, { paginationOpts })).page[0].title).toBe(page.title);
-    expect(await alice.mutation(api.reader.setReadingProgress, { ...page, title: " Renamed ", progress: 1.8 })).toBe(1);
-    expect(await alice.mutation(api.reader.setReadingProgress, { ...page, progress: -4 })).toBe(1);
-    for (let i = 0; i < 35; i++) await alice.mutation(api.reader.setReadingProgress, { ...page, progress: 0.3 });
-    expect(await t.run(ctx => ctx.db.query("readingProgress").take(2))).toHaveLength(1);
-    expect((await alice.query(api.reader.listReadingProgress, { paginationOpts })).page[0]).toMatchObject({ title: "Renamed", progress: 1 });
-    expect(await alice.query(api.reader.getReadingMark, { pathname: page.pathname })).toEqual({ status: "studied" });
-    expect(await alice.query(api.reader.getPage, { pathname: page.pathname })).toEqual({ bookmarked: true });
-    await alice.mutation(api.reader.setReadingMark, { ...page, status: "later" });
-    await alice.mutation(api.reader.clearReadingMark, { pathname: page.pathname });
-    expect(await alice.query(api.reader.getReadingProgress, { pathname: page.pathname })).toEqual({ progress: 1 });
-    await alice.mutation(api.reader.clearReadingProgress, { pathname: "/docs/%65xample" });
-    await alice.mutation(api.reader.clearReadingProgress, { pathname: page.pathname });
-    expect(await alice.query(api.reader.getReadingProgress, { pathname: page.pathname })).toEqual({ progress: null });
-    expect(await alice.query(api.reader.getPage, { pathname: page.pathname })).toEqual({ bookmarked: true });
-    await alice.mutation(api.reader.setReadingMark, { ...page, status: "read" });
-    expect(await alice.mutation(api.reader.setReadingProgress, { ...page, progress: 0.25 })).toBe(0.25);
-    await alice.mutation(api.reader.setBookmark, { ...page, bookmarked: false });
-    expect(await alice.query(api.reader.getReadingMark, { pathname: page.pathname })).toEqual({ status: "read" });
-    expect(await alice.query(api.reader.getReadingProgress, { pathname: page.pathname })).toEqual({ progress: 0.25 });
-    expect(await t.run(ctx => ctx.db.query("readingMarks").take(2))).toHaveLength(1);
-  });
-
-  test("rejects invalid progress, paths, titles, and bounded pagination", async () => {
-    const { alice } = setup();
-    for (const progress of [Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]) {
-      await expect(alice.mutation(api.reader.setReadingProgress, { ...page, progress })).rejects.toThrow("INVALID_ARGUMENT");
-    }
-    // @ts-expect-error progress must be a number
-    await expect(alice.mutation(api.reader.setReadingProgress, { ...page, progress: "0.4" })).rejects.toThrow();
-    for (const pathname of ["https://example.test/", "//example.test/", "/a?b", "/a#b", "/a/%2e%2e/b", "/a/%2fb", "/bad%", "/a\\b"]) {
-      await expect(alice.mutation(api.reader.setReadingProgress, { ...page, pathname, progress: 0.2 })).rejects.toThrow("INVALID_ARGUMENT");
-      await expect(alice.query(api.reader.getReadingProgress, { pathname })).rejects.toThrow("INVALID_ARGUMENT");
-      await expect(alice.mutation(api.reader.clearReadingProgress, { pathname })).rejects.toThrow("INVALID_ARGUMENT");
-    }
-    for (const title of ["", "   ", "a".repeat(241), "line\nbreak"]) {
-      await expect(alice.mutation(api.reader.setReadingProgress, { ...page, title, progress: 0.2 })).rejects.toThrow("INVALID_ARGUMENT");
-    }
-    for (const options of [{ numItems: 0 }, { numItems: 51 }, { maximumRowsRead: 101 }, { maximumBytesRead: 1_000_001 }]) {
-      await expect(alice.query(api.reader.listReadingProgress, { paginationOpts: { ...paginationOpts, ...options } })).rejects.toThrow("INVALID_ARGUMENT");
-    }
-    await expect(alice.query(api.reader.listReadingProgress, {
-      paginationOpts,
-      // @ts-expect-error Progress is not filtered by reading status.
-      status: "read",
-    })).rejects.toThrow();
-    expect((await alice.query(api.reader.listReadingProgress, { paginationOpts })).page).toEqual([]);
-  });
-
-  test("cursors return only the owner's rows in updated order", async () => {
-    const { alice, bob } = setup();
-    for (let i = 0; i < 8; i++) {
-      await alice.mutation(api.reader.setReadingProgress, { ...page, pathname: `/docs/progress-${i}/`, progress: (i + 1) / 10 });
-    }
-    await bob.mutation(api.reader.setReadingProgress, { ...page, progress: 0.9 });
-    const first = await alice.query(api.reader.listReadingProgress, { paginationOpts: { numItems: 3, cursor: null } });
-    const rest = await alice.query(api.reader.listReadingProgress, { paginationOpts: { numItems: 10, cursor: first.continueCursor } });
-    expect(first.page).toHaveLength(3);
-    expect(first.isDone).toBe(false);
-    expect(rest.isDone).toBe(true);
-    const rows = [...first.page, ...rest.page];
-    expect(new Set(rows.map(row => row.pathname)).size).toBe(8);
-    expect(rows.map(row => row.pathname)).not.toContain(page.pathname);
-    expect(rows.map(row => row.updatedAt)).toEqual(rows.map(row => row.updatedAt).sort((a, b) => b - a));
-    expect(rows.every(row => row.progress > 0 && row.progress <= 1)).toBe(true);
-  });
-
-  test("shares readerWrites limits while reads, no-ops and other owners remain available", async () => {
-    const { alice, bob } = setup();
-    await alice.mutation(api.reader.setReadingProgress, { ...page, progress: 0.2 });
-    for (let i = 0; i < 29; i++) await alice.mutation(api.reader.setBookmark, { ...page, pathname: `/docs/rate-${i}/`, bookmarked: true });
-    await expect(alice.mutation(api.reader.setReadingProgress, { ...page, progress: 0.5 })).rejects.toThrow();
-    await expect(alice.mutation(api.reader.clearReadingProgress, { pathname: page.pathname })).rejects.toThrow();
-    await expect(alice.mutation(api.reader.setReadingProgress, { ...page, progress: 0.1 })).resolves.toBe(0.2);
-    await expect(alice.mutation(api.reader.clearReadingProgress, { pathname: "/docs/untracked/" })).resolves.toBeNull();
-    expect(await alice.query(api.reader.getReadingProgress, { pathname: page.pathname })).toEqual({ progress: 0.2 });
-    expect(await alice.query(api.reader.getReadingMark, { pathname: page.pathname })).toEqual({ status: null });
-    await expect(bob.mutation(api.reader.setReadingProgress, { ...page, progress: 0.6 })).resolves.toBe(0.6);
-  });
-});
-
-const underline = {
+const highlight = {
   ...page,
-  type: "underline" as const,
+  type: "highlight" as const,
   quote: "统一入口",
   prefix: "把本地 Web ",
   suffix: "。它把 Vite",
@@ -385,10 +268,10 @@ const underline = {
 describe("text annotations", () => {
   test("anonymous callers cannot read or write selections", async () => {
     const { t, alice } = setup();
-    const id = await alice.mutation(api.reader.createTextAnnotation, underline);
+    const id = await alice.mutation(api.reader.createTextAnnotation, highlight);
     await expect(t.query(api.reader.listPageTextAnnotations, { pathname: page.pathname })).rejects.toThrow("UNAUTHENTICATED");
     await expect(t.query(api.reader.listTextAnnotations, { paginationOpts })).rejects.toThrow("UNAUTHENTICATED");
-    await expect(t.mutation(api.reader.createTextAnnotation, underline)).rejects.toThrow("UNAUTHENTICATED");
+    await expect(t.mutation(api.reader.createTextAnnotation, highlight)).rejects.toThrow("UNAUTHENTICATED");
     await expect(t.mutation(api.reader.deleteTextAnnotation, { id })).rejects.toThrow("UNAUTHENTICATED");
     expect((await alice.query(api.reader.listPageTextAnnotations, { pathname: page.pathname }))).toHaveLength(1);
   });
@@ -396,15 +279,15 @@ describe("text annotations", () => {
   test("selections stay on the owner, survive equivalent pathnames, and do not touch reading marks", async () => {
     const { t, alice, bob } = setup();
     await alice.mutation(api.reader.setReadingMark, { ...page, status: "read" });
-    const id = await alice.mutation(api.reader.createTextAnnotation, { ...underline, pathname: "/docs/%65xample" });
-    const again = await alice.mutation(api.reader.createTextAnnotation, underline);
+    const id = await alice.mutation(api.reader.createTextAnnotation, { ...highlight, pathname: "/docs/%65xample" });
+    const again = await alice.mutation(api.reader.createTextAnnotation, highlight);
     expect(again).toBe(id);
     expect(await t.run(ctx => ctx.db.query("textAnnotations").take(3))).toHaveLength(1);
     expect(await bob.query(api.reader.listPageTextAnnotations, { pathname: page.pathname })).toEqual([]);
     expect((await bob.query(api.reader.listTextAnnotations, { paginationOpts })).page).toEqual([]);
     await expect(bob.mutation(api.reader.deleteTextAnnotation, { id })).rejects.toThrow("INVALID_ARGUMENT");
     const row = (await alice.query(api.reader.listTextAnnotations, { paginationOpts })).page[0];
-    expect(row).toMatchObject({ pathname: page.pathname, type: "underline", quote: underline.quote, note: null });
+    expect(row).toMatchObject({ pathname: page.pathname, type: "highlight", quote: highlight.quote, note: null });
     expect(Object.keys(row).sort()).toEqual(["id", "note", "pathname", "prefix", "quote", "suffix", "title", "type", "updatedAt"]);
     expect(JSON.stringify(row)).not.toMatch(/owner|tokenIdentifier|Private real name|private@example/);
     expect(await alice.query(api.reader.getReadingMark, { pathname: page.pathname })).toEqual({ status: "read" });
@@ -414,17 +297,17 @@ describe("text annotations", () => {
 
   test("notes keep a body, filters separate types, and other pages stay out of the page paint list", async () => {
     const { alice } = setup();
-    await alice.mutation(api.reader.createTextAnnotation, underline);
-    await alice.mutation(api.reader.createTextAnnotation, { ...underline, type: "highlight", quote: "Rolldown" });
+    await alice.mutation(api.reader.createTextAnnotation, highlight);
+    await alice.mutation(api.reader.createTextAnnotation, { ...highlight, quote: "Rolldown" });
     const noteId = await alice.mutation(api.reader.createTextAnnotation, {
-      ...underline, type: "note", quote: "Vitest", note: "  先看测试命令  ",
+      ...highlight, type: "note", quote: "Vitest", note: "  先看测试命令  ",
     });
     const sameNote = await alice.mutation(api.reader.createTextAnnotation, {
-      ...underline, type: "note", quote: "Vitest", note: "先看测试命令",
+      ...highlight, type: "note", quote: "Vitest", note: "先看测试命令",
     });
     expect(sameNote).toBe(noteId);
     await alice.mutation(api.reader.createTextAnnotation, {
-      ...page, pathname: "/docs/other/", type: "underline", quote: "另一页", prefix: "", suffix: "",
+      ...page, pathname: "/docs/other/", type: "highlight", quote: "另一页", prefix: "", suffix: "",
     });
     const notes = await alice.query(api.reader.listTextAnnotations, { paginationOpts, type: "note" });
     expect(notes.page.map(row => row.quote)).toEqual(["Vitest"]);
@@ -434,17 +317,32 @@ describe("text annotations", () => {
     expect(painted.some(row => row.pathname !== page.pathname)).toBe(false);
     await alice.mutation(api.reader.deleteTextAnnotation, { id: noteId });
     expect((await alice.query(api.reader.listTextAnnotations, { paginationOpts, type: "note" })).page).toEqual([]);
-    expect((await alice.query(api.reader.listPageTextAnnotations, { pathname: page.pathname })).map(row => row.type).sort()).toEqual(["highlight", "underline"]);
+    expect((await alice.query(api.reader.listPageTextAnnotations, { pathname: page.pathname })).map(row => row.quote).sort()).toEqual(["Rolldown", "统一入口"]);
+  });
+
+  test("rejects new underlines and hides legacy underline rows from lists", async () => {
+    const { t, alice } = setup();
+    await expect(alice.mutation(api.reader.createTextAnnotation, { ...highlight, type: "underline" })).rejects.toThrow("INVALID_ARGUMENT");
+    const id = await alice.mutation(api.reader.createTextAnnotation, highlight);
+    await t.run(async (ctx) => {
+      const row = await ctx.db.get(id);
+      if (!row) throw new Error("missing highlight");
+      const {_id: _ignored, _creationTime: _created, ...fields} = row;
+      await ctx.db.insert("textAnnotations", {...fields, type: "underline", quote: "旧划线"});
+    });
+    expect((await alice.query(api.reader.listPageTextAnnotations, { pathname: page.pathname })).map(row => row.quote)).toEqual(["统一入口"]);
+    expect((await alice.query(api.reader.listTextAnnotations, { paginationOpts })).page.map(row => row.type)).toEqual(["highlight"]);
+    expect(await t.run(ctx => ctx.db.query("textAnnotations").take(5))).toHaveLength(2);
   });
 
   test("rejects empty quotes, overlong context and unknown types", async () => {
     const { alice } = setup();
-    await expect(alice.mutation(api.reader.createTextAnnotation, { ...underline, quote: "   " })).rejects.toThrow("INVALID_ARGUMENT");
-    await expect(alice.mutation(api.reader.createTextAnnotation, { ...underline, quote: "a".repeat(2001) })).rejects.toThrow("INVALID_ARGUMENT");
-    await expect(alice.mutation(api.reader.createTextAnnotation, { ...underline, prefix: "x".repeat(81) })).rejects.toThrow("INVALID_ARGUMENT");
-    await expect(alice.mutation(api.reader.createTextAnnotation, { ...underline, note: "n".repeat(4001) })).rejects.toThrow("INVALID_ARGUMENT");
+    await expect(alice.mutation(api.reader.createTextAnnotation, { ...highlight, quote: "   " })).rejects.toThrow("INVALID_ARGUMENT");
+    await expect(alice.mutation(api.reader.createTextAnnotation, { ...highlight, quote: "a".repeat(2001) })).rejects.toThrow("INVALID_ARGUMENT");
+    await expect(alice.mutation(api.reader.createTextAnnotation, { ...highlight, prefix: "x".repeat(81) })).rejects.toThrow("INVALID_ARGUMENT");
+    await expect(alice.mutation(api.reader.createTextAnnotation, { ...highlight, note: "n".repeat(4001) })).rejects.toThrow("INVALID_ARGUMENT");
     await expect(alice.mutation(api.reader.createTextAnnotation, {
-      ...underline,
+      ...highlight,
       // @ts-expect-error Runtime validation rejects a type outside the schema.
       type: "bookmark",
     })).rejects.toThrow();

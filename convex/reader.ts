@@ -201,79 +201,6 @@ export const listReadingMarks = query({
   },
 });
 
-function clampProgress(value: number) {
-  if (!Number.isFinite(value)) invalid("进度无效。");
-  return Math.min(1, Math.max(0, value));
-}
-
-// Scroll progress is monotonic. A lower or equal value is not a write, so it
-// cannot roll the ratio backward or consume the shared readerWrites budget.
-export const getReadingProgress = query({
-  args: pageArgs,
-  returns: v.object({ progress: v.union(v.number(), v.null()) }),
-  handler: async (ctx, args) => {
-    const owner = await requireOwner(ctx);
-    const pathname = canonicalPathname(args.pathname);
-    const row = await ctx.db.query("readingProgress")
-      .withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique();
-    return { progress: row?.progress ?? null };
-  },
-});
-
-export const setReadingProgress = mutation({
-  args: { ...pageWriteArgs, progress: v.number() },
-  returns: v.number(),
-  handler: async (ctx, args) => {
-    const owner = await requireOwner(ctx);
-    const pathname = canonicalPathname(args.pathname);
-    const title = pageTitle(args.title);
-    const progress = clampProgress(args.progress);
-    const existing = await ctx.db.query("readingProgress")
-      .withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique();
-    if (existing && progress <= existing.progress) return existing.progress;
-    await limitWrite(ctx, owner);
-    const updatedAt = Date.now();
-    if (existing) await ctx.db.patch("readingProgress", existing._id, { title, progress, updatedAt });
-    else await ctx.db.insert("readingProgress", { owner, pathname, title, progress, updatedAt });
-    return progress;
-  },
-});
-
-export const clearReadingProgress = mutation({
-  args: pageArgs,
-  returns: v.null(),
-  handler: async (ctx, args) => {
-    const owner = await requireOwner(ctx);
-    const pathname = canonicalPathname(args.pathname);
-    const existing = await ctx.db.query("readingProgress")
-      .withIndex("by_owner_and_pathname", q => q.eq("owner", owner).eq("pathname", pathname)).unique();
-    if (existing) {
-      await limitWrite(ctx, owner);
-      await ctx.db.delete("readingProgress", existing._id);
-    }
-    return null;
-  },
-});
-
-export const listReadingProgress = query({
-  args: { paginationOpts: paginationOptsValidator },
-  returns: paginationResultValidator(v.object({
-    pathname: v.string(), title: v.string(), progress: v.number(), updatedAt: v.number(),
-  })),
-  handler: async (ctx, args) => {
-    const owner = await requireOwner(ctx);
-    validatePagination(args.paginationOpts);
-    const result = await ctx.db.query("readingProgress")
-      .withIndex("by_owner_and_updatedAt", q => q.eq("owner", owner))
-      .order("desc")
-      .paginate(args.paginationOpts);
-    return {
-      ...result,
-      page: result.page.map(({ pathname, title, progress, updatedAt }) => ({ pathname, title, progress, updatedAt })),
-    };
-  },
-});
-
 const textAnnotationItem = v.object({
   id: v.id("textAnnotations"),
   pathname: v.string(),
@@ -343,7 +270,7 @@ export const listPageTextAnnotations = query({
       .withIndex("by_owner_and_pathname_and_updatedAt", q => q.eq("owner", owner).eq("pathname", pathname))
       .order("desc")
       .take(pageAnnotationLimit);
-    return rows.reverse().map(presentTextAnnotation);
+    return rows.filter(row => row.type !== "underline").reverse().map(presentTextAnnotation);
   },
 });
 
@@ -357,7 +284,7 @@ export const listTextAnnotations = query({
       ? ctx.db.query("textAnnotations").withIndex("by_owner_and_updatedAt", q => q.eq("owner", owner))
       : ctx.db.query("textAnnotations").withIndex("by_owner_and_type_and_updatedAt", q => q.eq("owner", owner).eq("type", args.type!));
     const result = await annotations.order("desc").paginate(args.paginationOpts);
-    return { ...result, page: result.page.map(presentTextAnnotation) };
+    return { ...result, page: result.page.filter(row => row.type !== "underline").map(presentTextAnnotation) };
   },
 });
 
@@ -366,6 +293,7 @@ export const createTextAnnotation = mutation({
   returns: v.id("textAnnotations"),
   handler: async (ctx, args) => {
     const owner = await requireOwner(ctx);
+    if (args.type === "underline") invalid("不再支持划线。");
     const pathname = canonicalPathname(args.pathname);
     const title = pageTitle(args.title);
     const quote = annotationQuote(args.quote);

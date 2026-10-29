@@ -1,6 +1,5 @@
 export const annotationFilters = [
   {id: 'all', label: '全部'},
-  {id: 'underline', label: '划线'},
   {id: 'highlight', label: '高亮'},
   {id: 'note', label: '笔记'},
 ] as const;

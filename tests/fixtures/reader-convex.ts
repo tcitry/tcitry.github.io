@@ -7,7 +7,7 @@ type Bookmark = {pathname: string; title: string; updatedAt: number};
 type ProgressRow = {pathname: string; title: string; progress: number; updatedAt: number; view: {progress: number}};
 type MarkRow = {pathname: string; title: string; status: 'later' | 'skimmed' | 'read' | 'studied'; updatedAt: number};
 type TextAnnotationRow = {
-  id: string; pathname: string; title: string; type: 'underline' | 'highlight' | 'note';
+  id: string; pathname: string; title: string; type: 'highlight' | 'note';
   quote: string; prefix: string; suffix: string; note: string | null; updatedAt: number;
 };
 type Page = {bookmarked: boolean};
@@ -52,10 +52,6 @@ function withReadingList(account: Account): Account {
     marks: [
       {pathname, title, status: 'later', updatedAt: day},
       {pathname: '/docs/mark-only/', title: '只有阅读标记的文章', status: 'read', updatedAt: day - 86_400_000},
-    ],
-    progress: [
-      {pathname, title, progress: 1, updatedAt: day, view: {progress: 1}},
-      {pathname: '/docs/progress-only/', title: '只有进度的文章', progress: 0.42, updatedAt: day - 2 * 86_400_000, view: {progress: 0.42}},
     ],
   };
 }
@@ -188,11 +184,6 @@ export function usePaginatedQuery(reference: Parameters<typeof getFunctionName>[
   if (name === 'reader:listReadingMarks') {
     const status = typeof args.status === 'string' ? args.status : undefined;
     const rows = data.marks.filter(item => !status || item.status === status).sort((a, b) => b.updatedAt - a.updatedAt);
-    return page(rows);
-  }
-  if (name === 'reader:listReadingProgress') {
-    if (Object.keys(args).length > 0) throw new Error('Progress list does not accept filters');
-    const rows = data.progress.map(({pathname, title, progress, updatedAt}) => ({pathname, title, progress, updatedAt})).sort((a, b) => b.updatedAt - a.updatedAt);
     return page(rows);
   }
   if (name === 'reader:listTextAnnotations') {
