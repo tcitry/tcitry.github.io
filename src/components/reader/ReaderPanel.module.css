@@ -145,3 +145,26 @@
 .loadMore {
   @apply mt-5;
 }
+
+.filters { @apply mb-4 flex min-w-0 overflow-x-auto; }
+.filters :global(.segment) { @apply w-auto shrink-0; }
+.filters :global(.segment__item) { @apply px-3 text-sm; }
+.annotationRow { @apply flex min-w-0 items-start gap-2; }
+.remove { @apply shrink-0; }
+.annotationRow .itemLink { @apply min-w-0 flex-1; }
+.quote { @apply m-0 line-clamp-3 text-sm leading-6 text-foreground [overflow-wrap:anywhere]; }
+.noteBody { @apply mt-1 line-clamp-4 whitespace-pre-wrap text-sm font-normal leading-6 text-muted [overflow-wrap:anywhere]; }
+.composer { @apply mb-4 grid gap-2 rounded-lg border border-border bg-surface p-3; }
+.composerLabel { @apply m-0 text-xs leading-5 text-muted; }
+.composer textarea {
+  width: 100%;
+  min-height: 6rem;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, .5rem);
+  background: var(--surface);
+  color: var(--foreground);
+  font: inherit;
+  padding: .5rem .75rem;
+}
+.rowActions { @apply flex flex-wrap items-center gap-2; }

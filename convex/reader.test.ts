@@ -373,3 +373,81 @@ describe("private reading progress", () => {
     await expect(bob.mutation(api.reader.setReadingProgress, { ...page, progress: 0.6 })).resolves.toBe(0.6);
   });
 });
+
+const underline = {
+  ...page,
+  type: "underline" as const,
+  quote: "统一入口",
+  prefix: "把本地 Web ",
+  suffix: "。它把 Vite",
+};
+
+describe("text annotations", () => {
+  test("anonymous callers cannot read or write selections", async () => {
+    const { t, alice } = setup();
+    const id = await alice.mutation(api.reader.createTextAnnotation, underline);
+    await expect(t.query(api.reader.listPageTextAnnotations, { pathname: page.pathname })).rejects.toThrow("UNAUTHENTICATED");
+    await expect(t.query(api.reader.listTextAnnotations, { paginationOpts })).rejects.toThrow("UNAUTHENTICATED");
+    await expect(t.mutation(api.reader.createTextAnnotation, underline)).rejects.toThrow("UNAUTHENTICATED");
+    await expect(t.mutation(api.reader.deleteTextAnnotation, { id })).rejects.toThrow("UNAUTHENTICATED");
+    expect((await alice.query(api.reader.listPageTextAnnotations, { pathname: page.pathname }))).toHaveLength(1);
+  });
+
+  test("selections stay on the owner, survive equivalent pathnames, and do not touch reading marks", async () => {
+    const { t, alice, bob } = setup();
+    await alice.mutation(api.reader.setReadingMark, { ...page, status: "read" });
+    const id = await alice.mutation(api.reader.createTextAnnotation, { ...underline, pathname: "/docs/%65xample" });
+    const again = await alice.mutation(api.reader.createTextAnnotation, underline);
+    expect(again).toBe(id);
+    expect(await t.run(ctx => ctx.db.query("textAnnotations").take(3))).toHaveLength(1);
+    expect(await bob.query(api.reader.listPageTextAnnotations, { pathname: page.pathname })).toEqual([]);
+    expect((await bob.query(api.reader.listTextAnnotations, { paginationOpts })).page).toEqual([]);
+    await expect(bob.mutation(api.reader.deleteTextAnnotation, { id })).rejects.toThrow("INVALID_ARGUMENT");
+    const row = (await alice.query(api.reader.listTextAnnotations, { paginationOpts })).page[0];
+    expect(row).toMatchObject({ pathname: page.pathname, type: "underline", quote: underline.quote, note: null });
+    expect(Object.keys(row).sort()).toEqual(["id", "note", "pathname", "prefix", "quote", "suffix", "title", "type", "updatedAt"]);
+    expect(JSON.stringify(row)).not.toMatch(/owner|tokenIdentifier|Private real name|private@example/);
+    expect(await alice.query(api.reader.getReadingMark, { pathname: page.pathname })).toEqual({ status: "read" });
+    expect(await t.run(ctx => ctx.db.query("privateNotes").take(1))).toEqual([]);
+    expect(await t.run(ctx => ctx.db.query("readingMarks").take(2))).toHaveLength(1);
+  });
+
+  test("notes keep a body, filters separate types, and other pages stay out of the page paint list", async () => {
+    const { alice } = setup();
+    await alice.mutation(api.reader.createTextAnnotation, underline);
+    await alice.mutation(api.reader.createTextAnnotation, { ...underline, type: "highlight", quote: "Rolldown" });
+    const noteId = await alice.mutation(api.reader.createTextAnnotation, {
+      ...underline, type: "note", quote: "Vitest", note: "  先看测试命令  ",
+    });
+    const sameNote = await alice.mutation(api.reader.createTextAnnotation, {
+      ...underline, type: "note", quote: "Vitest", note: "先看测试命令",
+    });
+    expect(sameNote).toBe(noteId);
+    await alice.mutation(api.reader.createTextAnnotation, {
+      ...page, pathname: "/docs/other/", type: "underline", quote: "另一页", prefix: "", suffix: "",
+    });
+    const notes = await alice.query(api.reader.listTextAnnotations, { paginationOpts, type: "note" });
+    expect(notes.page.map(row => row.quote)).toEqual(["Vitest"]);
+    expect(notes.page[0].note).toBe("先看测试命令");
+    const painted = await alice.query(api.reader.listPageTextAnnotations, { pathname: page.pathname });
+    expect(painted.map(row => row.quote).sort()).toEqual(["Rolldown", "Vitest", "统一入口"]);
+    expect(painted.some(row => row.pathname !== page.pathname)).toBe(false);
+    await alice.mutation(api.reader.deleteTextAnnotation, { id: noteId });
+    expect((await alice.query(api.reader.listTextAnnotations, { paginationOpts, type: "note" })).page).toEqual([]);
+    expect((await alice.query(api.reader.listPageTextAnnotations, { pathname: page.pathname })).map(row => row.type).sort()).toEqual(["highlight", "underline"]);
+  });
+
+  test("rejects empty quotes, overlong context and unknown types", async () => {
+    const { alice } = setup();
+    await expect(alice.mutation(api.reader.createTextAnnotation, { ...underline, quote: "   " })).rejects.toThrow("INVALID_ARGUMENT");
+    await expect(alice.mutation(api.reader.createTextAnnotation, { ...underline, quote: "a".repeat(2001) })).rejects.toThrow("INVALID_ARGUMENT");
+    await expect(alice.mutation(api.reader.createTextAnnotation, { ...underline, prefix: "x".repeat(81) })).rejects.toThrow("INVALID_ARGUMENT");
+    await expect(alice.mutation(api.reader.createTextAnnotation, { ...underline, note: "n".repeat(4001) })).rejects.toThrow("INVALID_ARGUMENT");
+    await expect(alice.mutation(api.reader.createTextAnnotation, {
+      ...underline,
+      // @ts-expect-error Runtime validation rejects a type outside the schema.
+      type: "bookmark",
+    })).rejects.toThrow();
+    expect(await alice.query(api.reader.listPageTextAnnotations, { pathname: page.pathname })).toEqual([]);
+  });
+});

@@ -1,0 +1,54 @@
+mark.reader-annotation {
+  background: transparent;
+  color: inherit;
+  padding: 0 .05em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  scroll-margin-top: 4.5rem;
+}
+
+mark.reader-annotation--underline {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--color-link, #0055bb);
+  text-underline-offset: .16em;
+}
+
+mark.reader-annotation--highlight {
+  background: color-mix(in srgb, #f5c451 68%, transparent);
+  border-radius: .15em;
+}
+
+html.dark mark.reader-annotation--highlight {
+  background: color-mix(in srgb, #f5c451 40%, transparent);
+}
+
+mark.reader-annotation--note {
+  background: color-mix(in srgb, var(--color-link, #0055bb) 16%, transparent);
+  border-radius: .15em;
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--color-link, #0055bb) 55%, transparent);
+}
+
+.reader-annotation--note.reader-annotation--anchor::after {
+  content: "";
+  display: inline-block;
+  width: .42em;
+  height: .42em;
+  margin-left: .15em;
+  border-radius: 50%;
+  background: var(--color-link, #0055bb);
+  vertical-align: super;
+}
+
+.reader-annotation--target {
+  animation: reader-annotation-flash 1.4s ease;
+}
+
+@keyframes reader-annotation-flash {
+  0% { background-color: color-mix(in srgb, var(--color-link, #0055bb) 34%, transparent); }
+  100% { background-color: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reader-annotation--target { animation: none; }
+}

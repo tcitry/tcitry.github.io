@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>划词笔记</title>
+  </head>
+  <body>
+    <main>
+      <div class="book-page">
+        <article class="markdown">
+          <p id="sentence">Vite+ 把本地 Web 开发工具链收成一个统一入口。它把 Vite、Rolldown 和 Vitest 放在一起。</p>
+          <p id="again">这里还有第二个统一入口，用来区分上下文。</p>
+          <pre><code id="code">npm test</code></pre>
+        </article>
+      </div>
+    </main>
+    <div class="blog-chat-widget" data-blog-chat-widget data-chat-appearance="sidebar" data-reader-pathname="/docs/vite-plus/" data-reader-title="Vite+">
+      <div class="reader-selection-tools" data-selection-tools hidden role="group" aria-label="划词工具">
+        <button type="button" data-selection-action="underline"><span>划线</span></button>
+        <button type="button" data-selection-action="highlight"><span>高亮</span></button>
+        <button type="button" data-selection-action="note"><span>写笔记</span></button>
+      </div>
+      <p class="reader-selection-tools__status" data-selection-status role="status"></p>
+      <button class="blog-chat-widget__launcher" type="button" aria-label="打开博客助手" data-chat-launcher>助手</button>
+    </div>
+    <button type="button" id="outside">页面外</button>
+    <script type="module" src="/tests/fixtures/text-annotations-boot.mjs"></script>
+  </body>
+</html>

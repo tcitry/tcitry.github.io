@@ -4,6 +4,21 @@ interface Props {pathname?: string; title?: string}
 const {pathname, title} = Astro.props;
 ---
 <div class="blog-chat-widget" data-blog-chat-widget data-chat-appearance="sidebar" data-reader-pathname={pathname} data-reader-title={title}>
+  <div class="reader-selection-tools" data-selection-tools hidden role="group" aria-label="划词工具">
+    <button type="button" data-selection-action="underline">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 5v6a5 5 0 0 0 10 0V5" /><path d="M6 20h12" /></svg>
+      <span>划线</span>
+    </button>
+    <button type="button" data-selection-action="highlight">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5 4 4-8.5 8.5H7v-3.5L15 5Z" /><path d="M5 20h8" /></svg>
+      <span>高亮</span>
+    </button>
+    <button type="button" data-selection-action="note">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h8l3 3v13H7V4Z" /><path d="M10 12h5M10 16h3" /></svg>
+      <span>写笔记</span>
+    </button>
+  </div>
+  <p class="reader-selection-tools__status" data-selection-status role="status"></p>
   <button class="blog-chat-widget__launcher" type="button" aria-label="打开博客助手" aria-haspopup="dialog" aria-expanded="false" aria-controls="blog-chat-panel" data-chat-launcher hidden>
     <span data-chat-launcher-icon>
       <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

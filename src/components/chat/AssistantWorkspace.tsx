@@ -18,6 +18,7 @@ import '../../styles/chat.css';
 
 const MyPanel = lazy(() => import('../reader/MyPanel'));
 const ReadingMarksPanel = lazy(() => import('../reader/ReadingMarksPanel'));
+const TextAnnotationsPanel = lazy(() => import('../reader/TextAnnotationsPanel'));
 const AgentChat = lazy(() => import('./AgentChat'));
 const ConsultationsPanel = lazy(() => import('../consultations/ConsultationsPanel'));
 const AdminPanel = lazy(() => import('./AdminPanel'));
@@ -25,6 +26,7 @@ const NotificationsPanel = lazy(() => import('./NotificationsPanel'));
 const views = [
   {id: 'my', label: '我的'},
   {id: 'reading', label: '阅读'},
+  {id: 'notes', label: '笔记'},
   {id: 'chat', label: 'AI 对话'},
   {id: 'consult', label: '咨询'},
 ] as const;
@@ -41,8 +43,8 @@ function ServiceView({children, shouldDismissFailure, onDismissFailure}: {
     <Suspense fallback={<AuthLoading label="正在加载…" />}>{children}</Suspense>
   </ServiceBoundary>;
 }
-function WorkspaceContent({onClose, onReady, view, myOpened, readingOpened, selectView, requestedPrompt, onPromptConsumed, shouldDismissFailure, onDismissFailure}: WorkspaceProps & {
-  view: AssistantView; myOpened: boolean; readingOpened: boolean; selectView: (view: AssistantView) => void;
+function WorkspaceContent({onClose, onReady, view, myOpened, readingOpened, notesOpened, selectView, requestedPrompt, onPromptConsumed, shouldDismissFailure, onDismissFailure, pathname}: WorkspaceProps & {
+  view: AssistantView; myOpened: boolean; readingOpened: boolean; notesOpened: boolean; selectView: (view: AssistantView) => void;
 }) {
   const {isLoaded} = useAuth();
   const {isAuthenticated, isLoading} = useConvexAuth();
@@ -113,6 +115,9 @@ function WorkspaceContent({onClose, onReady, view, myOpened, readingOpened, sele
           <div className="assistant-workspace__personal" hidden={activeView !== 'reading'}>
             {readingOpened && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><ReadingMarksPanel /></ServiceView></div>}
           </div>
+          <div className="assistant-workspace__personal" hidden={activeView !== 'notes'}>
+            {notesOpened && <div className="assistant-workspace__reader"><ServiceView {...dismiss}><TextAnnotationsPanel pathname={pathname} /></ServiceView></div>}
+          </div>
       </ConvexAuthGate>
     </div>
   </div>;
@@ -136,18 +141,30 @@ function Workspace(props: WorkspaceProps) {
   const [view, setView] = useState<AssistantView>(props.initialView ?? 'my');
   const [myOpened, setMyOpened] = useState(!props.initialView || props.initialView === 'my');
   const [readingOpened, setReadingOpened] = useState(props.initialView === 'reading');
+  const [notesOpened, setNotesOpened] = useState(props.initialView === 'notes');
   const selectView = useCallback((next: AssistantView) => {
     if (next === 'my') setMyOpened(true);
     if (next === 'reading') setReadingOpened(true);
+    if (next === 'notes') setNotesOpened(true);
     setView(next);
     props.onViewChange?.(next);
   }, [props.onViewChange]);
+  useEffect(() => {
+    const onView = (event: Event) => {
+      const next = event instanceof CustomEvent ? event.detail?.view : undefined;
+      if (next === 'my' || next === 'reading' || next === 'notes' || next === 'chat' || next === 'consult' || next === 'messages' || next === 'admin') {
+        selectView(next);
+      }
+    };
+    document.addEventListener('blog:assistant-view', onView);
+    return () => document.removeEventListener('blog:assistant-view', onView);
+  }, [selectView]);
   useEffect(() => {
     if (requestedPrompt) selectView('chat');
     else if (props.requestedPrompt && promptOwner.current?.cancelled) props.onPromptConsumed?.(props.requestedPrompt.id);
   }, [requestedPrompt?.id, props.requestedPrompt?.id, props.onPromptConsumed, selectView]);
   return <ConvexSession onErrorClose={props.onClose} shouldDismissFailure={props.shouldDismissFailure} onDismissFailure={props.onDismissFailure}>
-    <WorkspaceContent {...props} requestedPrompt={requestedPrompt} view={view} myOpened={myOpened} readingOpened={readingOpened} selectView={selectView} />
+    <WorkspaceContent {...props} requestedPrompt={requestedPrompt} view={view} myOpened={myOpened} readingOpened={readingOpened} notesOpened={notesOpened} selectView={selectView} />
   </ConvexSession>;
 }
 

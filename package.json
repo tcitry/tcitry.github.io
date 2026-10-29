@@ -47,6 +47,7 @@
     "check:production-config": "node scripts/reader-preflight.mjs",
     "test:browser:reader": "node tests/browser/reader.mjs",
     "test:browser:reader-ui": "node tests/browser/reader-ui.mjs",
+    "test:browser:annotations": "node tests/browser/text-annotations.mjs",
     "test:browser:services": "node tests/browser/services.mjs",
     "test:browser:consultations": "node tests/browser/consultations-membership.mjs",
     "test:browser:auth-control": "node tests/browser/auth-control.mjs",
