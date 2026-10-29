@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {mkdtemp, rm} from 'node:fs/promises';
+import {mkdir, mkdtemp, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -46,6 +46,12 @@ const results = page => page.locator('[data-blog-search-result]');
 const input = page => page.locator('[data-blog-search-input]');
 const command = page => page.locator('[data-blog-command]');
 const waitState = (page, state) => page.locator(`[data-blog-command][data-search-state="${state}"]`).waitFor();
+async function saveSearchShot(page, name) {
+  if (!process.env.SEARCH_ARTIFACTS) return;
+  await mkdir(process.env.SEARCH_ARTIFACTS, {recursive: true});
+  await page.screenshot({path: join(process.env.SEARCH_ARTIFACTS, name)});
+}
+
 async function assertEngine(page, engine) {
   const source = page.locator('[data-search-engine]');
   assert.equal(await source.count(), 1, 'Completed search identifies exactly one actual result engine');
@@ -67,6 +73,7 @@ async function installRoutes(context, base) {
       await route.fulfill({contentType: 'application/javascript', body: `
         export async function search(query) {
           window.__searchAi.pagefindCalls.push(query);
+          if (window.__searchAi.pagefindCalls.length > 1) await new Promise((resolve) => setTimeout(resolve, 250));
           return {results: Array.from({length: 12}, (_, index) => ({data: async () => ({
             url: '/docs/fulltext-' + (index + 1) + '/',
             meta: {title: '全文结果 ' + (index + 1)}, plain_excerpt: '全文索引匹配：' + query,
@@ -139,6 +146,7 @@ try {
       const trigger = page.locator('[data-blog-search-trigger]');
       await trigger.click();
       await waitState(page, 'recent');
+      assert.equal(await page.locator('[data-search-kind]').getAttribute('data-search-kind'), '文档');
       assert.equal(await page.locator('[data-search-engine]').count(), 0, 'Recent updates are not attributed to a search engine');
       assert.equal(await page.getByText('搜索公开文章 · 无需登录', {exact: true}).count(), 0, 'Idle commander does not show redundant public-search copy');
       assert.equal(network.requests.length, 0, 'Opening anonymous search does not issue an empty remote search');
@@ -147,6 +155,46 @@ try {
       await waitState(page, 'results');
       assert.equal(await results(page).count(), 1, 'Only a current, same-site whitelisted document survives malformed sources and duplicate chunks');
       assert.equal(await results(page).first().getAttribute('href'), '/docs/fixture/');
+      const kind = results(page).first().locator('[data-search-kind]');
+      assert.equal(await kind.getAttribute('data-search-kind'), '文档');
+      assert.equal((await kind.innerText()).trim(), '文档');
+      assert.match(await kind.evaluate((element) => element.className), /chip--sm/);
+      assert.match(await kind.evaluate((element) => element.className), /chip--soft/);
+      assert.match(await kind.evaluate((element) => element.className), /chip--accent/);
+      const placement = await results(page).first().evaluate((row) => {
+        const chip = row.querySelector('[data-search-kind]');
+        const title = row.querySelector('[data-search-title]');
+        if (!(chip instanceof HTMLElement) || !(title instanceof HTMLElement)) return null;
+        const chipBox = chip.getBoundingClientRect();
+        const titleBox = title.getBoundingClientRect();
+        return {
+          chipBeforeTitle: chipBox.right <= titleBox.left + 1,
+          sameRow: chipBox.top < titleBox.bottom && titleBox.top < chipBox.bottom,
+        };
+      });
+      assert.deepEqual(placement, {chipBeforeTitle: true, sameRow: true});
+      const footer = await page.evaluate(() => {
+        const footerNode = document.querySelector('[data-search-status]')?.parentElement;
+        const statusNode = document.querySelector('[data-search-status]');
+        const askNode = document.querySelector('[data-search-ask-ai]');
+        if (!footerNode || !statusNode || !askNode) return null;
+        const footerBox = footerNode.getBoundingClientRect();
+        const statusBox = statusNode.getBoundingClientRect();
+        const askBox = askNode.getBoundingClientRect();
+        return {
+          askLeft: askBox.left - footerBox.left,
+          statusRight: footerBox.right - statusBox.right,
+          askBeforeStatus: askBox.right <= statusBox.left + 1,
+          count: statusNode.textContent ?? '',
+        };
+      });
+      assert.ok(footer, 'search footer exposes the ask action and the result count');
+      assert.ok(footer.askLeft <= 28, 'Ask AI is at the left of the footer');
+      assert.ok(footer.statusRight <= 28, 'the result count is at the far right of the footer');
+      if (width >= 768) assert.equal(footer.askBeforeStatus, true);
+      assert.match(footer.count, /找到 1 条结果/);
+      assert.equal(await page.getByRole('button', {name: '加载更多', exact: true}).count(), 0);
+      await saveSearchShot(page, `search-results-${width}.png`);
       assert.match(await results(page).textContent(), /Keep.*literal text/);
       assert.equal(await results(page).locator('img, script').count(), 0, 'HTML-looking snippets render as text, never HTML nodes');
       assert.equal(await page.evaluate(() => window.__searchInjected), undefined);
@@ -176,10 +224,28 @@ try {
         assert.equal(await results(page).count(), 8);
         assert.ok((await results(page).allTextContents()).every(text => text.includes('全文结果')));
         await assertEngine(page, 'pagefind');
+        assert.equal(await page.getByRole('button', {name: '加载更多', exact: true}).count(), 0);
+        assert.match(await page.locator('[data-search-status]').innerText(), /找到 12 条结果，已显示 8 条/);
         const remoteBeforePage = network.requests.length;
-        await page.getByRole('button', {name: '加载更多', exact: true}).click();
+        const loadingMore = page.locator('[data-search-loading-more]');
+        const sawLoadingMore = loadingMore.waitFor({state: 'visible'});
+        await page.locator('[data-search-results]').evaluate((list) => {
+          list.scrollTop = list.scrollHeight;
+          list.dispatchEvent(new Event('scroll'));
+        });
+        await sawLoadingMore;
+        assert.match(await page.locator('[data-search-status]').innerText(), /已显示 8 条/);
+        await page.waitForFunction(() => document.querySelectorAll('[data-blog-search-result]').length === 12);
+        await saveSearchShot(page, 'search-scrolled-more.png');
         await waitState(page, 'results');
+        assert.equal(await loadingMore.count(), 0);
         assert.equal(await results(page).count(), 12);
+        assert.match(await page.locator('[data-search-status]').innerText(), /^找到 12 条结果/);
+        await page.locator('[data-search-results]').evaluate((list) => {
+          list.scrollTop = list.scrollHeight;
+          list.dispatchEvent(new Event('scroll'));
+        });
+        await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
         await assertEngine(page, 'pagefind');
         assert.equal(network.requests.length, remoteBeforePage, 'Pagination remains in the actual full-text engine after AI fallback');
         assert.deepEqual(await page.evaluate(() => window.__searchAi.pagefindCalls), ['retry', 'retry']);
@@ -188,6 +254,9 @@ try {
         assert.equal(network.retries, 2);
         assert.equal(await results(page).count(), 1);
         assert.match(await results(page).textContent(), /最新查询结果/);
+        assert.equal(await results(page).locator('[data-search-kind]').getAttribute('data-search-kind'), '文章');
+        assert.match(await results(page).locator('[data-search-kind]').evaluate((element) => element.className), /chip--success/);
+        await saveSearchShot(page, 'search-posts-chip.png');
         await assertEngine(page, 'ai-search');
         assert.equal(await page.getByText('AI 搜索暂不可用，当前显示全文搜索结果', {exact: true}).count(), 0, 'A successful explicit retry restores the AI engine and clears the fallback notice');
         for (const query of ['rate-limited', 'server-failure', 'network-failure']) {

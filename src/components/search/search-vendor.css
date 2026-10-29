@@ -4,3 +4,4 @@
 @import "@heroui/styles/components/input.css" layer(components);
 @import "@heroui/styles/components/close-button.css" layer(components);
 @import "@heroui/styles/components/spinner.css" layer(components);
+@import "@heroui/styles/components/chip.css" layer(components);

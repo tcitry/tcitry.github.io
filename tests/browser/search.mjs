@@ -289,10 +289,29 @@ try {
         if (width === 1440) await assertRecentDestinations(page, `${label}, built AI Search source`);
       } else assert.ok(pagefindLoaded, `${label}: a local fallback query loads the real Pagefind module`);
       await assertBounds(page, `${label}, query results`);
-      const more = page.getByRole('button', { name: '加载更多', exact: true });
-      if (await more.isVisible()) {
+      assert.equal(await page.getByRole('button', { name: '加载更多', exact: true }).count(), 0, `${label}: results page by scrolling, not a load-more button`);
+      const statusText = await page.locator('[data-search-status]').innerText();
+      if (statusText.includes('已显示')) {
         const before = await page.locator(selectors.result).count();
-        await more.click();
+        const footer = await page.evaluate(() => {
+          const footerNode = document.querySelector('[data-search-status]')?.parentElement;
+          const statusNode = document.querySelector('[data-search-status]');
+          const askNode = document.querySelector('[data-search-ask-ai]');
+          if (!footerNode || !statusNode) return null;
+          const footerBox = footerNode.getBoundingClientRect();
+          const statusBox = statusNode.getBoundingClientRect();
+          const askBox = askNode?.getBoundingClientRect();
+          return {
+            statusRight: footerBox.right - statusBox.right,
+            askLeft: askBox ? askBox.left - footerBox.left : null,
+          };
+        });
+        assert.ok(footer && footer.statusRight <= 28, `${label}: the result count sits at the far right of the footer`);
+        if (footer.askLeft != null) assert.ok(footer.askLeft <= 28, `${label}: Ask AI stays at the left of the footer`);
+        await page.locator('[data-search-results]').evaluate((list) => {
+          list.scrollTop = list.scrollHeight;
+          list.dispatchEvent(new Event('scroll'));
+        });
         await page.waitForFunction(({ selector, before }) => document.querySelectorAll(selector).length > before,
           { selector: selectors.result, before });
         await waitState(page, 'results');

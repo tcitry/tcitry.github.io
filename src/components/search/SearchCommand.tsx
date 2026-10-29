@@ -1,8 +1,8 @@
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState, type RefObject} from 'react';
 import {flushSync} from 'react-dom';
 import {createRoot} from 'react-dom/client';
 import {Command} from '@heroui-pro/react/command';
-import {Button, Spinner} from '@heroui/react';
+import {Button, Chip, Spinner} from '@heroui/react';
 import {searchContent} from '../../lib/search-client';
 import {loadRecentUpdates} from '../../lib/search-recent-client';
 import {captureFeatureError, withFeatureSpan} from '../../lib/monitoring';
@@ -13,10 +13,34 @@ import styles from './SearchCommand.module.css';
 import './search-vendor.css';
 
 const PAGE_SIZE = 8;
+const NEAR_BOTTOM_PX = 32;
 const acceptAll = () => true;
-const sectionNames: Record<string, string> = {
-  docs: '文档', posts: '文章', weekly: '周刊', links: '链接', about: '关于', timeline: '时间线',
+
+type SearchChipColor = 'default' | 'accent' | 'success' | 'warning' | 'danger';
+type SearchChipVariant = 'soft' | 'primary';
+
+const sectionKinds: Record<string, {label: string; color: SearchChipColor; variant?: SearchChipVariant}> = {
+  docs: {label: '文档', color: 'accent'},
+  文档: {label: '文档', color: 'accent'},
+  posts: {label: '文章', color: 'success'},
+  文章: {label: '文章', color: 'success'},
+  weekly: {label: '周刊', color: 'warning'},
+  周刊: {label: '周刊', color: 'warning'},
+  links: {label: '链接', color: 'danger'},
+  链接: {label: '链接', color: 'danger'},
+  about: {label: '关于', color: 'default'},
+  关于: {label: '关于', color: 'default'},
+  timeline: {label: '时间线', color: 'default', variant: 'primary'},
+  时间线: {label: '时间线', color: 'default', variant: 'primary'},
 };
+
+function resultKind(section: string | undefined) {
+  const value = section?.trim();
+  if (!value) return;
+  const known = sectionKinds[value];
+  if (!known) return {label: value, color: 'default' as const, variant: 'soft' as const};
+  return {variant: 'soft' as const, ...known};
+}
 
 interface Props {
   onClose: () => void;
@@ -26,6 +50,62 @@ interface Props {
 interface ResultState extends SearchResponse {
   query: string;
   limit: number;
+}
+
+function useLoadMoreOnScroll(root: RefObject<HTMLDivElement | null>, enabled: boolean, busy: boolean, onLoadMore: () => void) {
+  const paging = useRef(false);
+  const loadMore = useRef(onLoadMore);
+
+  useEffect(() => {
+    loadMore.current = onLoadMore;
+  });
+
+  useEffect(() => {
+    if (!busy) paging.current = false;
+  }, [busy]);
+
+  useEffect(() => {
+    const list = root.current?.querySelector<HTMLElement>('[data-search-results]');
+    if (!list || !enabled || busy) return;
+    let frame = 0;
+    const loadIfAtBottom = () => {
+      if (paging.current || !enabled || busy) return;
+      // An unmeasured list reports no remaining distance and would page before layout.
+      if (list.clientHeight < 32) return;
+      const remaining = list.scrollHeight - list.scrollTop - list.clientHeight;
+      if (remaining > NEAR_BOTTOM_PX) return;
+      paging.current = true;
+      loadMore.current();
+    };
+    frame = requestAnimationFrame(loadIfAtBottom);
+    const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(() => loadIfAtBottom());
+    observer?.observe(list);
+    list.addEventListener('scroll', loadIfAtBottom, {passive: true});
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+      list.removeEventListener('scroll', loadIfAtBottom);
+    };
+  }, [root, enabled, busy]);
+}
+
+function SearchResultItem({entry, showExcerpt}: {entry: SearchEntry; showExcerpt: boolean}) {
+  const date = entry.updated?.match(/^\d{4}-\d{2}-\d{2}/)?.[0];
+  const kind = resultKind(entry.section);
+  return <Command.Item id={entry.url} href={entry.url} textValue={entry.title} aria-label={entry.title} className={styles.item} data-search-result data-blog-search-result>
+    <div className={styles.entry}>
+      <span className={styles.titleRow}>
+        {kind && <Chip size="sm" variant={kind.variant} color={kind.color} className={styles.kind} data-search-kind={kind.label}>
+          <Chip.Label>{kind.label}</Chip.Label>
+        </Chip>}
+        <span className={styles.title} data-search-title>{entry.title}</span>
+      </span>
+      {showExcerpt && entry.excerpt && <span className={styles.excerpt}>{entry.excerpt}</span>}
+      {date && <span className={styles.meta}>
+        <time dateTime={entry.updated}>{date}</time>
+      </span>}
+    </div>
+  </Command.Item>;
 }
 
 function SearchCommand({onClose, onAskAI}: Props) {
@@ -152,15 +232,21 @@ function SearchCommand({onClose, onAskAI}: Props) {
   const queryLoading = Boolean(normalizedQuery) && busy && entries.length === 0;
   const recentLoading = !normalizedQuery && recentState === 'loading' && entries.length === 0;
   const showLoading = queryLoading || recentLoading;
+  const loadingMore = Boolean(normalizedQuery && busy && entries.length > 0 && !failed && !composing);
+  const showResultCount = Boolean(normalizedQuery && !composing && !showLoading && !failed && activeResult && !(activeResult.updating && !entries.length));
   const status = composing ? '正在输入…'
     : showLoading ? ''
-    : busy ? '正在加载更多…'
     : failed ? '搜索暂时不可用，请重试。'
     : normalizedQuery ? activeResult?.updating && !entries.length ? '相关结果正在更新，请稍后重试。'
       : `找到 ${activeResult?.total ?? 0} 条结果${hasMore ? `，已显示 ${entries.length} 条` : ''}${activeResult?.updating ? ' · 部分结果正在更新' : ''}`
     : recentState === 'loading' ? '正在加载最近更新…'
     : recentState === 'error' ? '最近更新暂时不可用，仍可输入关键词搜索。'
     : `最近更新 · ${entries.length} 篇`;
+
+  useLoadMoreOnScroll(backdrop, hasMore && !failed && !composing, busy, () => {
+    setBusy(true);
+    setLimit((value) => value + PAGE_SIZE);
+  });
   const emptyMessage = composing ? '完成输入后即可搜索。'
     : failed ? '暂时无法搜索，请稍后重试。'
     : normalizedQuery ? activeResult?.updating ? '相关结果正在更新，请稍后再试。' : '没有找到匹配内容，试试其他关键词。'
@@ -274,21 +360,14 @@ function SearchCommand({onClose, onAskAI}: Props) {
               : <div className={styles.empty}>{emptyMessage}</div>}
           >
             {entries.length > 0 && <Command.Group heading={normalizedQuery ? '搜索结果' : '最近更新'}>
-              {entries.map((entry) => {
-                const date = entry.updated?.match(/^\d{4}-\d{2}-\d{2}/)?.[0];
-                return <Command.Item key={entry.url} id={entry.url} href={entry.url} textValue={entry.title} aria-label={entry.title} className={styles.item} data-search-result data-blog-search-result>
-                  <div className={styles.entry}>
-                    <span className={styles.title}>{entry.title}</span>
-                    {normalizedQuery && entry.excerpt && <span className={styles.excerpt}>{entry.excerpt}</span>}
-                    {(entry.section || date) && <span className={styles.meta}>
-                      {entry.section && <span>{sectionNames[entry.section] ?? entry.section}</span>}
-                      {date && <time dateTime={entry.updated}>{date}</time>}
-                    </span>}
-                  </div>
-                </Command.Item>;
-              })}
+              {entries.map((entry) => <SearchResultItem key={entry.url} entry={entry} showExcerpt={Boolean(normalizedQuery)} />)}
             </Command.Group>}
           </Command.List>
+
+          {loadingMore && <div className={styles.loadingMore} role="status" data-search-loading-more>
+            <Spinner aria-hidden={true} size="sm" color="accent" />
+            <span className={styles.loadingMoreLabel}>正在加载更多…</span>
+          </div>}
 
           {activeResult?.fallback === 'ai-unavailable' && <div className={styles.fallback} data-search-fallback>
             <span role="status">AI 搜索暂不可用，当前显示全文搜索结果</span>
@@ -300,11 +379,11 @@ function SearchCommand({onClose, onAskAI}: Props) {
               <span className={styles.askLabel}>用这个问题问 AI</span>
               <span className={styles.askArrow} aria-hidden="true">→</span>
             </Button>}
-            <span role="status" aria-live="polite" aria-atomic="true" className={styles.status} data-search-status>{status}</span>
+            <span role="status" aria-live="polite" aria-atomic="true" className={showResultCount ? `${styles.status} ${styles.statusEnd}` : styles.status} data-search-status>{status}</span>
             {failed ? <button type="button" className={styles.action} onClick={() => { setBusy(true); setRetry((value) => value + 1); }}>重试</button>
               : !normalizedQuery && recentState === 'error' ? <button type="button" className={styles.action} data-search-recent-retry onClick={() => { setRecentState('loading'); setRecentRetry((value) => value + 1); }}>重试最近更新</button>
-              : hasMore ? <button type="button" className={styles.action} disabled={busy} onClick={() => { setBusy(true); setLimit((value) => value + PAGE_SIZE); }}>{busy ? '加载中…' : '加载更多'}</button>
-                : <span className={styles.hint} aria-hidden="true">↑ ↓ 选择 · Enter 打开</span>}
+              : showResultCount ? null
+              : <span className={styles.hint} aria-hidden="true">↑ ↓ 选择 · Enter 打开</span>}
           </Command.Footer>
         </Command.Dialog>
       </Command.Container>
