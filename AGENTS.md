@@ -16,7 +16,7 @@
 - `package.json` 是安装、开发、检查、构建和发布命令的唯一事实来源。首次检出运行 `npm run setup`。
 - `BLOG_DIR` 是只读内容源。私有内容、生成文件、凭据、本机路径和安装后的商业组件源码不得进入 Git。
 - 修改 Convex 代码前先读 `convex/_generated/ai/guidelines.md`。
-- 改写 Blog 技术文档时读取 `skills/blog-technical-docs/SKILL.md`，并以 Blog 内容仓库当前规则为准。
+- 改写 Blog 技术文档时读取 `.agents/skills/blog-technical-docs/SKILL.md`，并以 Blog 内容仓库当前规则为准。
 
 ## 云端依赖安装与网络排查
 

@@ -51,5 +51,7 @@ node_modules
 # Local development artifacts; published themes are installed from npm.
 /.artifacts/
 
-.agents/
+# Local agent state. Checked-in project skills live under .agents/skills/.
+.agents/*
+!.agents/skills/
 .claude/
