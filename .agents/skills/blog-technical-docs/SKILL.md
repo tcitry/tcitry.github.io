@@ -11,7 +11,7 @@ description: 改写 Blog 技术文档的英文术语、中文导读和 Mermaid �
 
 本 Skill 随 `tcitry-blog` 站点工程保存，Markdown 内容在独立的 Blog 仓库中。
 
-1. 从本 Skill 所在目录向上两级定位站点工程，读取其 `AGENTS.md`。按 `BLOG_DIR` 定位内容仓库；未设置时检查站点 `scripts/prepare-content.mjs` 的实际默认来源，不在站点 `docs/` 中误改 Blog 文章。
+1. 从本 Skill 所在目录向上三级定位站点工程，读取其 `AGENTS.md`。按 `BLOG_DIR` 定位内容仓库；未设置时检查站点 `scripts/prepare-content.mjs` 的实际默认来源，不在站点 `docs/` 中误改 Blog 文章。
 2. 读取内容仓库的 `Agents.md`，遵循其中当前有效的语言、分类、Git、AI 参与说明和 URL 兼容性规则。
 3. 读取以下内容仓库内文件，建立本批参照：
    - `docs/Agents/technical-terminology-and-mermaid-style-guide.md`：完整规则、反例与验收方法。
