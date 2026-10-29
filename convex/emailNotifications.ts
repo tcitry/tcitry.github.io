@@ -7,6 +7,7 @@ import {
   resendConfigured, siteUrl,
 } from "./emailShared";
 import {categoryEnabled} from "./emailPreferences";
+import {publicArticleTitle} from "./assistantPublicSearch";
 
 const sendPayload = v.union(
   v.object({
@@ -69,7 +70,7 @@ export const prepareCommentReplyEmail = internalMutation({
     if (throttle && now - throttle.lastSentAt < EMAIL_THROTTLE_MS) {
       return {kind: "skip" as const, notificationId, recipient: notification.recipient, reason: "throttled"};
     }
-    const title = reply.articleTitle?.trim() || articleTitleFromPath(reply.pathname);
+    const title = publicArticleTitle(reply.pathname) ?? articleTitleFromPath(reply.pathname);
     const excerpt = markdownExcerpt(reply.body);
     const origin = siteUrl();
     const commentUrl = `${origin}${reply.pathname}#comment-${reply._id}`;
