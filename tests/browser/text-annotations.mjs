@@ -76,8 +76,15 @@ try {
   }));
   assert.deepEqual(fan.map(item => item.action), ['underline', 'highlight', 'note']);
   assert.ok(fan.every(item => Number(item.opacity) > 0.9), 'Fanned tools are visible');
+  assert.deepEqual(await page.locator('[data-selection-tools] button').evaluateAll(buttons => buttons.map(button => button.innerText)), ['', '', '']);
   const launcher = await page.locator('[data-chat-launcher]').boundingBox();
   assert.ok(fan.every(item => item.x < launcher.x + launcher.width), 'Tools stay on the page side of the avatar');
+  await page.getByRole('button', {name: '划线'}).hover();
+  await page.waitForFunction(() => {
+    const tip = document.querySelector('[data-selection-action="underline"] .blog-chat-widget__tooltip');
+    const style = tip && getComputedStyle(tip);
+    return style && style.visibility === 'visible' && Number(style.opacity) > 0.9;
+  });
   await page.screenshot({path: `${artifacts}/selection-tools.png`});
 
   await page.getByRole('button', {name: '划线'}).click();

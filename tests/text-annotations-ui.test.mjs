@@ -23,9 +23,15 @@ test('notes tab follows 阅读 and lists text annotations separately from readin
   assert.match(panel, /api\.reader\.createTextAnnotation/);
   assert.match(panel, /api\.reader\.deleteTextAnnotation/);
   assert.doesNotMatch(panel, /listReadingMarks|setReadingMark/);
-  assert.match(read('src/components/chat/BlogChatWidget.astro'), /data-selection-action="underline"/);
-  assert.match(read('src/components/chat/BlogChatWidget.astro'), /data-selection-action="highlight"/);
-  assert.match(read('src/components/chat/BlogChatWidget.astro'), /data-selection-action="note"/);
+  const tools = read('src/components/chat/BlogChatWidget.astro');
+  assert.match(tools, /data-selection-action="underline"/);
+  assert.match(tools, /data-selection-action="highlight"/);
+  assert.match(tools, /data-selection-action="note"/);
+  assert.match(tools, /aria-label="划线"/);
+  assert.match(tools, /aria-label="高亮"/);
+  assert.match(tools, /aria-label="写笔记"/);
+  assert.match(tools, /blog-chat-widget__tooltip" aria-hidden="true">划线/);
+  assert.doesNotMatch(tools, /<span>划线<\/span>|<span>高亮<\/span>|<span>写笔记<\/span>/);
   assert.match(read('src/scripts/assistant-ui-state.mjs'), /'notes'/);
   assert.match(read('convex/schema.ts'), /textAnnotations:/);
   assert.doesNotMatch(read('src/components/reader/ReadingMarksPanel.tsx'), /textAnnotations|TextAnnotationsPanel/);
