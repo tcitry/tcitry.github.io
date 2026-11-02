@@ -42,6 +42,29 @@ function trustedReference(value: unknown): PublicSearchReference | null {
   } catch { return null; }
 }
 
+function decodedPathSegments(pathname: string): string[] | null {
+  try { return pathname.split('/').map(segment => decodeURIComponent(segment)); }
+  catch { return null; }
+}
+
+export function publicArticleTitle(pathname: string, references: readonly unknown[] = exportedReferences.documents): string | undefined {
+  const pathnameSegments = decodedPathSegments(pathname);
+  if (!pathnameSegments) return undefined;
+  for (const value of references) {
+    const ref = trustedReference(value);
+    if (!ref) continue;
+    let referencePathname: string;
+    try { referencePathname = new URL(ref.url).pathname; }
+    catch { continue; }
+    const referenceSegments = decodedPathSegments(referencePathname);
+    if (!referenceSegments || referenceSegments.length !== pathnameSegments.length
+        || referenceSegments.some((segment, index) => segment !== pathnameSegments[index])) continue;
+    const title = ref.title.replace(/[\u0000-\u001f\u007f\s]+/gu, " ").trim().slice(0, 160).trim();
+    return title || undefined;
+  }
+  return undefined;
+}
+
 /** Matching remote metadata cannot replace the locally exported article identity. */
 export function validatePublicChunk(chunk: unknown, references: readonly PublicSearchReference[]): PublicSearchReference | null {
   const candidate = record(chunk);

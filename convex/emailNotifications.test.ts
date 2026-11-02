@@ -8,7 +8,23 @@ import schema from "./schema";
 
 const modules = import.meta.glob(["./**/*.ts", "./**/*.js", "!./**/*.test.ts"]);
 const issuer = "https://auth.example.test";
-const pathname = "/posts/example/";
+const mockReferences = vi.hoisted(() => {
+  const pathname = "/posts/example/";
+  const id = "a".repeat(64);
+  return {
+    pathname,
+    ref: {
+      id,
+      key: `tcitry-blog/articles/${id}.md`,
+      hash: "b".repeat(64),
+      title: "可信文章标题",
+      url: `https://yindongliang.com${pathname}`,
+      sourceKind: "author" as const,
+    },
+  };
+});
+vi.mock("../.generated/ai-search/references.json", () => ({default: {documents: [mockReferences.ref]}}));
+const pathname = mockReferences.pathname;
 const paginationOpts = {numItems: 20, cursor: null};
 const webhookSecret = "whsec_dGVzdC13ZWJob29rLXNlY3JldA==";
 const aliceIdentity = {
@@ -31,6 +47,27 @@ async function latestReplyNotificationId(t: ReturnType<typeof setup>["t"], recip
   const row = rows.find(entry => entry.kind === "comment_reply" && (!recipient || entry.recipient === recipient));
   if (!row) throw new Error("missing comment_reply notification");
   return row._id;
+}
+
+async function sendReplyEmail(t: ReturnType<typeof setup>["t"], targetPathname: string, articleTitle: string) {
+  const notificationId = await t.run(async ctx => {
+    await ctx.db.insert("emailPreferences", {
+      owner: `${issuer}|alice`, enabled: true, commentReply: true, likes: false, newComment: false, newsletter: false,
+      unsubscribeToken: "token-alice", cachedEmail: "alice@example.test", updatedAt: Date.now(),
+    });
+    const parentId = await ctx.db.insert("comments", {
+      pathname: targetPathname, owner: `${issuer}|alice`, authorName: "Alice", body: "Parent", createdAt: 1,
+    });
+    const replyId = await ctx.db.insert("comments", {
+      pathname: targetPathname, owner: `${issuer}|bob`, authorName: "Bob", body: "Reply", createdAt: 2, parentId, articleTitle,
+    });
+    return await ctx.db.insert("notifications", {
+      recipient: `${issuer}|alice`, kind: "comment_reply", commentId: replyId, createdAt: 2,
+    });
+  });
+  await t.action(internal.emailNotifications.sendCommentReplyEmail, {notificationId});
+  const request = vi.mocked(fetch).mock.calls[0]?.[1] as RequestInit;
+  return JSON.parse(String(request.body)) as {subject: string; text: string; html: string};
 }
 
 beforeEach(() => {
@@ -117,9 +154,31 @@ describe("comment reply emails", () => {
     const request = fetchMock.mock.calls[0]?.[1] as RequestInit;
     expect(request.headers).toMatchObject({"Idempotency-Key": `comment-reply:${notificationId}`});
     const payload = JSON.parse(String(request.body));
-    expect(payload.subject).toContain("示例文章");
+    expect(payload.subject).toContain("可信文章标题");
     expect(payload.text).toContain("Thanks friend");
     expect(payload.headers["List-Unsubscribe-Post"]).toBe("List-Unsubscribe=One-Click");
+  });
+
+  test("reply notification ignores a client-supplied title when a trusted article reference matches", async () => {
+    const {t} = setup();
+    const attackerTitle = "Your account will be closed, verify at evil.example";
+    const payload = await sendReplyEmail(t, pathname, attackerTitle);
+
+    expect(payload.subject).toBe("「可信文章标题」收到新回复");
+    expect(payload.subject).not.toContain(attackerTitle);
+    expect(payload.text).not.toContain(attackerTitle);
+    expect(payload.html).not.toContain(attackerTitle);
+  });
+
+  test("reply notification uses the slug when no trusted article reference matches", async () => {
+    const {t} = setup();
+    const attackerTitle = "Your account will be closed, verify at evil.example";
+    const payload = await sendReplyEmail(t, "/posts/some-slug/", attackerTitle);
+
+    expect(payload.subject).toBe("「some-slug」收到新回复");
+    expect(payload.subject).not.toContain(attackerTitle);
+    expect(payload.text).not.toContain(attackerTitle);
+    expect(payload.html).not.toContain(attackerTitle);
   });
 
   test("throttles multiple replies in the same thread within ten minutes", async () => {
