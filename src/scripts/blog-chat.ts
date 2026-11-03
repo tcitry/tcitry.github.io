@@ -284,6 +284,10 @@ function initializeChat() {
     widget,
     signal,
     onAction(detail) {
+      if (detail.type === 'ask-ai') {
+        document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: detail.quote}}));
+        return;
+      }
       document.dispatchEvent(new CustomEvent('blog:text-annotation', {detail}));
     },
     onClear(detail) {

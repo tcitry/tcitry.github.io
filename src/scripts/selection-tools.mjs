@@ -1,9 +1,9 @@
 import {articleContentRoot, captureRange, captureSelection} from './annotation-paint.mjs';
 
 /**
- * Fan 高亮 / 写笔记 around the assistant launcher, or the sidebar edge control
- * while the sidebar is open. A click on an existing highlight offers 取消高亮
- * beside that mark.
+ * Fan 高亮 / 写笔记 / 问 AI around the assistant launcher, or the sidebar edge
+ * control while the sidebar is open. A click on an existing highlight offers
+ * 取消高亮 beside that mark.
  * @param {{
  *   widget: HTMLElement,
  *   signal?: AbortSignal,
@@ -126,7 +126,7 @@ export function mountSelectionTools(options) {
    * @param {boolean} fan
    */
   function setFanVisible(fan) {
-    for (const button of tools.querySelectorAll('[data-selection-action="highlight"], [data-selection-action="note"]')) {
+    for (const button of tools.querySelectorAll('[data-selection-action="highlight"], [data-selection-action="note"], [data-selection-action="ask-ai"]')) {
       if (button instanceof HTMLElement) button.hidden = !fan;
     }
   }
@@ -284,7 +284,7 @@ export function mountSelectionTools(options) {
       dismiss();
       return;
     }
-    if (!quote || (type !== 'highlight' && type !== 'note')) return;
+    if (!quote || (type !== 'highlight' && type !== 'note' && type !== 'ask-ai')) return;
     const pathname = options.widget.dataset.readerPathname ?? '';
     const title = options.widget.dataset.readerTitle ?? '';
     if (!pathname || !title) return;

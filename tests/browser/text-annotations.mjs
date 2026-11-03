@@ -69,17 +69,31 @@ try {
   const highlightTool = page.locator('[data-selection-action="highlight"]');
   await highlightTool.waitFor();
   await page.locator('[data-chat-launcher][data-selection-active]').waitFor();
-  await page.waitForFunction(() => [...document.querySelectorAll('[data-selection-tools] button:not([hidden])')].every(button => getComputedStyle(button).opacity === '1'));
+  await page.waitForFunction(() => [...document.querySelectorAll('[data-selection-tools] button:not([hidden])')].every(button => {
+    const style = getComputedStyle(button);
+    return style.opacity === '1' && !button.getAnimations().some(animation => animation.playState === 'running');
+  }));
   const fan = await page.locator('[data-selection-tools] button:not([hidden])').evaluateAll(buttons => buttons.map(button => {
     const box = button.getBoundingClientRect();
     return {action: button.getAttribute('data-selection-action'), x: box.x, y: box.y, opacity: getComputedStyle(button).opacity};
   }));
-  assert.deepEqual(fan.map(item => item.action), ['highlight', 'note']);
+  assert.deepEqual(fan.map(item => item.action), ['highlight', 'note', 'ask-ai']);
   assert.equal(await page.locator('[data-selection-action="underline"]').count(), 0);
   assert.equal(await page.locator('[data-selection-action="clear-highlight"]').count(), 1);
   assert.equal(await page.locator('[data-selection-action="clear-highlight"]').getAttribute('hidden'), '');
   assert.ok(fan.every(item => Number(item.opacity) > 0.9), 'Fanned tools are visible');
-  assert.deepEqual(await page.locator('[data-selection-tools] button:not([hidden])').evaluateAll(buttons => buttons.map(button => button.innerText)), ['', '']);
+  assert.deepEqual(await page.locator('[data-selection-tools] button:not([hidden])').evaluateAll(buttons => buttons.map(button => button.innerText)), ['', '', '']);
+  const ask = fan.find(item => item.action === 'ask-ai');
+  const noteButton = fan.find(item => item.action === 'note');
+  const highlightButton = fan.find(item => item.action === 'highlight');
+  assert.ok(ask && noteButton && highlightButton);
+  assert.ok(ask.y < noteButton.y && ask.y < highlightButton.y, 'Ask AI sits above highlight and note');
+  for (let i = 0; i < fan.length; i++) {
+    for (let j = i + 1; j < fan.length; j++) {
+      const gap = Math.hypot(fan[i].x - fan[j].x, fan[i].y - fan[j].y);
+      assert.ok(gap >= 42, `${fan[i].action} overlaps ${fan[j].action} (${gap}px)`);
+    }
+  }
   const launcher = await page.locator('[data-chat-launcher]').boundingBox();
   assert.ok(fan.every(item => item.x < launcher.x + launcher.width), 'Tools stay on the page side of the avatar');
   await page.getByRole('button', {name: '高亮'}).hover();
@@ -122,6 +136,8 @@ try {
   await clearTool.waitFor();
   assert.equal(await page.locator('[data-selection-tools]').getAttribute('data-anchor'), 'mark');
   assert.equal(await highlightTool.getAttribute('hidden'), '');
+  assert.equal(await page.locator('[data-selection-action="note"]').getAttribute('hidden'), '');
+  assert.equal(await page.locator('[data-selection-action="ask-ai"]').getAttribute('hidden'), '');
   const clearBox = await clearTool.boundingBox();
   const markBox = await page.locator('#again mark.reader-annotation--highlight').boundingBox();
   assert.ok(clearBox && markBox);
@@ -136,7 +152,23 @@ try {
   await selectText(page, '#again', '统一入口');
   await highlightTool.waitFor();
   await clearTool.waitFor();
+  await page.locator('[data-selection-action="ask-ai"]').waitFor();
   assert.equal(await page.locator('[data-selection-tools]').getAttribute('data-anchor'), 'launcher');
+  await page.waitForFunction(() => [...document.querySelectorAll('[data-selection-tools] button:not([hidden])')].every(button => {
+    const style = getComputedStyle(button);
+    return style.opacity === '1' && !button.getAnimations().some(animation => animation.playState === 'running');
+  }));
+  const overlapFan = await page.locator('[data-selection-tools] button:not([hidden])').evaluateAll(buttons => buttons.map(button => {
+    const box = button.getBoundingClientRect();
+    return {action: button.getAttribute('data-selection-action'), x: box.x, y: box.y};
+  }));
+  assert.deepEqual(overlapFan.map(item => item.action), ['highlight', 'note', 'ask-ai', 'clear-highlight']);
+  for (let i = 0; i < overlapFan.length; i++) {
+    for (let j = i + 1; j < overlapFan.length; j++) {
+      const gap = Math.hypot(overlapFan[i].x - overlapFan[j].x, overlapFan[i].y - overlapFan[j].y);
+      assert.ok(gap >= 42, `${overlapFan[i].action} overlaps ${overlapFan[j].action} (${gap}px)`);
+    }
+  }
   await page.keyboard.press('Escape');
   await highlightTool.waitFor({state: 'hidden'});
   assert.equal(await page.evaluate(() => getSelection().isCollapsed), true);
@@ -145,6 +177,17 @@ try {
   await highlightTool.waitFor();
   await page.locator('#outside').click();
   await highlightTool.waitFor({state: 'hidden'});
+
+  await selectText(page, '#sentence', 'Vitest');
+  await page.getByRole('button', {name: '问 AI'}).click();
+  await page.waitForFunction(() => window.__annotations.actions.some(action => action.type === 'ask-ai'));
+  const asked = await page.evaluate(() => window.__annotations.actions.find(action => action.type === 'ask-ai'));
+  assert.equal(asked.type, 'ask-ai');
+  assert.equal(asked.quote, 'Vitest');
+  assert.equal(asked.pathname, '/docs/vite-plus/');
+  assert.equal(asked.title, 'Vite+');
+  assert.equal(await page.locator('[data-selection-action="ask-ai"]').count(), 1);
+  await page.locator('[data-selection-action="ask-ai"]').waitFor({state: 'hidden'});
 
   for (const selector of ['#sentence', '#with-code', '#again']) {
     await page.locator(selector).click({clickCount: 3});
