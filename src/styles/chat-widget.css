@@ -140,6 +140,10 @@
   transform: translate(calc(-50% - .45rem), calc(-50% - 4.5rem)) scale(1);
   transition-delay: 40ms;
 }
+.reader-selection-tools[data-open] button[data-selection-action="ask-ai"] {
+  transform: translate(calc(-50% - 2.55rem), calc(-50% - 6.7rem)) scale(1);
+  transition-delay: 80ms;
+}
 .reader-selection-tools[data-open] button[data-selection-action="clear-highlight"] {
   transform: translate(calc(-50% - 4.5rem), calc(-50% - .35rem)) scale(1);
   transition-delay: 80ms;
