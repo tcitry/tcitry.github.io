@@ -7,6 +7,7 @@ import { parse, parseFragment } from 'parse5';
 import { publicURL } from '../src/lib/public-url.mjs';
 import { assertCanonical, assertComments, assertSitemapLocations, canonicalLinks, sitemapLocations, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects, removedAuthRoutes } from './verify-deployment.mjs';
 import { auditContentLinks } from './internal-links.mjs';
+import { mapLimit } from './lib/map-limit.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), output = path.join(root, 'dist');
 const { values } = parseArgs({ options: { env: { type: 'string' }, help: { type: 'boolean' } } });
 if (values.help) { console.log('Usage: node scripts/verify-build.mjs [--env production|preview]\nDefaults to PUBLIC_SITE_ENV, then preview.'); process.exit(0); }
@@ -175,7 +176,11 @@ for (const url of feeds) {
 }
 const redirects = parseRedirects(await readFile(path.join(output, '_redirects'), 'utf8'));
 const locations = sitemapLocations(sitemap);
-const canonicals = new Map(await Promise.all(locations.map(async loc => [loc, canonicalLinks(await readFile(htmlPath(new URL(loc).pathname), 'utf8'))])));
+// Workers Builds 3ba1e083 died here: Promise.all opened every sitemap page at once
+// and hit EMFILE at index 1003 (dist/posts/.../index.html, nofile around 1024).
+// Every location is still read and checked; only the number of simultaneous opens is capped.
+const sitemapReadConcurrency = 32;
+const canonicals = new Map(await mapLimit(locations, sitemapReadConcurrency, async loc => [loc, canonicalLinks(await readFile(htmlPath(new URL(loc).pathname), 'utf8'))]));
 assertSitemapLocations(locations, { canonicalOf: loc => canonicals.get(loc), redirects });
 const links = await auditContentLinks({ pages: content.pages, output, redirects, site: 'https://yindongliang.com' });
 assert.deepEqual(links.errors, [], 'Every internal article link and fragment must have a published destination');
