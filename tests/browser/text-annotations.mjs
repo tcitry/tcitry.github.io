@@ -27,6 +27,26 @@ const server = await createServer({
   logLevel: 'warn',
 });
 
+/** Launcher and sidebar-edge fans share one quarter-circle: equal radius, 45° steps. */
+function assertFanArc(buttons, origin, anchorRadius, label) {
+  const placed = buttons.filter(button => button.action !== 'clear-highlight').map(button => {
+    const dx = button.x + button.width / 2 - origin.x;
+    const dy = button.y + button.height / 2 - origin.y;
+    return {action: button.action, radius: Math.hypot(dx, dy), angle: Math.atan2(-dy, dx) * 180 / Math.PI};
+  });
+  assert.deepEqual(placed.map(button => button.action), ['highlight', 'note', 'ask-ai'], `${label} fan order`);
+  const radii = placed.map(button => button.radius);
+  const radius = radii.reduce((sum, value) => sum + value, 0) / radii.length;
+  assert.ok(radii.every(value => Math.abs(value - radius) < 1.5), `${label} radii differ (${radii.map(value => value.toFixed(1)).join(', ')})`);
+  const buttonRadius = buttons[0].width / 2;
+  assert.ok(radius > anchorRadius + buttonRadius + 12, `${label} fan sticks to the anchor (${radius.toFixed(1)}px)`);
+  const expected = {highlight: 180, note: 135, 'ask-ai': 90};
+  for (const button of placed) {
+    const delta = Math.abs(((button.angle - expected[button.action]) % 360 + 540) % 360 - 180);
+    assert.ok(delta < 2, `${label} ${button.action} angle ${button.angle.toFixed(1)}° is off the quarter arc`);
+  }
+}
+
 async function selectText(page, selector, quote) {
   await page.locator(selector).evaluate((element, quote) => {
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
@@ -75,7 +95,7 @@ try {
   }));
   const fan = await page.locator('[data-selection-tools] button:not([hidden])').evaluateAll(buttons => buttons.map(button => {
     const box = button.getBoundingClientRect();
-    return {action: button.getAttribute('data-selection-action'), x: box.x, y: box.y, opacity: getComputedStyle(button).opacity};
+    return {action: button.getAttribute('data-selection-action'), x: box.x, y: box.y, width: box.width, height: box.height, opacity: getComputedStyle(button).opacity};
   }));
   assert.deepEqual(fan.map(item => item.action), ['highlight', 'note', 'ask-ai']);
   assert.equal(await page.locator('[data-selection-action="underline"]').count(), 0);
@@ -95,7 +115,9 @@ try {
     }
   }
   const launcher = await page.locator('[data-chat-launcher]').boundingBox();
+  assert.ok(launcher);
   assert.ok(fan.every(item => item.x < launcher.x + launcher.width), 'Tools stay on the page side of the avatar');
+  assertFanArc(fan, {x: launcher.x + launcher.width / 2, y: launcher.y + launcher.height / 2}, launcher.width / 2, 'launcher');
   await page.getByRole('button', {name: '高亮'}).hover();
   await page.waitForFunction(() => {
     const tip = document.querySelector('[data-selection-action="highlight"] .blog-chat-widget__tooltip');
@@ -169,6 +191,7 @@ try {
       assert.ok(gap >= 42, `${overlapFan[i].action} overlaps ${overlapFan[j].action} (${gap}px)`);
     }
   }
+  await page.screenshot({path: `${artifacts}/selection-tools-with-clear.png`});
   await page.keyboard.press('Escape');
   await highlightTool.waitFor({state: 'hidden'});
   assert.equal(await page.evaluate(() => getSelection().isCollapsed), true);
@@ -215,9 +238,20 @@ try {
   await page.locator('[data-chat-close][data-selection-active]').waitFor();
   assert.equal(await page.locator('[data-chat-launcher][data-selection-active]').count(), 0, 'Open sidebar does not wake the bottom launcher');
   assert.equal(await page.locator('[data-selection-tools]').getAttribute('data-anchor'), 'edge');
-  const edgeFan = await highlightTool.boundingBox();
+  await page.waitForFunction(() => [...document.querySelectorAll('[data-selection-tools] button:not([hidden])')].every(button => {
+    const style = getComputedStyle(button);
+    return style.opacity === '1' && !button.getAnimations().some(animation => animation.playState === 'running');
+  }));
+  const edgeButtons = await page.locator('[data-selection-tools] button:not([hidden])').evaluateAll(buttons => buttons.map(button => {
+    const box = button.getBoundingClientRect();
+    return {action: button.getAttribute('data-selection-action'), x: box.x, y: box.y, width: box.width, height: box.height};
+  }));
+  const edgeAnchor = await page.locator('[data-chat-close]').boundingBox();
   const viewport = page.viewportSize();
-  assert.ok(edgeFan && viewport);
+  assert.ok(edgeAnchor && viewport);
+  assertFanArc(edgeButtons, {x: edgeAnchor.x + edgeAnchor.width / 2, y: edgeAnchor.y + edgeAnchor.height / 2}, Math.max(edgeAnchor.width, edgeAnchor.height) / 2, 'edge');
+  const edgeFan = edgeButtons.find(button => button.action === 'highlight');
+  assert.ok(edgeFan);
   assert.ok(edgeFan.y < viewport.height * 0.72, 'Edge fan is not stuck at the bottom launcher');
   assert.ok(Math.abs((edgeFan.y + edgeFan.height / 2) - viewport.height / 2) < 220, 'Edge fan stays near the fold control');
   await page.screenshot({path: `${artifacts}/selection-tools-sidebar.png`});

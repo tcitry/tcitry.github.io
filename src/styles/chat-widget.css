@@ -102,6 +102,8 @@
   100% { transform: scale(1) rotate(0deg); }
 }
 .reader-selection-tools {
+  /* Quarter-circle outside the anchor. 0° points right; buttons step 45°. */
+  --selection-fan-radius: 4.75rem;
   position: fixed;
   z-index: 44;
   right: calc(var(--selection-anchor-right) + 1.75rem);
@@ -133,19 +135,28 @@
   transition: transform 220ms cubic-bezier(.2, .85, .2, 1), opacity 160ms ease;
 }
 .reader-selection-tools[data-open] button { pointer-events: auto; opacity: 1; }
-.reader-selection-tools[data-open] button[data-selection-action="highlight"] {
-  transform: translate(calc(-50% - 3.15rem), calc(-50% - 3.15rem)) scale(1);
-}
+.reader-selection-tools[data-open] button[data-selection-action="highlight"] { --selection-fan-angle: 180deg; }
 .reader-selection-tools[data-open] button[data-selection-action="note"] {
-  transform: translate(calc(-50% - .45rem), calc(-50% - 4.5rem)) scale(1);
+  --selection-fan-angle: 135deg;
   transition-delay: 40ms;
 }
 .reader-selection-tools[data-open] button[data-selection-action="ask-ai"] {
-  transform: translate(calc(-50% - 2.55rem), calc(-50% - 6.7rem)) scale(1);
+  --selection-fan-angle: 90deg;
   transition-delay: 80ms;
 }
+.reader-selection-tools[data-open] :is(
+  button[data-selection-action="highlight"],
+  button[data-selection-action="note"],
+  button[data-selection-action="ask-ai"]
+) {
+  transform: translate(
+    calc(-50% + var(--selection-fan-radius) * cos(var(--selection-fan-angle))),
+    calc(-50% - var(--selection-fan-radius) * sin(var(--selection-fan-angle)))
+  ) scale(1);
+}
+/* Clear stays off the quarter arc, one button-gap further left of highlight. */
 .reader-selection-tools[data-open] button[data-selection-action="clear-highlight"] {
-  transform: translate(calc(-50% - 4.5rem), calc(-50% - .35rem)) scale(1);
+  transform: translate(calc(-50% - var(--selection-fan-radius) - 3.5rem), -50%) scale(1);
   transition-delay: 80ms;
 }
 .reader-selection-tools[data-anchor="mark"][data-open] button[data-selection-action="clear-highlight"] {
@@ -153,8 +164,17 @@
   transition-delay: 0ms;
 }
 .reader-selection-tools button:hover { background: color-mix(in srgb, var(--chat-fg) 6%, var(--chat-bg)); }
+.reader-selection-tools button:is(:hover, :focus-visible) { z-index: 1; }
 .reader-selection-tools button svg { display: block; }
 .reader-selection-tools .blog-chat-widget__tooltip { top: 50%; translate: 0 -50%; }
+/* Ask sits at 12 o'clock; a left tooltip would cover the note button. */
+.reader-selection-tools button[data-selection-action="ask-ai"] .blog-chat-widget__tooltip {
+  top: auto;
+  right: auto;
+  bottom: calc(100% + .625rem);
+  left: 50%;
+  translate: -50% 0;
+}
 .reader-selection-tools__status {
   position: absolute;
   width: 1px;
