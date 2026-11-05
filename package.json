@@ -102,7 +102,7 @@
     "@tiptap/suggestion": "^3.31.3",
     "ai": "7.0.94",
     "anatomy-figures": "0.1.0",
-    "astro": "7.3.1",
+    "astro": "7.4.5",
     "convex": "^1.48.0",
     "convex-helpers": "0.1.124",
     "jose": "^6.2.12",
