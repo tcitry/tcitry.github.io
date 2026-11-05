@@ -3,6 +3,47 @@
 export const CHAT_LOAD_RETRY_DELAY_MS = 400;
 export const STALE_CHAT_ASSET_RELOAD_KEY = 'blog-chat-stale-asset-reload';
 
+export const CLERK_QUIET_FAILURE_CODES = ['failed_to_load_clerk_js', 'failed_to_load_clerk_ui'];
+export const CLERK_QUIET_FAILURE_PATTERNS = [
+  /\bClerk: Failed to load Clerk (?:JS|UI)\b/i,
+  /\bClerkJS: Network error at ["']https:\/\/[^/\s"']+\/v1\/[^\s"']*["']/i,
+];
+
+/** @param {unknown} value */
+export function isClerkLoadErrorMessage(value) {
+  return typeof value === 'string' && (
+    CLERK_QUIET_FAILURE_CODES.some((code) => value.includes(`code="${code}"`))
+    || CLERK_QUIET_FAILURE_PATTERNS.some((pattern) => pattern.test(value))
+  );
+}
+
+/** @param {unknown} error */
+export function isQuietClerkError(error) {
+  const seen = new Set();
+  while (error && typeof error === 'object' && !seen.has(error)) {
+    seen.add(error);
+    if (('code' in error && CLERK_QUIET_FAILURE_CODES.includes(String(error.code)))
+      || ('message' in error && isClerkLoadErrorMessage(error.message))) return true;
+    error = 'cause' in error ? error.cause : undefined;
+  }
+  return false;
+}
+
+/** @param {{exception?: {values?: Array<{value?: string}>}}} event */
+export function isQuietClerkEvent(event) {
+  return event.exception?.values?.some((exception) => isClerkLoadErrorMessage(exception.value)) ?? false;
+}
+
+/** @param {EventTarget} [target] */
+export function quietClerkRejections(target = globalThis) {
+  /** @param {Event} event */
+  function onRejection(event) {
+    if ('reason' in event && isQuietClerkError(event.reason)) event.preventDefault();
+  }
+  target.addEventListener('unhandledrejection', onRejection);
+  return () => target.removeEventListener('unhandledrejection', onRejection);
+}
+
 /**
  * @param {unknown} value
  */
@@ -31,6 +72,7 @@ export function isAssetLoadError(error) {
  * @param {unknown} error
  */
 export function isClerkLoadError(error) {
+  if (isQuietClerkError(error)) return true;
   if (!(error instanceof Error)) return false;
   return error.message.includes('Clerk:') || ('clerkError' in error && error.clerkError === true);
 }
@@ -77,7 +119,7 @@ export function needsChatPageRefresh(error, phase = 'import') {
  * @param {'import' | 'mount'} [phase]
  */
 export function shouldReportChatLoadError(error, phase = 'import') {
-  return !needsChatPageRefresh(error, phase);
+  return !isQuietClerkError(error) && !needsChatPageRefresh(error, phase);
 }
 
 /**

@@ -1,5 +1,5 @@
 import {captureException, getClient, startSpan, withScope} from '@sentry/astro';
-import {isAssetLoadError} from '../scripts/module-load-error.mjs';
+import {isAssetLoadError, isQuietClerkError} from '../scripts/module-load-error.mjs';
 
 type Feature = 'search' | 'code' | 'chat';
 type Operation = 'load' | 'load_retry' | 'mount' | 'recent_load' | 'query' | 'render' | 'render_recoverable';
@@ -16,7 +16,7 @@ function tags(feature: Feature, operation: Operation) {
 /** Keep caught failures observable without attaching input, code, or component props. */
 export function captureFeatureError(error: unknown, feature: Feature, operation: Operation) {
   // Deploy-window 404s for replaced hashed chunks are recovered by a refresh.
-  if (isAssetLoadError(error) || !monitoringEnabled()) return;
+  if (isAssetLoadError(error) || isQuietClerkError(error) || !monitoringEnabled()) return;
   try {
     withScope((scope) => {
       scope.setTags(tags(feature, operation));
