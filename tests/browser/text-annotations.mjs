@@ -140,7 +140,7 @@ try {
     window.__annotations.paint([
       {...window.__annotations.actions[0], id: 'mark-1'},
       {id: 'mark-2', type: 'highlight', quote: '统一入口', prefix: '第二个', suffix: '，用来'},
-      {id: 'mark-3', type: 'note', quote: 'Vitest', prefix: '和 ', suffix: ' 放在'},
+      {id: 'mark-3', type: 'note', quote: 'Vitest', prefix: '和 ', suffix: ' 放在', note: '先看测试命令'},
       {id: 'mark-old', type: 'underline', quote: 'Rolldown', prefix: 'Vite、', suffix: ' 和'},
     ]);
   });
@@ -156,6 +156,8 @@ try {
   await page.locator('#again mark.reader-annotation--highlight').click();
   const clearTool = page.getByRole('button', {name: '取消高亮'});
   await clearTool.waitFor();
+  assert.equal(await page.locator('[data-note-preview]').getAttribute('hidden'), '');
+  assert.equal(await page.locator('[data-selection-action="open-note"]').getAttribute('hidden'), '');
   assert.equal(await page.locator('[data-selection-tools]').getAttribute('data-anchor'), 'mark');
   assert.equal(await highlightTool.getAttribute('hidden'), '');
   assert.equal(await page.locator('[data-selection-action="note"]').getAttribute('hidden'), '');
@@ -195,6 +197,28 @@ try {
   await page.keyboard.press('Escape');
   await highlightTool.waitFor({state: 'hidden'});
   assert.equal(await page.evaluate(() => getSelection().isCollapsed), true);
+
+  await page.locator('mark.reader-annotation--note').click();
+  const notePreview = page.locator('[data-note-preview]');
+  await notePreview.waitFor();
+  assert.equal(await page.locator('[data-note-preview-body]').innerText(), '先看测试命令');
+  assert.equal(await page.locator('[data-selection-action="highlight"]').getAttribute('hidden'), '');
+  assert.equal(await page.locator('[data-selection-action="note"]').getAttribute('hidden'), '');
+  assert.equal(await page.locator('[data-selection-action="ask-ai"]').getAttribute('hidden'), '');
+  assert.equal(await page.locator('[data-selection-action="clear-highlight"]').getAttribute('hidden'), '');
+  const openNote = page.getByRole('button', {name: '在笔记列表中查看'});
+  await openNote.waitFor();
+  const previewBox = await notePreview.boundingBox();
+  const noteMarkBox = await page.locator('mark.reader-annotation--note').boundingBox();
+  const noteViewport = page.viewportSize();
+  assert.ok(previewBox && noteMarkBox && noteViewport);
+  assert.ok(previewBox.x >= 0 && previewBox.x + previewBox.width <= noteViewport.width + 1, 'Note preview stays inside the viewport');
+  assert.ok(previewBox.y >= 0 && previewBox.y + previewBox.height <= noteViewport.height, 'Note preview stays inside the viewport');
+  await page.screenshot({path: `${artifacts}/note-preview.png`});
+  await openNote.click();
+  await page.waitForFunction(() => window.__annotations.opens.length === 1);
+  assert.deepEqual(await page.evaluate(() => window.__annotations.opens[0]), {id: 'mark-3'});
+  await notePreview.waitFor({state: 'hidden'});
 
   await selectText(page, '#again', '区分');
   await highlightTool.waitFor();
@@ -274,11 +298,26 @@ try {
   await notes.getByRole('radio', {name: '高亮'}).click();
   await notes.locator('[data-annotation-filter="highlight"]').waitFor();
   assert.equal(await notes.getByText('高亮一句').count(), 1);
-  assert.equal(await notes.getByText('写下来').count(), 0);
+  assert.equal(await notes.locator('[data-annotation-list]').getByText('写下来').count(), 0);
   await notes.getByRole('link', {name: /统一入口/}).click();
   await notes.waitForFunction(() => document.querySelector('#annotation-ann-1')?.classList.contains('reader-annotation--target'));
+  await notes.evaluate(() => {
+    document.documentElement.dataset.pendingAnnotation = 'ann-3';
+    document.dispatchEvent(new CustomEvent('blog:focus-annotation', {detail: {id: 'ann-3'}}));
+  });
+  await notes.locator('[data-annotation-filter="note"]').waitFor();
+  const focusedNote = notes.locator('[data-annotation-item="ann-3"][data-annotation-current="true"]');
+  await focusedNote.waitFor();
+  assert.match(await focusedNote.innerText(), /记住测试命令/);
   await notes.getByRole('radio', {name: '笔记'}).click();
   await notes.getByText('记住测试命令').waitFor();
+  await notes.getByRole('link', {name: /写下来/}).click();
+  await notes.waitForFunction(() => {
+    const mark = document.querySelector('#annotation-ann-3');
+    if (!mark?.classList.contains('reader-annotation--target')) return false;
+    const box = mark.getBoundingClientRect();
+    return box.top >= 0 && box.bottom <= window.innerHeight && box.height > 0;
+  });
   await notes.screenshot({path: `${artifacts}/notes-panel.png`});
   await notes.getByRole('button', {name: '删除这条笔记'}).click();
   await notes.getByText('还没有笔记。').waitFor();

@@ -111,6 +111,11 @@
   @apply min-w-0;
 }
 
+.item[data-annotation-current='true'] .itemLink {
+  background: color-mix(in srgb, var(--accent, #8250df) 14%, transparent);
+  box-shadow: inset 2px 0 0 var(--accent, #8250df);
+}
+
 .itemLink {
   @apply flex min-w-0 flex-col gap-1 rounded-lg px-2 py-3 text-foreground no-underline hover:bg-surface-hover;
 }

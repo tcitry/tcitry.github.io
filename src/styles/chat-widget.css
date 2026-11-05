@@ -112,7 +112,7 @@
   height: 0;
   pointer-events: none;
 }
-.reader-selection-tools button {
+.reader-selection-tools button[data-selection-action]:not([data-selection-action="open-note"]) {
   position: absolute;
   left: 0;
   top: 0;
@@ -134,7 +134,7 @@
   transform: translate(-50%, -50%) scale(.72);
   transition: transform 220ms cubic-bezier(.2, .85, .2, 1), opacity 160ms ease;
 }
-.reader-selection-tools[data-open] button { pointer-events: auto; opacity: 1; }
+.reader-selection-tools[data-open] button[data-selection-action]:not([data-selection-action="open-note"]) { pointer-events: auto; opacity: 1; }
 .reader-selection-tools[data-open] button[data-selection-action="highlight"] { --selection-fan-angle: 180deg; }
 .reader-selection-tools[data-open] button[data-selection-action="note"] {
   --selection-fan-angle: 135deg;
@@ -163,9 +163,64 @@
   transform: translate(-50%, calc(-100% - .4rem)) scale(1);
   transition-delay: 0ms;
 }
-.reader-selection-tools button:hover { background: color-mix(in srgb, var(--chat-fg) 6%, var(--chat-bg)); }
-.reader-selection-tools button:is(:hover, :focus-visible) { z-index: 1; }
-.reader-selection-tools button svg { display: block; }
+.reader-selection-tools button[data-selection-action]:not([data-selection-action="open-note"]):hover { background: color-mix(in srgb, var(--chat-fg) 6%, var(--chat-bg)); }
+.reader-selection-tools button[data-selection-action]:not([data-selection-action="open-note"]):is(:hover, :focus-visible) { z-index: 1; }
+.reader-selection-tools button[data-selection-action]:not([data-selection-action="open-note"]) svg { display: block; }
+.reader-note-preview {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  display: grid;
+  gap: .45rem;
+  width: min(18rem, calc(100vw - 1.5rem));
+  padding: .75rem .85rem;
+  border: 1px solid color-mix(in srgb, var(--chat-fg) 16%, transparent);
+  border-radius: .75rem;
+  background: var(--chat-bg);
+  color: var(--chat-fg);
+  box-shadow: 0 8px 24px #0002;
+  pointer-events: auto;
+  text-align: start;
+}
+.reader-selection-tools[data-note-placement="above"] .reader-note-preview {
+  transform: translate(-50%, calc(-100% - .55rem));
+}
+.reader-selection-tools[data-note-placement="below"] .reader-note-preview {
+  transform: translate(-50%, .55rem);
+}
+.reader-note-preview__label {
+  margin: 0;
+  font-size: .75rem;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--chat-fg) 62%, transparent);
+}
+.reader-note-preview__body {
+  margin: 0;
+  max-height: 7.5rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  font-size: .875rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.reader-note-preview__link {
+  justify-self: start;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--chat-accent);
+  font: inherit;
+  font-size: .8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: .18em;
+}
+.reader-note-preview__link:hover { color: var(--chat-fg); }
 .reader-selection-tools .blog-chat-widget__tooltip { top: 50%; translate: 0 -50%; }
 /* Ask sits at 12 o'clock; a left tooltip would cover the note button. */
 .reader-selection-tools button[data-selection-action="ask-ai"] .blog-chat-widget__tooltip {

@@ -45,18 +45,66 @@ export default function TextAnnotationsPanel({pathname = ''}: {pathname?: string
   const [saving, setSaving] = useState(false);
   const savingRef = useRef(false);
   const [error, setError] = useState('');
+  const [focusRequest, setFocusRequest] = useState<{id: string; nonce: number} | null>(null);
+  const focusLoads = useRef<string | null>(null);
+  const focusId = focusRequest?.id ?? '';
+  const focusNonce = focusRequest?.nonce ?? 0;
   const type = annotationFilterType(filter);
   const list = usePaginatedQuery(api.reader.listTextAnnotations, type ? {type} : {}, {initialNumItems: 20});
   const create = useMutation(api.reader.createTextAnnotation);
   const remove = useMutation(api.reader.deleteTextAnnotation);
   const currentPath = pathname || (typeof window === 'undefined' ? '' : window.location.pathname);
   const loading = list.status === 'LoadingFirstPage';
+  const visibleIds = list.results.map(item => item.id).join('\0');
 
   useEffect(() => {
     const sync = () => setDraft(readNoteDraft());
     document.addEventListener('blog:annotation-draft', sync);
     return () => document.removeEventListener('blog:annotation-draft', sync);
   }, []);
+
+  useEffect(() => {
+    const apply = (id: string) => {
+      if (!id) return;
+      setFocusRequest(current => ({id, nonce: (current?.nonce ?? 0) + 1}));
+      delete document.documentElement.dataset.pendingAnnotation;
+    };
+    apply(document.documentElement.dataset.pendingAnnotation ?? '');
+    const onFocus = (event: Event) => {
+      const id = event instanceof CustomEvent && typeof event.detail?.id === 'string' ? event.detail.id : '';
+      apply(id);
+    };
+    document.addEventListener('blog:focus-annotation', onFocus);
+    return () => document.removeEventListener('blog:focus-annotation', onFocus);
+  }, []);
+
+  useEffect(() => {
+    if (!focusId) return;
+    setFilter(current => current === 'highlight' ? 'note' : current);
+  }, [focusId, focusNonce]);
+
+  useEffect(() => {
+    if (!focusId || filter === 'highlight' || loading) return;
+    if (visibleIds.split('\0').includes(focusId)) return;
+    if (list.status !== 'CanLoadMore') return;
+    const key = `${focusNonce}:${filter}`;
+    if (focusLoads.current === key) return;
+    focusLoads.current = key;
+    list.loadMore(20);
+  }, [focusId, focusNonce, filter, loading, visibleIds, list.status, list.loadMore]);
+
+  useEffect(() => {
+    if (!focusId || !visibleIds.split('\0').includes(focusId)) return;
+    const node = document.querySelector<HTMLElement>(`[data-annotation-item="${CSS.escape(focusId)}"]`);
+    if (!node) return;
+    for (const current of document.querySelectorAll('[data-annotation-current]')) {
+      if (current !== node) current.removeAttribute('data-annotation-current');
+    }
+    node.setAttribute('data-annotation-current', 'true');
+    node.scrollIntoView({block: 'nearest'});
+    const link = node.querySelector('a');
+    if (link instanceof HTMLElement) link.focus({preventScroll: true});
+  }, [focusId, focusNonce, visibleIds]);
 
   function discardDraft() {
     try { clearAnnotationDraft(window.sessionStorage); } catch { /* ignore */ }
@@ -125,7 +173,7 @@ export default function TextAnnotationsPanel({pathname = ''}: {pathname?: string
             {list.results.map(item => {
               const here = sameArticlePath(currentPath, item.pathname);
               const label = annotationTypeLabel(item.type as AnnotationType);
-              return <li key={item.id} className={styles.item}>
+              return <li key={item.id} className={styles.item} data-annotation-item={item.id}>
                 <div className={styles.annotationRow}>
                   <a className={styles.itemLink} href={`${item.pathname}#annotation-${encodeURIComponent(item.id)}`}
                     onClick={event => {

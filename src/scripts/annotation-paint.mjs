@@ -143,7 +143,7 @@ export function captureSelection(selection, root) {
 
 /**
  * @param {Element} root
- * @param {{id: string, type: string, quote: string, prefix?: string, suffix?: string}[]} annotations
+ * @param {{id: string, type: string, quote: string, prefix?: string, suffix?: string, note?: string | null}[]} annotations
  */
 export function paintAnnotations(root, annotations) {
   clearAnnotations(root);
@@ -173,7 +173,7 @@ export function clearAnnotations(root) {
  * @param {ReturnType<typeof textIndex>} index
  * @param {number} start
  * @param {number} end
- * @param {{id: string, type: string}} annotation
+ * @param {{id: string, type: string, note?: string | null}} annotation
  */
 function wrapSlice(root, index, start, end, annotation) {
   const parts = index.nodes.filter(entry => entry.end > start && entry.start < end);
@@ -212,6 +212,7 @@ function wrapSlice(root, index, start, end, annotation) {
     if (!anchored) {
       mark.id = `annotation-${id}`;
       mark.classList.add('reader-annotation--anchor');
+      if (typeof annotation.note === 'string' && annotation.note) mark.dataset.annotationNote = annotation.note;
       anchored = true;
     }
     node.parentNode.insertBefore(mark, node);
@@ -221,15 +222,15 @@ function wrapSlice(root, index, start, end, annotation) {
 
 /** @param {string} id */
 export function focusAnnotation(id) {
-  const nodes = document.querySelectorAll(`[data-reader-annotation="${CSS.escape(id)}"]`);
-  if (!nodes.length) {
-    const fallback = document.getElementById(`annotation-${id}`);
-    if (!fallback) return false;
-    fallback.classList.add('reader-annotation--target');
-    fallback.scrollIntoView({behavior: 'smooth', block: 'center'});
-    return true;
+  const nodes = [...document.querySelectorAll(`[data-reader-annotation="${CSS.escape(id)}"]`)];
+  const fallback = nodes.length ? null : document.getElementById(`annotation-${id}`);
+  const targets = nodes.length ? nodes : fallback ? [fallback] : [];
+  if (!targets.length) return false;
+  for (const node of document.querySelectorAll('.reader-annotation--target')) {
+    node.classList.remove('reader-annotation--target');
   }
-  nodes.forEach(node => node.classList.add('reader-annotation--target'));
-  nodes[0].scrollIntoView({behavior: 'smooth', block: 'center'});
+  void targets[0].offsetWidth;
+  for (const node of targets) node.classList.add('reader-annotation--target');
+  targets[0].scrollIntoView({behavior: 'smooth', block: 'center'});
   return true;
 }
