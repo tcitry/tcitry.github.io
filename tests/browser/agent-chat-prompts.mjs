@@ -29,7 +29,7 @@ let sendGate;
 function Harness() {
   const [requestedPrompt, setRequestedPrompt] = useState();
   useEffect(() => {window.__promptFixture = {
-    request(id, text) {setRequestedPrompt({id, text});},
+    request(id, text, kind) {setRequestedPrompt(kind ? {id, text, kind} : {id, text});},
     getConsumed() {return [...consumed];},
     holdSend() {sendGate = new Promise(resolve => {resolveSend = resolve;});},
     waitForSend() {return sendGate;},
@@ -70,7 +70,7 @@ let browser;
 const errors = [];
 const state = page => page.evaluate(() => window.__services.getState());
 const consumed = page => page.evaluate(() => window.__promptFixture.getConsumed());
-const requestPrompt = (page, id, text) => page.evaluate(({id, text}) => window.__promptFixture.request(id, text), {id, text});
+const requestPrompt = (page, id, text, kind) => page.evaluate(({id, text, kind}) => window.__promptFixture.request(id, text, kind), {id, text, kind});
 try {
   await server.listen();
   const base = new URL(server.resolvedUrls.local[0]);
@@ -143,13 +143,84 @@ try {
     await page.getByRole('button', {name: '停止生成', exact: true}).click();
     assert.equal(await input.inputValue(), '发送过程中带入的新问题');
     await page.waitForFunction(() => document.querySelector('textarea')?.placeholder === '继续追问，或提出新问题…');
-    assert.equal(await page.getByRole('link', {name: /已核验的 RAG 文章/}).count(), 1, 'Existing per-turn source links remain available');
+    // The source row stays in the transcript inside a collapsed disclosure, so it is not an exposed link until opened.
+    assert.equal(await page.locator('a[href="https://yindongliang.com/docs/rag-fixture/"]').count(), 1, 'Existing per-turn source links remain available');
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
     for (const button of await page.locator('.agent-chat__prompt-actions button, .prompt-suggestion__item').all()) {
       const box = await button.boundingBox();
       if (box) assert.ok(box.x >= 0 && box.x + box.width <= width, 'Prompt controls remain reachable at narrow widths');
     }
     assert.equal(new Set(await consumed(page)).size, (await consumed(page)).length, 'StrictMode and rerenders consume each request once');
+
+    const quote = page.locator('[data-quote-attachment]');
+    await requestPrompt(page, 'quote-keep', '选中的一段原文', 'quote');
+    await quote.waitFor();
+    assert.equal(await quote.locator('blockquote').innerText(), '选中的一段原文');
+    assert.equal(await input.inputValue(), '发送过程中带入的新问题', 'A quote card does not replace an existing draft');
+    assert.equal(await page.getByRole('button', {name: '移除引用', exact: true}).isEnabled(), true);
+    await page.getByRole('button', {name: '移除引用', exact: true}).click();
+    await quote.waitFor({state: 'detached'});
+    assert.equal(await input.inputValue(), '发送过程中带入的新问题');
+
+    await input.fill('未发送的追问');
+    await requestPrompt(page, 'quote-conflict', '另一段选中原文', 'quote');
+    await quote.waitFor();
+    await requestPrompt(page, 'search-while-quoted', '来自搜索且与草稿冲突');
+    await page.getByRole('group', {name: '待使用的搜索问题'}).waitFor();
+    assert.equal(await quote.locator('blockquote').innerText(), '另一段选中原文', 'A conflicting search question does not drop the quote before the reader chooses');
+    await page.getByRole('button', {name: '保留草稿', exact: true}).click();
+    assert.equal(await input.inputValue(), '未发送的追问');
+    assert.equal(await quote.count(), 1);
+
+    await requestPrompt(page, 'search-replace', '换成这条搜索问题');
+    await page.getByRole('button', {name: '使用搜索问题', exact: true}).click();
+    assert.equal(await input.inputValue(), '换成这条搜索问题');
+    await quote.waitFor({state: 'detached'});
+
+    await input.fill('');
+    await requestPrompt(page, 'quote-only', '只带原文发问', 'quote');
+    await quote.waitFor();
+    assert.equal(await input.inputValue(), '');
+    assert.equal(await input.getAttribute('placeholder'), '围绕这段原文提问…');
+    const sendsBeforeQuote = (await state(page)).writes.filter(item => item.name === 'assistant:sendMessage').length;
+    await page.getByRole('button', {name: '发送问题', exact: true}).click();
+    await page.waitForFunction(before => window.__services.getState().writes.filter(item => item.name === 'assistant:sendMessage').length > before, sendsBeforeQuote);
+    const quoteOnly = (await state(page)).writes.filter(item => item.name === 'assistant:sendMessage').at(-1);
+    assert.equal(quoteOnly.args.prompt, '');
+    assert.equal(quoteOnly.args.quote, '只带原文发问');
+    await quote.waitFor({state: 'detached'});
+    assert.equal(await input.inputValue(), '');
+    await page.locator('[data-sent-quote]').waitFor();
+    assert.equal(await page.locator('[data-sent-quote]').last().innerText(), '只带原文发问');
+    await page.getByRole('button', {name: '停止生成', exact: true}).click();
+
+    await requestPrompt(page, 'quote-follow', '再选一段', 'quote');
+    await quote.waitFor();
+    await input.fill('这句话在问什么？');
+    await page.getByRole('button', {name: '发送问题', exact: true}).click();
+    await page.waitForFunction(() => window.__services.getState().writes.filter(item => item.name === 'assistant:sendMessage').at(-1)?.args.quote === '再选一段');
+    const followed = (await state(page)).writes.filter(item => item.name === 'assistant:sendMessage').at(-1);
+    assert.equal(followed.args.prompt, '这句话在问什么？');
+    await quote.waitFor({state: 'detached'});
+    assert.equal(await input.inputValue(), '');
+    await page.getByRole('button', {name: '停止生成', exact: true}).click();
+    await page.waitForFunction(() => document.querySelector('textarea')?.disabled !== true);
+
+    await requestPrompt(page, 'quote-then-search', '将被搜索问题替换的引用', 'quote');
+    await quote.waitFor();
+    await requestPrompt(page, 'search-clears-quote', '搜索词就是问题');
+    await page.waitForFunction(() => window.__promptFixture.getConsumed().includes('search-clears-quote'));
+    assert.equal(await input.inputValue(), '搜索词就是问题');
+    assert.equal(await quote.count(), 0, 'Search ask clears an unsent quote and fills the question draft');
+    await requestPrompt(page, 'quote-too-long', '超'.repeat(2001), 'quote');
+    await page.getByRole('alert').waitFor();
+    assert.equal(await input.inputValue(), '搜索词就是问题');
+    assert.equal(await quote.count(), 0);
+    if (width === 440) await page.screenshot({path: '/opt/cursor/artifacts/ask-ai-search-draft.png'});
+    await input.fill('');
+    await requestPrompt(page, 'quote-shot', '截图里的选中原文', 'quote');
+    await quote.waitFor();
+    if (width === 440) await page.screenshot({path: '/opt/cursor/artifacts/ask-ai-quote-card.png'});
     await context.close();
     console.log(`${width}px ${colorScheme}: starters, editable drafts, unique handoff, conflict choices, delayed-send race, continuation, stop and sources passed.`);
   }

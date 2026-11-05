@@ -29,7 +29,20 @@ const successChunk = `export function mountChat(host, onClose, onReady) {
   workspace.append(input);
   host.append(workspace);
   queueMicrotask(onReady);
-  return {requestPrompt(text) { input.value = text; }, destroy() { host.replaceChildren(); }};
+  return {requestPrompt(text, kind = 'prompt') {
+    if (kind === 'quote') {
+      let card = host.querySelector('[data-quote-attachment]');
+      if (!card) {
+        card = document.createElement('blockquote');
+        card.dataset.quoteAttachment = '';
+        workspace.append(card);
+      }
+      card.textContent = text;
+      return;
+    }
+    host.querySelector('[data-quote-attachment]')?.remove();
+    input.value = text;
+  }, destroy() { host.replaceChildren(); }};
 }`;
 const throwOnceChunk = `let mounts = 0;
 export function mountChat(host, onClose, onReady) {
@@ -146,6 +159,9 @@ try {
   pending = undefined;
   await page.locator('.assistant-workspace').waitFor();
   await page.waitForFunction(() => document.querySelector('textarea[aria-label="向 AI 博客助手提问"]')?.value === '用这个问题问 AI');
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {quote: '选中的原文'}})));
+  await page.waitForFunction(() => document.querySelector('[data-quote-attachment]')?.textContent === '选中的原文');
+  assert.equal(await page.locator('textarea[aria-label="向 AI 博客助手提问"]').inputValue(), '用这个问题问 AI', 'A selection quote must not replace the question draft');
   assert.equal(await page.getByText('助手未能加载').count(), 0, 'Ask AI must not stay on the load-failure shell');
   assert.equal(await page.locator('#blog-chat-panel').getAttribute('data-chat-loaded'), 'true');
 
@@ -334,6 +350,10 @@ try {
   await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: '已登录问 AI'}})));
   await page.locator('.assistant-workspace').waitFor();
   await page.waitForFunction(() => document.querySelector('textarea[aria-label="向 AI 博客助手提问"]')?.value === '已登录问 AI');
+  await page.evaluate(() => document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {quote: '登录后的选中原文'}})));
+  await page.waitForFunction(() => document.querySelector('[data-quote-attachment]')?.textContent === '登录后的选中原文');
+  assert.equal(await page.locator('textarea[aria-label="向 AI 博客助手提问"]').inputValue(), '', 'A selection quote stays out of the textarea');
+  assert.equal(await page.locator('textarea[aria-label="向 AI 博客助手提问"]').getAttribute('data-prompt-kind'), 'quote');
   const providers = await page.evaluate(() => window.__clerkProviders);
   assert.equal(providers, 1, 'Ask AI must reuse the signed-in launcher ClerkProvider instead of creating a second tree');
   assert.equal(await page.getByText('助手未能加载').count(), 0);

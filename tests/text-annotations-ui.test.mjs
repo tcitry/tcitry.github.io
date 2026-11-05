@@ -45,7 +45,7 @@ test('notes tab follows 阅读 and lists text annotations separately from readin
   const chat = read('src/scripts/blog-chat.ts');
   const askAction = chat.slice(chat.indexOf('onAction(detail)'), chat.indexOf('onClear(detail)'));
   assert.match(askAction, /detail\.type === 'ask-ai'/);
-  assert.match(askAction, /new CustomEvent\('blog:ask-ai', \{detail: \{prompt: detail\.quote\}\}\)/);
+  assert.match(askAction, /new CustomEvent\('blog:ask-ai', \{detail: \{quote: detail\.quote\}\}\)/);
   assert.match(askAction, /blog:text-annotation/);
   assert.match(chat, /blog:text-annotation-clear/);
   assert.match(read('docs/member-services.md'), /问 AI/);

@@ -60,9 +60,9 @@ export function mountChat(target: HTMLElement, onClose: () => void, onReady: () 
     throw error;
   }
   return {
-    requestPrompt(text: string) {
+    requestPrompt(text: string, kind: 'prompt' | 'quote' = 'prompt') {
       if (destroyed || !text.trim() || text.trim().length > 2000) return;
-      requestedPrompt = {id: crypto.randomUUID(), text: text.trim()};
+      requestedPrompt = {id: crypto.randomUUID(), text: text.trim(), kind};
       render();
     },
     destroy() {

@@ -7,6 +7,7 @@ import {components, internal} from './_generated/api';
 import type {Doc, Id} from './_generated/dataModel';
 import {env, internalAction, internalMutation, internalQuery, mutation, query, type ActionCtx, type MutationCtx, type QueryCtx} from './_generated/server';
 import {routeToolChoice, toolInstructions, workersAiChatModel, NO_SOURCES, SAFE_ERROR, TOOL_BUDGET, type GenerationEvent, type Snippet, type Source} from './assistantModel';
+import {applyQuoteContext, DEFAULT_QUOTE_QUESTION, normalizeAskText, quoteAwareUserContent} from './assistantQuote';
 import {searchRetrievalOptions} from './assistantRetrievalConfig';
 import {retrievePublicSources} from './assistantPublicSearch';
 
@@ -99,17 +100,20 @@ export const getConversation = query({
 });
 
 export const sendMessage = mutation({
-  args: {conversationId: v.id('assistantConversations'), prompt: v.string(), requestId: v.string()},
+  args: {conversationId: v.id('assistantConversations'), prompt: v.string(), requestId: v.string(), quote: v.optional(v.string())},
   returns: v.id('assistantRuns'),
   handler: async (ctx, args) => {
     const conversation = await ownedConversation(ctx, args.conversationId);
-    const prompt = args.prompt.trim();
-    if (!prompt || args.prompt.length > 2000 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(prompt)
+    const quote = (args.quote ?? '').trim();
+    const question = args.prompt.trim();
+    if ((args.quote !== undefined && args.quote.length > 2000) || args.prompt.length > 2000
+        || (quote && !normalizeAskText(quote)) || (question && !normalizeAskText(question)) || (!quote && !question)
         || !/^[a-zA-Z0-9_-]{16,100}$/.test(args.requestId)) throw new ConvexError({code: 'INVALID_ARGUMENT', message: '问题须为 1–2000 字。'});
+    const prompt = question || DEFAULT_QUOTE_QUESTION;
     const previous = await ctx.db.query('assistantRuns').withIndex('by_conversationId_and_requestId', q => q.eq('conversationId', conversation._id).eq('requestId', args.requestId)).unique();
     if (previous) {
       const saved = await ctx.runQuery(components.agent.messages.getMessagesByIds, {messageIds: [previous.promptMessageId]});
-      if (saved[0]?.message?.content !== prompt) throw new ConvexError({code: 'REQUEST_CONFLICT', message: '发送标识已用于其他问题，请重新发送。'});
+      if (saved[0]?.message?.content !== prompt || (previous.quote ?? '') !== quote) throw new ConvexError({code: 'REQUEST_CONFLICT', message: '发送标识已用于其他问题，请重新发送。'});
       return previous._id;
     }
     if (conversation.activeRunId) {
@@ -121,9 +125,9 @@ export const sendMessage = mutation({
     const now = Date.now();
     const runId = await ctx.db.insert('assistantRuns', {conversationId: conversation._id, owner: conversation.owner,
       requestId: args.requestId, promptMessageId: saved.messageId, promptOrder: saved.message.order,
-      status: 'queued', sources: [], createdAt: now, deadlineAt: now + 120_000});
+      status: 'queued', sources: [], createdAt: now, deadlineAt: now + 120_000, ...(quote ? {quote} : {})});
     await ctx.db.patch('assistantConversations', conversation._id, {activeRunId: runId, updatedAt: now,
-      ...(conversation.title === '新对话' ? {title: prompt.replace(/\s+/g, ' ').slice(0, 80)} : {})});
+      ...(conversation.title === '新对话' ? {title: (question || quote).replace(/\s+/g, ' ').slice(0, 80)} : {})});
     // Message, run and both jobs commit together. A disconnected browser cannot
     // undo an acknowledged submission, and a lost provider response has a deadline.
     await ctx.scheduler.runAfter(0, internal.assistant.generate, {runId});
@@ -165,7 +169,7 @@ export const getRunStates = query({
     const runs = await Promise.all([...new Set(orders)].map(order => ctx.db.query('assistantRuns')
       .withIndex('by_conversationId_and_promptOrder', q => q.eq('conversationId', conversationId).eq('promptOrder', order)).unique()));
     return runs.filter(run => run !== null).map(run => ({order: run.promptOrder, status: run.status, sources: run.sources, error: run.error ?? null,
-      phase: run.phase ?? null, toolCalls: run.toolCalls ?? 0, completedAt: run.completedAt ?? null}));
+      phase: run.phase ?? null, toolCalls: run.toolCalls ?? 0, completedAt: run.completedAt ?? null, quote: run.quote ?? null}));
   },
 });
 
@@ -228,7 +232,7 @@ export const start = internalMutation({
     const conversation = await ctx.db.get('assistantConversations', run.conversationId);
     if (!conversation || conversation.activeRunId !== runId) return null;
     await ctx.db.patch('assistantRuns', runId, {status: 'running', phase: 'thinking', toolCalls: 0});
-    return {threadId: conversation.threadId, promptMessageId: run.promptMessageId, promptOrder: run.promptOrder, deadlineAt: run.deadlineAt};
+    return {threadId: conversation.threadId, promptMessageId: run.promptMessageId, promptOrder: run.promptOrder, deadlineAt: run.deadlineAt, quote: run.quote ?? ''};
   },
 });
 
@@ -274,7 +278,7 @@ export const completedContext = internalQuery({
     const recent = await ctx.db.query('assistantRuns').withIndex('by_conversationId_and_promptOrder', q =>
       q.eq('conversationId', run.conversationId).lt('promptOrder', run.promptOrder)).order('desc').take(32);
     const candidates = recent.filter(candidate => candidate.status === 'completed' && candidate.owner === run.owner).slice(0, 4);
-    const pairs: {question: string; answer: string}[] = [];
+    const pairs: {question: string; answer: string; content: string}[] = [];
     for (const candidate of candidates) {
       const response = await ctx.runQuery(components.agent.messages.listMessagesByThreadId, {
         threadId: conversation.threadId, upToAndIncludingMessageId: candidate.promptMessageId,
@@ -290,12 +294,13 @@ export const completedContext = internalQuery({
       if (!prompt || !answers.length) continue;
       const question = completedText(prompt.message?.content);
       const answer = completedText(answers[0].message?.content);
-      if (!question || !answer || question.length > 2000 || answer.length > 12_000) continue;
-      pairs.push({question, answer});
+      const quote = candidate.quote?.trim() ?? '';
+      if (!question || !answer || question.length > 2000 || quote.length > 2000 || answer.length > 12_000) continue;
+      pairs.push({question, answer, content: quote ? quoteAwareUserContent(quote, question) : question});
     }
     const previousQuestion = pairs[0]?.question ?? null;
-    return {previousQuestion, messages: pairs.reverse().flatMap(({question, answer}) => [
-      {role: 'user' as const, content: question}, {role: 'assistant' as const, content: answer},
+    return {previousQuestion, messages: pairs.reverse().flatMap(({content, answer}) => [
+      {role: 'user' as const, content}, {role: 'assistant' as const, content: answer},
     ])};
   },
 });
@@ -332,7 +337,7 @@ export const finish = internalMutation({
 export const generate = internalAction({
   args: {runId: v.id('assistantRuns')}, returns: v.null(),
   handler: async (ctx, {runId}) => {
-    const run: {threadId: string; promptMessageId: string; promptOrder: number; deadlineAt: number} | null = await ctx.runMutation(internal.assistant.start, {runId});
+    const run: {threadId: string; promptMessageId: string; promptOrder: number; deadlineAt: number; quote: string} | null = await ctx.runMutation(internal.assistant.start, {runId});
     if (!run) return null;
     const startedAt = Date.now();
     const trace = (event: {stage: string} & Partial<Omit<GenerationEvent, 'stage'>>) => {
@@ -371,7 +376,7 @@ export const generate = internalAction({
 
 type ToolRunArgs = {
   runId: Id<'assistantRuns'>;
-  run: {threadId: string; promptMessageId: string; deadlineAt: number};
+  run: {threadId: string; promptMessageId: string; deadlineAt: number; quote: string};
   history: {role: 'user' | 'assistant'; content: string}[];
   topicTerms: string;
   controller: AbortController;
@@ -540,7 +545,7 @@ async function generateWithTool(ctx: ActionCtx, {runId, run, history, topicTerms
       prepareStep: ({steps}) => routeToolChoice(steps.reduce((count, step) => count + step.toolCalls.length, 0)),
     }, {saveStreamDeltas: {throttleMs: 250}, contextHandler: async (_ctx, {threadId, inputPrompt}) => {
       if (threadId !== run.threadId || inputPrompt.length !== 1 || inputPrompt[0].role !== 'user') throw new Error(SAFE_ERROR);
-      return [...history, ...inputPrompt];
+      return [...history, ...inputPrompt.map(message => applyQuoteContext(message, run.quote))];
     }});
     await result.consumeStream();
     progressTrace({stage: 'agent_persisted'});

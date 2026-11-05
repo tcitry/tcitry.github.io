@@ -41,6 +41,7 @@ export default defineSchema({
     createdAt: v.number(), deadlineAt: v.number(), completedAt: v.optional(v.number()), error: v.optional(v.string()), streamId: v.optional(v.string()),
     phase: v.optional(v.union(v.literal("thinking"), v.literal("searching"), v.literal("writing"))),
     toolCalls: v.optional(v.number()),
+    quote: v.optional(v.string()),
   }).index("by_conversationId_and_requestId", ["conversationId", "requestId"])
     .index("by_conversationId_and_createdAt", ["conversationId", "createdAt"])
     .index("by_conversationId_and_promptOrder", ["conversationId", "promptOrder"]),

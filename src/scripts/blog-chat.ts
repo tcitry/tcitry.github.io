@@ -285,7 +285,7 @@ function initializeChat() {
     signal,
     onAction(detail) {
       if (detail.type === 'ask-ai') {
-        document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt: detail.quote}}));
+        document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {quote: detail.quote}}));
         return;
       }
       document.dispatchEvent(new CustomEvent('blog:text-annotation', {detail}));
@@ -345,8 +345,13 @@ function initializeChat() {
     });
   }, {signal});
   document.addEventListener('blog:ask-ai', (event) => {
-    const prompt = event instanceof CustomEvent && typeof event.detail?.prompt === 'string' ? event.detail.prompt.trim() : '';
-    if (!prompt || prompt.length > 2000) return;
+    const detail = event instanceof CustomEvent ? event.detail : undefined;
+    const quote = typeof detail?.quote === 'string' ? detail.quote.trim() : '';
+    const prompt = typeof detail?.prompt === 'string' ? detail.prompt.trim() : '';
+    // Selection is reference context. A search question stays an editable draft.
+    const kind = quote ? 'quote' : 'prompt';
+    const text = quote || prompt;
+    if (!text || text.length > 2000) return;
     const request = ++promptRequest;
     currentView = 'chat';
     try {
@@ -357,7 +362,7 @@ function initializeChat() {
       return;
     }
     void loadChat().then(() => {
-      if (!stopped && panel.open && request === promptRequest) mount?.requestPrompt(prompt);
+      if (!stopped && panel.open && request === promptRequest) mount?.requestPrompt(text, kind);
     });
   }, {signal});
   panel.addEventListener('click', (event) => {
