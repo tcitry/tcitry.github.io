@@ -23,6 +23,12 @@ test('notes tab follows 阅读 and lists text annotations separately from readin
   assert.match(panel, /api\.reader\.createTextAnnotation/);
   assert.match(panel, /api\.reader\.deleteTextAnnotation/);
   assert.doesNotMatch(panel, /listReadingMarks|setReadingMark/);
+  assert.match(panel, /blog:focus-annotation/);
+  assert.match(panel, /pendingAnnotation/);
+  assert.match(panel, /data-annotation-item/);
+  assert.match(panel, /data-annotation-current/);
+  assert.match(read('src/scripts/annotation-paint.mjs'), /annotationNote/);
+  assert.match(read('docs/member-services.md'), /在笔记列表中查看/);
   const tools = read('src/components/chat/BlogChatWidget.astro');
   assert.match(tools, /data-selection-action="highlight"/);
   assert.match(tools, /data-selection-action="note"/);
@@ -32,6 +38,9 @@ test('notes tab follows 阅读 and lists text annotations separately from readin
   assert.match(tools, /aria-label="写笔记"/);
   assert.match(tools, /aria-label="问 AI"/);
   assert.match(tools, /aria-label="取消高亮"/);
+  assert.match(tools, /data-note-preview/);
+  assert.match(tools, /data-selection-action="open-note"/);
+  assert.match(tools, /在笔记列表中查看/);
   assert.match(tools, /blog-chat-widget__tooltip" aria-hidden="true">问 AI/);
   assert.match(tools, /blog-chat-widget__tooltip" aria-hidden="true">取消高亮/);
   assert.doesNotMatch(tools, /data-selection-action="underline"|aria-label="划线"/);
@@ -39,6 +48,9 @@ test('notes tab follows 阅读 and lists text annotations separately from readin
   const selectionTools = read('src/scripts/selection-tools.mjs');
   assert.match(selectionTools, /data-selection-action="highlight"\], \[data-selection-action="note"\], \[data-selection-action="ask-ai"\]/);
   assert.match(selectionTools, /type !== 'ask-ai'/);
+  assert.match(selectionTools, /annotationType === 'note'/);
+  assert.match(selectionTools, /type === 'open-note'/);
+  assert.match(selectionTools, /在笔记列表中查看|这条笔记没有正文/);
   assert.match(read('src/styles/chat-widget.css'), /data-selection-action="ask-ai"/);
   assert.match(read('src/components/reader/ReaderAnnotations.tsx'), /blog:text-annotation-clear/);
   assert.match(read('src/components/reader/ReaderAnnotations.tsx'), /deleteTextAnnotation/);
@@ -48,6 +60,10 @@ test('notes tab follows 阅读 and lists text annotations separately from readin
   assert.match(askAction, /new CustomEvent\('blog:ask-ai', \{detail: \{quote: detail\.quote\}\}\)/);
   assert.match(askAction, /blog:text-annotation/);
   assert.match(chat, /blog:text-annotation-clear/);
+  assert.match(chat, /onOpenNote/);
+  assert.match(chat, /annotationId/);
+  assert.match(chat, /pendingAnnotation/);
+  assert.match(chat, /blog:focus-annotation/);
   assert.match(read('docs/member-services.md'), /问 AI/);
   assert.match(read('src/scripts/assistant-ui-state.mjs'), /'notes'/);
   assert.match(read('convex/schema.ts'), /textAnnotations:/);

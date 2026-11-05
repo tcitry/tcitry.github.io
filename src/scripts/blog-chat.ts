@@ -293,6 +293,9 @@ function initializeChat() {
     onClear(detail) {
       document.dispatchEvent(new CustomEvent('blog:text-annotation-clear', {detail}));
     },
+    onOpenNote(detail) {
+      document.dispatchEvent(new CustomEvent('blog:open-assistant', {detail: {view: 'notes', annotationId: detail.id}}));
+    },
   });
   launcher.hidden = false;
   expandHandle.hidden = false;
@@ -328,6 +331,9 @@ function initializeChat() {
   document.addEventListener('blog:open-assistant', (event) => {
     const view = event instanceof CustomEvent ? event.detail?.view : undefined;
     if (view !== 'notes' && view !== 'chat' && view !== 'reading' && view !== 'my' && view !== 'consult') return;
+    const annotationId = event instanceof CustomEvent && typeof event.detail?.annotationId === 'string'
+      ? event.detail.annotationId
+      : '';
     currentView = view;
     try {
       if (!panel.open) open();
@@ -340,7 +346,9 @@ function initializeChat() {
     void loadChat().then(() => {
       if (stopped || !panel.open) return;
       requestAnimationFrame(() => {
+        if (annotationId) document.documentElement.dataset.pendingAnnotation = annotationId;
         document.dispatchEvent(new CustomEvent('blog:assistant-view', {detail: {view}}));
+        if (annotationId) document.dispatchEvent(new CustomEvent('blog:focus-annotation', {detail: {id: annotationId}}));
       });
     });
   }, {signal});

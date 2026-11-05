@@ -3,7 +3,8 @@ import {articleContentRoot, captureRange, captureSelection} from './annotation-p
 /**
  * Fan 高亮 / 写笔记 / 问 AI around the assistant launcher, or the sidebar edge
  * control while the sidebar is open. A click on an existing highlight offers
- * 取消高亮 beside that mark.
+ * 取消高亮 beside that mark. A click on an existing note shows that note and
+ * a link into the sidebar notes list.
  * @param {{
  *   widget: HTMLElement,
  *   signal?: AbortSignal,
@@ -11,6 +12,7 @@ import {articleContentRoot, captureRange, captureSelection} from './annotation-p
  *     type: string, pathname: string, title: string, quote: string, prefix: string, suffix: string,
  *   }) => void,
  *   onClear?: (detail: {id: string}) => void,
+ *   onOpenNote?: (detail: {id: string}) => void,
  *   document?: Document,
  *   view?: Window,
  * }} options
@@ -23,11 +25,16 @@ export function mountSelectionTools(options) {
   if (!(tools instanceof HTMLElement)) return {dismiss() { return false; }, destroy() {}};
   const signal = options.signal;
   const clearButton = tools.querySelector('[data-selection-action="clear-highlight"]');
+  const notePreview = tools.querySelector('[data-note-preview]');
+  const noteBody = tools.querySelector('[data-note-preview-body]');
+  const openNoteButton = tools.querySelector('[data-selection-action="open-note"]');
   let open = false;
   /** @type {{quote: string, prefix: string, suffix: string} | null} */
   let quote = null;
   /** @type {string | null} */
   let clearId = null;
+  /** @type {string | null} */
+  let noteId = null;
   /** @type {Range | null} */
   let gestureRange = null;
   let hideTimer = 0;
@@ -38,8 +45,11 @@ export function mountSelectionTools(options) {
     open = false;
     quote = null;
     clearId = null;
+    noteId = null;
+    setNote(null, '');
     tools.removeAttribute('data-open');
     tools.removeAttribute('data-anchor');
+    tools.removeAttribute('data-note-placement');
     tools.style.left = '';
     tools.style.top = '';
     for (const node of options.widget.querySelectorAll('[data-selection-active]')) {
@@ -131,6 +141,18 @@ export function mountSelectionTools(options) {
     }
   }
 
+  /**
+   * @param {string | null} id
+   * @param {string} text
+   */
+  function setNote(id, text) {
+    noteId = id;
+    const showNote = Boolean(id);
+    if (notePreview instanceof HTMLElement) notePreview.hidden = !showNote;
+    if (openNoteButton instanceof HTMLElement) openNoteButton.hidden = !showNote;
+    if (noteBody instanceof HTMLElement) noteBody.textContent = showNote ? (text.trim() || '这条笔记没有正文。') : '';
+  }
+
   function dismiss() {
     const was = open;
     gestureRange = null;
@@ -148,19 +170,37 @@ export function mountSelectionTools(options) {
   /**
    * @param {Range | null} range
    * @param {Element | null} root
+   * @param {'highlight' | 'note' | ''} [type]
    */
-  function highlightInRange(range, root) {
+  function annotationInRange(range, root, type = '') {
     if (!range || !root) return null;
     const node = range.startContainer;
     const element = node instanceof Element ? node : node.parentElement;
-    const direct = element?.closest('mark[data-annotation-type="highlight"]');
-    if (direct instanceof HTMLElement && root.contains(direct) && direct.dataset.readerAnnotation) return direct;
+    const direct = element?.closest('mark[data-reader-annotation]');
+    if (direct instanceof HTMLElement && root.contains(direct) && direct.dataset.readerAnnotation
+      && (!type || direct.dataset.annotationType === type)) return direct;
     if (range.collapsed) return null;
-    for (const mark of root.querySelectorAll('mark[data-annotation-type="highlight"]')) {
+    const selector = type ? `mark[data-annotation-type="${type}"]` : 'mark[data-reader-annotation]';
+    for (const mark of root.querySelectorAll(selector)) {
       if (!(mark instanceof HTMLElement) || !mark.dataset.readerAnnotation) continue;
       if (overlaps(range, mark)) return mark;
     }
     return null;
+  }
+
+  /**
+   * The anchor fragment carries the saved note. Later slices of a wrapped
+   * quote only repeat the id.
+   * @param {HTMLElement} mark
+   * @param {Element} root
+   */
+  function noteText(mark, root) {
+    const id = mark.dataset.readerAnnotation ?? '';
+    if (!id) return '';
+    for (const node of root.querySelectorAll(`[data-reader-annotation="${CSS.escape(id)}"]`)) {
+      if (node instanceof HTMLElement && node.dataset.annotationNote) return node.dataset.annotationNote;
+    }
+    return '';
   }
 
   /**
@@ -179,11 +219,23 @@ export function mountSelectionTools(options) {
 
   /**
    * @param {HTMLElement} mark
+   * @param {boolean} withPreview
    */
-  function placeOnMark(mark) {
+  function placeOnMark(mark, withPreview) {
     const box = mark.getBoundingClientRect();
-    tools.style.left = `${box.left + Math.min(box.width / 2, 48)}px`;
-    tools.style.top = `${Math.max(8, box.top)}px`;
+    const center = box.left + Math.min(box.width / 2, 48);
+    if (!withPreview) {
+      tools.style.left = `${center}px`;
+      tools.style.top = `${Math.max(8, box.top)}px`;
+      tools.removeAttribute('data-note-placement');
+      return;
+    }
+    const width = Math.min(288, Math.max(160, view.innerWidth - 24));
+    const left = Math.min(Math.max(center, width / 2 + 12), Math.max(width / 2 + 12, view.innerWidth - width / 2 - 12));
+    const above = box.top > 168;
+    tools.style.left = `${left}px`;
+    tools.style.top = `${above ? Math.max(8, box.top) : box.bottom}px`;
+    tools.dataset.notePlacement = above ? 'above' : 'below';
   }
 
   function refresh() {
@@ -200,19 +252,30 @@ export function mountSelectionTools(options) {
       captured = captureRange(saved, root);
       range = saved;
     }
-    const highlight = highlightInRange(range, root);
+    const mark = annotationInRange(range, root);
     if (captured) {
       setFanVisible(true);
+      setNote(null, '');
+      const highlight = mark?.dataset.annotationType === 'highlight' ? mark : annotationInRange(range, root, 'highlight');
       setClear(highlight?.dataset.readerAnnotation ?? null);
       const edge = edgeAnchor();
       show(captured, edge ?? (launcher instanceof HTMLElement ? launcher : null), edge ? 'edge' : 'launcher');
       return;
     }
-    const caretInHighlight = selection?.isCollapsed ? highlight : null;
-    if (caretInHighlight) {
+    const caretMark = selection?.isCollapsed ? mark : null;
+    if (caretMark?.dataset.annotationType === 'note' && caretMark.dataset.readerAnnotation) {
       setFanVisible(false);
-      setClear(caretInHighlight.dataset.readerAnnotation ?? null);
-      placeOnMark(caretInHighlight);
+      setClear(null);
+      setNote(caretMark.dataset.readerAnnotation, noteText(caretMark, root));
+      placeOnMark(caretMark, true);
+      show(null, null, 'mark');
+      return;
+    }
+    if (caretMark?.dataset.annotationType === 'highlight') {
+      setFanVisible(false);
+      setNote(null, '');
+      setClear(caretMark.dataset.readerAnnotation ?? null);
+      placeOnMark(caretMark, false);
       show(null, null, 'mark');
       return;
     }
@@ -281,6 +344,14 @@ export function mountSelectionTools(options) {
       if (!id) return;
       clearId = null;
       options.onClear?.({id});
+      dismiss();
+      return;
+    }
+    if (type === 'open-note') {
+      const id = noteId;
+      if (!id) return;
+      noteId = null;
+      options.onOpenNote?.({id});
       dismiss();
       return;
     }
