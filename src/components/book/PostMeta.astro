@@ -1,8 +1,10 @@
 ---
 import type { ContentPage, TaxonomyTerm } from '../../lib/types';
+import { articleCover } from './article-cover.mjs';
 import { displayDate, readingMinutes } from './helpers';
 interface Props { page: ContentPage; tags: TaxonomyTerm[] }
 const { page, tags } = Astro.props;
+const cover = articleCover(page);
 const stats: string[] = [];
 if (page.wordCount > 0) stats.push(`${page.wordCount} 字`);
 const created = displayDate(page, 'short');
@@ -25,3 +27,4 @@ const tagLinks = page.tags.map((tag) => ({
     </p>
   )}
 </div>
+{cover && <p class="post-cover"><img src={cover.src} alt={cover.alt} loading="lazy" /></p>}
