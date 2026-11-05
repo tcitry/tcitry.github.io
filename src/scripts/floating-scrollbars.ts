@@ -3,6 +3,8 @@
 type Axis = 'x' | 'y';
 type Thumb = { node: HTMLDivElement; range: number; travel: number };
 type Area = { element: HTMLElement; thumbs: Record<Axis, Thumb>; timer?: number; removal?: number; dragging: boolean };
+// Chromium < 105 throws on `:modal`; an open dialog is the closest older match.
+const modalDialogSelector = CSS.supports('selector(:modal)') ? 'dialog:modal' : 'dialog[open]';
 
 export function installFloatingScrollbars() {
   const controller = new AbortController();
@@ -79,7 +81,7 @@ export function installFloatingScrollbars() {
     left = Math.max(0, left); top = Math.max(0, top);
     right = Math.min(innerWidth, right); bottom = Math.min(innerHeight, bottom);
     // A modal dialog lives above body portals. Its thumb must share that layer.
-    const host = element.closest('dialog:modal') ?? document.body;
+    const host = element.closest(modalDialogSelector) ?? document.body;
     for (const axis of ['x', 'y'] as const) {
       const thumb = area.thumbs[axis];
       const vertical = axis === 'y';
