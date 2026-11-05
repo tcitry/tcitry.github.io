@@ -19,7 +19,7 @@ export function preferredArticleTitle(item: ArticleTitleItem, current?: ArticleT
 }
 
 export function articleTitleFallback(pathname: string) {
-  const last = articleTitleKey(pathname).split('/').filter(Boolean).at(-1) ?? '';
+  const last = articleTitleKey(pathname).split('/').filter(Boolean).pop() ?? '';
   return last.replace(/[-_]+/g, ' ').replace(/[\u0000-\u001f\u007f]/g, '').trim() || '查看文章';
 }
 
