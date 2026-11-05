@@ -22,7 +22,7 @@ export function publicAIEndpoint(value, {endpoint = 'search', allowChatPath = fa
   try { url = new URL(value); } catch { throw new Error(ERROR); }
   const host = url.hostname;
   const labels = host.split('.');
-  const suffix = labels.at(-1) ?? '';
+  const suffix = labels[labels.length - 1] ?? '';
   if (host !== match[1].toLowerCase() || host.length > 253 || labels.length < 2
       || labels.some(label => !LABEL.test(label)) || !/[a-z]/.test(suffix)
       || LOCAL_SUFFIXES.has(suffix) || host === 'search.ai.cloudflare.com'

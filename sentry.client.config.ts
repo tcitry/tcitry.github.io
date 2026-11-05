@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/astro';
 import {isAssetLoadErrorMessage, isQuietClerkEvent} from './src/scripts/module-load-error.mjs';
+import {isThirdPartyNoise} from './src/scripts/sentry-noise.mjs';
 import {setupProjectAnalytics} from './src/scripts/project-analytics';
 
 // The DSN is a public ingestion address. Upload credentials stay in build secrets.
@@ -23,7 +24,7 @@ if (import.meta.env.PUBLIC_SITE_ENV === 'production' && window.location.hostname
     initialScope: { tags: { site: 'tcitry-blog' } },
     beforeSend(event) {
       const message = event.exception?.values?.[0]?.value;
-      if (isAssetLoadErrorMessage(message) || isQuietClerkEvent(event)) return null;
+      if (isAssetLoadErrorMessage(message) || isQuietClerkEvent(event) || isThirdPartyNoise(event)) return null;
       event.tags = { ...event.tags, page_path: window.location.pathname };
       if (event.request?.url) event.request.url = withoutQuery(event.request.url);
       return event;
