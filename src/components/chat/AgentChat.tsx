@@ -2,7 +2,7 @@ import {useEffect, useMemo, useRef, useState, type ReactNode} from 'react';
 import {useMutation, usePaginatedQuery, useQuery} from 'convex/react';
 import {useUIMessages, type UIMessage} from '@convex-dev/agent/react';
 import {ConvexError} from 'convex/values';
-import {ClockArrowRotateLeft, Ellipsis, Plus} from '@gravity-ui/icons';
+import {ClockArrowRotateLeft, Ellipsis, Plus, Xmark} from '@gravity-ui/icons';
 import {AlertDialog, Button, Dropdown, ListBox, Popover, Tooltip} from '@heroui/react';
 import {ChatConversation} from '@heroui-pro/react/chat-conversation';
 import {ChatLoader} from '@heroui-pro/react/chat-loader';
@@ -13,6 +13,7 @@ import {PromptInput} from '@heroui-pro/react/prompt-input';
 import {PromptSuggestion} from '@heroui-pro/react/prompt-suggestion';
 import {api} from '../../../convex/_generated/api';
 import type {Id} from '../../../convex/_generated/dataModel';
+import {normalizeAskText} from '../../../convex/assistantQuote';
 import {deriveFollowUpSuggestions} from '../../lib/chat-follow-ups';
 import {armCopySuccess, formatAnswerFinishedAt, releaseCopySuccess, type CopyTimer} from './answer-finished-at';
 import {CitationSourcesFooter, injectCitationLinks, type ChatCitationSource, useCitationMarkdownComponents} from './citations';
@@ -21,7 +22,7 @@ import '../../styles/chat.css';
 import './agent-chat.css';
 
 type RenderMessage = Pick<UIMessage, 'id' | 'key' | 'role' | 'parts' | 'text' | 'order' | 'stepOrder' | 'status' | '_creationTime'>;
-export type ChatPromptRequest = {id: string; text: string};
+export type ChatPromptRequest = {id: string; text: string; kind?: 'prompt' | 'quote'};
 const suggestions = ['Convex 适合哪些应用场景？', '如何用 Git 管理代码提交？', 'Durable Objects 如何保存状态？'];
 
 function ConversationShell({children, busy}: {children: ReactNode; busy?: boolean}) {
@@ -118,7 +119,7 @@ export function runLoaderLabel(run: {phase?: 'thinking' | 'searching' | 'writing
 function Turn({conversationId, order, messages, isLatest, busy, onFollowUp, onRegenerate, suggestionsDisabled}: {
   conversationId: Id<'assistantConversations'>; order: number; messages: RenderMessage[];
   isLatest: boolean; busy: boolean; onFollowUp: (prompt: string) => void;
-  onRegenerate: (prompt: string) => void; suggestionsDisabled: boolean;
+  onRegenerate: (prompt: string, quote?: string) => void; suggestionsDisabled: boolean;
 }) {
   // Each loaded turn has one bounded indexed subscription; pagination never loses
   // older citations by limiting a separate run list to the latest N generations.
@@ -135,7 +136,10 @@ function Turn({conversationId, order, messages, isLatest, busy, onFollowUp, onRe
     : [];
   return <div className="agent-chat__turn">
     {messages.map(message => message.role === 'user'
-      ? <ChatMessage.User key={message.key} className="blog-chat__user"><ChatMessage.Bubble><ChatMessage.Content>{message.text}</ChatMessage.Content></ChatMessage.Bubble></ChatMessage.User>
+      ? <div key={message.key} className="agent-chat__user-stack">
+          {run?.quote && <blockquote className="agent-chat__sent-quote" data-sent-quote>{run.quote}</blockquote>}
+          <ChatMessage.User className="blog-chat__user"><ChatMessage.Bubble><ChatMessage.Content>{message.text}</ChatMessage.Content></ChatMessage.Bubble></ChatMessage.User>
+        </div>
       : message.role === 'assistant' ? <Answer key={message.key} message={message} sources={run?.sources ?? []} finishedAt={finishedAt} busy={busy} /> : null)}
     {pending && !hasAnswer && userPrompt && <ChatLoader.Dots className="blog-chat__pending" label={runLoaderLabel(run)} />}
     {run?.status === 'canceled' && <p className="blog-chat__notice">已停止生成。{hasAnswer ? '当前回答可能不完整。' : ''}</p>}
@@ -144,7 +148,7 @@ function Turn({conversationId, order, messages, isLatest, busy, onFollowUp, onRe
       {!busy && userPrompt && <div className="agent-chat__turn-actions">
         <ChatMessageActions className="blog-chat__actions">
           <ChatMessageActions.Regenerate size="sm" variant="ghost" aria-label="重新生成" tooltip={false}
-            isDisabled={suggestionsDisabled} onPress={() => onRegenerate(userPrompt)} />
+            isDisabled={suggestionsDisabled} onPress={() => onRegenerate(userPrompt, run?.quote || undefined)} />
         </ChatMessageActions>
       </div>}
     </>}
@@ -154,7 +158,7 @@ function Turn({conversationId, order, messages, isLatest, busy, onFollowUp, onRe
 
 function Transcript({conversationId, threadId, expectEmpty, onHasMessages, onSuggestion, onRegenerate, busy, suggestionsDisabled}: {
   conversationId: Id<'assistantConversations'>; threadId: string; expectEmpty?: boolean;
-  onHasMessages: (value: boolean) => void; onSuggestion: (prompt: string) => void; onRegenerate: (prompt: string) => void;
+  onHasMessages: (value: boolean) => void; onSuggestion: (prompt: string) => void; onRegenerate: (prompt: string, quote?: string) => void;
   busy: boolean; suggestionsDisabled: boolean;
 }) {
   const messages = useUIMessages(api.assistant.listThreadMessages, {threadId}, {initialNumItems: 20, stream: true});
@@ -197,6 +201,7 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
   const [deleting, setDeleting] = useState(false);
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
   const [value, setValue] = useState('');
+  const [quote, setQuote] = useState('');
   const [hasMessages, setHasMessages] = useState(false);
   const [pendingPrompt, setPendingPrompt] = useState<ChatPromptRequest | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -204,7 +209,7 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
   const [announcement, setAnnouncement] = useState('');
   const locked = useRef(false);
   const awaitingConversation = useRef<Id<'assistantConversations'> | null>(null);
-  const retry = useRef<{conversationId: Id<'assistantConversations'>; prompt: string; requestId: string} | null>(null);
+  const retry = useRef<{conversationId: Id<'assistantConversations'>; prompt: string; quote: string; requestId: string} | null>(null);
   const input = useRef<HTMLTextAreaElement>(null);
   const receivedPrompts = useRef(new Set<string>());
   const currentId = selected ?? conversations.results[0]?.id ?? null;
@@ -220,16 +225,23 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
   useEffect(() => {
     if (!requestedPrompt || submitting || locked.current || receivedPrompts.current.has(requestedPrompt.id)) return;
     receivedPrompts.current.add(requestedPrompt.id);
-    const prompt = requestedPrompt.text.trim();
-    if (!prompt || prompt.length > 2000 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(prompt)) {
-      setError('搜索问题须为 1–2000 字的有效文本，请调整后重试。');
+    const prompt = normalizeAskText(requestedPrompt.text);
+    const kind = requestedPrompt.kind === 'quote' ? 'quote' : 'prompt';
+    if (!prompt) {
+      setError(kind === 'quote' ? '引用须为 1–2000 字的有效文本，请重新选择。' : '搜索问题须为 1–2000 字的有效文本，请调整后重试。');
       onPromptConsumed?.(requestedPrompt.id);
       return;
     }
+    if (kind === 'quote') {
+      setQuote(prompt); setError('');
+      onPromptConsumed?.(requestedPrompt.id);
+      input.current?.focus({preventScroll: true});
+      return;
+    }
     if (value.trim() && value.trim() !== prompt) {
-      setPendingPrompt({...requestedPrompt, text: prompt});
+      setPendingPrompt({...requestedPrompt, text: prompt, kind: 'prompt'});
     } else {
-      setValue(prompt); setPendingPrompt(null); setError('');
+      setQuote(''); setValue(prompt); setPendingPrompt(null); setError('');
       onPromptConsumed?.(requestedPrompt.id);
     }
     input.current?.focus({preventScroll: true});
@@ -242,7 +254,7 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
 
   function consumePendingPrompt(replace: boolean) {
     if (!pendingPrompt || locked.current) return;
-    if (replace) { setValue(pendingPrompt.text); setError(''); }
+    if (replace) { setQuote(''); setValue(pendingPrompt.text); setError(''); }
     onPromptConsumed?.(pendingPrompt.id); setPendingPrompt(null);
     input.current?.focus({preventScroll: true});
   }
@@ -253,7 +265,7 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
     try {
       const id = await create();
       awaitingConversation.current = id;
-      setSelected(id); setHasMessages(false); setHistoryOpen(false); setValue(''); retry.current = null;
+      setSelected(id); setHasMessages(false); setHistoryOpen(false); setValue(''); setQuote(''); retry.current = null;
     }
     catch (failure) { setError(errorMessage(failure)); }
     finally { locked.current = false; setSubmitting(false); }
@@ -262,29 +274,36 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
   function selectConversation(key: string | number) {
     const item = conversations.results.find(conversation => conversation.id === key);
     if (!item) return;
-    setSelected(item.id); setHasMessages(false); setHistoryOpen(false); setValue(''); setError(''); retry.current = null;
+    setSelected(item.id); setHasMessages(false); setHistoryOpen(false); setValue(''); setQuote(''); setError(''); retry.current = null;
   }
 
-  async function submit(overridePrompt?: string) {
+  async function submit(overridePrompt?: string, sentQuote?: string) {
+    const fromComposer = sentQuote === undefined;
     const prompt = (overridePrompt ?? value).trim();
-    if (locked.current || busy || !prompt || prompt.length > 2000) return;
+    const attached = (fromComposer ? quote : sentQuote).trim();
+    if (locked.current || busy || prompt.length > 2000 || attached.length > 2000 || (!prompt && !attached)) return;
+    if ((prompt && !normalizeAskText(prompt)) || (attached && !normalizeAskText(attached))) {
+      setError('问题须为 1–2000 字的有效文本。');
+      return;
+    }
     locked.current = true; setSubmitting(true); setError('');
     try {
       const conversationId = currentId ?? await create();
       setSelected(conversationId);
-      const request = retry.current?.conversationId === conversationId && retry.current.prompt === prompt
-        ? retry.current : {conversationId, prompt, requestId: crypto.randomUUID()};
+      const same = retry.current?.conversationId === conversationId && retry.current.prompt === prompt && retry.current.quote === attached;
+      const request = same && retry.current ? retry.current : {conversationId, prompt, quote: attached, requestId: crypto.randomUUID()};
       retry.current = request;
-      await send(request);
-      retry.current = null; setValue(''); setAnnouncement('问题已保存。');
+      await send({conversationId, prompt, requestId: request.requestId, ...(attached ? {quote: attached} : {})});
+      retry.current = null; setValue(''); if (fromComposer) setQuote(''); setAnnouncement('问题已保存。');
     } catch (failure) { setError(errorMessage(failure)); }
     finally { locked.current = false; setSubmitting(false); }
   }
 
-  function regenerate(prompt: string) {
+  function regenerate(prompt: string, attachedQuote?: string) {
     if (locked.current || busy || submitting || !prompt.trim()) return;
-    retry.current = currentId ? {conversationId: currentId, prompt: prompt.trim(), requestId: crypto.randomUUID()} : null;
-    void submit(prompt);
+    const nextQuote = attachedQuote?.trim() ?? '';
+    retry.current = currentId ? {conversationId: currentId, prompt: prompt.trim(), quote: nextQuote, requestId: crypto.randomUUID()} : null;
+    void submit(prompt, nextQuote);
   }
 
   async function stop() {
@@ -307,7 +326,7 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
     const nextId = nextConversationAfterDelete(deletedId);
     setSelected(nextId);
     setHasMessages(false); setHistoryOpen(false); setMenuOpen(false); setDeleteConfirmOpen(false);
-    setValue(''); retry.current = null;
+    setValue(''); setQuote(''); retry.current = null;
     try {
       await remove({conversationId: deletedId});
       setAnnouncement('对话已删除。');
@@ -411,10 +430,23 @@ export default function AgentChat({onReady, requestedPrompt, onPromptConsumed}: 
         </div>
       </div>}
       {error && <p role="alert" className="blog-chat__error">{error}</p>}
-      <PromptInput value={value} onValueChange={setValue} status={busy ? 'streaming' : submitting ? 'submitted' : 'ready'} onSubmit={submit} onStop={stop} isDisabled={submitting} maxHeight={160}>
-        <PromptInput.Shell><PromptInput.Content><PromptInput.TextArea ref={input} aria-label="向 AI 博客助手提问" placeholder={hasMessages ? '继续追问，或提出新问题…' : '向 AI 博客助手提问…'} maxLength={2000} /></PromptInput.Content>
-          <PromptInput.Toolbar><PromptInput.ToolbarStart><span className="blog-chat__input-help">{value.length ? `${value.length} / 2000` : busy ? '正在生成，可离开后回来查看' : hasMessages ? '围绕当前对话继续追问' : '检索公开博客文章'}</span></PromptInput.ToolbarStart>
-            <PromptInput.ToolbarEnd><PromptInput.Send aria-label={busy ? '停止生成' : '发送问题'} isDisabled={submitting || (!busy && !value.trim())} /></PromptInput.ToolbarEnd>
+      <PromptInput value={value} onValueChange={setValue} status={busy ? 'streaming' : submitting ? 'submitted' : 'ready'} onSubmit={() => { void submit(); }} onStop={stop} isDisabled={submitting} maxHeight={160}>
+        <PromptInput.Shell><PromptInput.Content>
+          {quote && <PromptInput.Attachments className="agent-chat__quote-slot">
+            <div className="agent-chat__quote" role="group" aria-label="选中的原文" data-quote-attachment>
+              <div className="agent-chat__quote-body">
+                <span className="agent-chat__quote-label">引用</span>
+                <blockquote className="agent-chat__quote-text">{quote}</blockquote>
+              </div>
+              <Button type="button" variant="ghost" size="sm" isIconOnly className="agent-chat__quote-remove" aria-label="移除引用" isDisabled={submitting} onPress={() => { setQuote(''); input.current?.focus({preventScroll: true}); }}>
+                <Xmark width={14} height={14} aria-hidden="true" />
+              </Button>
+            </div>
+          </PromptInput.Attachments>}
+          <PromptInput.TextArea ref={input} aria-label="向 AI 博客助手提问" placeholder={quote ? '围绕这段原文提问…' : hasMessages ? '继续追问，或提出新问题…' : '向 AI 博客助手提问…'} maxLength={2000} />
+        </PromptInput.Content>
+          <PromptInput.Toolbar><PromptInput.ToolbarStart><span className="blog-chat__input-help">{value.length ? `${value.length} / 2000` : quote ? '引用会随问题一起发送' : busy ? '正在生成，可离开后回来查看' : hasMessages ? '围绕当前对话继续追问' : '检索公开博客文章'}</span></PromptInput.ToolbarStart>
+            <PromptInput.ToolbarEnd><PromptInput.Send aria-label={busy ? '停止生成' : '发送问题'} isDisabled={submitting || (!busy && !value.trim() && !quote)} /></PromptInput.ToolbarEnd>
           </PromptInput.Toolbar>
         </PromptInput.Shell>
         <PromptInput.Footer>AI 回答请以原文为准 · 对话已登录保存 · 真人咨询请使用「咨询」</PromptInput.Footer>

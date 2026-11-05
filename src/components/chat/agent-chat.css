@@ -51,6 +51,15 @@
 .agent-chat .agent-chat__follow-ups .prompt-suggestion__item { min-height: 2.5rem; font-size: .8125rem; }
 .agent-chat__turn-actions { display: flex; justify-content: flex-start; }
 .agent-chat .blog-chat__composer > .blog-chat__error { margin: 0 0 .625rem; }
+.agent-chat__quote-slot { width: 100%; min-width: 0; }
+.agent-chat__quote { display: flex; flex: 1 1 100%; align-items: flex-start; gap: .375rem; width: 100%; min-width: 0; padding: .5rem .375rem .5rem .75rem; border: 1px solid var(--border); border-radius: .75rem; background: color-mix(in srgb, var(--foreground) 4%, transparent); }
+.agent-chat__quote-body { min-width: 0; flex: 1; }
+.agent-chat__quote-label { display: block; color: var(--muted); font-size: .75rem; line-height: 1.4; }
+.agent-chat__quote-text { max-height: 6.4em; margin: .125rem 0 0; overflow: auto; color: var(--foreground); font-size: .875rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.agent-chat__quote-remove { flex-shrink: 0; width: 2rem; min-width: 2rem; height: 2rem; min-height: 2rem; color: var(--muted); }
+.blog-chat .prompt-input__content:has(.agent-chat__quote-slot) .prompt-input__textarea { padding-top: .375rem; }
+.agent-chat__user-stack { display: flex; flex-direction: column; align-items: stretch; gap: .375rem; min-width: 0; }
+.agent-chat__sent-quote { align-self: flex-end; max-width: 90%; max-height: 7.2em; margin: 0; overflow: auto; padding: .5rem .75rem; border: 1px solid var(--border); border-radius: .75rem; color: var(--foreground); background: color-mix(in srgb, var(--foreground) 4%, transparent); font-size: .8125rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
 
 @media (max-width: 639px) {
   .agent-chat__header-actions .button { min-height: 2.75rem; }

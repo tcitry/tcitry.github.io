@@ -9,6 +9,7 @@ import {api, components, internal} from './_generated/api';
 import schema from './schema';
 import {SAFE_ERROR} from './assistantModel';
 import {citedSources, mergeToolSources, sourcesToPersist, validateToolQuery} from './assistant';
+import {DEFAULT_QUOTE_QUESTION, quoteAwareUserContent} from './assistantQuote';
 
 const modules = import.meta.glob(['./**/*.ts', './**/*.js', '!./**/*.test.ts']);
 const paginationOpts = {numItems: 20, cursor: null};
@@ -80,6 +81,42 @@ describe('assistant authorization and persisted submissions', () => {
     expect(results.filter(result => result.status === 'fulfilled')).toHaveLength(1);
     expect(results.filter(result => result.status === 'rejected')).toHaveLength(1);
     await expect(alice.query(api.assistant.listConversations, {paginationOpts: {cursor: null, numItems: 1000}})).rejects.toThrow('INVALID_ARGUMENT');
+  });
+
+  test('a selection quote is stored beside the question and repeated sends stay idempotent', async () => {
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    const args = {conversationId, prompt: '这句话在问什么？', quote: '选中的原文', requestId};
+    const first = await alice.mutation(api.assistant.sendMessage, args);
+    expect(await alice.mutation(api.assistant.sendMessage, args)).toBe(first);
+    await expect(alice.mutation(api.assistant.sendMessage, {...args, quote: '另一段原文'})).rejects.toThrow('REQUEST_CONFLICT');
+    await expect(alice.mutation(api.assistant.sendMessage, {...args, prompt: '另一个问题'})).rejects.toThrow('REQUEST_CONFLICT');
+    const conversation = await alice.query(api.assistant.getConversation, {conversationId});
+    expect(conversation.title).toBe(args.prompt);
+    const messages = await alice.query(api.assistant.listThreadMessages, {threadId: conversation.threadId, paginationOpts});
+    expect(messages.page.map(message => message.text)).toEqual([args.prompt]);
+    const run = await t.run(ctx => ctx.db.get('assistantRuns', first));
+    expect(run?.quote).toBe(args.quote);
+    const states = await alice.query(api.assistant.getRunStates, {conversationId, orders: [run!.promptOrder]});
+    expect(states[0]?.quote).toBe(args.quote);
+    await expect(alice.mutation(api.assistant.sendMessage, {conversationId, prompt: 'x'.repeat(2001), quote: '原文', requestId: 'question-request-0002'})).rejects.toThrow('INVALID_ARGUMENT');
+    await expect(alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '问题', quote: 'y'.repeat(2001), requestId: 'question-request-0003'})).rejects.toThrow('INVALID_ARGUMENT');
+    await expect(alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '', quote: '坏\u0000引用', requestId: 'question-request-0004'})).rejects.toThrow('INVALID_ARGUMENT');
+    await expect(alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '   ', quote: '   ', requestId: 'question-request-0005'})).rejects.toThrow('INVALID_ARGUMENT');
+  });
+
+  test('a quote without a follow-up question keeps a short saved prompt and a passage title', async () => {
+    const {alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    const quote = '第一行原文\n第二行原文';
+    await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '', quote, requestId});
+    const conversation = await alice.query(api.assistant.getConversation, {conversationId});
+    expect(conversation.title).toBe('第一行原文 第二行原文');
+    const messages = await alice.query(api.assistant.listThreadMessages, {threadId: conversation.threadId, paginationOpts});
+    expect(messages.page.map(message => message.text)).toEqual([DEFAULT_QUOTE_QUESTION]);
+    expect(quoteAwareUserContent(quote, '')).toContain('「原文」\n第一行原文\n第二行原文');
+    expect(quoteAwareUserContent(quote, '')).toContain(`「问题」\n${DEFAULT_QUOTE_QUESTION}`);
+    expect(quoteAwareUserContent('', '只是问题')).toBe('只是问题');
   });
 
   test('cancellation is persisted before a queued job starts and late completion cannot overwrite it', async () => {
@@ -205,6 +242,28 @@ describe('assistant completed context', () => {
     expect(JSON.stringify(context)).not.toMatch(/私密|归属不匹配/);
     await alice.mutation(api.assistant.cancel, {conversationId});
     expect(await t.query(internal.assistant.completedContext, {runId})).toBeNull();
+  });
+
+  test('completed context keeps the visible question and wraps a stored quote for the model', async () => {
+    const {t, alice} = setup();
+    const conversationId = await alice.mutation(api.assistant.createConversation, {});
+    await t.run(async ctx => {
+      const conversation = await ctx.db.get('assistantConversations', conversationId);
+      const saved = await saveMessage(ctx, components.agent, {threadId: conversation!.threadId, prompt: '围绕原文的问题'});
+      await saveMessage(ctx, components.agent, {threadId: conversation!.threadId, promptMessageId: saved.messageId,
+        message: {role: 'assistant', content: '围绕原文的回答'}});
+      await ctx.db.insert('assistantRuns', {conversationId, owner: conversation!.owner, requestId: 'seed-quoted-round',
+        promptMessageId: saved.messageId, promptOrder: saved.message.order, status: 'completed', sources: [], createdAt: Date.now(), deadlineAt: Date.now() + 120_000,
+        quote: '选中原文'});
+    });
+    const runId = await alice.mutation(api.assistant.sendMessage, {conversationId, prompt: '当前问题', requestId});
+    await t.mutation(internal.assistant.start, {runId});
+    const context = await t.query(internal.assistant.completedContext, {runId});
+    expect(context?.previousQuestion).toBe('围绕原文的问题');
+    expect(context?.messages).toEqual([
+      {role: 'user', content: quoteAwareUserContent('选中原文', '围绕原文的问题')},
+      {role: 'assistant', content: '围绕原文的回答'},
+    ]);
   });
 
   test('completed context keeps a tool-loop round: last text-only assistant step wins, tool steps are skipped', async () => {

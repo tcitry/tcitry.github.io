@@ -54,6 +54,7 @@ function initializeSearch() {
         // HeroUI/Clerk teardown is not concurrent with the assistant createRoot.
         requestAnimationFrame(() => {
           setTimeout(() => {
+            // The typed search is the question, so it stays a draft instead of a quote.
             document.dispatchEvent(new CustomEvent('blog:ask-ai', {detail: {prompt}}));
           }, 0);
         });

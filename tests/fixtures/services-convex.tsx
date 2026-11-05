@@ -74,7 +74,7 @@ let convexAuthOverride: {isAuthenticated: boolean; isLoading: boolean} | null =
 type Source = {id: string; title: string; url: string; sourceKind: 'author'};
 type AiConversation = {id: string; owner: string; threadId: string; title: string; activeRun: string | null; updatedAt: number};
 type AiMessage = {id: string; key: string; role: 'user' | 'assistant'; parts: {type: 'text'; text: string}[]; text: string; order: number; stepOrder: number; status: 'success' | 'streaming'; _creationTime: number; threadId: string};
-type AiRun = {id: string; conversationId: string; order: number; status: 'running' | 'completed' | 'canceled' | 'failed'; sources: Source[]; error?: string; completedAt?: number | null};
+type AiRun = {id: string; conversationId: string; order: number; status: 'running' | 'completed' | 'canceled' | 'failed'; sources: Source[]; error?: string; completedAt?: number | null; quote?: string | null};
 const sources: Source[] = [{id: '1', title: '已核验的 RAG 文章', url: 'https://yindongliang.com/docs/rag-fixture/', sourceKind: 'author'}];
 const safeAnswer = '根据已核验的文章[1]回答。\n\n[外部链接](https://example.invalid/unsafe)与 ![图片替代文字](https://example.invalid/unsafe.png) 不应成为可操作链接或图片。';
 const aiConversations: AiConversation[] = [
@@ -379,8 +379,9 @@ function useRequest(reference: Parameters<typeof getFunctionName>[0]) {
       const conversation = getAiConversation(String(args.conversationId), userId);
       const runId = `run_${nextId++}`;
       const order = aiRuns.filter(run => run.conversationId === conversation.id).length;
-      aiRuns.push({id: runId, conversationId: conversation.id, order, status: 'running', sources});
-      conversation.activeRun = runId; conversation.title = String(args.prompt); conversation.updatedAt = ++now;
+      const quote = typeof args.quote === 'string' ? args.quote : null;
+      aiRuns.push({id: runId, conversationId: conversation.id, order, status: 'running', sources, quote});
+      conversation.activeRun = runId; conversation.title = String(args.prompt).trim() || quote || '新对话'; conversation.updatedAt = ++now;
       addAiMessage(conversation.threadId, order, 'user', String(args.prompt));
       addAiMessage(conversation.threadId, order, 'assistant', '正在生成的部分回答。', 'streaming');
       publish(); return runId;
