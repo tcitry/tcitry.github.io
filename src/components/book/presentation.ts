@@ -1,5 +1,6 @@
 import type { ArticleItem, ArticleMetadata, BadgeData } from '@tcitry/astro-book/presentation';
 import type { ContentPage, TaxonomyTerm } from '../../lib/types';
+import { articleCover } from './article-cover.mjs';
 import { breadcrumb, dateText, displayDate, excerpt } from './helpers';
 
 export function articleBadges(page: ContentPage, tags: TaxonomyTerm[], detailed = false): BadgeData[] {
@@ -19,7 +20,7 @@ export function articleMetadata(page: ContentPage, tags: TaxonomyTerm[]): Articl
   return {
     date: dateText(page.date) ? { value: page.date, label: displayDate(page, 'localized') } : undefined,
     tags: page.tags.map((tag) => ({ label: tag, href: tags.find((term) => term.name === tag)?.url || `/tags/${encodeURIComponent(tag)}/` })),
-    image: page.image ? { src: page.image, alt: page.title } : undefined,
+    image: articleCover(page) ?? undefined,
   };
 }
 
