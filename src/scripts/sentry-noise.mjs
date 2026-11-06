@@ -7,7 +7,7 @@ const NETWORK_FAILURE = /^(?:Failed to fetch|Load failed|NetworkError when attem
 /**
  * @param {{
  *   exception?: {values?: Array<{type?: string, value?: string, mechanism?: {type?: string, handled?: boolean},
- *     stacktrace?: {frames?: Array<{filename?: string, lineno?: number, colno?: number}>}}>},
+ *     stacktrace?: {frames?: Array<{filename?: string, abs_path?: string, lineno?: number, colno?: number}>}}>},
  *   tags?: Record<string, unknown>,
  * }} event
  */
@@ -17,9 +17,10 @@ export function isThirdPartyNoise(event) {
   if (!exception) return false;
   const frames = exception.stacktrace?.frames ?? [];
   const thrownAt = frames[frames.length - 1];
+  const source = thrownAt?.abs_path ?? thrownAt?.filename;
 
   // Google Ads scripts injected by extensions or ad slots, e.g. `Error: int64` in rum_fy2021.js.
-  if (isAdScript(thrownAt?.filename)) return true;
+  if (isAdScript(source)) return true;
 
   // The search panel already shows a retry when its recent-updates request drops.
   if (event.tags?.feature === 'search' && event.tags?.operation === 'recent_load'
@@ -32,14 +33,14 @@ export function isThirdPartyNoise(event) {
     && exception.mechanism?.type === 'auto.browser.global_handlers.onerror'
     && frames.length === 1
     && thrownAt?.lineno === 1 && (thrownAt.colno ?? 0) <= 2
-    && isSiteChunk(thrownAt.filename);
+    && isSiteChunk(source);
 }
 
 /** @param {string | undefined} filename */
 function scriptURL(filename) {
   if (!filename) return null;
   try {
-    return new URL(filename);
+    return new URL(filename, `https://${SITE_HOST}`);
   } catch {
     return null;
   }
@@ -48,7 +49,7 @@ function scriptURL(filename) {
 /** @param {string | undefined} filename */
 function isAdScript(filename) {
   const url = scriptURL(filename);
-  return Boolean(url && url.hostname !== SITE_HOST && (AD_HOST.test(url.hostname) || url.pathname.startsWith('/pagead/')));
+  return Boolean(url && AD_HOST.test(url.hostname));
 }
 
 /** @param {string | undefined} filename */
