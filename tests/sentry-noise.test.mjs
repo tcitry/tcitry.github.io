@@ -23,6 +23,15 @@ test('site errors that merely pass through an ad callback are kept', () => {
   assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'int64', stacktrace: {frames: [
     frame(`${site}/pagead/fake.js`),
   ]}})), false);
+  for (const filename of [
+    'https://vendor.example/pagead/application.js',
+    'https://notgooglesyndication.com/pagead/application.js',
+    'https://googlesyndication.com.vendor.example/pagead/application.js',
+  ]) {
+    assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'int64', stacktrace: {frames: [
+      frame(filename),
+    ]}})), false, 'a pagead path alone does not establish a Google Ads origin');
+  }
 });
 
 test('a dropped recent-updates request is dropped only for that search operation', () => {
@@ -59,4 +68,42 @@ test('ordinary site errors are kept', () => {
     frame(`${site}/_astro/page.js`),
   ]}})), false);
   assert.equal(isThirdPartyNoise(event({type: 'TypeError', value: 'Failed to fetch'})), false);
+});
+
+test('Sentry path frames and abs_path retain the same origin checks', () => {
+  const syntax = source => event({
+    type: 'SyntaxError', value: 'Invalid or unexpected token',
+    mechanism: {type: 'auto.browser.global_handlers.onerror', handled: false},
+    stacktrace: {frames: [{...frame('/_astro/preload-helper.DHhhL8Zf.js', 1, 2), ...source}]},
+  });
+  assert.equal(isThirdPartyNoise(syntax({})), true);
+  assert.equal(isThirdPartyNoise(syntax({abs_path: `${site}/_astro/preload-helper.DHhhL8Zf.js`})), true);
+  assert.equal(isThirdPartyNoise(syntax({abs_path: 'https://vendor.example/_astro/preload-helper.DHhhL8Zf.js'})), false,
+    'an absolute source on another origin takes precedence over the path-only filename');
+  assert.equal(isThirdPartyNoise(syntax({filename: '//vendor.example/_astro/preload-helper.DHhhL8Zf.js'})), false);
+  assert.equal(isThirdPartyNoise(syntax({abs_path: 'not a URL'})), false);
+  assert.equal(isThirdPartyNoise(syntax({filename: '/docs/article/'})), false);
+
+  const ads = {type: 'Error', value: 'int64', stacktrace: {frames: [{
+    ...frame('/pagead/js/r20261019/r20190131/rum_fy2021.js'),
+    abs_path: 'https://pagead2.googlesyndication.com/pagead/js/r20261019/r20190131/rum_fy2021.js',
+  }]}};
+  assert.equal(isThirdPartyNoise(event(ads)), true);
+  assert.equal(isThirdPartyNoise(event({...ads, stacktrace: {frames: [
+    {...ads.stacktrace.frames[0], abs_path: `${site}/pagead/application.js`},
+  ]}})), false);
+});
+
+test('unattributed rejections, code loads, inline declarations and Convex failures remain visible', () => {
+  for (const sample of [
+    event({type: 'UnhandledRejection', value: 'Non-Error promise rejection captured with value: undefined',
+      mechanism: {type: 'auto.browser.global_handlers.onunhandledrejection', handled: false}}),
+    event({type: 'Error', value: 'undefined', mechanism: {type: 'generic', handled: true}},
+      {feature: 'code', operation: 'load'}),
+    event({type: 'SyntaxError', value: "Identifier 'originalQuery' has already been declared",
+      mechanism: {type: 'auto.browser.global_handlers.onerror', handled: false},
+      stacktrace: {frames: [frame('/docs/Linux/DevOps/alibaba-cloud-cli-configuration-guide/', 1, 1)]}}),
+    event({type: 'Error', value: '[CONVEX Q(reader:listReadingProgress)] [Request ID: fixture] Server Error\n  Called by client',
+      mechanism: {type: 'generic', handled: true}}, {feature: 'chat', operation: 'render'}),
+  ]) assert.equal(isThirdPartyNoise(sample), false);
 });
