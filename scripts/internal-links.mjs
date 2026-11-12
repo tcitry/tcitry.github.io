@@ -25,6 +25,15 @@ export async function auditContentLinks({ pages, output, redirects = [], site = 
     }
   }
   await inventory(root);
+  // A case-insensitive build host folds the requested spelling into a differently
+  // cased file, which is exactly what a case-sensitive deploy would answer 404 for.
+  // Resolving it names the real spelling instead of reporting a bare missing target.
+  const foldedNames = new Map();
+  for (const file of files) {
+    const key = file.toLowerCase();
+    if (!foldedNames.has(key)) foldedNames.set(key, []);
+    foldedNames.get(key).push(file);
+  }
   const redirectMap = new Map(redirects.map(rule => [decode(new URL(rule.from, site).pathname), rule.to]));
   const anchors = new Map();
   async function hasAnchor(file, fragment) {
@@ -54,7 +63,14 @@ export async function auditContentLinks({ pages, output, redirects = [], site = 
     const candidates = pathname.endsWith('/')
       ? [relative ? `${relative}/index.html` : 'index.html']
       : [relative, `${relative}/index.html`, `${relative}.html`];
-    return { file: candidates.find(candidate => files.has(candidate)) };
+    const file = candidates.find(candidate => files.has(candidate));
+    if (file) return { file };
+    const folded = candidates.flatMap(candidate => foldedNames.get(candidate.toLowerCase()) || []);
+    if (folded.length) {
+      const actual = folded[0].replace(/\/index\.html$/, '/');
+      return { reason: `case mismatch: ${actual} exists, link asks for ${pathname}` };
+    }
+    return { file: undefined };
   }
   const errors = [];
   let checkedLinks = 0;

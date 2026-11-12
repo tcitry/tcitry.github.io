@@ -111,7 +111,7 @@ test('preserves path case and rejects encoded traversal and symlinks outside out
     <a href="/outside/anything">symlink</a>
   `)] });
   assert.equal(errors.length, 3);
-  assert.equal(errors[0].reason, 'missing target: /docs/article/');
+  assert.equal(errors[0].reason, 'case mismatch: Docs/Article/ exists, link asks for /docs/article/');
   assert.equal(errors[1].reason, 'path escapes output');
   assert.equal(errors[2].reason, 'missing target: /outside/anything');
 });

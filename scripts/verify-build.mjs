@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { parseArgs } from 'node:util';
 import { parse, parseFragment } from 'parse5';
 import { publicURL } from '../src/lib/public-url.mjs';
-import { assertCanonical, assertComments, assertSitemapLocations, canonicalLinks, sitemapLocations, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects, removedAuthRoutes } from './verify-deployment.mjs';
+import { assertCanonical, assertComments, assertSitemapLocations, canonicalLinks, caseVariantDirectoryConflicts, sitemapLocations, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects, removedAuthRoutes } from './verify-deployment.mjs';
 import { auditContentLinks } from './internal-links.mjs';
 import { mapLimit } from './lib/map-limit.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), output = path.join(root, 'dist');
@@ -17,6 +17,8 @@ const content = JSON.parse(await readFile(path.join(root, '.generated/content.js
 assert.deepEqual(content.diagnostics.warnings.filter(warning => warning.startsWith('Unresolved relref')), [], 'Every prose relref must resolve before publishing');
 const routes = JSON.parse(await readFile(path.join(root, '.generated/routes.json'), 'utf8'));
 assertRecentUpdates(JSON.parse(await readFile(path.join(output, 'search/recent.json'), 'utf8')), routes);
+assert.deepEqual(caseVariantDirectoryConflicts(routes.map(route => route.url)), [],
+  'Route directories that differ only in case collapse on a case-insensitive build host');
 const legacy = JSON.parse(await readFile(path.join(root, 'scripts/legacy-routes.json'), 'utf8'));
 const htmlPath = url => path.join(output, decodeURIComponent(url), 'index.html');
 const assets = new Set();
