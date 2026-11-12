@@ -34,6 +34,84 @@ test('site errors that merely pass through an ad callback are kept', () => {
   }
 });
 
+test('Google Identity Services client errors are dropped', () => {
+  const gsi = '/gsi/client';
+  const page = '/_astro/page.Ab12Cd34.js';
+  const xhrWrap = (functionName, filename = page) => ({...frame(filename, 4, 80), function: functionName});
+
+  assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'pa', stacktrace: {frames: [
+    frame(gsi, 40, 10), frame(gsi, 12, 4),
+  ]}})), true, 'a path-only /gsi/client throw site is the GSI script');
+  assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'pa', stacktrace: {frames: [
+    frame('https://accounts.google.com/gsi/client?hl=en', 20, 8),
+  ]}})), true);
+  assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'pa', stacktrace: {frames: [
+    frame('//accounts.google.com/gsi/client'),
+  ]}})), true);
+  assert.equal(isThirdPartyNoise(event({
+    type: 'Error', value: 'pa',
+    mechanism: {type: 'auto.browser.browserapierrors.xhr.onreadystatechange', handled: false},
+    stacktrace: {frames: [
+      frame(gsi, 30, 12), frame(gsi, 18, 6), xhrWrap('Object.apply'), xhrWrap('XMLHttpRequest.r'),
+    ]},
+  })), true, 'trailing Sentry XHR wrappers in the page chunk are not the throw site');
+  assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'pa', stacktrace: {frames: [
+    {...frame('https://accounts.google.com/gsi/client'), function: '_.Tk'},
+    xhrWrap('XMLHttpRequest.ab', `${site}/_astro/page.js`),
+    xhrWrap('Object.apply', `${site}/_astro/page.js`),
+  ]}})), true, 'the minified listener name is not pinned to one build');
+  assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'pa', stacktrace: {frames: [{
+    ...frame(gsi), abs_path: 'https://accounts.google.com/gsi/client',
+  }]}})), true);
+  assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'pa', stacktrace: {frames: [
+    xhrWrap('XMLHttpRequest.r'), xhrWrap('Object.apply'), frame(gsi, 40, 10),
+  ]}})), true, 'older XHR wrapper callers still leave the /gsi/client throw site');
+});
+
+test('site errors that merely pass through a GSI callback are kept', () => {
+  const gsi = '/gsi/client';
+  const page = `${site}/_astro/page.js`;
+  const xhrWrap = functionName => ({...frame(page, 4, 80), function: functionName});
+
+  assert.equal(isThirdPartyNoise(event({type: 'TypeError', value: 'x is undefined', stacktrace: {frames: [
+    frame(gsi), {...frame(page), function: 'onCredential'},
+  ]}})), false);
+  assert.equal(isThirdPartyNoise(event({
+    type: 'TypeError', value: 'x is undefined',
+    mechanism: {type: 'auto.browser.browserapierrors.xhr.onreadystatechange', handled: false},
+    stacktrace: {frames: [
+      frame(gsi), {...frame(page), function: 'onCredential'}, xhrWrap('Object.apply'), xhrWrap('XMLHttpRequest.r'),
+    ]},
+  })), false, 'a site frame under the Sentry XHR wrappers stays visible');
+  assert.equal(isThirdPartyNoise(event({type: 'TypeError', value: 'x is undefined', stacktrace: {frames: [
+    frame(gsi), {...frame(page), function: 'XMLHttpRequest.ab'},
+  ]}})), false, 'a lone XMLHttpRequest method without the Proxy frame is a site handler');
+  assert.equal(isThirdPartyNoise(event({type: 'TypeError', value: 'x is undefined', stacktrace: {frames: [
+    xhrWrap('Object.apply'), xhrWrap('XMLHttpRequest.r'),
+  ]}})), false, 'wrapper frames alone do not drop a site error');
+  assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'pa', stacktrace: {frames: [
+    frame(`${site}/gsi/client`),
+  ]}})), false, 'an absolute site URL is not the GSI script');
+  assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'pa', stacktrace: {frames: [{
+    ...frame(gsi), abs_path: `${site}/gsi/client`,
+  }]}})), false, 'abs_path on this site takes precedence over the path-only filename');
+  assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'pa', stacktrace: {frames: [
+    frame('https://accounts.google.com/gsi/status'),
+  ]}})), false, 'the GSI status endpoint is not the client script');
+  for (const filename of [
+    'https://vendor.example/gsi/client',
+    'https://accounts.google.com.vendor.example/gsi/client',
+    'https://notaccounts.google.com/gsi/client',
+  ]) {
+    assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'pa', stacktrace: {frames: [
+      frame(filename),
+    ]}})), false, 'a /gsi/client path on another origin is not Google Identity Services');
+  }
+  assert.equal(isThirdPartyNoise(event({type: 'Error', value: 'pa', stacktrace: {frames: [
+    frame('/gsi/status'),
+  ]}})), false);
+});
+
 test('a dropped recent-updates request is dropped only for that search operation', () => {
   const failed = {type: 'TypeError', value: 'Failed to fetch (yindongliang.com)', mechanism: {type: 'generic', handled: true}};
   assert.equal(isThirdPartyNoise(event(failed, {feature: 'search', operation: 'recent_load'})), true);
