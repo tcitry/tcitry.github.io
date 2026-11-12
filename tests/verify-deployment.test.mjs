@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   assetReferences,
   assertNotFound,
+  caseVariantDirectoryConflicts,
   assertPagefindEntryMatches,
   removedAuthRoutes,
   hashedAstroAssets,
@@ -216,4 +217,23 @@ test('waitForPublishedRelease retries a 200 JSON body served as HTML until the J
     origin: 'https://yindongliang.com', expected, fetchImpl, attempts: 4, delayMs: 0, sleep: async () => {},
   }), expected);
   assert.equal(generation, 3);
+});
+
+test('caseVariantDirectoryConflicts reports route directories that differ only in case', () => {
+  // The 2026-11 regression: two Cloudflare articles declared directory-cased URLs
+  // while their section page used the flat lowercase form, so `/docs/Cloudflare/Workers/`
+  // and `/docs/Cloudflare/workers/` folded into one directory on a case-insensitive host.
+  const sections = ['/docs/Cloudflare/workers/', '/docs/Cloudflare/ai-agents/', '/docs/ai/skills/'];
+  const articles = ['/docs/Cloudflare/Workers/capnweb-rpc/', '/docs/Cloudflare/AI-Agents/cloudflare-agents-sdk-guide/'];
+  // Only the directories collide: each article keeps a single spelling of its own path.
+  assert.deepEqual(caseVariantDirectoryConflicts([...sections, ...articles]), [
+    ['docs/Cloudflare/Workers', 'docs/Cloudflare/workers'],
+    ['docs/Cloudflare/AI-Agents', 'docs/Cloudflare/ai-agents'],
+  ]);
+  assert.deepEqual(caseVariantDirectoryConflicts(['/docs/A/B/', '/docs/a/b/']), [
+    ['docs/A', 'docs/a'], ['docs/A/B', 'docs/a/b'],
+  ]);
+  assert.deepEqual(caseVariantDirectoryConflicts(['/docs/Cloudflare/capnweb-rpc/', '/docs/Cloudflare/workers/', '/docs/AI/Skills/cloudflare-security-audit-skill/']), []);
+  assert.deepEqual(caseVariantDirectoryConflicts(['/docs/AI/Skills/', '/docs/AI/Skills/skills-overview/']), []);
+  assert.deepEqual(caseVariantDirectoryConflicts([]), []);
 });

@@ -67,6 +67,25 @@ export function assertSitemapLocations(locations, { canonicalOf, redirects = [] 
   }
 }
 
+// A case-insensitive build host (default macOS APFS) silently folds two route
+// directories that differ only in case into one, so the artifact that ships
+// depends on which page wrote first and the local audit can no longer see the
+// other spelling. Route data is platform-independent, so detect the conflict
+// here rather than by walking dist, where the fold has already happened.
+export function caseVariantDirectoryConflicts(urls) {
+  const spellings = new Map();
+  for (const url of urls) {
+    const segments = decodeURIComponent(new URL(url, canonicalOrigin).pathname).split('/').filter(Boolean);
+    for (let depth = 1; depth <= segments.length; depth++) {
+      const parts = segments.slice(0, depth).join('/');
+      const key = parts.toLowerCase();
+      if (!spellings.has(key)) spellings.set(key, new Set());
+      spellings.get(key).add(parts);
+    }
+  }
+  return [...spellings.values()].filter(set => set.size > 1).map(set => [...set].sort());
+}
+
 // Paths whose segments need escapes beyond encodeURI are the ones asset routing respells.
 export const routingSensitive = loc => new URL(loc).pathname.split('/').some(segment => decodeURIComponent(segment) !== decodeURI(segment));
 
