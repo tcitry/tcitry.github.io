@@ -79,7 +79,7 @@
     "@ai-sdk/provider": "4.0.11",
     "@ai-sdk/provider-utils": "5.0.37",
     "@astrojs/react": "6.0.5",
-    "@astrojs/svelte": "9.0.1",
+    "@astrojs/svelte": "9.1.2",
     "@clerk/react": "6.15.1",
     "@convex-dev/agent": "0.7.2",
     "@convex-dev/rate-limiter": "0.3.2",
