@@ -20,7 +20,7 @@ async function fixture(t) {
   for (const subdirectory of [content, site, 'site/scripts', 'site/dist', 'site/.generated', 'site/node_modules/wrangler/bin', 'site/node_modules/convex/bin']) {
     await mkdir(path.isAbsolute(subdirectory) ? subdirectory : path.join(directory, subdirectory), { recursive: true });
   }
-  for (const file of ['release-manifest.mjs', 'verify-release.mjs', 'deploy-verified.mjs', 'theme-package.mjs', 'reader-config.mjs', 'reader-build.mjs', 'finalize-build.mjs', 'build-site.mjs', 'verify-convex-target.mjs', 'ci-branch.mjs', 'production-release-guard.mjs']) {
+  for (const file of ['release-manifest.mjs', 'verify-release.mjs', 'deploy-verified.mjs', 'theme-package.mjs', 'reader-config.mjs', 'reader-build.mjs', 'finalize-build.mjs', 'route-redirects.mjs', 'build-site.mjs', 'verify-convex-target.mjs', 'ci-branch.mjs', 'production-release-guard.mjs']) {
     await copyFile(new URL(`../scripts/${file}`, import.meta.url), path.join(site, 'scripts', file));
   }
   await mkdir(path.join(site, 'src/lib'), {recursive: true});

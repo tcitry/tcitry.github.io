@@ -332,11 +332,12 @@ async function main() {
   const timeout = Number(values['timeout-ms']);
   assert.ok(Number.isInteger(timeout) && timeout > 0 && timeout <= 120000, '--timeout-ms must be between 1 and 120000');
   const generated = path.join(root, '.generated');
-  const [content, routes, source, redirectText] = await Promise.all([
+  const [content, routes, source, redirectText, workerRules] = await Promise.all([
     readFile(path.join(generated, 'content.json'), 'utf8').then(JSON.parse),
     readFile(path.join(generated, 'routes.json'), 'utf8').then(JSON.parse),
     themeRelease(root),
     readFile(path.join(root, 'dist/_redirects'), 'utf8'),
+    readFile(path.join(root, 'dist/route-redirects.json'), 'utf8').then(JSON.parse),
   ]);
   const routeMap = new Map(routes.map(route => [route.url, route]));
   const selected = new Set(['/', '/archives/', '/posts/', '/weekly/', '/timeline/', '/portfolio/', '/links/', '/tags/', '/categories/', '/about/', '/docs/', '/labs/', '/labs/agent-replay/', '/demos/2026/rounded-timeline/']);
@@ -450,14 +451,23 @@ async function main() {
   const redirects = parseRedirects(redirectText);
   assert.ok(redirects.some(rule => rule.from === '/page/1/' && rule.to === '/'), 'Pagination redirect missing');
   for (const from of ['/chat/', '/me/']) assert.ok(!redirects.some(rule => rule.from === from), `Unpublished account URL does not need a redirect: ${from}`);
-  const checkedRedirects = localPreview ? [] : redirects;
+  const staticSources = new Set(redirects.map(rule => assetPathname(rule.from)));
+  const automatic = Object.entries(workerRules).filter(([from]) => !staticSources.has(from))
+    .map(([from, to]) => ({ from, to, status: 301 }));
+  const acceptanceSources = new Set(['/docs/apple/swiftui/method/allowshittesting', '/docs/Xcode/SwiftUI/View/Grid/', '/docs/Xcode/SwiftUI/View/Grid']);
+  const workerSample = values['all-routes'] ? automatic : automatic.filter(({ from }, i) => acceptanceSources.has(from) || i % Math.ceil(automatic.length / 12) === 0);
+  const checkedRedirects = localPreview ? [] : [...redirects, ...workerSample];
   await batches(checkedRedirects, async ({ from, to, status }) => {
     const response = await request(from); assert.equal(response.status, status, `Redirect status: ${from}`);
     assert.ok(response.headers.get('location'), `Redirect Location missing: ${from}`);
-    assert.equal(new URL(response.headers.get('location'), origin).href, new URL(to, origin).href, `Redirect target: ${from}`);
+    assert.equal(new URL(response.headers.get('location'), origin).href, new URL(assetPathname(to), origin).href, `Redirect target: ${from}`);
     const destination = await request(assetPathname(to)); assert.equal(destination.status, 200, `Redirect destination missing: ${to}`);
     assertCanonical(destination.body, to); assertHtmlIndexing(destination.body, environment, to); assertHeaderIndexing(destination.headers.get('x-robots-tag'), environment, to);
-  }, 'Legacy redirects');
+  }, 'Legacy and Worker redirects');
+  if (!localPreview) {
+    const missing = '/docs/Apple/SwiftUI/Bindable/';
+    if (!routeMap.has(missing)) assertNotFound(await request(missing), missing);
+  }
   for (const route of localPreview ? [] : ['/labs', '/archives', '/demos/2026/rounded-timeline']) {
     const response = await request(route); assert.equal(response.status, 307, `Trailing-slash redirect: ${route}`);
     assert.ok(response.headers.get('location'), `Trailing-slash Location missing: ${route}`);

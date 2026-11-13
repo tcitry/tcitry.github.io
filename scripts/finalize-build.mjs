@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { assertBuiltReaderConfig } from './reader-build.mjs';
 import { previewBuildOutput } from './build-site.mjs';
 import { publicURL } from '../src/lib/public-url.mjs';
+import { generateRouteRedirects } from './route-redirects.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = await previewBuildOutput(root, process.env.BLOG_PREVIEW_OUTPUT_DIR, process.env.PUBLIC_SITE_ENV);
 // Preserve Astro's snapshot of the configuration actually compiled into JS.
@@ -50,28 +51,29 @@ const sitemap = routes.filter(route => !/\/page\/\d+\/$/.test(route.url)).map(ro
 });
 for (const url of ['/labs/', '/labs/agent-replay/', '/demos/2026/threejs-basics/']) sitemap.push(`<url><loc>${absolute(url)}</loc></url>`);
 await put('/sitemap.xml', `<?xml version="1.0" encoding="utf-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${sitemap.join('\n')}</urlset>\n`);
-let redirects = 0;
-const routeURLs = new Set(routes.map(route => route.url));
+let aliasHtml = 0;
 // macOS commonly uses a case-insensitive filesystem. Keep aliases that only differ
 // in case in the host redirect manifest instead of overwriting a real HTML page.
 const outputKeys = new Set(routes.map(route => decodeURIComponent(route.url).toLowerCase()));
-const redirectRules = [];
 const aliasEntries = content.pages.flatMap(page => page.aliases.map(alias => [alias, page.url]));
 aliasEntries.push(['/page/1/', '/']);
-for (const [alias, url] of aliasEntries) {
-  if (routeURLs.has(alias)) continue;
-  redirectRules.push(`${alias} ${url} 301`);
+const { staticRules, workerRules, preservedAliases, skippedCanonical } = generateRouteRedirects(routes, aliasEntries);
+for (const { from: alias, to: url } of staticRules) {
   const key = decodeURIComponent(alias).toLowerCase();
   if (outputKeys.has(key)) continue;
   outputKeys.add(key);
   const target = alias.endsWith('/') ? alias + 'index.html' : alias;
   const canonical = absolute(url);
   await put(target, `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="robots" content="noindex"><link rel="canonical" href="${escape(canonical)}"><meta http-equiv="refresh" content="0; url=${escape(url)}"><title>页面已迁移</title></head><body><a href="${escape(url)}">继续阅读</a></body></html>`);
-  redirects++;
+  aliasHtml++;
 }
-await put('/_redirects', redirectRules.join('\n') + '\n');
-await writeFile(path.join(root, '.generated/build-summary.json'), JSON.stringify({ routes: routes.length, feeds: feedCount, redirects, generatedAt: new Date().toISOString() }, null, 2));
+await put('/_redirects', staticRules.map(({ from, to }) => `${from} ${to} 301`).join('\n') + '\n');
+// Import from dist so the existing release seal covers exactly the JSON bytes
+// bundled into the Worker. This contains only already-public route pathnames.
+await put('/route-redirects.json', JSON.stringify(workerRules, null, 2) + '\n');
+const redirects = Object.keys(workerRules).length;
+await writeFile(path.join(root, '.generated/build-summary.json'), JSON.stringify({ routes: routes.length, feeds: feedCount, redirects, staticRedirects: staticRules.length, aliasHtml, preservedAliases, skippedCanonical, generatedAt: new Date().toISOString() }, null, 2));
 const corpus = JSON.parse(await readFile(path.join(root, '.generated/ai-search/manifest.json'), 'utf8'));
 await put('/blog-release.json', JSON.stringify({ version: 1, ...corpus.revision, corpusHash: corpus.corpusHash, environment: corpus.environment }) + '\n');
 if (process.env.PUBLIC_SITE_ENV === 'production') await assertBuiltReaderConfig(root);
-console.log(`Finalized ${routes.length} content routes, ${feedCount} feeds, sitemap and ${redirects} existing/pagination redirects.`);
+console.log(`Finalized ${routes.length} content routes, ${feedCount} feeds, sitemap and ${redirects} Worker redirects (${staticRules.length} static aliases; ${aliasHtml} alias HTML pages).`);
