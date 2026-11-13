@@ -67,6 +67,8 @@ npm run deploy:verified
 - `verify:release` 校验来源提交、配置、产物和 AI Search 语料并封存 release。
 - `deploy:verified` 只上传该封存产物，完成线上核验后尽力同步 AI Search。文章同步失败或只完成一部分不会让这次 verified deploy 失败。
 
+生产构建与验证会比较上一版已发布的累计 URL 清单，阻止未声明的历史地址消失。清单首次启用、迁移与退役规则、离线 preview 限制以及站内 canonical 链接检查见 [公开 URL 与历史兼容](url-lifecycle.md)。
+
 封存后不得重建或修改 `dist/`、配置、引用清单或语料。Wrangler 上传期间如有其他进程可能改写产物，应中止并从新的独立检出重建。
 
 若站点已上传但线上核验失败，在同一封存目录修复外部条件后运行项目定义的 deployment verify；不要手工制造 deployment receipt。AI Search 文章同步是发布后的尽力而为步骤：Workers Builds 变绿只表示 Worker/Convex 与线上核验（含 AI Search corpus/chat API）成功，不等于全部文章已经索引完成。

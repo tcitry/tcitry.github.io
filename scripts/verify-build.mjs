@@ -4,7 +4,10 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { parseArgs } from 'node:util';
 import { parse, parseFragment } from 'parse5';
-import { publicURL } from '../src/lib/public-url.mjs';
+import { assetPathname, publicURL } from '../src/lib/public-url.mjs';
+import { generateRouteRedirects } from './route-redirects.mjs';
+import { publishedRouteHistory, routeLifecycle } from './route-lifecycle.mjs';
+import { publicHtmlRoutes } from './canonical-links.mjs';
 import { assertCanonical, assertComments, assertSitemapLocations, canonicalLinks, caseVariantDirectoryConflicts, sitemapLocations, assertHeaderIndexing, assertHtmlIndexing, assertRecentUpdates, assertRobotsPolicy, assertXMLSiteURLs, assetReferences, parseRedirects, removedAuthRoutes } from './verify-deployment.mjs';
 import { auditContentLinks } from './internal-links.mjs';
 import { mapLimit } from './lib/map-limit.mjs';
@@ -97,9 +100,6 @@ function assertMdxPage(html, page) {
 const urls = new Set(routes.map(route => route.url));
 const legacyURLs = new Set(legacy.pages.map(page => page.url));
 // Migrated URLs still need a rendered canonical destination; actual redirects are checked below.
-const aliasTargets = new Map(content.pages.flatMap(page => page.aliases.map(alias => [alias, page.url])));
-const missing = [...legacyURLs].filter(url => !urls.has(url) && !urls.has(aliasTargets.get(url)));
-assert.deepEqual(missing, [], 'Every original public route must remain available');
 const counts = { routes: routes.length, originalRoutes: legacyURLs.size, comments: 0, math: 0, mermaid: 0, code: 0, blogMdx: 0 };
 const pages = new Map(content.pages.map(page => [page.id, page]));
 for (const route of routes) {
@@ -177,15 +177,41 @@ for (const url of feeds) {
   assert.match(xml, /<rss\b[^>]*version="2\.0"/); assertXMLSiteURLs(xml, url);
 }
 const redirects = parseRedirects(await readFile(path.join(output, '_redirects'), 'utf8'));
+const workerRules = JSON.parse(await readFile(path.join(output, 'route-redirects.json'), 'utf8'));
+const baseline = JSON.parse(await readFile(path.join(root, '.generated/route-history-baseline.json'), 'utf8'));
+if (environment === 'production') assert.equal(baseline.source, 'published', 'Production must compare against published route history');
+const policy = JSON.parse(await readFile(path.join(root, 'scripts/route-migrations.json'), 'utf8'));
+const allPublicRoutes = await publicHtmlRoutes(output);
+const lifecycle = routeLifecycle(allPublicRoutes, [...content.pages.flatMap(page => page.aliases.map(alias => [alias, page.url])), ['/page/1/', '/']], policy,
+  environment === 'production' ? await publishedRouteHistory() : baseline.history);
+assert.deepEqual(JSON.parse(await readFile(path.join(output, 'route-history.json'), 'utf8')), lifecycle.history, 'Route history must retain every previously published URL');
+assert.deepEqual(JSON.parse(await readFile(path.join(output, 'route-retirements.json'), 'utf8')), lifecycle.retired, 'Retired HTTP statuses must match the reviewed policy');
+const expectedRedirects = generateRouteRedirects(allPublicRoutes, lifecycle.aliases, lifecycle.migrations, lifecycle.retired);
+assert.deepEqual(redirects, expectedRedirects.staticRules, 'Static aliases must match the current route table');
+assert.deepEqual(workerRules, expectedRedirects.workerRules, 'Worker redirects must match the current route table');
+const workerRedirects = Object.entries(workerRules).map(([from, to]) => ({ from, to, status: 301 }));
+const publicRoutes = new Set(allPublicRoutes.map(route => assetPathname(route.url)));
+const missing = [...legacyURLs].filter(url => !publicRoutes.has(assetPathname(url)) && !Object.hasOwn(workerRules, assetPathname(url)) && !Object.hasOwn(lifecycle.retired, assetPathname(url)));
+assert.deepEqual(missing, [], 'Every original public route must remain available or explicitly retired');
+for (const { from, to } of workerRedirects) {
+  assert.ok(!publicRoutes.has(from) && !publicRoutes.has(`${from}/`), `Worker redirect shadows a canonical route: ${from}`);
+  assert.ok(publicRoutes.has(to), `Worker redirect has no destination: ${from}`);
+  assert.ok(!Object.hasOwn(workerRules, to), `Worker redirect chains: ${from}`);
+}
+const buildSummary = JSON.parse(await readFile(path.join(root, '.generated/build-summary.json'), 'utf8'));
+assert.equal(buildSummary.redirects, workerRedirects.length, 'Build summary must count all Worker sources');
+assert.equal(buildSummary.staticRedirects, redirects.length, 'Build summary must count static aliases separately');
 const locations = sitemapLocations(sitemap);
 // Workers Builds 3ba1e083 died here: Promise.all opened every sitemap page at once
 // and hit EMFILE at index 1003 (dist/posts/.../index.html, nofile around 1024).
 // Every location is still read and checked; only the number of simultaneous opens is capped.
 const sitemapReadConcurrency = 32;
 const canonicals = new Map(await mapLimit(locations, sitemapReadConcurrency, async loc => [loc, canonicalLinks(await readFile(htmlPath(new URL(loc).pathname), 'utf8'))]));
-assertSitemapLocations(locations, { canonicalOf: loc => canonicals.get(loc), redirects });
-const links = await auditContentLinks({ pages: content.pages, output, redirects, site: 'https://yindongliang.com' });
-assert.deepEqual(links.errors, [], 'Every internal article link and fragment must have a published destination');
+assertSitemapLocations(locations, { canonicalOf: loc => canonicals.get(loc), redirects: [...redirects, ...workerRedirects] });
+const renderedPages = [];
+for (const route of allPublicRoutes) renderedPages.push({ source: route.url, url: route.url, html: await readFile(htmlPath(route.url), 'utf8') });
+const links = await auditContentLinks({ pages: renderedPages, output, redirects: workerRedirects, canonicalRoutes: allPublicRoutes, site: 'https://yindongliang.com' });
+assert.deepEqual(links.errors, [], 'Every rendered internal page link must use the canonical destination and a valid fragment');
 assert.ok(redirects.some(rule => rule.from === '/page/1/' && rule.to === '/'), 'First-page redirect missing');
 assert.ok(redirects.some(rule => rule.from === '/modified/' && rule.to === '/archives/' && rule.status === 301), 'Retired LastModified URL must redirect to archives');
 assert.ok(!sitemap.includes(`<loc>${publicURL('/modified/')}</loc>`), 'Retired LastModified URL must stay out of the sitemap');
@@ -248,5 +274,5 @@ async function inspect(directory) {
   }
 }
 await inspect(output); assert.deepEqual(errors, [], 'Only public generated artifacts can be deployed');
-await writeFile(path.join(root, '.generated/verification.json'), JSON.stringify({ environment, ...counts, contentLinks: links.checkedLinks, feeds: feeds.size, redirects: redirects.length, assets: assets.size, indexedPages, checkedAt: new Date().toISOString() }, null, 2));
-console.log(`Verified ${counts.routes} rendered routes; all ${counts.originalRoutes} original URLs retained; ${counts.comments} Convex comment pages, ${counts.math} math pages, ${counts.mermaid} Mermaid pages, ${counts.code} code pages, ${counts.blogMdx} imported Blog MDX pages. ${links.checkedLinks} internal article links, ${feeds.size} feeds, ${redirects.length} redirects, ${assets.size} assets, search, existing demos, MDX/React/Svelte and ${environment} indexing policy passed.`);
+await writeFile(path.join(root, '.generated/verification.json'), JSON.stringify({ environment, ...counts, contentLinks: links.checkedLinks, feeds: feeds.size, redirects: workerRedirects.length, staticRedirects: redirects.length, assets: assets.size, indexedPages, checkedAt: new Date().toISOString() }, null, 2));
+console.log(`Verified ${counts.routes} rendered routes; all ${counts.originalRoutes} original URLs retained; ${counts.comments} Convex comment pages, ${counts.math} math pages, ${counts.mermaid} Mermaid pages, ${counts.code} code pages, ${counts.blogMdx} imported Blog MDX pages. ${links.checkedLinks} internal article links, ${feeds.size} feeds, ${workerRedirects.length} Worker redirects (${redirects.length} static aliases), ${assets.size} assets, search, existing demos, MDX/React/Svelte and ${environment} indexing policy passed.`);

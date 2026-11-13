@@ -6,6 +6,10 @@ A static personal blog built with Astro and the independently maintained `@tcitr
 
 Cloudflare Workers Static Assets serves the site through a single production Worker. Labs contains interactive experiments with React, HeroUI, HeroUI Pro, and Svelte; site-specific pages and components stay in this repository.
 
+The build finalizer derives exact redirects from the public route table: lowercase spellings return to their original canonical routes, and existing `/docs/Apple/` routes also accept the old `/docs/Xcode/` prefix. Both trailing-slash forms redirect directly with 301; explicit aliases take precedence. Canonical routes and missing destinations are never redirected.
+
+Existing aliases remain in `_redirects` with a 2,000-rule limit; the full lookup is generated as `dist/route-redirects.json` and bundled into the Worker. This JSON contains only public pathnames and is covered by the release asset seal. The Worker runs before static assets on every request to avoid intermediate HTML slash/encoding redirects, then delegates all unmatched requests to `ASSETS`. This means static requests also invoke the Worker. `build-summary.json` counts unique Worker sources as `redirects`, and reports `staticRedirects`, `aliasHtml` and any preserved alias conflicts separately.
+
 ## Development
 
 Requires Node.js 22.12+, npm, Git, and authorized access to HeroUI Pro.
