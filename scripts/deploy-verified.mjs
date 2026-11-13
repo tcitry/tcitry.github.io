@@ -8,6 +8,7 @@ import { assertSealedRelease, assetHashes } from './release-manifest.mjs';
 import { assertClerkIssuer, assertConvexSearchURL, assertProductionDeployKey, loadReaderEnvironment, readProductionReaderConfig, withoutReaderSecrets } from './reader-config.mjs';
 import { assertProductionWorkersBranch } from './ci-branch.mjs';
 import { publishedReleaseSupersedes, resolveWorkersProductionDeploy } from './production-release-guard.mjs';
+import { assertPublishedHistoryRetained } from './route-lifecycle.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const execute = promisify(execFile);
@@ -32,6 +33,7 @@ try {
   // Two main builds can overlap. Uploading the older sealed Worker replaces the
   // newer release and makes its Pagefind check compare against the wrong index.
   await assertCurrentProductionRelease(manifest.siteCommit);
+  await assertPublishedHistoryRetained(root, assets);
   const env = withoutReaderSecrets(configured);
   await rm(path.join(root, '.generated/deployment.json'), { force: true });
   for (const name of ['BLOG_READ_TOKEN', 'BLOG_CONTENT_REPOSITORY', 'BLOG_CONTENT_COMMIT', 'HEROUI_AUTH_TOKEN', 'GITHUB_TOKEN', 'GH_TOKEN']) delete env[name];
@@ -96,6 +98,7 @@ try {
   // Backend failure stops here. Also reject any local change before Worker upload.
   await assertSealedRelease(root, manifest);
   await assertCurrentProductionRelease(manifest.siteCommit);
+  await assertPublishedHistoryRetained(root, assets);
   console.log(`Deploying ${Object.keys(assets).length} sealed production assets without rebuilding.`);
   // Use the installed, lockfile-pinned CLI. Never download a different Wrangler.
   await run('Uploading the verified Worker assets', ['node_modules/wrangler/bin/wrangler.js', 'deploy'], env);

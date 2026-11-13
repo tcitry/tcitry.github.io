@@ -5,6 +5,8 @@ import { assertBuiltReaderConfig } from './reader-build.mjs';
 import { previewBuildOutput } from './build-site.mjs';
 import { publicURL } from '../src/lib/public-url.mjs';
 import { generateRouteRedirects } from './route-redirects.mjs';
+import { routeBaseline, routeLifecycle } from './route-lifecycle.mjs';
+import { canonicalizeOutputLinks, publicHtmlRoutes } from './canonical-links.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = await previewBuildOutput(root, process.env.BLOG_PREVIEW_OUTPUT_DIR, process.env.PUBLIC_SITE_ENV);
 // Preserve Astro's snapshot of the configuration actually compiled into JS.
@@ -57,7 +59,14 @@ let aliasHtml = 0;
 const outputKeys = new Set(routes.map(route => decodeURIComponent(route.url).toLowerCase()));
 const aliasEntries = content.pages.flatMap(page => page.aliases.map(alias => [alias, page.url]));
 aliasEntries.push(['/page/1/', '/']);
-const { staticRules, workerRules, preservedAliases, skippedCanonical } = generateRouteRedirects(routes, aliasEntries);
+const baseline = await routeBaseline(root, process.env.PUBLIC_SITE_ENV);
+const policy = JSON.parse(await readFile(path.join(root, 'scripts/route-migrations.json'), 'utf8'));
+const publicRoutes = await publicHtmlRoutes(output);
+const lifecycle = routeLifecycle(publicRoutes, aliasEntries, policy, baseline.history);
+const { staticRules, workerRules, preservedAliases, skippedCanonical } = generateRouteRedirects(publicRoutes, lifecycle.aliases, lifecycle.migrations, lifecycle.retired);
+await writeFile(path.join(root, '.generated/route-history-baseline.json'), JSON.stringify(baseline) + '\n');
+await put('/route-history.json', JSON.stringify(lifecycle.history, null, 2) + '\n');
+await put('/route-retirements.json', JSON.stringify(lifecycle.retired, null, 2) + '\n');
 for (const { from: alias, to: url } of staticRules) {
   const key = decodeURIComponent(alias).toLowerCase();
   if (outputKeys.has(key)) continue;
@@ -72,8 +81,9 @@ await put('/_redirects', staticRules.map(({ from, to }) => `${from} ${to} 301`).
 // bundled into the Worker. This contains only already-public route pathnames.
 await put('/route-redirects.json', JSON.stringify(workerRules, null, 2) + '\n');
 const redirects = Object.keys(workerRules).length;
-await writeFile(path.join(root, '.generated/build-summary.json'), JSON.stringify({ routes: routes.length, feeds: feedCount, redirects, staticRedirects: staticRules.length, aliasHtml, preservedAliases, skippedCanonical, generatedAt: new Date().toISOString() }, null, 2));
+const canonicalLinks = await canonicalizeOutputLinks(output, publicRoutes, workerRules);
+await writeFile(path.join(root, '.generated/build-summary.json'), JSON.stringify({ routes: routes.length, feeds: feedCount, redirects, staticRedirects: staticRules.length, aliasHtml, canonicalLinks, preservedAliases, skippedCanonical, generatedAt: new Date().toISOString() }, null, 2));
 const corpus = JSON.parse(await readFile(path.join(root, '.generated/ai-search/manifest.json'), 'utf8'));
-await put('/blog-release.json', JSON.stringify({ version: 1, ...corpus.revision, corpusHash: corpus.corpusHash, environment: corpus.environment }) + '\n');
+await put('/blog-release.json', JSON.stringify({ version: 1, routeHistoryVersion: 1, ...corpus.revision, corpusHash: corpus.corpusHash, environment: corpus.environment }) + '\n');
 if (process.env.PUBLIC_SITE_ENV === 'production') await assertBuiltReaderConfig(root);
 console.log(`Finalized ${routes.length} content routes, ${feedCount} feeds, sitemap and ${redirects} Worker redirects (${staticRules.length} static aliases; ${aliasHtml} alias HTML pages).`);

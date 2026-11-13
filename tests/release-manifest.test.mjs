@@ -20,7 +20,8 @@ async function fixture(t) {
   for (const subdirectory of [content, site, 'site/scripts', 'site/dist', 'site/.generated', 'site/node_modules/wrangler/bin', 'site/node_modules/convex/bin']) {
     await mkdir(path.isAbsolute(subdirectory) ? subdirectory : path.join(directory, subdirectory), { recursive: true });
   }
-  for (const file of ['release-manifest.mjs', 'verify-release.mjs', 'deploy-verified.mjs', 'theme-package.mjs', 'reader-config.mjs', 'reader-build.mjs', 'finalize-build.mjs', 'route-redirects.mjs', 'build-site.mjs', 'verify-convex-target.mjs', 'ci-branch.mjs', 'production-release-guard.mjs']) {
+  await symlink(path.resolve(path.dirname(fileURLToPath(import.meta.resolve('parse5'))), '..'), path.join(site, 'node_modules/parse5'), 'dir');
+  for (const file of ['release-manifest.mjs', 'verify-release.mjs', 'deploy-verified.mjs', 'theme-package.mjs', 'reader-config.mjs', 'reader-build.mjs', 'finalize-build.mjs', 'route-redirects.mjs', 'route-lifecycle.mjs', 'canonical-links.mjs', 'build-site.mjs', 'verify-convex-target.mjs', 'ci-branch.mjs', 'production-release-guard.mjs']) {
     await copyFile(new URL(`../scripts/${file}`, import.meta.url), path.join(site, 'scripts', file));
   }
   await mkdir(path.join(site, 'src/lib'), {recursive: true});
@@ -124,7 +125,6 @@ async function sealWithAISearch(context) {
   await mkdir(path.join(context.site, '.generated/ai-search/documents'), { recursive: true });
   await mkdir(path.join(context.site, 'dist/posts/one'), { recursive: true });
   await copyFile(new URL('../scripts/lib/ai-search-corpus.mjs', import.meta.url), path.join(context.site, 'scripts/lib/ai-search-corpus.mjs'));
-  await symlink(fileURLToPath(new URL('../node_modules/parse5', import.meta.url)), path.join(context.site, 'node_modules/parse5'));
   await writeFile(path.join(context.site, 'wrangler.jsonc'), JSON.stringify({ name: 'test-worker', main: 'worker/index.ts', assets: { directory: './dist' } }));
   await writeFile(path.join(context.site, 'worker/index.ts'), 'export default {};\n');
   await writeFile(path.join(context.site, 'dist/posts/one/index.html'), '<html>Published fixture content.</html>');

@@ -332,12 +332,13 @@ async function main() {
   const timeout = Number(values['timeout-ms']);
   assert.ok(Number.isInteger(timeout) && timeout > 0 && timeout <= 120000, '--timeout-ms must be between 1 and 120000');
   const generated = path.join(root, '.generated');
-  const [content, routes, source, redirectText, workerRules] = await Promise.all([
+  const [content, routes, source, redirectText, workerRules, retirements] = await Promise.all([
     readFile(path.join(generated, 'content.json'), 'utf8').then(JSON.parse),
     readFile(path.join(generated, 'routes.json'), 'utf8').then(JSON.parse),
     themeRelease(root),
     readFile(path.join(root, 'dist/_redirects'), 'utf8'),
     readFile(path.join(root, 'dist/route-redirects.json'), 'utf8').then(JSON.parse),
+    readFile(path.join(root, 'dist/route-retirements.json'), 'utf8').then(JSON.parse),
   ]);
   const routeMap = new Map(routes.map(route => [route.url, route]));
   const selected = new Set(['/', '/archives/', '/posts/', '/weekly/', '/timeline/', '/portfolio/', '/links/', '/tags/', '/categories/', '/about/', '/docs/', '/labs/', '/labs/agent-replay/', '/demos/2026/rounded-timeline/']);
@@ -464,6 +465,13 @@ async function main() {
     const destination = await request(assetPathname(to)); assert.equal(destination.status, 200, `Redirect destination missing: ${to}`);
     assertCanonical(destination.body, to); assertHtmlIndexing(destination.body, environment, to); assertHeaderIndexing(destination.headers.get('x-robots-tag'), environment, to);
   }, 'Legacy and Worker redirects');
+  if (!localPreview) {
+    await batches(Object.entries(retirements), async ([from, status]) => {
+      const response = await request(from);
+      assert.equal(response.status, status, `Retired URL status: ${from}`);
+      assert.ok(!response.headers.get('location'), `Retired URL must not redirect: ${from}`);
+    }, 'Explicitly retired URLs');
+  }
   if (!localPreview) {
     const missing = '/docs/Apple/SwiftUI/Bindable/';
     if (!routeMap.has(missing)) assertNotFound(await request(missing), missing);

@@ -9,7 +9,7 @@ export function lowercaseRoute(url) {
   return assetPathname(url).replace(/%[\da-f]{2}|[^%]+/gi, part => part.startsWith('%') ? part : part.toLowerCase());
 }
 
-export function generateRouteRedirects(routes, aliases) {
+export function generateRouteRedirects(routes, aliases, migrations = [], retirements = {}) {
   const canonical = new Set(routes.map(route => assetPathname(route.url)));
   const staticRules = [];
   const targets = new Map();
@@ -49,10 +49,18 @@ export function generateRouteRedirects(routes, aliases) {
       targets.set(source, to);
     }
   }
+
+  for (const [from, to] of migrations) {
+    assert.ok(canonical.has(to), `Migration has no canonical destination: ${from}`);
+    const source = from === '/' ? from : from.replace(/\/$/, '') + '/';
+    add(source, to);
+    for (const variant of variants(source)) aliasSources.add(variant);
+  }
   for (const url of canonical) {
     const from = lowercaseRoute(url);
     if (from !== url) add(from, url);
     if (url.startsWith('/docs/Apple/')) add(url.replace('/docs/Apple/', '/docs/Xcode/'), url);
   }
+  for (const from of Object.keys(retirements)) assert.ok(!targets.has(from), `Retired URL would redirect: ${from}`);
   return { staticRules, workerRules: Object.fromEntries([...targets].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)), preservedAliases, skippedCanonical };
 }

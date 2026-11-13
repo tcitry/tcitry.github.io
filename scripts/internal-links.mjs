@@ -1,6 +1,8 @@
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { parse, parseFragment } from 'parse5';
+import { canonicalLink } from './canonical-links.mjs';
+import { assetPathname } from '../src/lib/public-url.mjs';
 
 const siteHosts = new Set(['yindongliang.com', 'www.yindongliang.com']);
 const decode = value => { try { return decodeURIComponent(value); } catch { return value; } };
@@ -12,7 +14,7 @@ function walk(node, visit, skipCode = false) {
 }
 
 /** Check rendered Markdown links against the files and redirects being deployed. */
-export async function auditContentLinks({ pages, output, redirects = [], site = 'https://yindongliang.com' }) {
+export async function auditContentLinks({ pages, output, redirects = [], site = 'https://yindongliang.com', canonicalRoutes }) {
   const root = path.resolve(output);
   // An exact file inventory avoids false positives on case-insensitive macOS disks.
   // Symlinks are excluded, so the audit cannot read outside the deployment output.
@@ -73,9 +75,14 @@ export async function auditContentLinks({ pages, output, redirects = [], site = 
     return { file: undefined };
   }
   const errors = [];
+  const validLinks = new Set();
+  const publicRoutes = canonicalRoutes && new Set(canonicalRoutes.map(route => assetPathname(route.url)));
+  const publicRedirects = Object.fromEntries(redirects.map(rule => [assetPathname(rule.from), assetPathname(rule.to)]));
   let checkedLinks = 0;
   for (const page of pages) {
     const hrefs = [];
+    const base = assetPathname(page.url);
+    const baseURL = new URL(base, site);
     walk(parseFragment(page.html || ''), node => {
       if (node.tagName === 'a') {
         const href = attribute(node, 'href');
@@ -85,10 +92,18 @@ export async function auditContentLinks({ pages, output, redirects = [], site = 
     for (const href of hrefs) {
       const fail = reason => errors.push({ source: page.source || page.id || page.url, url: page.url, href, reason });
       let url;
-      try { url = new URL(href, new URL(page.url, site)); }
+      try { url = new URL(href, baseURL); }
       catch { fail('invalid URL'); continue; }
       if (!['https:', 'http:'].includes(url.protocol) || !siteHosts.has(url.hostname)) continue;
       checkedLinks++;
+      // Global navigation repeats on every page. Validate each resolved URL
+      // once, while still counting every link and reporting every broken use.
+      const cacheKey = url.href;
+      if (validLinks.has(cacheKey)) continue;
+      if (publicRoutes) {
+        const canonical = canonicalLink(href, base, publicRoutes, publicRedirects);
+        if (canonical !== null) { fail(`noncanonical page link: use ${canonical}`); continue; }
+      }
       const seen = new Set();
       let redirectError = false;
       while (['https:', 'http:'].includes(url.protocol) && siteHosts.has(url.hostname) && redirectMap.has(decode(url.pathname))) {
@@ -105,8 +120,11 @@ export async function auditContentLinks({ pages, output, redirects = [], site = 
       const { file, reason } = destination(url);
       if (reason || !file) { fail(reason || `missing target: ${url.pathname}`); continue; }
       const fragment = url.hash.slice(1).split(':~:')[0];
-      if (!fragment || decode(fragment).toLowerCase() === 'top' || !/\.html$/i.test(file)) continue;
-      if (!await hasAnchor(file, fragment)) fail(`missing fragment: ${url.pathname}#${fragment}`);
+      if (fragment && decode(fragment).toLowerCase() !== 'top' && /\.html$/i.test(file) && !await hasAnchor(file, fragment)) {
+        fail(`missing fragment: ${url.pathname}#${fragment}`);
+        continue;
+      }
+      validLinks.add(cacheKey);
     }
   }
   return { errors, checkedLinks, checkedPages: pages.length };

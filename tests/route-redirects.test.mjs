@@ -3,7 +3,7 @@ import test from 'node:test';
 import { readFile } from 'node:fs/promises';
 import ts from 'typescript';
 import { generateRouteRedirects, lowercaseRoute, STATIC_REDIRECT_LIMIT } from '../scripts/route-redirects.mjs';
-import { routeRedirectResponse } from '../worker/route-redirects.mjs';
+import { routeRedirectResponse, routeRetirementResponse } from '../worker/route-redirects.mjs';
 import { assertSitemapLocations } from '../scripts/verify-deployment.mjs';
 
 const generate = (urls, aliases = []) => generateRouteRedirects(urls.map(url => ({ url })), aliases);
@@ -88,7 +88,7 @@ test('Worker entry redirects before ASSETS, preserves API 404s and forwards othe
   const source = await readFile(new URL('../worker/index.ts', import.meta.url), 'utf8');
   const { workerRules } = generate([hit, grid]);
   const entry = ts.transpileModule(source.replace(/^import .*;\n/gm, ''), { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText;
-  const worker = Function('redirects', 'routeRedirectResponse', entry.replace('export default', 'return'))(workerRules, routeRedirectResponse);
+  const worker = Function('redirects', 'retirements', 'routeRedirectResponse', 'routeRetirementResponse', entry.replace('export default', 'return'))(workerRules, { '/gone/': 410 }, routeRedirectResponse, routeRetirementResponse);
   const calls = [];
   const assetResponse = new Response('asset', { status: 200 });
   const env = { ASSETS: { async fetch(request) { calls.push(request); return assetResponse; } } };
@@ -98,6 +98,9 @@ test('Worker entry redirects before ASSETS, preserves API 404s and forwards othe
   const api = await worker.fetch(new Request('https://example.com/api/old'), env);
   assert.equal(api.status, 404);
   assert.equal(api.headers.get('cache-control'), 'no-store');
+  assert.equal(calls.length, 0);
+  const gone = await worker.fetch(new Request('https://example.com/gone/'), env);
+  assert.equal(gone.status, 410);
   assert.equal(calls.length, 0);
   for (const url of [grid, '/missing/', '/_astro/example.js']) {
     const request = new Request(`https://example.com${url}`);
