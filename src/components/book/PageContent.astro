@@ -62,7 +62,7 @@ const cloudSize = (count: number) => {
   <article class:list={{ markdown: true, 'book-post': ['posts', 'links'].includes(page.type), 'mb-16': ['posts', 'links'].includes(page.type), 'book-article': !['posts', 'links'].includes(page.type) }} data-pagefind-body data-blog-mdx={page.mdx ? '' : undefined}>
     {page.kind === 'page' && ['posts', 'weekly', 'links', 'docs'].includes(page.type) && (
       <>
-        <h1>{page.type === 'docs' ? bookTitle(page) : <a href={page.url}>{bookTitle(page)}</a>}</h1>
+        <h1>{page.type === 'docs' ? page.title : <a href={page.url}>{page.title}</a>}</h1>
         <PostMeta page={page} tags={tags} />
       </>
     )}
