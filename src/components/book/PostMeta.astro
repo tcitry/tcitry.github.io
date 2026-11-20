@@ -6,9 +6,9 @@ interface Props { page: ContentPage; tags: TaxonomyTerm[] }
 const { page, tags } = Astro.props;
 const cover = articleCover(page);
 const stats: string[] = [];
-if (page.wordCount > 0) stats.push(`${page.wordCount} 字`);
 const created = displayDate(page, 'short');
 if (created) stats.push(created);
+if (page.wordCount > 0) stats.push(`${page.wordCount} 字`);
 const minutes = readingMinutes(page.wordCount);
 if (minutes) stats.push(`~${minutes} min read`);
 const tagLinks = page.tags.map((tag) => ({

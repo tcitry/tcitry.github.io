@@ -21,7 +21,7 @@ root.innerHTML = `
   <article class="markdown" data-tag-fixture>
     <h1>Cap'n Web RPC</h1>
     <div class="post-meta post-after" data-article-meta>
-      <p class="post-meta__stats">3833 字 · 2026-10-21 · ~10 min read</p>
+      <p class="post-meta__stats">2026-10-21 · 3833 字 · ~10 min read</p>
       <p class="post-meta__tags" data-visual>
         相关标签：
         <a data-visual-tag="visited" href="${href('visitedTag')}">Cloudflare</a>,
