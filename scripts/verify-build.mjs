@@ -114,6 +114,13 @@ for (const route of routes) {
   if (expectedComments) counts.comments++;
   const page = pages.get(route.id);
   if (page?.mdx) { assertMdxPage(html, page); counts.blogMdx++; }
+  const navigationTitle = page?.params?.linkTitle || page?.params?.linktitle || page?.params?.bookTitle || page?.params?.booktitle;
+  if (route.kind === 'page' && ['docs', 'posts', 'weekly', 'links'].includes(route.type) && navigationTitle && navigationTitle !== page.title) {
+    const article = descendants(parse(html)).find(node => node.tagName === 'article' && Object.hasOwn(attributes(node), 'data-pagefind-body'));
+    const heading = article?.childNodes.find(node => node.tagName === 'h1');
+    assert.ok(heading, `Article is missing its H1: ${route.url}`);
+    assert.equal(normalizeText(textContent(heading)), normalizeText(page.title), `Article H1 must use the full title: ${route.url}`);
+  }
   for (const [feature, pattern] of [['math', 'class="katex"'], ['mermaid', 'class="mermaid"'], ['code', 'data-blog-code-language=']]) {
     if (page?.html.includes(pattern)) { assert.ok(html.includes(pattern), `${feature} lost in ${route.url}`); counts[feature]++; }
   }
