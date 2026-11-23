@@ -22,6 +22,13 @@ test('article reading mark sits left of like, and bookmark stays on the comment 
   assert.match(article, /isAuthenticated \? \{pathname\} : 'skip'/);
 });
 
+test('article reading mark renders no wrapper until Clerk has a user', () => {
+  const mark = read('src/components/reader/ReadingMarkControl.tsx');
+  assert.match(mark, /if \(!isLoaded \|\| !userId\) return null;\s+return <div [^>]*data-reading-mark/);
+  assert.doesNotMatch(mark, /openClerkSignIn|登录后标记阅读/);
+  assert.match(mark, /authState === 'unavailable'\s+\? <Button [^\n]*retryConvexAuth\(refreshToken\)[^\n]*重试同步阅读标记/);
+});
+
 test('reading list is a top-level assistant tab with one merged row per article', () => {
   const mine = read('src/components/reader/MyPanel.tsx');
   assert.doesNotMatch(mine, /ReadingMarksPanel|id: 'reading'/);
